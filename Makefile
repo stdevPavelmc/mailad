@@ -1,41 +1,60 @@
 .DEFAULT_GOAL := help
 
-.PHONY : deps clean conf-check certs install
+.PHONY : clean reset fix-vmail install-purge all force-provision force-certs help
 
 PWD = $(shell pwd)
 
-clean: ## Clean the environment to have a fresh start
-	#-sudo rm
+clean: ## Clean the environment to have a fresh start (preserve SSL/DH certs in /etc/ssl)
+	-rm reps conf-check install provision all || exit 0
 
-deps: ## Install all the needed deps to test & build it
+reset: clean install-purge ## Reset all configurations and remove/purge all softwares & certificates
+	-rm certs || exit 0
+	-rm -rdf /etc/ssl/private/mail.key /etc/ssl/certs/mail.crt /etc/ssl/certs/cacert.pem /etc/ssl/dh || exit 0
+
+deps:  ## Install all the needed deps to test & build it
 	sudo apt update -q
 	sudo apt install -y ldap-utils
+	echo "done" > deps
 
-conf-check: ## Make some tests to validate the actual config before proceed 
+conf-check: deps ## Make some tests to validate the actual config before proceed 
 	# test the settings of the localhost
 	scripts/test_localhost.sh
 	# test the binddn user and search for the admin user
 	scripts/test_bind_dn.sh
 	# test a search on the admin user and warn about any misconfigured property
 	scripts/test_mailadmin.sh
+	echo "done" > conf-check
 
 fix-vmail: ## Fix the warning by creating the vmail user as per the conf file
 	scripts/vmail_create.sh
 
-certs: ## Generate a self-signed certificate for the server SSL/TLS options
+certs: conf-check ## Generate a self-signed certificate for the server SSL/TLS options
 	scripts/gen_cert.sh
+	echo "done" > certs
 
-install: ## Install all the software from the repository
+install: certs ## Install all the software from the repository
 	scripts/install_mail.sh
+	echo "done" > install
 
 install-purge: ## Uninstall postfix and dovecot already installed software (purge config also)
 	scripts/install_purge.sh
+	rm install
 
-provision: ## Provision the server, this will copy over the config files and set the vars
+provision: install ## Provision the server, this will copy over the config files and set the vars
 	scripts/provision.sh
+	echo "done" > provision
 
-all: deps conf-check certs install ## run all targets in the logic order
+all: provision ## Run all targets in the logic order, run this to make it all
+	echo "done" > all
 	echo "Done!"
+
+force-provision: ## Force a re-provisioning of the system
+	rm provision
+	$(MAKE) provision
+
+force-certs: ## Force a re-creation of the SSL & dhparm certs
+	rm certs
+	$(MAKE) certs
 
 help:
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
