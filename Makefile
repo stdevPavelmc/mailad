@@ -19,6 +19,9 @@ conf-check: ## Make some tests to validate the actual config before proceed
 	# test a search on the admin user and warn about any misconfigured property
 	scripts/test_mailadmin.sh
 
+fix-vmail: ## Fix the warning by creating the vmail user as per the conf file
+	scripts/vmail_create.sh
+
 certs: ## Generate a self-signed certificate for the server SSL/TLS options
 	scripts/gen_cert.sh
 
