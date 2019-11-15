@@ -28,7 +28,10 @@ install: ## Install all the software from the repository
 install-purge: ## Uninstall postfix and dovecot already installed software (purge config also)
 	scripts/install_purge.sh
 
-all: deps conf-check install certs ## run all targets in the logic order
+provision: ## Provision the server, this will copy over the config files and set the vars
+	scripts/provision.sh
+
+all: deps conf-check certs install ## run all targets in the logic order
 	echo "Done!"
 
 help:

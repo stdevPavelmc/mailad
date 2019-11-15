@@ -82,15 +82,7 @@ Once you have installed the dependencies it's time to check the config file basi
 make conf-check
 ```
 
-This will check for some of the pre-defined scenarios and configs, if any problem is four you will be warned about, otherwise we a re ready to install the softs
-
-### Software installs
-
-``` sh
-make install
-```
-
-This step installs all the needed softwares with the provision of making a backup of the old config folders if there is a previous config on the server, folders will be named like this `postfix-20191112_234590` as you can see a timestamp is added to the folders
+This will check for some of the pre-defined scenarios and configs, if any problem is four you will be warned about, otherwise we a re ready to install the softs, but first we need to generate the SSL certificates
 
 ### Certificate creation
 
@@ -100,6 +92,16 @@ All communications with the clients in this setup will be encrypted, so you will
 ``` sh
 make certs
 ```
+
+This step must be run **before** the `make install` one or it will fail
+
+### Software installs
+
+``` sh
+make install
+```
+
+This step installs all the needed softwares, or fail if some of them are already installed (we need a clean system) in that case we will offer a way to clean the system for you
 
 ### Services provision
 
