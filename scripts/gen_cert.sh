@@ -4,6 +4,7 @@
 #
 # Goal:
 #   - Generate a 3 years valid self-signed certificate
+#   - Generate a safe dhparm file to protect forward secrecy
 
 # locate the source file (makefile or run by hand)
 if [ -f mailad.conf ] ; then 
@@ -39,6 +40,20 @@ sudo mv cacert.pem /etc/ssl/certs/
 sudo chmod 0600 /etc/ssl/private/mail.key
 sudo chmod 0600 /etc/ssl/certs/mail.crt
 sudo chmod 0600 /etc/ssl/certs/cacert.pem
+
+# clan the workspace for dhparam generation
+rm *
+
+## dhparms generation
+echo "Generation of SAFE dhparam, this will take a time, be patient..."
+openssl dhparam -out RSA2048.pem -5 2048
+openssl dhparam -dsaparam -out DSA2048.pem 2048
+openssl dhparam -out RSA4096.pem -5 4096
+openssl dhparam -dsaparam -out DSA4096.pem 4096
+
+# copy to final destination
+sudo mkdir /etc/ssl/dh & > /dev/null
+sudo mv -f *.pem /etc/ssl/dh/ 
 
 # clean the house
 cd ~
