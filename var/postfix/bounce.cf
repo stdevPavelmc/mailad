@@ -1,0 +1,94 @@
+failure_template = <<EOF
+Charset: utf-8
+From: MAILER-DAEMON (Mail Delivery System)
+Subject: Correo no entregado, retornado al remitente.
+
+Este es un mensaje automático del servidor de correo:
+
+                    $myhostname
+
+Tengo el pesar de informarle que el mensaje que envió no
+pudo ser entregado a uno o más destinatario; los detalles
+acerca de los problemas los puede encontrar debajo.
+
+Para más detalles acerca de porque recibó este error, por
+favor re-envíelo a uno de los administradores de la red y
+ellos le explicarán.
+
+      Gracias, el equipo de administración de la red.
+EOF
+
+delay_template = <<EOF
+Charset: utf-8
+From: MAILER-DAEMON (Mail Delivery System)
+Subject: Correo retrasado, esto es solo una notificación.
+
+Este es un mensaje automático del servidor de correo:
+
+                    $myhostname
+
+####################################################################
+# ESTO ES SOLO UNA NOTIFICACIóN, NO NECESITA RE-ENVIAR SU MENSAJE. #
+####################################################################
+
+El mensaje que envió no ha podido ser entregado al servidor
+del destinatario.
+
+Usted recibe esta notificación (esto NO ES un error) porque 
+su mensaje ha pasado más d $delay_warning_time_hours horas 
+en cola siendo entregado sin lograrlo. 
+
+Esto puede pasar por probemas de conectividad o problemas en el
+servidor del destinatario.
+
+Seguiremos intentando entregar su correo por hasta $maximal_queue_lifetime_days días
+si es necesario.
+
+Para más detalles acerca de porque reciib� sta nota, por
+favor re-envíelo a uno de los administradores de la red y
+ellos le explicarán.
+
+      Gracias, el equipo de administración de la red.
+
+EOF
+
+success_template = <<EOF
+Charset: utf-8
+From: MAILER-DAEMON (Mail Delivery System)
+Subject: Su correo fue entregado satisfactoriamente.
+
+Este es un mensaje automático del servidor de correo:
+
+                    $myhostname
+
+Esta es una confirmación de que el mensaje que envió a esta
+o estas personas fue entregado en el servidor de correo de
+el o los destinatarios.
+
+Este mensaje le llega porque usted solicitó ser notificado
+cuando el mensaje fuera entregado al destino.
+
+Esto no es un error, es solo una confirmación de entrega,
+recuerde que aún así el destinatario puede elejir no informar
+que ha leido el mensaje.
+
+      Gracias, el equipo de administración de la red.
+
+EOF
+
+verify_template = <<EOF
+Charset: utf-8
+From: MAILER-DAEMON (Mail Delivery System)
+Subject: Su correo fue entregado satisfactoriamente.
+
+Este es un mensaje automático del servidor de correo:
+
+                    $myhostname
+
+Esta es una confirmación de que el destinatario leyó su
+correo, los detalles a continuación.
+
+      Gracias, el equipo de administración de la red.
+EOF
+
+
