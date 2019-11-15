@@ -96,7 +96,7 @@ All communications with the clients in this setup will be encrypted, so you will
 
 
 ``` sh
-make cert
+make certs
 ```
 
 ### Services provision
