@@ -67,6 +67,8 @@ Read and fill all needed variables on the `mailad.conf` file, please read carefu
 Call the dependencies to install all the needed tools, like this
 
 ``` sh
+sudo apt update
+sudo apt install make
 make deps
 ```
 

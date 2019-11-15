@@ -2,13 +2,14 @@
 
 # This script is part of MailAD, see https://github.com/stdevPavelmc/mailad/
 #
-# Goal: Pass or Fail by logging into the AD with the bind DN provided
-#       Search ffor the admin user by its declares email and test the followinf parameters
-#           Office = VMAILSTORAGE
-#           Telephone = not empty
-#           WebPage = not empty and end in "/"
+# Goal:
+#   - Pass or Fail by logging into the AD with the bind DN provided
+#   - Search for the admin user by its declares email and test the followinf parameters
+#       - Office = VMAILSTORAGE
+#       - Telephone = not empty
+#       - WebPage = not empty and end in "/"
 
-# locate the source file (makefile or run bu hand)
+# locate the source file (makefile or run by hand)
 if [ -f mailad.conf ] ; then 
     source mailad.conf
 else
@@ -84,7 +85,8 @@ fi
 
 # succcess
 USER=`cat $TEMP | grep givenName`
-echo "User $USER is configured ok, use it as an example to set up the other!"
+echo "User $USER is configured ok"
+echo "You can use that user as an example to set up the others!"
 echo "Success!"
 rm $TEMP
 exit 0

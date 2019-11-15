@@ -2,9 +2,10 @@
 
 # This script is part of MailAD, see https://github.com/stdevPavelmc/mailad/
 #
-# Goal: Pass or Fail by logging into the AD with the bind DN provided
+# Goal:
+#   - Generate a 3 years valid self-signed certificate
 
-# locate the source file (makefile or run bu hand)
+# locate the source file (makefile or run by hand)
 if [ -f mailad.conf ] ; then 
     source mailad.conf
 else
@@ -32,11 +33,11 @@ openssl x509 -req -days 1095 -in mail.csr -CA ca.crt -CAkey ca.key -CAcreateseri
 cat ca.key ca.crt > cacert.pem
 
 #move it to the final places & fix perms
-sudo mv mail.crt /etc/ssl/certs/
 sudo mv mail.key /etc/ssl/private/
+sudo mv mail.crt /etc/ssl/certs/
 sudo mv cacert.pem /etc/ssl/certs/
+sudo chmod 0600 /etc/ssl/private/mail.key
 sudo chmod 0600 /etc/ssl/certs/mail.crt
-sudo chmod 0600 /etc/ssl/certs/mail.key
 sudo chmod 0600 /etc/ssl/certs/cacert.pem
 
 # clean the house
