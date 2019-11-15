@@ -118,3 +118,6 @@ If any problem is found you will be warned about and will need to re-run the com
 
 When you reach a success message after the provision you can run and test your mail server, congrats!
 
+## This is free software
+
+Have a comment, contributions, fix... Do not hesitate, use the Issues tab in the repository URL, we have a fill to register the contributions to this Software, you can check it [here](Contributors.md) 
