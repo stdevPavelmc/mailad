@@ -32,9 +32,9 @@ function services() {
     for s in `echo $SERVICENAMES | xargs` ; do
         # do it
         echo "Doing $1 with $s..."
-        sudo systemctl $1 $s
+        sudo systemctl --no-pager $1 $s
         sleep 2
-        systemctl status $s
+        systemctl --no-pager status $s
     done
 }
 
