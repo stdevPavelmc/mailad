@@ -29,6 +29,7 @@ for p in `echo $PKGCOMMON | xargs` ; do
         echo "    so, this system is dirty and it's not recommended to install it"
         echo "    here; or you can force a purge runnig: 'make install-purge'"
         echo "    and run 'make install' again"
+        echo " "
         exit 1
     fi
 done

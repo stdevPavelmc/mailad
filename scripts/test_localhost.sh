@@ -4,6 +4,7 @@
 #
 # Goals:
 #   - Test the local configuration for:
+#       - is the vmail user setup correctly?
 #       - fqdn & domain
 #       - DNS resolution and HOSTAD config
 #       - conectivity to the HOSTAD 
@@ -17,6 +18,19 @@ fi
 
 echo "Testing the configurations on the local host"
 
+#vmail user
+GROUP=`cat /etc/group | grep $VMAILNAME | grep $VMAILGID`
+USER=`cat /etc/passwd | grep $VMAILNAME | grep $VMAILUID`
+if [ "$GROUP" == "" -o "$USER" == "" ] ; then
+    # fail
+    echo "ERROR!"
+    echo "    The vmail user is not set or not with proper uid/gid!"
+    echo "    You can fix this by calling 'make fix-vmail' and then"
+    echo "    run the comman 'make conf-check' again."
+    echo " "
+    exit 1
+fi
+
 # hostname vs fqdn
 HOST=`hostname`
 FQDN=`hostname -f`
@@ -26,6 +40,7 @@ if [ "$HOST" == "$FQDN" ] ; then
     echo "    Your hostname does not have a domain or it's configured wrong!"
     echo "    A 'hostname' command must return just the name of the host with no domain"
     echo "    A 'hostname -f' command must return the name with the domain"
+    echo " "
     exit 1
 else
     echo "You have a correct fqdn in the hostname"
@@ -41,6 +56,7 @@ else
     echo "ERROR!"
     echo "    Your HOSTNAME var in mailad.conf does not match the FQDN of this host!"
     echo "    Please fix that"
+    echo " "
     exit 1
 fi
 
@@ -55,6 +71,7 @@ else
     echo "ERROR!"
     echo "    Domain host seems to be down or not reacheable!"
     echo "    Check your network settings and cable"
+    echo " "
     exit 1
 fi
 
@@ -65,6 +82,7 @@ if [ "$SOAREC" == "" ] ; then
     echo "ERROR!"
     echo "    The DOMAIN you declared in mailad.conf has no SOA record in the actual DNS"
     echo "    That, or your DNS is not configurated correctly in this host"
+
     exit 1
 else
     # returned values so DNS is configured OK, but need more testing
@@ -86,6 +104,7 @@ else
             echo "    The DNS answer with a value for the SOA of $DOMAIN, but the value does"
             echo "    not match the one configured in HOSTAD, please fix that"
             echo "    HOSTAD=$HOSTAD vs SOA_IP=$IP "
+            echo " "
             exit 1
         fi
     else

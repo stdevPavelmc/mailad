@@ -41,6 +41,7 @@ else
     echo "ERROR!:"
     echo "    VMAILSTORAGE parameter in mailad.conf does not match the one in the user field 'Office'"
     echo "    Config file vs AD value: '$VMAILSTORAGE' != '$OFFICE'"
+    echo " "
     rm $TEMP
     exit 1
 fi
@@ -51,7 +52,9 @@ if [ "$TELEF" == "" ] ; then
     # fail
     echo "ERROR!:"
     echo "    The user has no quota value configured, it will not work!"
-    echo "    You must use the field Telephone to store a value like '100M' or '1T'"
+    echo "    You must use the field Telephone to store a value like "
+    echo "    '10M', 500M or '1G'"
+    echo " "
     rm $TEMP
     exit 1
 else
@@ -71,14 +74,18 @@ if [ "$WP" != "" ] ; then
     else
         # fail
         echo "ERROR!:"
-        echo "    WebPage is configured for this user, but does not end with '/', please put an '/' at the end"
+        echo "    WebPage is configured for this user, but does not end with '/'"
+        echo "    please put an '/' at the end"
+        echo " "
         rm $TEMP
         exit 1
     fi
 else
     # fail
     echo "ERROR!:"
-    echo "    WebPage is not configured for this user, you must put a folder, ussually the username followed by a '/'"
+    echo "    WebPage is not configured for this user, you must "
+    echo "    put a folder, ussually the username followed by a '/'"
+    echo " "
     rm $TEMP
     exit 1
 fi

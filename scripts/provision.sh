@@ -33,6 +33,8 @@ function services() {
         # do it
         echo "Doing $1 with $s..."
         sudo systemctl $1 $s
+        sleep 2
+        systemctl status $s
     done
 }
 
