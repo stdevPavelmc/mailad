@@ -34,9 +34,9 @@ openssl x509 -req -days 1095 -in mail.csr -CA ca.crt -CAkey ca.key -CAcreateseri
 cat ca.key ca.crt > cacert.pem
 
 #move it to the final places & fix perms
-sudo mv mail.key /etc/ssl/private/
-sudo mv mail.crt /etc/ssl/certs/
-sudo mv cacert.pem /etc/ssl/certs/
+sudo mv -f mail.key /etc/ssl/private/
+sudo mv -f mail.crt /etc/ssl/certs/
+sudo mv -f cacert.pem /etc/ssl/certs/
 sudo chmod 0600 /etc/ssl/private/mail.key
 sudo chmod 0600 /etc/ssl/certs/mail.crt
 sudo chmod 0600 /etc/ssl/certs/cacert.pem
@@ -47,13 +47,11 @@ rm *
 ## dhparms generation
 echo "Generation of SAFE dhparam, this will take a time, be patient..."
 openssl dhparam -out RSA2048.pem -5 2048
-openssl dhparam -dsaparam -out DSA2048.pem 2048
-openssl dhparam -out RSA4096.pem -5 4096
-openssl dhparam -dsaparam -out DSA4096.pem 4096
 
 # copy to final destination
-sudo mkdir /etc/ssl/dh & > /dev/null
-sudo mv -f *.pem /etc/ssl/dh/ 
+sudo mkdir -p /etc/ssl/dh &> /dev/null
+sudo mv -f RSA2048.pem /etc/ssl/dh
+sudo chmod 0644 /etc/ssl/dh/RSA2048.pem
 
 # clean the house
 cd ~
