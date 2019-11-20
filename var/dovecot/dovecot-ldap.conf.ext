@@ -109,7 +109,7 @@ scope = subtree
 user_attrs = \
   =quota_rule=*:bytes=%{ldap:telephoneNumber}, \
   =home=_VMAILSTORAGE_/%n, \
-  =uid=_VMAILNAME_, =gid=_VMAILNAME_
+  =uid=_VMAILUID_, =gid=_VMAILGID_
 
 # Filter for user lookup. Some variables can be used (see
 # http://wiki2.dovecot.org/Variables for full list):
