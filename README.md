@@ -1,24 +1,24 @@
 # MailAD
 
-This a tool to provision a mail server linked to an active directory server (Samba or Windows AD) with some constraints in mind as this is a typical mail config to be used in Cuba under ceirtain Laws and security requirements;
+This is a tool to provision a mail server linked to an active directory server (Samba or Windows active directory, it does not care) with some constraints in mind as this is a typical mail config to be used in Cuba under ceirtain laws and security requirements;
 
 ## Rationale
 
-This repository is inteded to be clonated on your fresh OS install (LXC instance, VM, etc) and configured on a main file as per the file comments, then run the steps on a makefile and follow the steps to configure your server, is all goes well you will have your mail server up and running in about 30 minutes.
+This repository is inteded to be clonated on your fresh OS install (LXC instance, VM, etc) and configured on a main file as per the file comments, then run the steps on a makefile and follow the steps to configure your server, is all goes well you will have your mail server up and running in about 15 minutes tops. _(this time is based on a 2Mbps internet connection to a repository, if you have a local repository it will be much less)_
 
 ## Constraints and requirements
 
 0. Your user base and config came from a Windows Active Directory (AD from now on) as mentioned, we prefer a Samba AD but works on Windows too; see [the requirements of the AD for this tool](AD_Requirements.md)
-0. The mail storage will be a folder in `/home/vmail` all mail will belong to a user named `vmail` with uid:5000 & gid:5000. Tip: that folder can be a NFS mount of a Docker volume
+0. The mail storage will be a folder in `/home/vmail` all mail will belong to a user named `vmail` with uid:5000 & gid:5000. Tip: that folder can be a NFS mount or a Docker volume
 0. You use a Virtual/Real Windows PC to control and manage the domain (must have the RSAT installed and activated), we recommend a Windows 10 LTSC/Professional.
-0. For now all users have international access, national and local restrictions will be supported in the near term
+0. For now all users have international access, national and local restrictions will be supported in the near term.
 0. For now the underlying OS must be Ubuntu 18.04 LTS and you must get access to a repository for the package installation.
-0. Debian 10 will be supported in the near term
-0. The server allows all communications protocols by default _(pop3, pop3s, imap, imaps, smtp, smtps and submission)_ it's **up to you** to restrict with a firewall the users access in a way that them just use the secure versions of it (pop3s, imaps and submission; the smtp service must be used only to receive the emails from the outside world)
+0. Debian 10 will be supported in the near future if enough interest on this.
+0. The server allows all communications protocols by default _(pop3, pop3s, imap, imaps, smtp, smtps and submission)_ it's **up to you** to restrict the users access (firewall) in a way that them just use the secure versions (pop3s, imaps and submission; the smtp service must be used only to send/receive the emails from the outside world)
 
 ## Technical details
 
-For debug and test purposes we use this config **you nee to change it on the mailad.conf file!**
+For debug and test purposes we use this config, **you need to change it on the mailad.conf file!**
 
 ### Samba/Windows Active Directory PC
 
@@ -38,7 +38,7 @@ Special Domain settings are clarified [in a specific file](AD_requirements.md):
 
 ## How to make it work?
 
-**Security warning:** As the config file has passwords in clear text it must be held under the /root directory, so from this moment and forward you need to be root to runs the following comands, `sudo -i` is your friend if you are not root.
+**Security warning:** As the config file has passwords in clear text it must be held under the /root directory, so from this moment and forward you need to be root to runs the following commands, `sudo -i` is your friend if you are not root.
 
 ### Initial setup
 
@@ -56,7 +56,7 @@ cd mailad
 
 Read and fill all needed variables on the `mailad.conf` file, please read carefully and choose wisely!
 
-At this point the fast & fourious ones can just run `make all` and follow the clues, the rest of the mortals just follow the next steps 
+_At this point the fast & fourious ones can just run `make all` and follow the clues, the rest of the mortals just follow the next steps_
 
 ### Dependencies handling
 
@@ -70,13 +70,15 @@ This will install a group of needed tools to run the scripts on this software, i
 
 ### Checks
 
-Once you have installed the dependencies it's time to check the config file basics
+Once you have installed the dependencies it's time to check the local config for errors.
 
 ``` sh
 make conf-check
 ```
 
-This will check for some of the pre-defined scenarios and configs, if any problem is four you will be warned about, otherwise we are ready to install the softwares, but first we need to generate the SSL certificates
+This will check for some of the pre-defined scenarios and configs, if any problem is four you will be warned about, otherwise we are ready to install...
+
+Oh wait! We need to generate the SSL certificates first.
 
 ### Certificate creation
 
@@ -87,7 +89,7 @@ All communications with the clients in this setup will be encrypted, so you will
 make certs
 ```
 
-If you have a custom certificate, then just use the generated one and at the end replace them, the certs are in:\
+If you have a custom certificate, then just use the generated one during config and test stage, and at the end replace ir with your's, the certs are in:\
 
 - Certificate: `/etc/ssl/certs/mail.crt`
 - Private Key: `/etc/ssl/private/mail.key`
