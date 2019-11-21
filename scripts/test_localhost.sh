@@ -22,13 +22,8 @@ echo "Testing the configurations on the local host"
 GROUP=`cat /etc/group | grep $VMAILNAME | grep $VMAILGID`
 USER=`cat /etc/passwd | grep $VMAILNAME | grep $VMAILUID`
 if [ "$GROUP" == "" -o "$USER" == "" ] ; then
-    # fail
-    echo "ERROR!"
-    echo "    The vmail user is not set or not with proper uid/gid!"
-    echo "    You can fix this by calling 'make fix-vmail' and then"
-    echo "    run the comman 'make conf-check' again."
-    echo " "
-    exit 1
+    # fix it!
+    ./vmail_create.sh
 fi
 
 # hostname vs fqdn
