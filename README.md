@@ -8,52 +8,46 @@ This repository is inteded to be clonated on your fresh OS install (LXC instance
 
 ## Constraints and requirements
 
-0. Your user base and config came from a Windows Active Directory (AD from now on) as mentioned, we prefer a Samba AD but works on Windows AD too
-0. Your user base is arranged under a special OU in the AC under the NETBIOS domain name
+0. Your user base and config came from a Windows Active Directory (AD from now on) as mentioned, we prefer a Samba AD but works on Windows too; see [the requirements of the AD for this tool](AD_Requirements.md)
 0. The mail storage will be a folder in `/home/vmail` all mail will belong to a user named `vmail` with uid:5000 & gid:5000. Tip: that folder can be a NFS mount of a Docker volume
-0. You use a Virtual/Real Windows PC to control and manage the domain (must have the RSAT installed and activated), we recommend a Windows 7 PC, as windows 10 is picky for the RSAT install.
+0. You use a Virtual/Real Windows PC to control and manage the domain (must have the RSAT installed and activated), we recommend a Windows 10 LTSC/Professional.
 0. For now all users have international access, national and local restrictions will be supported in the near term
-0. For now the underlying OS must be Ubuntu 18.04 LTS and you must get access to a repository for the package installation, Debian 10 will be supported in the near term
-0. All mail with the users will be under secure comunications (pop3s, imaps, submission but not smtps)
+0. For now the underlying OS must be Ubuntu 18.04 LTS and you must get access to a repository for the package installation.
+0. Debian 10 will be supported in the near term
+0. The server allows all communications protocols by default _(pop3, pop3s, imap, imaps, smtp, smtps and submission)_ it's **up to you** to restrict with a firewall the users access in a way that them just use the secure versions of it (pop3s, imaps and submission; the smtp service must be used only to receive the emails from the outside world)
 
-## Assumptions
+## Technical details
 
-We use a simple user (not admin!) to link the LDAP searches from the linux boxes, the details for this user are show below:
-
-- User name: `linux`
-- Password: `Passw0rd!!!` Warning: `(This is the default you must change it!)`
-- User must be located on the `Users` default AD tree, NOT in the organizational OU see picture below
-
-Settings for the default PCs
+For debug and test purposes we use this config **you nee to change it on the mailad.conf file!**
 
 ### Samba/Windows Active Directory PC
 
-- IP: 10.42.0.2/24  (Ubuntu use netplan for network config check /etc/netplan/mailad.conf)
+- IP: 10.42.0.2/24  (Ubuntu uses netplan for network config, check /etc/netplan/*.conf files)
 - Hostname: dc.mailad.cu
 - Domain NETBIOS name: MAILAD
 - Domain DNS name: mailad.cu
 - DNS server: 10.42.0.2 `yes, itself`
 
-Special Domain settings are clarified below:
-
-[show domain AD tree]
+Special Domain settings are clarified [in a specific file](AD_requirements.md):
 
 ### Ubuntu Mail server
 
 - IP: 10.42.0.3/24
 - Hostname: mail.mailad.cu
-- DNS server: 10.42.0.2 `yes, itself`
+- DNS server: 10.42.0.2
 
 ## How to make it work?
 
-**From this point forward you must work as root user**
+**Security warning:** As the config file has passwords in clear text it must be held under the /root directory, so from this moment and forward you need to be root to runs the following comands, `sudo -i` is your friend if you are not root.
 
 ### Initial setup
 
-Just clone this repository under the place you like, your home is a good place
+Just update and upgrade your system, install one dependency and clone this repository under /root (see above Security warning note)
 
 ``` sh
-cd ~
+cd /root
+sudo apt update
+sudo apt install make -y
 git clone https://github.com/stdevPavelmc/mailad
 cd mailad
 ```
@@ -62,17 +56,17 @@ cd mailad
 
 Read and fill all needed variables on the `mailad.conf` file, please read carefully and choose wisely!
 
+At this point the fast & fourious ones can just run `make all` and follow the clues, the rest of the mortals just follow the next steps 
+
 ### Dependencies handling
 
 Call the dependencies to install all the needed tools, like this
 
 ``` sh
-sudo apt update
-sudo apt install make
 make deps
 ```
 
-This will install a group of needed tools to run the scripts on this software, is all goes well no error must be shown; if an error is shown then you must work it out, as it will be 99% of the time a problem related to the repository link and update.
+This will install a group of needed tools to run the scripts on this software, is all goes well no error must be shown; if an error is shown then you must work it out as it will be 99% of the time a problem related to the repository link and update.
 
 ### Checks
 
@@ -82,18 +76,22 @@ Once you have installed the dependencies it's time to check the config file basi
 make conf-check
 ```
 
-This will check for some of the pre-defined scenarios and configs, if any problem is four you will be warned about, otherwise we a re ready to install the softs, but first we need to generate the SSL certificates
+This will check for some of the pre-defined scenarios and configs, if any problem is four you will be warned about, otherwise we are ready to install the softwares, but first we need to generate the SSL certificates
 
 ### Certificate creation
 
-All communications with the clients in this setup will be encrypted, so you will need a self signed certificate for internal use, in this step a few lines of info will be asked, if it fails just re-run the command until it works. This certificate will be used by postfix & dovecot
+All communications with the clients in this setup will be encrypted, so you will need at least a self signed certificate for internal use. This certificate will be used by postfix & dovecot
 
 
 ``` sh
 make certs
 ```
 
-This step must be run **before** the `make install` one or it will fail
+If you have a custom certificate, then just use the generated one and at the end replace them, the certs are in:\
+
+- Certificate: `/etc/ssl/certs/mail.crt`
+- Private Key: `/etc/ssl/private/mail.key`
+- CA certificate: `/etc/ssl/certs/cacert.pem`
 
 ### Software installs
 
@@ -101,7 +99,7 @@ This step must be run **before** the `make install` one or it will fail
 make install
 ```
 
-This step installs all the needed softwares, or fail if some of them are already installed (we need a clean system) in that case we will offer a way to clean the system for you
+This step installs all the needed softwares, be ware that we **ALWAYS** purge the soft and old configs in this step; in this way we always start with a fresh set of files for the provision stage.
 
 ### Services provision
 
@@ -112,12 +110,14 @@ After the install you must provision the configuration from the mailad.conf file
 make provision
 ```
 
-This stage will copy the template files in the var folder of this repo replacing the values with the ones in your `mailad.conf` file.
+This stage will copy the template files in the var folder of this repo replacing the values with the ones in your `mailad.conf` file. If any problem is found you will be warned about it and will need to re-run the command `make provision` to continue the provision. There is also a `make force-provision` target in case you need to force the provision by hand.
 
-If any problem is found you will be warned about and will need to re-run the command to continue the provision.
-
-When you reach a success message after the provision you can run and test your mail server, congrats!
+When you reach a success message after the provision you are ready to test your new mail server, congrats!
 
 ## This is free software
 
-Have a comment, contributions, fix... Do not hesitate, use the Issues tab in the repository URL, we have a fill to register the contributions to this Software, you can check it [here](Contributors.md) 
+Have a comment, contributions or fix?
+
+Don't hesitate, use the Issues tab in the repository URL.
+
+We have a file to register the contributions to this Software, you can check it [here](Contributors.md)
