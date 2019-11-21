@@ -7,7 +7,8 @@
 #       - is the vmail user setup correctly?
 #       - fqdn & domain
 #       - DNS resolution and HOSTAD config
-#       - conectivity to the HOSTAD 
+#       - conectivity to the HOSTAD
+#       - Check if we are in a non testing domain the password must be changed
 
 # locate the source file (makefile or run by hand)
 if [ -f mailad.conf ] ; then 
@@ -107,4 +108,13 @@ else
         echo "The SOA record points to the HOSTAD value (HOSTAD is a hostname), nice!"
         echo "Success!"
     fi
+fi
+
+
+# testing that the password is different if we are in a non  testing domain
+if [ $DOMAIN != "mailad.cu" -a "$LDAPBINDPASSWD" == "Passw0rd---"] ; then
+    echo "ERROR!"
+    echo "    You has a default password in the bind dn user 'LDAPBINDUSER', that's a very bad practice"
+    echo "    please change the password for the user in the AD and update it on the file 'mailad.conf'"
+    exit 1
 fi
