@@ -28,7 +28,7 @@ For debugging and testing purposes we use this config **you need to change it on
 - Domain DNS name: mailad.cu
 - DNS server: 10.42.0.2 `yes, itself`
 
-Special Domain settings are clarified [in a specific file](AD_requirements.md):
+Special Domain settings are clarified [in a specific file](AD_Requirements.md):
 
 ### Ubuntu Mail server
 
