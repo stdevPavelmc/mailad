@@ -4,7 +4,7 @@ This a tool to provision a mail server linked to an active directory server (Sam
 
 ## Rationale
 
-This repository is inteded to be clonated on your fresh OS install (LXC instance, VM, etc) and configured on a main file as per the file comments, then run the steps on a makefile and follow the steps to configure your server, is all goes well you will have your mail server up and running in about 30 minutes.
+This repository is intended to be cloned on your fresh OS install (LXC instance, VM, etc) and configured on a main file as per the file comments, then run the makefile and follow the steps to configure your server, if everything goes well you will have your mail server up and running in about 30 minutes.
 
 ## Constraints and requirements
 
