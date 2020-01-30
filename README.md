@@ -1,14 +1,14 @@
 # MailAD
 
-This a tool to provision a mail server linked to an active directory server (Samba or Windows AD) with some constraints in mind as this is a typical mail config to be used in Cuba under ceirtain Laws and security requirements;
+MailAD is a tool to provision a mail server using an active directory server (Samba or Windows AD) as a backend. This tool produces a typical mail configuration to be used in Cuba under certain rules and security requirements.
 
 ## Rationale
 
-This repository is intended to be cloned on your fresh OS install (LXC instance, VM, etc) and configured on a main file as per the file comments, then run the makefile and follow the steps to configure your server, if everything goes well you will have your mail server up and running in about 30 minutes.
+This repository is intended to be cloned on fresh installed operating system (LXC instance, VM, etc) and configured using a main file. You have to run the makefile and follow the steps to configure your server, if everything goes well you will have your mail server up and running in about 30 minutes.
 
 ## Constraints and requirements
 
-0. Your user base and config came from a Windows Active Directory (AD from now on) as mentioned, we prefer a Samba AD but works on Windows too; see [the requirements of the AD for this tool](AD_Requirements.md)
+0. Your user base and configuration will be on a Windows Active Directory (AD from now on) as mentioned, we prefer a Samba AD but works on Windows too; see [the requirements of the AD for this tool](AD_Requirements.md)
 0. The mail storage will be a folder in `/home/vmail` all mail will belong to a user named `vmail` with uid:5000 & gid:5000. Tip: that folder can be a NFS mount of a Docker volume
 0. You use a Virtual/Real Windows PC to control and manage the domain (must have the RSAT installed and activated), we recommend a Windows 10 LTSC/Professional.
 0. For now all users have international access, national and local restrictions will be supported in the near term
@@ -18,7 +18,7 @@ This repository is intended to be cloned on your fresh OS install (LXC instance,
 
 ## Technical details
 
-For debug and test purposes we use this config **you nee to change it on the mailad.conf file!**
+For debugging and testing purposes we use this config **you need to change it on the mailad.conf file!**
 
 ### Samba/Windows Active Directory PC
 
