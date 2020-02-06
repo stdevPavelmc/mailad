@@ -23,7 +23,7 @@ GROUP=`cat /etc/group | grep $VMAILNAME | grep $VMAILGID`
 USER=`cat /etc/passwd | grep $VMAILNAME | grep $VMAILUID`
 if [ "$GROUP" == "" -o "$USER" == "" ] ; then
     # fix it!
-    ./vmail_create.sh
+    ./vmail_create.sh || scripts/vmail_create.sh
 fi
 
 # hostname vs fqdn
