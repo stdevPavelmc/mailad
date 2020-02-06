@@ -2,5 +2,7 @@
 
 - HappyHarryHoungan (Telegram: @Koratsuki)
   - Full pkg list in the dependencies to install ldap support for postfix and dovecot
+- Oneohthree (Github: @neohthree)
+  - English translations
 
   **Are you a contributor and your name is not here? drop me a Tlegram DM at @pavelmc about it!**

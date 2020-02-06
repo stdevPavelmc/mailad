@@ -24,7 +24,7 @@ GROUP=`cat /etc/group | grep $VMAILNAME | grep $VMAILGID`
 USER=`cat /etc/passwd | grep $VMAILNAME | grep $VMAILUID`
 if [ "$GROUP" == "" -o "$USER" == "" ] ; then
     # fix it!
-    ./vmail_create.sh
+    ./vmail_create.sh || scripts/vmail_create.sh
 fi
 
 # hostname vs fqdn
@@ -112,7 +112,7 @@ fi
 
 
 # testing that the password is different if we are in a non  testing domain
-if [ $DOMAIN != "mailad.cu" -a "$LDAPBINDPASSWD" == "Passw0rd---"] ; then
+if [ $DOMAIN != "mailad.cu" -a "$LDAPBINDPASSWD" == "Passw0rd---" ] ; then
     echo "ERROR!"
     echo "    You has a default password in the bind dn user 'LDAPBINDUSER', that's a very bad practice"
     echo "    please change the password for the user in the AD and update it on the file 'mailad.conf'"
