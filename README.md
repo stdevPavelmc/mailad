@@ -44,11 +44,14 @@ Special Domain settings are clarified [in a specific file](AD_Requirements.md):
 
 Just update and upgrade your system, install one dependency and clone this repository under /root (see above Security warning note)
 
+**Warning! the recomended branch for productions environments is the master branch, don't use the development branch on production!**
+
 ``` sh
 cd /root
 sudo apt update
 sudo apt install make -y
 git clone https://github.com/stdevPavelmc/mailad
+git checkout master
 cd mailad
 ```
 
