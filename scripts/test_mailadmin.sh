@@ -21,9 +21,9 @@ echo "Searching for the user that owns the email: $ADMINMAIL"
 TEMP=`mktemp`
 ldapsearch -h "$HOSTAD" -D "$LDAPBINDUSER" -w "$LDAPBINDPASSWD" -b "$LDAPSEARCHBASE" "(&(objectClass=person)(mail=$ADMINMAIL))" > $TEMP
 cat $TEMP
-RESULTS=`cat $TEMP | grep "result: " | awk '{print $2}'`
+RESULTS=`cat $TEMP | grep "numEntries: " | awk '{print $3}'`
 
-if [ $RESULT -eq 0 ] ; then
+if [ $RESULTS -eq 0 ] ; then
     # fail
     echo "ERROR!:"
     echo "    There is no user in the AD with the email you provided en the ADMINMAIL setting"
