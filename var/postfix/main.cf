@@ -203,6 +203,7 @@ virtual_transport = dovecot
 
 # para que se entreguen a dovecot como transport uno a uno
 dovecot_destination_recipient_limit = 1
+dovecot_destination_concurrency_limit = 1
 
 # para forzar que los users sean los que existen y no otros
 # depende de virtual_mailbox_maps para el chequeo.
