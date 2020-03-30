@@ -194,7 +194,7 @@ smtpd_sender_restrictions =
 # declaracion del dominio virtual...
 virtual_mailbox_domains = _DOMAIN_
 virtual_mailbox_maps = ldap:/etc/postfix/mailbox_maps.cf
-virtual_alias_maps = hash:/etc/postfix/alias_virtuales
+virtual_alias_maps = hash:/etc/postfix/alias_virtuales, hash:/etc/postfix/auto_aliases
 virtual_mailbox_base = _VMAILSTORAGE_
 virtual_minimum_uid = 100
 virtual_uid_maps = static:_VMAILUID_
