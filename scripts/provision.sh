@@ -25,7 +25,7 @@ else
 fi
 
 # postfix files to make postmap (not the path just the names)
-PMFILES="lista_negra alias_virtuales"
+PMFILES="lista_negra alias_virtuales auto_aliases"
 
 # Control services, argument $1 is the action (start/stop)
 function services() {
@@ -68,6 +68,14 @@ for f in `echo "/etc/postfix /etc/dovecot" | xargs` ; do
             sed -i s/"\_$v\_"/"$CONT"/g {} \;
     done
 done
+
+### install the group.sh scripts as a daily task and run it
+# rm if there
+rm -f /etc/cron.daily/mail_groups_update > /dev/null
+# create the link
+ln -s "${PATHPREF}scripts/groups.sh" /etc/cron.daily/mail_groups_update
+# run it
+/etc/cron.daily/mail_groups_update
 
 # process some of the files, aka postfix postmap
 PWD=`pwd`
