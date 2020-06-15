@@ -85,5 +85,24 @@ for f in `echo "$PMFILES" | xargs` ; do
 done
 cd $PWD
 
+# Dovecot Sieve config: create the directory if not present
+mkdir -p /var/lib/dovecot/sieve/ || exit 0
+
+# Create a default junk filter if required to
+if [ "$SPAM_FILTER_ENABLED" == "yes" -o "$SPAM_FILTER_ENABLED" == "Yes" -o "$SPAM_FILTER_ENABLED" == "YES"] ; then
+    # create the default filter
+    FILE=/var/lib/dovecot/sieve/default.sieve
+    echo 'require "fileinto";' > $FILE
+    echo 'if header :contains "X-Spam-Flag" "YES" {' >> $FILE
+    echo '    fileinto "Junk";' >> $FILE
+    echo '}' >> $FILE
+
+    # fix ownership
+    chown -R vmail:vmail /var/lib/dovecot
+
+    # compile it
+    sievec /var/lib/dovecot/sieve/default.sieve
+fi
+
 # start services
 services start
