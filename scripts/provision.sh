@@ -17,12 +17,17 @@
 if [ -f mailad.conf ] ; then 
     source mailad.conf
     source common.conf
-    PATHPREF="./"
+    PATHPREF=$(realpath "./")
 else
     source ../mailad.conf
     source ../common.conf
-    PATHPREF="../"
+    PATHPREF=$(realpath "../")
 fi
+
+# mailad install path
+echo " "
+echo "NOTICE: mailad install is: $PATHPREF"
+echo " "
 
 # postfix files to make postmap (not the path just the names)
 PMFILES="lista_negra alias_virtuales auto_aliases"
@@ -49,9 +54,9 @@ services stop
 
 # copy over the relevan files
 echo "Sync postfix files..."
-sudo rsync -rv "${PATHPREF}var/postfix/" /etc/postfix/
+sudo rsync -rv "${PATHPREF}/var/postfix/" /etc/postfix/
 echo "Sync dovecot files..."
-sudo rsync -rv "${PATHPREF}var/dovecot/" /etc/dovecot/
+sudo rsync -rv "${PATHPREF}/var/dovecot/" /etc/dovecot/
 
 # replace the vars in the folders
 for f in `echo "/etc/postfix /etc/dovecot" | xargs` ; do
@@ -72,8 +77,10 @@ done
 ### install the group.sh scripts as a daily task and run it
 # rm if there
 rm -f /etc/cron.daily/mail_groups_update > /dev/null
+# fix exec perms just in case it was lost
+chmod +x "${PATHPREF}/scripts/groups.sh"
 # create the link
-ln -s "${PATHPREF}scripts/groups.sh" /etc/cron.daily/mail_groups_update
+ln -s "${PATHPREF}/scripts/groups.sh" /etc/cron.daily/mail_groups_update
 # run it
 /etc/cron.daily/mail_groups_update
 
@@ -89,7 +96,7 @@ cd $PWD
 mkdir -p /var/lib/dovecot/sieve/ || exit 0
 
 # Create a default junk filter if required to
-if [ "$SPAM_FILTER_ENABLED" == "yes" -o "$SPAM_FILTER_ENABLED" == "Yes" -o "$SPAM_FILTER_ENABLED" == "YES"] ; then
+if [ "$SPAM_FILTER_ENABLED" == "yes" -o "$SPAM_FILTER_ENABLED" == "Yes" -o "$SPAM_FILTER_ENABLED" == "YES" ] ; then
     # create the default filter
     FILE=/var/lib/dovecot/sieve/default.sieve
     echo 'require "fileinto";' > $FILE
