@@ -18,6 +18,8 @@ elif [ -f ../mailad.conf ] ; then
     source ../mailad.conf
 else
     source /root/mailad/mailad.conf
+else
+    echo "Can't find the mailad.conf file, default path is /root/mailad/mailad/conf"
 fi
 
 # check if we need to get the everyone group
