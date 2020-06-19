@@ -4,7 +4,7 @@ This is a tool to provision a mail server linked to an active directory server (
 
 ## Rationale
 
-This repository is inteded to be clonated on your fresh OS install (LXC instance, VM, etc) and configured on a main file as per the file comments, then run the steps on a makefile and follow the steps to configure your server, is all goes well you will have your mail server up and running in about 15 minutes tops. _(this time is based on a 2Mbps internet connection to a repository, if you have a local repository it will be much less)_
+This repository is inteded to be clonated on your fresh OS install under `/root` (you can use a LXC instance, VM, CT, etc) and configured on a main file as per the file comments, then run the steps on a makefile and follow the steps to configure your server, is all goes well you will have your mail server up and running in about 15 minutes tops. _(this time is based on a 2Mbps internet connection to a repository, if you have a local repository it will be much less)_
 
 ## Constraints and requirements
 
@@ -51,7 +51,9 @@ cd /root
 sudo apt update
 sudo apt install make -y
 git clone https://github.com/stdevPavelmc/mailad
+cd mailad
 git checkout master
+git pull
 cd mailad
 ```
 
@@ -97,6 +99,14 @@ If you have a custom certificate, then just use the generated one during config 
 - Certificate: `/etc/ssl/certs/mail.crt`
 - Private Key: `/etc/ssl/private/mail.key`
 - CA certificate: `/etc/ssl/certs/cacert.pem`
+
+If you have a Let's Encrypt certificate for your server (or a willcard one) just place them in `/root/certs`, erase those files and link them to the actual ones
+
+The mapping is as this:
+
+- fullchain.pem > `/etc/ssl/certs/mail.crt`
+- fullchain.pem > `/etc/ssl/certs/cacert.pem`
+- privkey.pem > `/etc/ssl/private/mail.key`
 
 ### Software installs
 
