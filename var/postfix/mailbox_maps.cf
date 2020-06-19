@@ -9,5 +9,3 @@ result_attribute = wWWHomePage
 bind = yes
 bind_dn = _LDAPBINDUSER_
 bind_pw = _LDAPBINDPASSWD_
-deference = 3
-

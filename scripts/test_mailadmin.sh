@@ -20,17 +20,31 @@ echo "Searching for the user that owns the email: $ADMINMAIL"
 
 TEMP=`mktemp`
 ldapsearch -h "$HOSTAD" -D "$LDAPBINDUSER" -w "$LDAPBINDPASSWD" -b "$LDAPSEARCHBASE" "(&(objectClass=person)(mail=$ADMINMAIL))" > $TEMP
-cat $TEMP
 RESULTS=`cat $TEMP | grep "numEntries: " | awk '{print $3}'`
 
-if [ $RESULTS -eq 0 ] ; then
-    # fail
-    echo "ERROR!:"
-    echo "    There is no user in the AD with the email you provided en the ADMINMAIL setting"
-    echo "    please check and set the correct value"
-    echo " "
-    rm $TEMP
-    exit 1
+if [ -z "$RESULTS" ] ; then
+    # check for a bad LDAPSEARCHBASE
+    BSD=`cat $TEMP | grep "acl_read"`
+    if [ -z "$BSD" ] ; then
+        # fail
+        echo "ERROR!:"
+        echo "    There is no user in the AD with the email you provided en the ADMINMAIL setting"
+        echo "    please check and set the correct value"
+        echo " "
+        rm $TEMP
+        exit 1
+    else
+        # fail
+        echo "ERROR!:"
+        echo "    There is no valid data and the search returned an error, this in most cases is"
+        echo "    a sign of a bad LDAPSEARCHBASE variable, please check that in your config and"
+        echo "    try again. For reference the LDAPSEARCHBASE var value is this:"
+        echo " "
+        echo "    $LDAPSEARCHBASE"
+        echo " "
+        rm $TEMP
+        exit 1
+    fi
 else
     # Success
     echo "Found at least one Object, parsing the data..."
