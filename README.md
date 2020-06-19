@@ -16,6 +16,10 @@ This repository is inteded to be clonated on your fresh OS install under `/root`
 0. Debian 10 will be supported in the near future if enough interest on this.
 0. The server allows all communications protocols by default _(pop3, pop3s, imap, imaps, smtp, smtps and submission)_ it's **up to you** to restrict the users access (firewall) in a way that them just use the secure versions (pop3s, imaps and submission; the smtp service must be used only to send/receive the emails from the outside world)
 
+## Features
+
+This will provision a mail server to server in a enterprise as a real server behind a Mail Gateway, you can see the major features in the `Features.md` file
+
 ## Technical details
 
 For debug and test purposes we use this config, **you need to change it on the mailad.conf file!**

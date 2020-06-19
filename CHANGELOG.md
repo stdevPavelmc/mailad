@@ -23,14 +23,15 @@ Dates must be YEAR-MONTH-DAY
 ### Changed
 
 - Added: the SIEVE support in Dovecot
+- Added: features.md file and link
 - Fixed: automatic group alias creation cron link
 - Fixed: other minor bugs and dependencies
 
 ## 2020-04-02
 
-- Add: Creation of auto aliases based on group memberships
-- Add: added a everyone capability
-- Add: Warning in the README.md about usage of master branch only in production
+- Added: Creation of auto aliases based on group memberships
+- Added: added a everyone capability
+- Added: Warning in the README.md about usage of master branch only in production
 - Changed: improved the SMTPS & AUBMISSION restrictions
 - Changed: dovecot concurrency limit set to 1, to avoid collisions
 - Fixed: email vs username usage in dovecot, unified to username
