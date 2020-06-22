@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := help
 
-.PHONY : clean reset fix-vmail install-purge all force-provision force-certs help
+.PHONY : clean reset fix-vmail install-purge all force-provision force-certs test_setup test_reset test help
 
 PWD = $(shell pwd)
 
@@ -9,7 +9,7 @@ clean: ## Clean the environment to have a fresh start (preserve SSL/DH certs in 
 
 reset: clean install-purge ## Reset all configurations and remove/purge all softwares & certificates
 	-rm certs || exit 0
-	-rm -rdf /etc/ssl/private/mail.key /etc/ssl/certs/mail.crt /etc/ssl/certs/cacert.pem /etc/ssl/dh || exit 0
+	-rm /etc/ssl/private/mail.key /etc/ssl/certs/mail.crt /etc/ssl/certs/cacert.pem || exit 0
 
 deps:  ## Install all the needed deps to test & build it
 	sudo apt update -q
@@ -38,7 +38,7 @@ install: certs ## Install all the software from the repository
 
 install-purge: ## Uninstall postfix and dovecot already installed software (purge config also)
 	scripts/install_purge.sh
-	rm install
+	rm install || exit 0
 
 provision: install ## Provision the server, this will copy over the config files and set the vars
 	scripts/provision.sh
@@ -55,6 +55,15 @@ force-provision: ## Force a re-provisioning of the system
 force-certs: ## Force a re-creation of the SSL & dhparm certs
 	rm certs
 	$(MAKE) certs
+
+test_setup: ## Setup a test env to perform tests
+	tests/test_env.sh up
+
+test_reset: ## Reset the test env
+	tests/test_env.sh down
+
+test: ## Make all tests (must be on other PC than the server, outside the my_networks segment)
+	tests/test.sh
 
 help:
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
