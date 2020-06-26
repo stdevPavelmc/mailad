@@ -1,5 +1,16 @@
 # Mailad features explained
 
+This is a long page, so here is an index:
+
+* [Low resource footprint](Features.md#low-resource-footprint)
+* [Active directory integration and management](Features.md#active-directory-integration-and-management)
+* [Automatic alias using AD groups](Features.md#automatic-alias-using-ad-groups)
+* [Dovecot filtering](Features.md#dovecot-filtering)
+* [Centralized mail storage](Features.md#centralized-mail-storage)
+* [Manual alias to handle typos or enterprise positions](Features.md#manual-alias-to-handle-typos-or-enterprise-positions)
+* [Test suite](Features.md#test-suite)
+* [Painless upgrades](Features.md#painless-upgrades)
+
 ## Low resource footprint
 
 This solution is working on about 5 sites on production, the most active one has a traffic of about 3k emails monthly (~100 daily) and it's happily running on a Proxmox CT with 2 cores @1.8GHz, 512 MB of RAM & 64MB of swap.
@@ -38,7 +49,9 @@ If you have clients that use POP don't use this feature as SPAM tagged mails wil
 
 With this feature your users will have the choice to re-route emails to their personal emails while on a business trip, create a "vacation auto-response" or simply parse an classify their emails
 
-## Central mail storage
+Please notice that in webmail clients you need to enable and configure the sieve plugin to get it working
+
+## Centralized mail storage
 
 If you are using a virtualization solution you con configure the local mail storage as a network share via the preferred method and have all email in a safe storage on the network, generating clean & slim backups of the server.
 
@@ -90,6 +103,31 @@ But, that's not all, postfix can understand this file you need to compile it and
 postmap /etc/postfix/alias_virtuales
 postfix reload
 ```
+
 ## Test suite
 
-Since June 2020 we have a basic test suite to test our fresh provisioned server and during development as a checkpoint to know that your new feature is not breaking the security or basic features
+Since June 2020 we have a basic test suite to test our fresh provisioned server and during development as a checkpoint to know that your new feature is not breaking the security or basic features, see [Testing the mail server](tests/README.md) for more details
+
+## Painless upgrades
+
+There will be a point on the future when we add a new cool feature and you want to use it, then you face the question: how to upgrade?
+
+No problem, we have work over that point also, to upgrade the software you just need to follow this steps, all do you need is a internet connection on you mail server
+
+0. Move to the mailad folder (we recommend /root/mailad for security reasons)
+0. Upgrade the code from github with the command `git pull`
+0. Run the upgrade process with `make upgrade`
+
+The first step of the upgrade is to backup your configuration, no matter if the backup worked or failed you will end with a backup file in the folder `/var/backups/mailad/` whose name is the date and time of the backup; so in the unlikely outcome of a broken system you can do this ro restore your system state:
+
+We have identified the latest backup as the file "20200626_145845.tar.gz"
+
+``` sh
+cd /
+tar -zxvf /var/backups/mailad/20200626_145845.tar.gz
+reboot
+```
+
+And all must be working as it was
+
+We have tested the process extensively and the chances of corruption or failure are very low, if you hit a broken "upgrade" process feel free to contact me via Telegram, my nick there is @pavelmc
