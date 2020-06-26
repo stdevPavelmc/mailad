@@ -13,6 +13,16 @@ else
     source ../mailad.conf
 fi
 
+# generate the cers only of not present already
+if [ -f /etc/ssl/private/mail.key -a -f /etc/ssl/certs/mail.crt -a -f /etc/ssl/certs/cacert.pem ] ; then
+    # already present, not generating the certs
+    echo "===> Certs aready present, skiping the generation"
+    exit 0
+fi
+
+# verify a LE cert
+# openssl verify -verbose -x509_strict -CAfile le/fullchain.pem le/fullchain.pem 
+
 echo "Generating a Self Signed Certificate for this node" 
 
 # moving to a temp dir to work 
