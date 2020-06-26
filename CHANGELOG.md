@@ -22,8 +22,10 @@ Dates must be YEAR-MONTH-DAY
 
 ### Changed
 
-- Added: test suite for postfix basic security and the related documentation
-- Fixed: group script, a bad structured if sentence
+- Added: test suite for postfix basic security, also the related documentation
+- Added: upgrade code and instructions (see Features.md file)
+- Fixed: improvements in the feature page (navigation)
+- Fixed: group script, culprit: a bad structured if sentence
 
 ## 2020-06-19
 
