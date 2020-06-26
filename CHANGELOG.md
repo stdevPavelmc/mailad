@@ -18,6 +18,13 @@ This is a note for developers about the recommended tags to keep track of the ch
 Dates must be YEAR-MONTH-DAY
 -->
 
+## 2020-06-26
+
+### Changed
+
+- Added: test suite for postfix basic security and the related documentation
+- Fixed: group script, a bad structured if sentence
+
 ## 2020-06-19
 
 ### Changed

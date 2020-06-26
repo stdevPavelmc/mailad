@@ -90,3 +90,6 @@ But, that's not all, postfix can understand this file you need to compile it and
 postmap /etc/postfix/alias_virtuales
 postfix reload
 ```
+## Test suite
+
+Since June 2020 we have a basic test suite to test our fresh provisioned server and during development as a checkpoint to know that your new feature is not breaking the security or basic features
