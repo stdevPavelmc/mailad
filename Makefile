@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := help
 
-.PHONY : clean reset fix-vmail install-purge all force-provision force-certs test_setup test_reset test help
+.PHONY : clean reset fix-vmail install-purge all force-provision force-certs test_deps test_setup test_reset test help
 
 PWD = $(shell pwd)
 
@@ -56,10 +56,13 @@ force-certs: ## Force a re-creation of the SSL & dhparm certs
 	rm certs
 	$(MAKE) certs
 
-test_setup: ## Setup a test env to perform tests
+test-setup: ## Setup a test env to perform tests
 	tests/test_env.sh up
 
-test_reset: ## Reset the test env
+test-deps: ## install test dependencies
+	apt update && apt install -y swaks coreutils mawk bc
+
+test-reset: ## Reset the test env
 	tests/test_env.sh down
 
 test: ## Make all tests (must be on other PC than the server, outside the my_networks segment)
