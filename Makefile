@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := help
 
-.PHONY : clean reset fix-vmail install-purge all force-provision force-certs test_deps test_setup test_reset test help
+.PHONY : clean reset fix-vmail install-purge all force-provision force-certs test_deps test_setup test_reset test upgrade help
 
 PWD = $(shell pwd)
 
@@ -49,7 +49,7 @@ all: provision ## Run all targets in the logic order, run this to make it all
 	echo "Done!"
 
 force-provision: ## Force a re-provisioning of the system
-	rm provision
+	rm provision || exit 0
 	$(MAKE) provision
 
 force-certs: ## Force a re-creation of the SSL & dhparm certs
@@ -67,6 +67,9 @@ test-reset: ## Reset the test env
 
 test: ## Make all tests (must be on other PC than the server, outside the my_networks segment)
 	tests/test.sh
+
+upgrade: ## Upgrade a setup, see README.md for details
+	scripts/backup_upgrade.sh
 
 help:
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
