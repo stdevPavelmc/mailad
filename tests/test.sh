@@ -87,7 +87,7 @@ if [ $R -ne 0 ] ; then
     # error
     echo "========================================================="
     echo "ERROR: can't relay a mail to a valid local recipient with"
-    echo "       autentication (as sender) over SUBMISSION (587)"
+    echo "       authentication (as sender) over SUBMISSION (587)"
     echo " "
     echo "COMMENT: it's expected that your server can receive"
     echo "         emails for it's domain via SUBMISSION from an"
@@ -101,7 +101,7 @@ if [ $R -ne 0 ] ; then
     exit 1
 else
     # ok
-    echo "===> Ok: Autenticated users can send local emails"
+    echo "===> Ok: Authenticated users can send local emails"
 fi
 
 ### Send an email to the outside as a valid user with auth
@@ -111,7 +111,7 @@ if [ $R -ne 0 ] ; then
     # error
     echo "=========================================================="
     echo "ERROR: can't send a mail to an outside recipient using"
-    echo "       autentication (as sender) from a local user over"
+    echo "       authentication (as sender) from a local user over"
     echo "       SUBMISSION (587)"
     echo " "
     echo "COMMENT: it's expected that your server can send an"
@@ -126,7 +126,7 @@ if [ $R -ne 0 ] ; then
     exit 1
 else
     # ok
-    echo "===> Ok: Autenticated users can send emails to the outside world"
+    echo "===> Ok: Authenticated users can send emails to the outside world"
 fi
 
 ### Send an email to a non-existent user, port 25
@@ -185,7 +185,7 @@ if [ $R -ne 24 ] ; then
     # error
     echo "======================================================="
     echo "ERROR: can send a mail to a valid local email via SSMTP"
-    echo "       with no autentication"
+    echo "       with no authentication"
     echo " "
     echo "COMMENT: it's expected that your server bounce emails"
     echo "         via secure channel with no authentication;"
@@ -210,7 +210,7 @@ if [ $R -ne 24 ] ; then
     # error
     echo "========================================================="
     echo "ERROR: can send a mail to a valid local email using"
-    echo "       SUBMISSION and a valid autentication that does"
+    echo "       SUBMISSION and a valid authentication that does"
     echo "       not match the sender address, please check your"
     echo "       configuration"
     echo " "
