@@ -16,7 +16,7 @@ if [ -f mailad.conf ] ; then
     source mailad.conf
 elif [ -f ../mailad.conf ] ; then
     source ../mailad.conf
-else
+elif [ -f /root/mailad/mailad.conf ] ; then
     source /root/mailad/mailad.conf
 else
     echo "Can't find the mailad.conf file, default path is /root/mailad/mailad/conf"
