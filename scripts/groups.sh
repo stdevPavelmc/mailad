@@ -1,6 +1,8 @@
 #!/bin/bash
 
 # This script is part of MailAD, see https://github.com/stdevPavelmc/mailad/
+# Copyright 2020 Pavel Milanes Costa <pavelmc@gmail.com>
+# LICENCE: GPL 3.0 and later  
 #
 # Goal:
 #   - Search and create the groups as aliases in the postfix MTA
