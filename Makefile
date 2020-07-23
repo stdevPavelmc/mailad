@@ -10,6 +10,8 @@ clean: ## Clean the environment to have a fresh start (preserve SSL/DH certs in 
 reset: clean install-purge ## Reset all configurations and remove/purge all softwares & certificates
 	-rm certs || exit 0
 	-rm /etc/ssl/private/mail.key /etc/ssl/certs/mail.crt /etc/ssl/certs/cacert.pem || exit 0
+	-rm -rdf /etc/dovecot || exit 0
+	-rm -rdf /etc/postfix || exit 0
 
 deps:  ## Install all the needed deps to test & build it
 	sudo apt update -q
