@@ -130,6 +130,25 @@ disable_vrfy_command = yes
 header_checks = regexp:/etc/postfix/header_checks
 body_checks = regexp:/etc/postfix/body_checks
 
+## NACIONAL
+# si el destino no es .cu rechazo
+nac_out = check_recipient_access regexp:/etc/postfix/filtro_nac, reject
+# idem pero al revez
+nac_in = check_sender_access regexp:/etc/postfix/filtro_nac, reject
+
+## LOCAL
+# si el destino no es .[local_domain] rechazo
+loc_out = check_recipient_access regexp:/etc/postfix/filtro_loc, reject
+# iden pero al revez
+loc_in = check_sender_access regexp:/etc/postfix/filtro_loc, reject
+
+# Declaracion de las Clases de restricciones nacionales
+smtpd_restriction_classes = 
+	nac_in,
+	nac_out,
+	loc_in,
+	loc_out,
+
 # Restricciones de destinatarios
 smtpd_recipient_restrictions =
     # politicas de buzón de correos (quota devecot)
@@ -148,6 +167,11 @@ smtpd_recipient_restrictions =
 
     # rechazar si no esta en la lista de usuarios validos
     reject_unlisted_recipient
+
+    # Aplicacion de .cu y .[local-domain]
+    check_sender_access
+	    hash:/etc/postfix/locales_out,
+        hash:/etc/postfix/nacionales_out,
 
     # chequeo de politicas
     #check_policy_service
@@ -181,7 +205,12 @@ smtpd_sender_restrictions =
     #reject_unknown_sender_domain
 
     # chequeo de lista negra
-    check_sender_access  hash:/etc/postfix/lista_negra
+    check_sender_access hash:/etc/postfix/lista_negra
+
+    # aplicando solo .cu y solo local
+    check_recipient_access
+	    hash:/etc/postfix/locales_in,
+	    hash:/etc/postfix/nacionales_in,
 
     # Permite solo envios con LOGIN
     permit_sasl_authenticated
