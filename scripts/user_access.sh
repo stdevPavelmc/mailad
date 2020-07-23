@@ -47,56 +47,52 @@ function reset_file {
 
 # update files
 function update_files {
-    # Parameters
-    #   $1 group name to request users from "Mail_national|Mail_local"
-    #   $2 file start "nacionales|locales"
-    #   $3 action "in|out"
-    #   $4 user's emails as a single text string (no \n!)
-
+    # Parameter
+    #   Only one the group name to request users from
+    #       - "Mail_national|Mail_local"
+    
     # static vars
     PPATH="/etc/postfix"
-    ACTION=$2
-    AVSCOPE=${ACTION:0:3}
+
+    # detecting scope
+    if [ "$1" == "Mail_national" ] ; then
+        SCOPE="nacionales"
+    else
+        SCOPE="locales"
+    fi
+
+    AVSCOPE=${SCOPE:0:3}
 
     # Get members of the group
     MEMBERS=`get_emails "$1"`
     
+    # Need to touch two files "SCOPE_in|$SCOPE_out" 
     # file to process
-    FILE="$PPATH/$2_$3"
+    for s in `echo "in out" | xargs` ; do
+        FILE="$PPATH/${SCOPE}_${s}"
 
-    # reset the file (empty and add banner)
-    reset_file $FILE
+        # reset the file (empty and add banner)
+        reset_file $FILE
 
-    # only if returned something
-    if [ "$4" != "" ] ; then
-        for u in `echo $4 | xargs` ; do
-            # just for non empty ones
-            if [ "$u" != "" ] ; then 
-                echo "$u            ${AVSCOPE}_${3}" >> $FILE 
-            fi
-        done
-    fi
+        # only if returned something
+        if [ "$MEMBERS" != "" ] ; then
+            for u in `echo $MEMBERS | xargs` ; do
+                # just for non empty ones
+                if [ "$u" != "" ] ; then 
+                    echo "$u            ${AVSCOPE}_${s}" >> $FILE 
+                fi
+            done
+        fi
 
-    # postmap the file
-    postmap $FILE
+        # postmap the file
+        postmap $FILE
+    done
 }
 
-# processing: fun start here
-for G in `echo "Mail_local Mail_national" | xargs` ; do
-    # get members only once
-    M=`get_emails "$G"`
-    for S in `echo "nacionales locales" | xargs` ; do
-        for A in `echo "in out" | xargs` ; do
-            # update_files arguments
-            #   $1 group name to request users from "Mail_national|Mail_local"
-            #   $2 file start "nacionales|locales"
-            #   $3 action "in|out"
-            #   $4 user's emails as a single text string (no \n!)
-
-            update_files "$G" "$S" "$A" "$M"
-        done
-    done
+# Fun start here 
+for S in `echo "Mail_national Mail_local" | xargs` ; do
+    update_files "$S"
 done
 
 # updating postfix about the change
-postfix reload
+postfix reload 2> /dev/null
