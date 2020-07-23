@@ -22,12 +22,14 @@ elif [ -f /root/mailad/mailad.conf ] ; then
     source /root/mailad/mailad.conf
 else
     echo "Can't find the mailad.conf file, default path is /root/mailad/mailad/conf"
+    exit 1
 fi
 
 # check if we need to get the everyone group
 if [ "$EVERYONE" == "" ] ; then
     # empy result: Fail
     echo "EVERYONE group disabled, skiping..."
+    echo "# Everyone list DISABLED in config" > /etc/postfix/auto_aliases
 else
     echo "Trying to retrieve all the emails to form login into $HOSTAD as $LDAPBINDUSER"
 
