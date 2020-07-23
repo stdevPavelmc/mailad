@@ -1,0 +1,5 @@
+/.*\@.*_ESCNATIONAL_/        RELAY
+/^\@/				REJECT	550	Invalid Format / Formato invalido
+/[!%\@=].*\@/		REJECT	550	Syntax Error / Error de sintaxis
+/.*\@.*/			REJECT	550	Sorry this user has no international access / Lo siento este usuario no tiene acceso internacional
+/\<\>/				RELAY
