@@ -66,8 +66,10 @@ for f in `echo "/etc/postfix /etc/dovecot" | xargs` ; do
     for v in `echo $VARS | xargs` ; do
         # get the var content
         CONTp=${!v}
-         #escape possible / in the files
+
+        # escape possible "/" in there
         CONT=`echo ${CONTp//\//\\\\/}`
+
         # note
         echo "replace $v by \"$CONT\""
 
@@ -75,6 +77,19 @@ for f in `echo "/etc/postfix /etc/dovecot" | xargs` ; do
             sed -i s/"\_$v\_"/"$CONT"/g {} \;
     done
 done
+
+# Special case variables with complicated scaping and specific files
+#   $ESCLOCAL > /etc/postfix/filtro_loc
+#   $ESCNATIONAL > /etc/postfix/filtro_nac
+#
+# escaped domain for the local restrictions on postfix
+ESCDOMAIN=${DOMAIN//./\\\\\\.}
+# escaped national or enterprise wide domain
+ESCNATIONAL=${ESCNATIONAL//./\\\\\\.}
+
+# action goes here
+sed -i s/{_ESCDOMAIN_/"$ESCDOMAIN"/g /etc/postfix/filtro_loc
+sed -i s/{_ESCNATIONAL_/"$ESCNATIONAL"/g /etc/postfix/filtro_nac
 
 ### install the group.sh scripts as a daily task and run it
 # rm if there
@@ -85,6 +100,16 @@ chmod +x "${PATHPREF}/scripts/groups.sh"
 ln -s "${PATHPREF}/scripts/groups.sh" /etc/cron.daily/mail_groups_update
 # run it
 /etc/cron.daily/mail_groups_update
+
+### install the mail user access scripts
+# rm if there
+rm -f /etc/cron.hourly/mail_groups_user_access > /dev/null
+# fix exec perms just in case it was lost
+chmod +x "${PATHPREF}/scripts/user_access.sh"
+# create the link
+ln -s "${PATHPREF}/scripts/user_access.sh" /etc/cron.hourly/mail_groups_user_access
+# run it
+/etc/cron.hourly/mail_groups_user_access
 
 # process some of the files, aka postfix postmap
 PWD=`pwd`
