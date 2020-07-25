@@ -4,28 +4,49 @@ This is a long page, so here is an index:
 
 * [Low resource footprint](Features.md#low-resource-footprint)
 * [Active directory integration and management](Features.md#active-directory-integration-and-management)
+* [Enforced quota control](Features.md#enforced-quota-control)
 * [Automatic alias using AD groups, without the snowball effect](Features.md#automatic-alias-using-ad-groups)
+* [Optional user privilege access via AD groups](Features.md#optional-user-privilege-access-via-ad-groups)
 * [Dovecot filtering](Features.md#dovecot-filtering)
 * [Centralized mail storage](Features.md#centralized-mail-storage)
 * [Manual alias to handle typos or enterprise positions](Features.md#manual-alias-to-handle-typos-or-enterprise-positions)
+* [Manual ban list for trouble some address](Features.md#manual-ban-list-for-trouble-some-address)
+* [Manual headers and body checks lists](Features.md#manual-headers-and-body-checks-lists)
 * [Test suite](Features.md#test-suite)
 * [Painless upgrades](Features.md#painless-upgrades)
 
 ## Low resource footprint
 
-This solution is working on about 5 sites on production to my knowledge, the most active one has a traffic of about 3k emails monthly (~100 daily) and it's happily running on a Proxmox CT with 2 cores @1.8GHz, 512 MB of RAM & 64MB of swap.
+This solution is working on about 5 sites on production to my knowledge until the time I wrote this, the most active one has a traffic of about 3k emails monthly (~100 daily) and it's happily running on a Proxmox CT with 2 cores @1.8GHz, 512 MB of RAM & 64MB of swap.
 
-If you are using it under a heavier load, please share with me the statistics and hardware details to update this.
+If you are using it under a heavier load, please share with me the statistics and hardware details to update this section
 
 ## Active directory integration and management
 
 This script is intended to provision a corporative mail server inside a DMZ & behind a Mail Gateway solution (I use Proxmox Mail Gateway on the latest version)
 
-The server created will only handle the authentication, processing, routing and basic filtering of the mails, no SPAM/Attachment filtering is done [planed feature], that task is delegated [by now] to the Mail Gateway
+The server created will only handle the authentication, processing, routing and basic filtering of the mails, no SPAM/AV filtering is done by now [planed feature], that task is delegated [by now] to the Mail Gateway
 
 The user base details are grabbed from a Windows Active Directory server (I recommend Samba 4 in linux, but works with a Windows server too) so user management and control is delegated to the interface you use to control de Active directory, no other service is needed, ZERO touching the mail server to make & apply some changes
 
-For a Windows sysadmin this will be easy, just config and deploy on the mail server, then control the users in the AD interface in your PC via RSAT, see the details on the file `AD_Requirements.md`. If you are a Linux user then you can use `samba-tool` to control the users properties in the CLI or put a Windows VM with RSAT tools in your server with remote access to manage the domain users
+For a Windows sysadmin this will be easy, just config and deploy on the mail server, then control the users in the AD interface in your PC via RSAT, see the details on the file [AD_Requirements.md](AD_Requirements.md). If you are a Linux user then you can use `samba-tool` to control the users properties in the CLI or put a Windows VM with RSAT tools in your server with remote access to manage the domain users
+
+## Enforced quota control
+
+Yes, this is not optional, when you setup an user to use the email services as we discussed in the file [AD_Requirements.md](AD_Requirements.md) you must specify a size for the mailbox a good value to start is from 20 to 100 MB depending on your available space and user's behavior.
+
+You can use any of the following letter multiplier to specify that:
+
+- K: Kilo bytes, available but not practical as it's very small for example 900 Kbytes will be specified as "900K"
+- M: Mega bytes, most used unit, for example "100M" or "2048M" for a 2TB size, but...
+- T: Tera byte, this is used by heavy lifters
+
+**Tip:** You need to avoid using decimal units, dovecot quota is picky about that, instead of using "1.5T" use "1500M"
+
+For example this are equivalent:
+
+- 2048K = 2M
+- 1024M = 1T
 
 ## Automatic alias using AD groups
 
@@ -35,11 +56,27 @@ You can configure that from the AD interface, just create a Organizational Group
 
 The group checking is triggered daily around ~6:00 am, if you need to trigger it now, just run the script on `/etc/cron.daily/mail_groups_update` and that will force the update. As a cron job it will report any fail or warning to the declared mail administrator
 
-The trigger for this feature is the setting of a email for a group, once you set an email to a group you are triggering it next morning
+The trigger for this feature is the setting of a email for a group, once you set an email to a group you are triggering it next morning, Be aware that this feature can be exploited by malicious users as the alias created has no user control, anybody can send to the alias address, so use it wisely
 
-Be aware that this feature can be exploited by malicious users as the alias created has no user control, anybody can send to the alias address, so use it wisely.
+**Bonus:** this aliases behave not like a real distribution list (like mailman's list for example), all the generated messages have no trace of being "from" a list, and seems just like single messages from the original sender, also all answers (make it a reply or a forwards email) will have the original sender as recipient and not the list address, this will kill the well known snowball effect seen on the "everyone@domain.tld" of MDaemon to state an example
 
-**Bonus:** this aliases behave not like a list, all answers (make it a reply or a forwards email) will have the original sender as recipient and not the list address, this will kill the well known snowball effect seen on the "everyone@domain.tld" of MDaemon to state an example
+**Tip:** the users must belong to a group directly for this feature to work properly, you can't create a group whish members are other groups abd expect it to work.
+
+## Optional user privilege access via AD groups
+
+In some scenarios you are required by law (or specific enterprise restrictions) to limit a group of users to get only national service, it goes beyond in other cases and you need add even users with only local access to the domain
+
+This is now possible and optional, it's a built-in feature. To activate it you just need to create a new Organizational Unit (OU) and two Groups inside it, the OU must be placed on the root of the ldap search base declared
+
+**Warning:** The feature is linked to the OU & Group's names, so you must preserve the name, place and casing of all, aka  _DO NOT MOVE OR RENAME IT_
+
+The OU must be named `MAIL_ACCESS`, inside it you must create two groups called `Local_mail` & `National_mail`
+
+As you may guessed at this point, any user that belongs to the `Local_mail` group will have ONLY access to emails inside the domain address, the same is true for the ones belonging to the `National_mail` group but for national access. The access is instantaneous and you need no more actions
+
+You can take a look at this example:
+
+![AD example](imgs/user_access.png)
 
 ## Dovecot filtering (sieve)
 
@@ -111,6 +148,37 @@ postfix reload
 ```
 
 Since June/2020 this hand crafted file is preserved on upgrades, you are welcomed
+
+## Manual ban list for trouble some address
+
+Yes, there is a list to put non desirable addresses, but not only addresses, you can put even users or domains, it's located on `/etc/postfix/rules/lista_negra`
+
+You have two options to declare an address/domain not welcomed: DROP or REJECT
+
+- DROP: this is a shortcut to the trash bin, a redirection to /dev/null. It accepts the mail but trash it ride away
+- REJECT: Explicitly reject the email, you can even specify an reject code and text
+
+The file has some examples, you can check the [list of SMTP server return codes](https://en.wikipedia.org/wiki/List_of_SMTP_server_return_codes) to learn how to respond, look for the 5XX codes, 511 is recommended
+
+**Warning:** You need to make a `postmap lista_negra && postfix reload` every time you change the content of the file, to generate the binary code postfix need and to apply the change
+
+## Manual headers and body checks lists
+
+### Header checks
+
+The header checks are stated in a file: `/etc/postfix/rules/header_checks`
+
+This file uses regular expressions to match the content, you can match phrases on the subject line of messages and so on, the file has an example up on you can build your rules
+
+One example for a rule is to match and reject mails from certain Mail User Agents (the software people's use to send emails) or for some version of them that are known to be deprecated and not valid
+
+### Body checks
+
+The header checks are stated in a file: `/etc/postfix/rules/body_checks`
+
+This file uses regular expressions to match the content, you can match phrases on the body of the message. Please be aware that this will only match the text part of the message, MIME encoded messages will not match
+
+With some care and testing you can even filter MIME types or attachments
 
 ## Test suite
 
