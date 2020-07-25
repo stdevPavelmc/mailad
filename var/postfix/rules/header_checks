@@ -1,9 +1,11 @@
-# chqueo de cabeceras, son expresiones regulares de perl
+# Header checks
 #
-# Es una buena practica poner un # luego de la razón del reject para
-# poder saber cual de las reglas macheo un correo falso positivo
-# por ejemplo la palabra Puta machea la #1 
+# This are regular expression filters
+#
+# It's a good practice to put a # and a Reason after the action, in
+# that way you will be able to identify which rule baned a mail to
+# analyze it 
 
-# Expresion				Orden  No   Razon
+# Expresion				        Action  No  Reason
 /^Subject: .* [P|p]uta .*/		REJECT (#1) No se permiten Mala palabras
 

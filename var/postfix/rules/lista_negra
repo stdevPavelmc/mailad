@@ -1,15 +1,12 @@
-# Esta es la lista negra, los correos que ese pongan en este file no pasan
-# ni salen ni entran, con varios perfiles de accion
+# Ban list
+#
+# This is a hash table, you need to make a 'postmap [file]' after saving
+#
+# It's a good practice to put comments with the reason and not just c&p
+# them, make it unique, in that way you will be able to identify which
+# rule was triggered
 
-# REJECT es rechazar el correo diciendole al remitente el problema
-# DROP es aceptalo y tiralo a la basura, el que envia "siente" que salio
-# o entró pero no va a ningun lado en realidad, util en listas de correos
-
-# al finalizar la modificiacion dar "postmap lista_negra && postfix reload"
-
-# [EJEMPLOS eliminar cuando configures los tuyos]
-horoscopofree@ofree.com			REJECT
-jodedor@ejemplo.cu			DROP
-@facebookmail.com			REJECT
-@example.com				REJECT
-
+# EXAMPLES
+horoscopofree@ofree.com     REJECT 511 horosco is not allowed here
+jodedor@ejemplo.cu			DROP 511 jodedor not permitted
+@example.com				REJECT 511 Domain not allowed (example.com)
