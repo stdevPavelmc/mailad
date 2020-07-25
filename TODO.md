@@ -1,6 +1,6 @@
-# ROADMAP
+# TODO
 
-This is a soft roadmap, with no order, take it as a TODO list
+This is a TODO list with no particular order
 
 ## New features/wish/TODO items
 
