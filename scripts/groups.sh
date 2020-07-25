@@ -26,10 +26,11 @@ else
 fi
 
 # check if we need to get the everyone group
-if [ "$EVERYONE" == "" ] ; then
+if [ -z "$EVERYONE" ] ; then
     # empy result: Fail
     echo "EVERYONE group disabled, skiping..."
-    echo "# Everyone list DISABLED in config" > /etc/postfix/auto_aliases
+    echo "# Everyone list DISABLED in config" > /etc/postfix/aliases/auto_aliases
+    echo " " >> /etc/postfix/aliases/auto_aliases
 else
     echo "Trying to retrieve all the emails to form login into $HOSTAD as $LDAPBINDUSER"
 
@@ -43,8 +44,9 @@ else
     else
         # Success
         echo "Success, $EVERYONE list crearted"
-        echo "# Everyone list" > /etc/postfix/auto_aliases
-        echo "$EVERYONE     $RESULT" >> /etc/postfix/auto_aliases
+        echo "# Everyone list" > /etc/postfix/aliases/auto_aliases
+        echo "$EVERYONE     $RESULT" >> /etc/postfix/aliases/auto_aliases
+        echo " " >> /etc/postfix/aliases/auto_aliases
     fi
 fi
 
@@ -57,11 +59,12 @@ for G in `echo $RESULT | xargs `; do
     if [ "$GEM" != "" ] ; then
         RESULT=`ldapsearch -h "$HOSTAD" -D "$LDAPBINDUSER" -w "$LDAPBINDPASSWD" -b "$LDAPSEARCHBASE" "(&(objectCategory=person)(objectClass=user)(sAMAccountName=*)(memberOf=$G))" mail | grep "mail: " | awk '{print$2}' | tr '\n' ','`
 
-        echo "# Group: $G" >> /etc/postfix/auto_aliases
-        echo "$GEM   $RESULT" >> /etc/postfix/auto_aliases
+        echo "# Group: $G" >> /etc/postfix/aliases/auto_aliases
+        echo "$GEM   $RESULT" >> /etc/postfix/aliases/auto_aliases
+        echo " " >> /etc/postfix/aliases/auto_aliases
     fi 
 done
 
 # updating postfix about the change
-cd /etc/postfix && postmap auto_aliases
+cd /etc/postfix/aliases && postmap auto_aliases
 postfix reload
