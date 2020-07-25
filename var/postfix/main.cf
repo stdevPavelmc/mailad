@@ -112,11 +112,11 @@ smtpd_helo_restrictions =
 
 # mapeos de los logins de los users contra su cuenta de correo
 # para que usuario1@ no pueda mandar email como usuario2@
-smtpd_sender_login_maps = ldap:/etc/postfix/email2user.cf
+smtpd_sender_login_maps = ldap:/etc/postfix/ldap/email2user.cf
 
 # para que el server sepa las direcciones locales validas y rechace las otras
 # que parecen validas pero no existen
-relay_recipient_maps = ldap:/etc/postfix/email2user.cf
+relay_recipient_maps = ldap:/etc/postfix/ldap/email2user.cf
 
 # parametros del server...
 smtpd_error_sleep_time = 1s
@@ -127,27 +127,51 @@ smtpd_hard_error_limit = 10
 disable_vrfy_command = yes
 
 # filtro del cuerpo y cabeceras
-header_checks = regexp:/etc/postfix/header_checks
-body_checks = regexp:/etc/postfix/body_checks
+header_checks = regexp:/etc/postfix/rules/header_checks
+body_checks = regexp:/etc/postfix/rules/body_checks
 
 ## NACIONAL
 # si el destino no es .cu rechazo
-nac_out = check_recipient_access regexp:/etc/postfix/filtro_nac, reject
-# idem pero al revez
-nac_in = check_sender_access regexp:/etc/postfix/filtro_nac, reject
+mail_national_in = check_sender_access regexp:/etc/postfix/rules/filter_nat
+mail_national_out = check_recipient_access regexp:/etc/postfix/rules/filter_nat
 
 ## LOCAL
-# si el destino no es .[local_domain] rechazo
-loc_out = check_recipient_access regexp:/etc/postfix/filtro_loc, reject
-# iden pero al revez
-loc_in = check_sender_access regexp:/etc/postfix/filtro_loc, reject
+mail_local_in = check_sender_access regexp:/etc/postfix/rules/filter_loc
+mail_local_out = check_recipient_access regexp:/etc/postfix/rules/filter_loc
 
 # Declaracion de las Clases de restricciones nacionales
-smtpd_restriction_classes = 
-	nac_in,
-	nac_out,
-	loc_in,
-	loc_out,
+smtpd_restriction_classes =
+    mail_national_in, mail_national_out,
+    mail_local_in, mail_local_out,
+
+# restricciones del que envia
+smtpd_sender_restrictions =
+    # tengo que dejar permit mynetworks arriba, porque ahora permit soy yo
+    # si no, no pinchan amavis, postgrey, etc...
+    permit_mynetworks
+
+    # FUERZA que el user que hace LOGIN sea el mismo del FROM, sino REJECT
+    reject_unauthenticated_sender_login_mismatch
+    reject_sender_login_mismatch
+
+    # Impide enviar desde un dominio que no existe, ojo! si el DNS da bateo
+    # este email sera rechazado como dominio no valido, !!!!!!!!!!!
+    # desactivado por problemas de que se pierden email por DNS mal configurados
+    #reject_unknown_sender_domain
+
+    # aplicación nacional
+    check_recipient_access ldap:/etc/postfix/ldap/national_in.cf
+    check_sender_access ldap:/etc/postfix/ldap/national_out.cf
+
+    # aplicación nacional
+    check_recipient_access ldap:/etc/postfix/ldap/local_in.cf
+    check_sender_access ldap:/etc/postfix/ldap/local_out.cf
+
+    # chequeo de lista negra
+    check_sender_access hash:/etc/postfix/rules/lista_negra
+
+    # Permite solo envios con LOGIN
+    permit_sasl_authenticated
 
 # Restricciones de destinatarios
 smtpd_recipient_restrictions =
@@ -168,17 +192,6 @@ smtpd_recipient_restrictions =
     # rechazar si no esta en la lista de usuarios validos
     reject_unlisted_recipient
 
-    # Aplicacion de .cu y .[local-domain]
-    check_sender_access
-	    hash:/etc/postfix/locales_out,
-        hash:/etc/postfix/nacionales_out,
-
-    # chequeo de politicas
-    #check_policy_service
-        # SPF que no aplica porque no estoy de cara a internet
-        # asumimos que hay un Gateway delante
-        # unix:private/policy-spf
-
     # rechazar si no es para mi destino cuando viene de afuera
     reject_unauth_destination
 
@@ -189,41 +202,15 @@ smtpd_recipient_restrictions =
 # !!! OJO debes crear el user y ponerle un email valido en el AD!!!
 always_bcc = _ALWAYSBCC_
 
-# restricciones del que envia
-smtpd_sender_restrictions =
-    # tengo que dejar permit mynetworks arriba, porque ahora permit soy yo
-    # si no, no pinchan amavis, postgrey, etc...
-    permit_mynetworks
-
-    # FUERZA que el user que hace LOGIN sea el mismo del FROM, sino REJECT
-    reject_unauthenticated_sender_login_mismatch
-    reject_sender_login_mismatch
-
-    # Impide enviar desde un dominio que no existe, ojo! si el DNS da bateo
-    # este email sera rechazado como dominio no valido, !!!!!!!!!!!
-    # desactivado por problemas de que se pierden email por DNS mal configurados
-    #reject_unknown_sender_domain
-
-    # chequeo de lista negra
-    check_sender_access hash:/etc/postfix/lista_negra
-
-    # aplicando solo .cu y solo local
-    check_recipient_access
-	    hash:/etc/postfix/locales_in,
-	    hash:/etc/postfix/nacionales_in,
-
-    # Permite solo envios con LOGIN
-    permit_sasl_authenticated
-
 # Debug para diagnosticos sobre esta IP...
 # revisar /var/log/mail.log, recuerda desactivarlo al final
-#debug_peer_list = 10.42.0.4
+#debug_peer_list = 10.0.3.161
 #debug_peer_level = 16
 
 # declaracion del dominio virtual...
 virtual_mailbox_domains = _DOMAIN_
-virtual_mailbox_maps = ldap:/etc/postfix/mailbox_maps.cf
-virtual_alias_maps = hash:/etc/postfix/alias_virtuales, hash:/etc/postfix/auto_aliases
+virtual_mailbox_maps = ldap:/etc/postfix/ldap/mailbox_maps.cf
+virtual_alias_maps = hash:/etc/postfix/aliases/alias_virtuales, hash:/etc/postfix/aliases/auto_aliases
 virtual_mailbox_base = _VMAILSTORAGE_
 virtual_minimum_uid = 100
 virtual_uid_maps = static:_VMAILUID_
