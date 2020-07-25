@@ -31,8 +31,8 @@ echo " "
 echo "NOTICE: mailad install is: $PATHPREF"
 echo " "
 
-# postfix files to make postmap (not the path just the names)
-PMFILES="lista_negra alias_virtuales auto_aliases"
+# postfix files to make postmap, with full path
+PMFILES="/etc/postfix/rules/lista_negra /etc/postfix/aliases/alias_virtuales"
 
 # Control services, argument $1 is the action (start/stop)
 function services() {
@@ -88,8 +88,8 @@ ESCDOMAIN=${DOMAIN//./\\\\\\.}
 ESCNATIONAL=${ESCNATIONAL//./\\\\\\.}
 
 # action goes here
-sed -i s/{_ESCDOMAIN_/"$ESCDOMAIN"/g /etc/postfix/filtro_loc
-sed -i s/{_ESCNATIONAL_/"$ESCNATIONAL"/g /etc/postfix/filtro_nac
+sed -i s/"_ESCDOMAIN_"/"$ESCDOMAIN"/g /etc/postfix/rules/filter_loc
+sed -i s/"_ESCNATIONAL_"/"$ESCNATIONAL"/g /etc/postfix/rules/filter_nat
 
 ### install the group.sh scripts as a daily task and run it
 # rm if there
@@ -101,23 +101,10 @@ ln -s "${PATHPREF}/scripts/groups.sh" /etc/cron.daily/mail_groups_update
 # run it
 /etc/cron.daily/mail_groups_update
 
-### install the mail user access scripts
-# rm if there
-rm -f /etc/cron.hourly/mail_groups_user_access > /dev/null
-# fix exec perms just in case it was lost
-chmod +x "${PATHPREF}/scripts/user_access.sh"
-# create the link
-ln -s "${PATHPREF}/scripts/user_access.sh" /etc/cron.hourly/mail_groups_user_access
-# run it
-/etc/cron.hourly/mail_groups_user_access
-
-# process some of the files, aka postfix postmap
-PWD=`pwd`
-cd /etc/postfix
+# process postmap files
 for f in `echo "$PMFILES" | xargs` ; do
     sudo postmap $f
 done
-cd $PWD
 
 # Dovecot Sieve config: create the directory if not present
 mkdir -p /var/lib/dovecot/sieve/ || exit 0
