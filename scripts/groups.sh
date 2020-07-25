@@ -50,11 +50,29 @@ else
     fi
 fi
 
-# Obteniendo el listado de grupos que tienen mail definido
-RESULT=`ldapsearch -h "$HOSTAD" -D "$LDAPBINDUSER" -w "$LDAPBINDPASSWD" -b "$LDAPSEARCHBASE" "(&(objectClass=group)(mail=*))" dn | grep "dn: " | awk '{print $2}' | tr '\n' ' '`
+# Getting the list of the groups in the search base
+TEMP=`mktemp`
+ldapsearch -h "$HOSTAD" -D "$LDAPBINDUSER" -w "$LDAPBINDPASSWD" -b "$LDAPSEARCHBASE" "(&(objectClass=group)(mail=*))" dn | grep "^dn:" > $TEMP
+
+RESULT=""
+# parsing the group names, as it can be coded in base64 when non default charset is used
+while IFS= read -r line ; do
+    L=`echo $line | grep '::'`
+    if [ -z "$L" ] ; then
+        R=`echo $line | awk '{print $2}'`
+    else
+        R=`echo $line | awk '{print $2}' | base64 -d`
+    fi
+
+    # aggregate
+    RESULT="$R $RESULT"
+done < $TEMP
+
+rm $TEMP
+
 for G in `echo $RESULT | xargs `; do
     # search the group dn
-    GEM=`ldapsearch -h "$HOSTAD" -D "$LDAPBINDUSER" -w "$LDAPBINDPASSWD" -b "$LDAPSEARCHBASE" "(&(objectClass=group)(distinguishedName=$G))" | grep "mail: " | awk '{print $2}'`
+    GEM=`ldapsearch -h "$HOSTAD" -D "$LDAPBINDUSER" -w "$LDAPBINDPASSWD" -b "$LDAPSEARCHBASE" "(&(objectClass=group)(distinguishedName=$G))" mail | grep "mail: " | awk '{print $2}'`
 
     if [ "$GEM" != "" ] ; then
         RESULT=`ldapsearch -h "$HOSTAD" -D "$LDAPBINDUSER" -w "$LDAPBINDPASSWD" -b "$LDAPSEARCHBASE" "(&(objectCategory=person)(objectClass=user)(sAMAccountName=*)(memberOf=$G))" mail | grep "mail: " | awk '{print$2}' | tr '\n' ','`
