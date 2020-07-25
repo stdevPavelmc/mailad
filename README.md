@@ -13,14 +13,16 @@ After a few steps you will have a mail server up and running in about 15 minutes
 This will provision a mail server in a enterprise/SOHO as a real server facing the users and behind a Mail Gateway to the outside world, you can see the major features in the [Features.md](Features.md) file, among others you will find:
 
 0. Low resource footprint
-0. Automatic alias using AD groups, without the snowball effect
+0. Automatic alias using AD groups (without the snowball effect)
+0. Optional user privilege access via AD groups (local/national/international)
 0. Manual alias to handle typos or enterprise positions
+0. Manual ban list for trouble some address (aka blacklist)
+0. Manual headers & body checks lists
 0. Painless upgrades
-0. **[ON PROGRESS!]** Optional user privilege segregation via AD groups (local/national/international)
 
-## Roadmap
+## TODO
 
-There a [no bonding roadmap/TODO list](Roadmap.md), a kind of a "roadmap" for new features, but as I (only one dev so far) have a life, a family and a daily job, you know...
+There is a [TODO list](TODO.md), a kind of a "roadmap" for new features, but as I (only one dev so far) have a life, a family and a daily job, you know...
 
 All dev is made on weekend or late at night (seriously take a peek on the commit dates!) if you need a feature or fix ASAP, please take into account making a donation or found me and I will be happy to help you, my contact info is on the bottom of t his page
 
@@ -74,14 +76,13 @@ git clone https://github.com/stdevPavelmc/mailad
 cd mailad
 git checkout master
 git pull
-cd mailad
 ```
 
 ### initial config
 
 Read and fill all needed variables on the `mailad.conf` file, please read carefully and choose wisely!
 
-_At this point the fast & fourious ones can just run `make all` and follow the clues, the rest of the mortals just follow the next steps_
+_At this point the fast & furious ones can just run `make all` and follow the clues, the rest of the mortals just follow the next steps_
 
 ### Dependencies handling
 
