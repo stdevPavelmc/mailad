@@ -1,9 +1,0 @@
-# chqueo de cabeceras, son expresiones regulares de perl
-#
-# Es una buena practica poner un # luego de la razón del reject para
-# poder saber cual de las reglas macheo un correo falso positivo
-# por ejemplo la palabra Puta machea la #1 
-
-# Expresion				Orden  No   Razon
-/^Subject: .* [P|p]uta .*/		REJECT (#1) No se permiten Mala palabras
-
