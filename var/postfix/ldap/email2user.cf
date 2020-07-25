@@ -1,0 +1,11 @@
+# LDAP to postfix link
+server_host = _HOSTAD_
+server_port = 389
+timeout = 10
+search_base = _LDAPSEARCHBASE_
+# Filter                      account active         password don't expire     password had expired
+query_filter = (&(mail=%u@%d)(|(userAccountControl=512)(userAccountControl=66048)(userAccountControl=8398120)))
+result_attribute = sAMAccountName
+bind = yes
+bind_dn = _LDAPBINDUSER_
+bind_pw = _LDAPBINDPASSWD_
