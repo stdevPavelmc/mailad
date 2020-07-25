@@ -18,6 +18,21 @@ This is a note for developers about the recommended tags to keep track of the ch
 Dates must be YEAR-MONTH-DAY
 -->
 
+## 2020-07-25
+
+### Changed
+
+- Added: Users restrictions (local/national/international) based on being members of some AD groups and updated the docs
+- Added: Documented the following features:
+    - Ban list (lista_negra)
+    - Header checks
+    - Body checks
+    - Quotas
+- Changed: Postfix better organization on the conf folder, now ldap/rules/aliases have it's own folders
+- Fixed: Group script:
+    - Processing was not starting with a clean file and you get duplicated groups in some scenarios
+    - Some groups with accent and non standard chars in the names returned in base64 encoding and the script missed that ones, that's fixed now
+
 ## 2020-06-26
 
 ### Changed
