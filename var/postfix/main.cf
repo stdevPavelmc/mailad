@@ -1,7 +1,7 @@
 # See /usr/share/postfix/main.cf.dist for a commented, more complete version
 
 # Banner de bienvenida
-smtpd_banner = $myhostname ESMTP $mail_name (Ubuntu GNU/Linux)
+smtpd_banner = $myhostname ESMTP
 
 # No annadir el dominio, eso es trabajo del cliente
 append_dot_mydomain = no
