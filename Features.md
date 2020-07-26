@@ -38,15 +38,17 @@ Yes, this is not optional, when you setup an user to use the email services as w
 You can use any of the following letter multiplier to specify that:
 
 - K: Kilo bytes, available but not practical as it's very small for example 900 Kbytes will be specified as "900K"
-- M: Mega bytes, most used unit, for example "100M" or "2048M" for a 2TB size, but...
+- M: Mega bytes, most used unit, for example "100M" or "2048M" for a 2GB size, but...
+- G: Giga bytes, 1024M = 1G
 - T: Tera byte, this is used by heavy lifters
 
-**Tip:** You need to avoid using decimal units, dovecot quota is picky about that, instead of using "1.5T" use "1500M"
+**Tip:** You need to avoid using decimal units, dovecot quota is picky about that, instead of using "1.5G" use "1500M"
 
 For example this are equivalent:
 
 - 2048K = 2M
-- 1024M = 1T
+- 4096M = 4G
+- 1024G = 1T
 
 ## Automatic alias using AD groups
 
