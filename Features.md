@@ -7,7 +7,7 @@ This is a long page, so here is an index:
 * [Enforced quota control](Features.md#enforced-quota-control)
 * [Automatic alias using AD groups, without the snowball effect](Features.md#automatic-alias-using-ad-groups)
 * [Optional user privilege access via AD groups](Features.md#optional-user-privilege-access-via-ad-groups)
-* [Dovecot filtering](Features.md#dovecot-filtering)
+* [Dovecot filtering](Features.md#dovecot-filtering-sieve)
 * [Centralized mail storage](Features.md#centralized-mail-storage)
 * [Manual alias to handle typos or enterprise positions](Features.md#manual-alias-to-handle-typos-or-enterprise-positions)
 * [Manual ban list for trouble some address](Features.md#manual-ban-list-for-trouble-some-address)
