@@ -66,6 +66,5 @@ if [ "$ACTION" == "down" ] ; then
     echo "=== reset the test conf ==="
 
     rm $CONF 2> /dev/null
-    FILE=mailad.conf
-    git checkout $(git rev-list -n 1 HEAD -- "$FILE")^ -- "$FILE"
+    git checkout HEAD -- mailad.conf
 fi
