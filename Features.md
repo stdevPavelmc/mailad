@@ -5,7 +5,8 @@ This is a long page, so here is an index:
 * [Low resource footprint](Features.md#low-resource-footprint)
 * [Active directory integration and management](Features.md#active-directory-integration-and-management)
 * [Enforced quota control](Features.md#enforced-quota-control)
-* [Automatic alias using AD groups, without the snowball effect](Features.md#automatic-alias-using-ad-groups)
+* [Optional everyone list with custom address](Features.md#optional-everyone-list-with-custom-address)
+* [Automatic alias using AD groups](Features.md#automatic-alias-using-ad-groups)
 * [Optional user privilege access via AD groups](Features.md#optional-user-privilege-access-via-ad-groups)
 * [Dovecot filtering](Features.md#dovecot-filtering-sieve)
 * [Centralized mail storage](Features.md#centralized-mail-storage)
@@ -50,6 +51,14 @@ For example this are equivalent:
 - 4096M = 4G
 - 1024G = 1T
 
+## Optional everyone list with custom address
+
+You have the option to enable a everyone address that has a few cool features:
+
+- All users of the domain can send a mail to the list, but the list address is hidden every time
+- The address is hidden, when you send a mail to it all mail users will receive a copy of the mail coming from you, and if they reply to the email it will return only to you, so keep the address to you and you will be safe
+- The address will not receive emails from outside the domain, to avoid external access and security implications
+
 ## Automatic alias using AD groups
 
 Suppose you have a group of specialist that need to receive all the emails for a service, a normal example are the bills, boucher, account status notifications from a bank institution, having an alias "banking@omain.tld" that points to all of them is a neat trick
@@ -60,9 +69,11 @@ The group checking is triggered daily around ~6:00 am, if you need to trigger it
 
 The trigger for this feature is the setting of a email for a group, once you set an email to a group you are triggering it next morning, Be aware that this feature can be exploited by malicious users as the alias created has no user control, anybody can send to the alias address, so use it wisely
 
-**Bonus:** this aliases behave not like a real distribution list (like mailman's list for example), all the generated messages have no trace of being "from" a list, and seems just like single messages from the original sender, also all answers (make it a reply or a forwards email) will have the original sender as recipient and not the list address, this will kill the well known snowball effect seen on the "everyone@domain.tld" of MDaemon to state an example
+**Bonus:** this aliases behave not like a real distribution list (like mailman's list for example), all the generated messages have no trace of being "from" a list, and seems just like single messages from the original sender, also all answers (make it a reply or a forwards email) will have the original sender as recipient and not the list address
 
 **Tip:** the users must belong to a group directly for this feature to work properly, you can't create a group whish members are other groups abd expect it to work.
+
+**Warning:** it's up to you to check that you don't assign a list a email address that is previously assigned in the `virtual_aliases` file or from a real users, if you fall on this one you will have delivery problems.
 
 ## Optional user privilege access via AD groups
 
