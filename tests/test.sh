@@ -450,7 +450,7 @@ if [ "$EVERYONE" != "" ] ; then
         exit 1
     else
         # ok
-        echo "===> Ok: Local restricted users can send emails to the everyone declared alias"
+        echo "===> Ok: Local users can send emails to the everyone declared alias"
     fi
     # sum the logs
     cat $LOGP >> $LOG
