@@ -18,7 +18,7 @@ This is a note for developers about the recommended tags to keep track of the ch
 Dates must be YEAR-MONTH-DAY
 -->
 
-## 2020-07-25
+## 2020-07-27
 
 ### Changed
 
@@ -28,10 +28,12 @@ Dates must be YEAR-MONTH-DAY
     - Header checks
     - Body checks
     - Quotas
+    - Optional everyone list
 - Changed: Postfix better organization on the conf folder, now ldap/rules/aliases have it's own folders
 - Fixed: Group script:
-    - Processing was not starting with a clean file and you get duplicated groups in some scenarios
+    - Processing was not starting with a clean file and you may get duplicated groups in some scenarios, that's fixed now
     - Some groups with accent and non standard chars in the names returned in base64 encoding and the script missed that ones, that's fixed now
+    - The everyone group now works only when the sender is a member of the local domain, if not then it will reject the mail for obvious reasons
 
 ## 2020-06-26
 
