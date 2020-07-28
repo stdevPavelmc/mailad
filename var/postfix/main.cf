@@ -130,6 +130,12 @@ disable_vrfy_command = yes
 header_checks = regexp:/etc/postfix/rules/header_checks
 body_checks = regexp:/etc/postfix/rules/body_checks
 
+# Declaracion de las Clases de restricciones nacionales
+smtpd_restriction_classes =
+    mail_national_in, mail_national_out,
+    mail_local_in, mail_local_out,
+    everyone_list,
+
 ## NACIONAL
 # si el destino no es .cu rechazo
 mail_national_in = check_sender_access regexp:/etc/postfix/rules/filter_nat
@@ -139,10 +145,8 @@ mail_national_out = check_recipient_access regexp:/etc/postfix/rules/filter_nat
 mail_local_in = check_sender_access regexp:/etc/postfix/rules/filter_loc
 mail_local_out = check_recipient_access regexp:/etc/postfix/rules/filter_loc
 
-# Declaracion de las Clases de restricciones nacionales
-smtpd_restriction_classes =
-    mail_national_in, mail_national_out,
-    mail_local_in, mail_local_out,
+## Everyone
+everyone_list = check_sender_access regexp:/etc/postfix/rules/filter_loc
 
 # restricciones del que envia
 smtpd_sender_restrictions =
@@ -169,6 +173,9 @@ smtpd_sender_restrictions =
 
     # chequeo de lista negra
     check_sender_access hash:/etc/postfix/rules/lista_negra
+
+    # check everyone list protection
+    check_recipient_access hash:/etc/postfix/rules/everyone_list_check
 
     # Permite solo envios con LOGIN
     permit_sasl_authenticated
