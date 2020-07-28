@@ -14,10 +14,16 @@ else
     source ../mailad.conf
 fi
 
+echo "Installing the server certificate for ldap connection"
+openssl s_client -connect ${HOSTAD}:636 -showcerts < /dev/null > /etc/ssl/certs/samba.crt
+cat /etc/ldap/ldap.conf | grep -v TLS_CACERT > /tmp/1
+echo "TLS_CACERT /etc/ssl/certs/samba.crt" >> /tmp/1
+cat /tmp/1 > /etc/ldap/ldap.conf
+
 echo "Trying to login into $HOSTAD as $LDAPBINDUSER"
 
 # LDAP query
-RESULT=`ldapsearch -h "$HOSTAD" -D "$LDAPBINDUSER" -w "$LDAPBINDPASSWD" -b "$LDAPSEARCHBASE" | grep "numResponses"`
+RESULT=`ldapsearch -H "ldaps://${HOSTAD}:636/" -D "$LDAPBINDUSER" -w "$LDAPBINDPASSWD" -b "$LDAPSEARCHBASE" | grep "numResponses"`
 
 if [ "$RESULT" == "" ] ; then
     # empy result: Fail

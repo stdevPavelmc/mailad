@@ -21,7 +21,7 @@ fi
 echo "Searching for the user that owns the email: $ADMINMAIL"
 
 TEMP=`mktemp`
-ldapsearch -h "$HOSTAD" -D "$LDAPBINDUSER" -w "$LDAPBINDPASSWD" -b "$LDAPSEARCHBASE" "(&(objectClass=person)(mail=$ADMINMAIL))" > $TEMP
+ldapsearch -H "ldaps://${HOSTAD}:636/" -D "$LDAPBINDUSER" -w "$LDAPBINDPASSWD" -b "$LDAPSEARCHBASE" "(&(objectClass=person)(mail=$ADMINMAIL))" > $TEMP
 RESULTS=`cat $TEMP | grep "numEntries: " | awk '{print $3}'`
 
 if [ -z "$RESULTS" ] ; then
