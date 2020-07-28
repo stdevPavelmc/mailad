@@ -24,7 +24,7 @@ cd $PATHPREF
 
 # some local vars
 FOLDERS="/etc/postfix /etc/dovecot"
-BKPFOLDER="/var/backups/mailad/"
+BKPFOLDER="/var/backups/mailad"
 
 # advice
 echo "===> Starting a backup of all actual configs to $BKPFOLDER"
@@ -35,6 +35,9 @@ mkdir -p /var/backups/mailad 2> /dev/null || exit 0
 # create the backup
 TIMESTAMP=`date +%Y%m%d_%H%M%S`
 tar -cvzf /var/backups/mailad/${TIMESTAMP}.tar.gz ${FOLDERS}
+# secure the file
+chown root:root /var/backups/mailad/${TIMESTAMP}.tar.gz
+chmod 0440 /var/backups/mailad/${TIMESTAMP}.tar.gz
 
 # show the properties
 echo "===> Your backup is on: ${BKPFOLDER}/${TIMESTAMP}.tar.gz"
@@ -45,11 +48,15 @@ make install-purge
 # force a re-provision
 make force-provision
 
-# extract alias_virtuales
-echo "===> Extracting the alias file from the backup: ${BKPFOLDER}/${TIMESTAMP}.tar.gz"
-cd / && tar -zvxf ${BKPFOLDER}/${TIMESTAMP}.tar.gz etc/postfix/alias_virtuales
+# extract some user modified files
+echo "===> Extracting custom domain files from the backup: ${BKPFOLDER}/${TIMESTAMP}.tar.gz"
+cd / && tar -zvxf ${BKPFOLDER}/${TIMESTAMP}.tar.gz etc/postfix/aliases/alias_virtuales
+cd / && tar -zvxf ${BKPFOLDER}/${TIMESTAMP}.tar.gz etc/postfix/rules/body_checks
+cd / && tar -zvxf ${BKPFOLDER}/${TIMESTAMP}.tar.gz etc/postfix/rules/header_checks
+cd / && tar -zvxf ${BKPFOLDER}/${TIMESTAMP}.tar.gz etc/postfix/rules/lista_negra
 
 # postmap to the alias virtuales & reload postfix
 cd /etc/postfix
-postmap alias_virtuales
+postmap aliases/alias_virtuales
+postmap rules/lista_negra
 postfix reload
