@@ -203,22 +203,27 @@ There will be a point on the future when we add a new cool feature and you want 
 
 No problem, we have it covered, to upgrade the software you just need to follow this steps, all do you need is a internet connection on you mail server (or access to a local repository)
 
-0. Move to the mailad folder _(`/root/mailad` right?, if not you are making it wrong, shame on you: RTFM!)_
-0. Upgrade the new code from github with the command `git pull`
-0. Run the upgrade process with `make upgrade`
+I assume you moved to the mailad folder `/root/mailad` to make the next steps
 
-The first step of the upgrade is to backup your configuration, no matter if the upgrade worked or failed you will end with a backup file in the folder `/var/backups/mailad/` whose name is the date and time of the backup; so in the unlikely outcome of a broken system you can do this to restore your system state:
+0. Backup your mailad.conf file to a temp file, like this `cp mailad.conf /root/mailad-old.conf`
+0. Upgrade the new code from github with the command `git pull && git reset --hard`
+0. Open the files `mailad.conf` and `/root/mailad-old.conf` and copy var values from the old one to the new one
+0. Run the upgrade process with `make upgrade` and follow instructions if you hit some rock
 
-We have identified the latest backup as the file "20200626_145845.tar.gz"
+The first step of the upgrade is to backup your configuration file and the last one will make a FULL backup of the actual software configs before try anything. No matter if the upgrade worked or failed you will end with a backup file in the folder `/var/backups/mailad/` whose name is the date and time of the `make upgrade`; so in the unlikely outcome of a broken system you can do this to restore your system state
 
-``` sh
+### how to revert a failed upgrade?
+
+- Move to the mailad folder `/root/mailad` and run this: `make reset && make install`
+- Move to the folder `/var/backups/mailad/` and identify the backup file you want to restore, for example: "/var/backups/mailad/20200626_145845.tar.gz"
+- Restore the files with this commands:
+
+```sh
 cd /
 tar -zxvf /var/backups/mailad/20200626_145845.tar.gz
 reboot
 ```
 
-And all must be working as it was before the failed upgrade
+The PC will restart and all must be working as before the failed upgrade
 
-We have tested the process extensively and the chances of corruption or failure are very low, if you hit a broken "upgrade" process feel free to contact me via Telegram, my nick there is @pavelmc
-
-As usual in FLOSS no bonding warranty, make and keep backups before the upgrade to restore it
+We have tested the process extensively and the chances of corruption or failure are very low, if you hit a broken "upgrade" process feel free to contact me via Telegram, my nick there is @pavelmc, As usual in FLOSS no bonding warranty, make and keep backups before the upgrade to restore it
