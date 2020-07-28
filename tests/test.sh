@@ -426,3 +426,58 @@ else
 fi
 # sum the logs
 cat $LOGP >> $LOG
+
+# EVERYONE testing
+if [ "$EVERYONE" != "" ] ; then
+    ### Send an email to the everyone as a local user
+    $SOFT -s "$SERVER" -p 587 -tls -a PLAIN -au "$LOCUSER" -ap "$LOCUSERPASSWORD" -t "$EVERYONE" -f "$LOCUSER" > $LOGP
+    R=$?
+    if [ $R -ne 0 ] ; then
+        # error
+        echo "=========================================================="
+        echo "ERROR: Can't send a mail to the EVERYONE account declared"
+        echo "       in the config using a local autenticated account"
+        echo "       using SUBMISSION (587)"
+        echo " "
+        echo "COMMENT: It's not the expected, your server must allow the"
+        echo "         user to send the mail, please check your"
+        echo "         configuration"
+        echo " "
+        echo "Exit code: $R"
+        echo "Logs follow"
+        echo "=========================================================="
+        cat $LOGP
+        exit 1
+    else
+        # ok
+        echo "===> Ok: Local restricted users can send emails to the everyone declared alias"
+    fi
+    # sum the logs
+    cat $LOGP >> $LOG
+
+    ### Send an email to a the everyone alias from an international account: port 25
+    $SOFT -s $SERVER --protocol SMTP -t "$EVERYONE" -f "testing@invalid.com" > $LOGP
+    R=$?
+    if [ $R -eq 0 ] ; then
+        # error
+        echo "======================================================"
+        echo "ERROR: Can send a mail to the defined everyone alias"
+        echo "       from an international address: using SMTP (25)"
+        echo " "
+        echo "COMMENT: It's expected that your server block this"
+        echo "         emails as the everyone list must be used"
+        echo "         inside your domain only, please check your"
+        echo "         configuration"
+        echo " "
+        echo "Exit code: $R"
+        echo "Logs follow"
+        echo "======================================================"
+        cat $LOGP
+        exit 1
+    else
+        # ok
+        echo "===> Ok: EVERYONE alias can't receive emails from outside"
+    fi
+    # sum the logs
+    cat $LOGP >> $LOG
+fi
