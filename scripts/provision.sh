@@ -32,7 +32,7 @@ echo "NOTICE: mailad install is: $PATHPREF"
 echo " "
 
 # postfix files to make postmap, with full path
-PMFILES="/etc/postfix/rules/lista_negra /etc/postfix/aliases/alias_virtuales"
+PMFILES="/etc/postfix/rules/lista_negra /etc/postfix/rules/everyone_list_check /etc/postfix/aliases/alias_virtuales"
 
 # Control services, argument $1 is the action (start/stop)
 function services() {
@@ -101,11 +101,6 @@ ln -s "${PATHPREF}/scripts/groups.sh" /etc/cron.daily/mail_groups_update
 # run it
 /etc/cron.daily/mail_groups_update
 
-# process postmap files
-for f in `echo "$PMFILES" | xargs` ; do
-    sudo postmap $f
-done
-
 # Dovecot Sieve config: create the directory if not present
 mkdir -p /var/lib/dovecot/sieve/ || exit 0
 
@@ -127,6 +122,21 @@ fi
 
 # improve dh crypto for dovecot
 dd if=/var/lib/dovecot/ssl-parameters.dat bs=1 skip=88 | openssl dhparam -inform der > /etc/dovecot/dh.pem
+
+# everyone list protection from outside
+FILE=/etc/postfix/rules/everyone_list_check
+echo '# DO NOT EDIT BY HAND' > $FILE
+echo '# this file is used to protect the inside everyone list from outside' >> $FILE
+echo ' ' >> $FILE
+
+if [ "$EVERYONE" != "" ] ; then
+    echo "$EVERYONE         everyone_list" >> $FILE
+fi
+
+# process postmap files
+for f in `echo "$PMFILES" | xargs` ; do
+    sudo postmap $f
+done
 
 # start services
 services start
