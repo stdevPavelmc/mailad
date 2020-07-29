@@ -120,9 +120,6 @@ if [ "$SPAM_FILTER_ENABLED" == "yes" -o "$SPAM_FILTER_ENABLED" == "Yes" -o "$SPA
     sievec /var/lib/dovecot/sieve/default.sieve
 fi
 
-# improve dh crypto for dovecot
-dd if=/var/lib/dovecot/ssl-parameters.dat bs=1 skip=88 | openssl dhparam -inform der > /etc/dovecot/dh.pem
-
 # everyone list protection from outside
 FILE=/etc/postfix/rules/everyone_list_check
 echo '# DO NOT EDIT BY HAND' > $FILE
