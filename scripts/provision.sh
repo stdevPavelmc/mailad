@@ -15,13 +15,12 @@
 #           - services init wwith no fail
 #           - send an email and verify it's placed on the users folder
 
-# locate the source file (makefile or run by hand)
+# locate the conf files
+source /etc/mailad/mailad.conf
 if [ -f mailad.conf ] ; then 
-    source mailad.conf
     source common.conf
     PATHPREF=$(realpath "./")
 else
-    source ../mailad.conf
     source ../common.conf
     PATHPREF=$(realpath "../")
 fi
