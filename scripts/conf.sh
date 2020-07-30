@@ -17,6 +17,6 @@ if [ -f /etc/mailad/mailad.conf ] ; then
     echo "and run 'make conf' one more time to set a default one"
 else
     # just compy the default
-    echo "Installing default conf file en /etc/cmailad/"
+    echo "Installing default conf file en /etc/mailad/"
     cp mailad.conf /etc/mailad/
 fi
