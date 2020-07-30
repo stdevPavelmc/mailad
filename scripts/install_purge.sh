@@ -7,12 +7,11 @@
 # Goals:
 #   - Uninstall mail install pkgs and purge configs
 
-# locate the source file (makefile or run by hand)
+# load the conf file
+source /etc/mailad/mailad.conf
 if [ -f mailad.conf ] ; then 
-    source mailad.conf
     source common.conf
 else
-    source ../mailad.conf
     source ../common.conf
 fi
 
