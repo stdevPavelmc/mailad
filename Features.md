@@ -156,7 +156,7 @@ You will be tempted to make alias for a group, I know, that feature is described
 But, that's not all, postfix can't understand this file so far! you need to compile it and instruct postfix to apply the changes, this commands does precisely that:
 
 ```sh
-postmap /etc/postfix/alias_virtuales
+postmap /etc/postfix/aliases/alias_virtuales
 postfix reload
 ```
 
