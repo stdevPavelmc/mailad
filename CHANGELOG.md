@@ -23,6 +23,7 @@ Dates must be YEAR-MONTH-DAY
 - Changed: The configuration file is now on /etc/mailad/ in a file called mailad.conf; this change give us more freedom in a few scenarios and make testing over multiple OS/versions more easily, also improve the backups procedure
 - Changed: Improved the docs to reflect the changes in the conf file
 - Changed: Upgrade process, to match the recent changes
+- Changed: Scripts now have the structure to support other Linux OS
 - Added: Support for Ubuntu Focal 20.04 LTS, from now on this will be the default dev OS
 - Added: Support for Debian Buster 10.x (Stable)
 - Fixed: Removed the use of 'sudo' in the scripts, as it collides with Debian that has no sudo by default
