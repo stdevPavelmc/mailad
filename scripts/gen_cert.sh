@@ -9,7 +9,7 @@
 #   - Generate a safe dhparm file to protect forward secrecy
 
 # load the conf file
-source /etc/mailad/mailad/conf
+source /etc/mailad/mailad.conf
 
 # generate the cers only of not present already
 if [ -f /etc/ssl/private/mail.key -a -f /etc/ssl/certs/mail.crt -a -f /etc/ssl/certs/cacert.pem ] ; then
