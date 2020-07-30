@@ -1,8 +1,11 @@
 .DEFAULT_GOAL := help
 
-.PHONY : clean reset fix-vmail install-purge all force-provision force-certs test_deps test_setup test_reset test upgrade help
+.PHONY : conf clean reset fix-vmail install-purge all force-provision force-certs test_deps test_setup test upgrade help
 
 PWD = $(shell pwd)
+
+conf: ## Create a configuration file in /etc/
+	scripts/conf.sh
 
 clean: ## Clean the environment to have a fresh start (preserve SSL/DH certs in /etc/ssl)
 	-rm reps conf-check install provision all || exit 0
@@ -13,10 +16,8 @@ reset: clean install-purge ## Reset all configurations and remove/purge all soft
 	-rm -rdf /etc/dovecot || exit 0
 	-rm -rdf /etc/postfix || exit 0
 
-deps:  ## Install all the needed deps to test & build it
-	sudo apt update -q
-	sudo apt install -y ldap-utils
-	echo "done" > deps
+deps: ## Install all the needed deps to test & build it
+	scripts/deps.sh
 
 conf-check: deps ## Make some tests to validate the actual config before proceed 
 	# test the settings of the localhost
@@ -34,11 +35,10 @@ certs: conf-check ## Generate a self-signed certificate for the server SSL/TLS o
 	scripts/gen_cert.sh
 	echo "done" > certs
 
-install: certs ## Install all the software from the repository
+install: deps certs ## Install all the software from the repository
 	scripts/install_mail.sh
-	echo "done" > install
 
-install-purge: ## Uninstall postfix and dovecot already installed software (purge config also)
+install-purge: deps ## Uninstall postfix and dovecot already installed software (purge config also)
 	scripts/install_purge.sh
 	rm install || exit 0
 
@@ -63,9 +63,6 @@ test-setup: ## Setup a test env to perform tests
 
 test-deps: ## install test dependencies
 	apt update && apt install -y swaks coreutils mawk bc
-
-test-reset: ## Reset the test env
-	tests/test_env.sh down
 
 test: ## Make all tests (must be on other PC than the server, outside the my_networks segment)
 	tests/test.sh
