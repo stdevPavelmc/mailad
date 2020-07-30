@@ -9,24 +9,13 @@
 #     see the README.md on this directory for deatils
 
 # load conf file and detect the common one
-    source /etc/mailad/mailad.conf
-if [ -f mailad.conf ] ; then 
-    source common.conf
-    PATHPREF=$(realpath "./")
-elif [ -f ../mailad.conf ] ; then
-    source ../common.conf
-    PATHPREF=$(realpath "../")
-else
-    echo "Can't find the common config file, aborting"
-    exit 1
-fi
+source /etc/mailad/mailad.conf
 
 # vars
-CONFTEST=$PATHPREF/.mailad.test
+CONFTEST=.mailad.test
 CONFPATH=/etc/mailad/
 
 # setup the env
 echo "=== setup the test conf ==="
-cd $CONFPATH
-mv mailad.conf mailad.conf.old
-cp $CONFTEST $CONFPATH/
+mv $CONFPATH/mailad.conf $CONFPATH/mailad.conf.old
+cp $CONFTEST $CONFPATH/mailad.conf
