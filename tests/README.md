@@ -58,11 +58,9 @@ cp mailad.conf .mailad.test
 
 0. Clone the repository or copy over the mailad folder from the server to the PC you will use for testing
 0. Create a file named `.mailadmin.auth` with the mail administrator password (see the previous section)
-0. Create a local copy of the config used in the server in a test point (see the previous section regarding the `.mailad.test` file)
+0. Copy the default config file from the server in `/etc/mailad/mailad.conf` to the same location on the PC you will use for testing
 0. Install test dependencies with `make test-deps`
 0. Setup the test env with the command `make test-setup` this will prepare the tests and configs (remember the `.mailad.test` file?)
-0. Run the tests with `make test`
-
-Developers my take a peek on the Makefile for targets like "test-reset" and others
+0. Run the tests with `make test ip=1.2.3.4` where the IP is the IP of the server
 
 If the script found an error it will output an error in the console and then a transaction log tail about the error.
