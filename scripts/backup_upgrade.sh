@@ -18,11 +18,22 @@ else
     PATHPREF=$(realpath "../")
 fi
 
+# Control services, argument $1 is the action (start/stop)
+function services() {
+    for s in `echo $SERVICENAMES | xargs` ; do
+        # do it
+        echo "Doing $1 with $s..."
+        systemctl --no-pager $1 $s
+        sleep 2
+        systemctl --no-pager status $s
+    done
+}
+
 # move to the mailad root to work on
 cd $PATHPREF
 
 # some local vars
-FOLDERS="/etc/postfix /etc/dovecot"
+FOLDERS="/etc/postfix /etc/dovecot /etc/mailad"
 BKPFOLDER="/var/backups/mailad"
 
 # advice
@@ -41,11 +52,14 @@ chmod 0440 /var/backups/mailad/${TIMESTAMP}.tar.gz
 # show the properties
 echo "===> Your backup is on: ${BKPFOLDER}/${TIMESTAMP}.tar.gz"
 
+# stoping services
+services stop
+
 # remove old install
 make install-purge
 
 # force a re-provision
-make force-provision
+make all
 
 # extract some user modified files
 echo "===> Extracting custom domain files from the backup: ${BKPFOLDER}/${TIMESTAMP}.tar.gz"
@@ -58,4 +72,6 @@ cd / && tar -zvxf ${BKPFOLDER}/${TIMESTAMP}.tar.gz etc/postfix/rules/lista_negra
 cd /etc/postfix
 postmap aliases/alias_virtuales
 postmap rules/lista_negra
-postfix reload
+
+# restarting services
+services start
