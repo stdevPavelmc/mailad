@@ -7,12 +7,11 @@
 # Goals:
 #   - Uninstall mail install pkgs and purge configs
 
-# locate the source file (makefile or run by hand)
+# load the conf file
+source /etc/mailad/mailad.conf
 if [ -f mailad.conf ] ; then 
-    source mailad.conf
     source common.conf
 else
-    source ../mailad.conf
     source ../common.conf
 fi
 
@@ -21,8 +20,8 @@ fi
 # iterate over the common name of the pkgs
 for p in `echo $PKGCOMMON | xargs` ; do
     # do it
-    sudo env DEBIAN_FRONTEND=noninteractive apt-get purge "$p*" -y
+    env DEBIAN_FRONTEND=noninteractive apt-get purge "$p*" -y
 done
 
 # autoremove some of the pkgs left over
-sudo env DEBIAN_FRONTEND=noninteractive apt autoremove -y
+env DEBIAN_FRONTEND=noninteractive apt autoremove -y

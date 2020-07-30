@@ -15,13 +15,12 @@
 #           - services init wwith no fail
 #           - send an email and verify it's placed on the users folder
 
-# locate the source file (makefile or run by hand)
+# locate the conf files
+source /etc/mailad/mailad.conf
 if [ -f mailad.conf ] ; then 
-    source mailad.conf
     source common.conf
     PATHPREF=$(realpath "./")
 else
-    source ../mailad.conf
     source ../common.conf
     PATHPREF=$(realpath "../")
 fi
@@ -39,7 +38,7 @@ function services() {
     for s in `echo $SERVICENAMES | xargs` ; do
         # do it
         echo "Doing $1 with $s..."
-        sudo systemctl --no-pager $1 $s
+        systemctl --no-pager $1 $s
         sleep 2
         systemctl --no-pager status $s
     done
@@ -56,9 +55,9 @@ services stop
 
 # copy over the relevan files
 echo "Sync postfix files..."
-sudo rsync -rv "${PATHPREF}/var/postfix/" /etc/postfix/
+rsync -rv "${PATHPREF}/var/postfix/" /etc/postfix/
 echo "Sync dovecot files..."
-sudo rsync -rv "${PATHPREF}/var/dovecot/" /etc/dovecot/
+rsync -rv "${PATHPREF}/var/dovecot/" /etc/dovecot/
 
 # replace the vars in the folders
 for f in `echo "/etc/postfix /etc/dovecot" | xargs` ; do
@@ -73,7 +72,7 @@ for f in `echo "/etc/postfix /etc/dovecot" | xargs` ; do
         # note
         echo "replace $v by \"$CONT\""
 
-        sudo find "$f/" -type f -exec \
+        find "$f/" -type f -exec \
             sed -i s/"\_$v\_"/"$CONT"/g {} \;
     done
 done
@@ -120,9 +119,6 @@ if [ "$SPAM_FILTER_ENABLED" == "yes" -o "$SPAM_FILTER_ENABLED" == "Yes" -o "$SPA
     sievec /var/lib/dovecot/sieve/default.sieve
 fi
 
-# improve dh crypto for dovecot
-dd if=/var/lib/dovecot/ssl-parameters.dat bs=1 skip=88 | openssl dhparam -inform der > /etc/dovecot/dh.pem
-
 # everyone list protection from outside
 FILE=/etc/postfix/rules/everyone_list_check
 echo '# DO NOT EDIT BY HAND' > $FILE
@@ -135,7 +131,7 @@ fi
 
 # process postmap files
 for f in `echo "$PMFILES" | xargs` ; do
-    sudo postmap $f
+    postmap $f
 done
 
 # start services

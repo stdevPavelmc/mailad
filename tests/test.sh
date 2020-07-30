@@ -8,21 +8,19 @@
 #   - Test a few properties of the email server
 #     see the README.md on this directory for deatils
 
-# locate the source file (makefile or run by hand)
+# load the conf and locate the common
+source /etc/mailad/mailad.conf
 if [ -f mailad.conf ] ; then
-    source mailad.conf
     source common.conf
     PATHPREF=$(realpath "./")
 elif [ -f ../mailad.conf ] ; then
-    source ../mailad.conf
     source ../common.conf
     PATHPREF=$(realpath "../")
 elif [ -f /root/mailad/mailad.conf ] ; then
-    source /root/mailad/mailad.conf
     source /root/mailad/common.conf
     PATHPREF="/root/mailad"
 else
-    echo "Can't find the config file, aborting"
+    echo "Can't find the common config file, aborting"
     exit 1
 fi
 

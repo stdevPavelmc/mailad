@@ -12,12 +12,9 @@
 #       - conectivity to the HOSTAD
 #       - Check if we are in a non testing domain the password must be changed
 
-# locate the source file (makefile or run by hand)
-if [ -f mailad.conf ] ; then 
-    source mailad.conf
-else
-    source ../mailad.conf
-fi
+# load conf files
+source /etc/mailad/mailad.conf
+
 
 echo "Testing the configurations on the local host"
 
