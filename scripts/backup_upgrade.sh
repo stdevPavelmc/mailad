@@ -9,12 +9,11 @@
 #   - Create a backup of the postfix and dovecot folders in /var/backups/mailad
 
 # locate the source file (makefile or run by hand)
+source /etc/mailad/mailad.conf
 if [ -f mailad.conf ] ; then 
-    source mailad.conf
     source common.conf
     PATHPREF=$(realpath "./")
 else
-    source ../mailad.conf
     source ../common.conf
     PATHPREF=$(realpath "../")
 fi
