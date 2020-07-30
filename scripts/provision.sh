@@ -39,7 +39,7 @@ function services() {
     for s in `echo $SERVICENAMES | xargs` ; do
         # do it
         echo "Doing $1 with $s..."
-        sudo systemctl --no-pager $1 $s
+        systemctl --no-pager $1 $s
         sleep 2
         systemctl --no-pager status $s
     done
@@ -56,9 +56,9 @@ services stop
 
 # copy over the relevan files
 echo "Sync postfix files..."
-sudo rsync -rv "${PATHPREF}/var/postfix/" /etc/postfix/
+rsync -rv "${PATHPREF}/var/postfix/" /etc/postfix/
 echo "Sync dovecot files..."
-sudo rsync -rv "${PATHPREF}/var/dovecot/" /etc/dovecot/
+rsync -rv "${PATHPREF}/var/dovecot/" /etc/dovecot/
 
 # replace the vars in the folders
 for f in `echo "/etc/postfix /etc/dovecot" | xargs` ; do
@@ -73,7 +73,7 @@ for f in `echo "/etc/postfix /etc/dovecot" | xargs` ; do
         # note
         echo "replace $v by \"$CONT\""
 
-        sudo find "$f/" -type f -exec \
+        find "$f/" -type f -exec \
             sed -i s/"\_$v\_"/"$CONT"/g {} \;
     done
 done
@@ -132,7 +132,7 @@ fi
 
 # process postmap files
 for f in `echo "$PMFILES" | xargs` ; do
-    sudo postmap $f
+    postmap $f
 done
 
 # start services
