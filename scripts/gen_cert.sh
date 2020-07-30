@@ -8,12 +8,8 @@
 #   - Generate a 3 years valid self-signed certificate
 #   - Generate a safe dhparm file to protect forward secrecy
 
-# locate the source file (makefile or run by hand)
-if [ -f mailad.conf ] ; then 
-    source mailad.conf
-else
-    source ../mailad.conf
-fi
+# load the conf file
+source /etc/mailad/mailad/conf
 
 # generate the cers only of not present already
 if [ -f /etc/ssl/private/mail.key -a -f /etc/ssl/certs/mail.crt -a -f /etc/ssl/certs/cacert.pem ] ; then
@@ -46,12 +42,12 @@ openssl x509 -req -days 1095 -in mail.csr -CA ca.crt -CAkey ca.key -CAcreateseri
 cat ca.key ca.crt > cacert.pem
 
 #move it to the final places & fix perms
-sudo mv -f mail.key /etc/ssl/private/
-sudo mv -f mail.crt /etc/ssl/certs/
-sudo mv -f cacert.pem /etc/ssl/certs/
-sudo chmod 0600 /etc/ssl/private/mail.key
-sudo chmod 0600 /etc/ssl/certs/mail.crt
-sudo chmod 0600 /etc/ssl/certs/cacert.pem
+mv -f mail.key /etc/ssl/private/
+mv -f mail.crt /etc/ssl/certs/
+mv -f cacert.pem /etc/ssl/certs/
+chmod 0600 /etc/ssl/private/mail.key
+chmod 0600 /etc/ssl/certs/mail.crt
+chmod 0600 /etc/ssl/certs/cacert.pem
 
 # clan the workspace for dhparam generation
 rm *
@@ -61,9 +57,9 @@ echo "Generation of SAFE dhparam, this will take a time, be patient..."
 openssl dhparam -out RSA2048.pem -5 2048
 
 # copy to final destination
-sudo mkdir -p /etc/ssl/dh &> /dev/null
-sudo mv -f RSA2048.pem /etc/ssl/dh
-sudo chmod 0644 /etc/ssl/dh/RSA2048.pem
+mkdir -p /etc/ssl/dh &> /dev/null
+mv -f RSA2048.pem /etc/ssl/dh
+chmod 0644 /etc/ssl/dh/RSA2048.pem
 
 # clean the house
 cd ~
