@@ -4,7 +4,6 @@ This is a TODO list with no particular order
 
 ## New features/wish/TODO items
 
-- Users access segregation via AD groups (local/national/international access)
 - Spam filtering via SpamAssasin
 - Anti Virus scan using ClamAV
 - Content filtering (mime & extensions) beyond the basics
@@ -14,4 +13,4 @@ This is a TODO list with no particular order
 
 ## Done Items
 
-- None [October/1510] (:p)
+- - Users access segregation via AD groups (local/national/international access) [July/2020]
