@@ -13,12 +13,11 @@
 #
 # And not doing that after failure, that way it will not install on a unknown distro
 
-# locate the source file (makefile or run by hand)
+# load the conf file
+source /etc/mailad/mailad.conf
 if [ -f mailad.conf ] ; then 
-    source mailad.conf
     source common.conf
 else
-    source ../mailad.conf
     source ../common.conf
 fi
 
