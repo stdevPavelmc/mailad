@@ -25,6 +25,11 @@ if [ -f /etc/mailad/le/fullchain.pem -a -f /etc/mailad/le/privkey.pem ] ; then
     cp /etc/mailad/le/fullchain.pem /etc/ssl/certs/cacert.pem
     cp /etc/mailad/le/privkey.pem /etc/ssl/private/mail.key
 
+    # secure the files
+    chmod 0640 /etc/ssl/certs/mail.crt
+    chmod 0640 /etc/ssl/certs/cacert.pem
+    chmod 0640 /etc/ssl/private/mail.key
+
 else
     # generate the certs only of not present already
     if [ -f /etc/ssl/private/mail.key -a -f /etc/ssl/certs/mail.crt -a -f /etc/ssl/certs/cacert.pem ] ; then
