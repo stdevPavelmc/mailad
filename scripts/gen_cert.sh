@@ -11,29 +11,29 @@
 # load the conf file
 source /etc/mailad/mailad.conf
 
-# generate the cers only of not present already
-if [ -f /etc/ssl/private/mail.key -a -f /etc/ssl/certs/mail.crt -a -f /etc/ssl/certs/cacert.pem ] ; then
-    # already present, not generating the certs
-    echo "===> Certs aready present, skiping the generation"
-    exit 0
-fi
-
 # Check if a LE certificate is on the config
-if [ -f /etc/mailad/le/fullchain.pem -a -f /etc/mailad/le/privkey.key ] ; then
-    echo "Let's Encrypt certificates found, using them"
+if [ -f /etc/mailad/le/fullchain.pem -a -f /etc/mailad/le/privkey.pem ] ; then
+    echo "===> Let's Encrypt certificates found, using them"
 
     # erase in place certificates if found
     rm -f /etc/ssl/private/mail.key &2> /dev/null
     rm -f /etc/ssl/certs/mail.crt &2> /dev/null
     rm -f /etc/ssl/certs/cacert.pem &2> /dev/null
 
-    # linking the LE certificates
-    ln -s /etc/mailad/le/fullchain.pem /etc/ssl/certs/mail.crt
-    ln -s /etc/mailad/le/fullchain.pem /etc/ssl/certs/cacert.pem
-    ln -s /etc/mailad/le/privkey.key /etc/ssl/private/mail.key
+    # copy the LE certificates
+    cp /etc/mailad/le/fullchain.pem /etc/ssl/certs/mail.crt
+    cp /etc/mailad/le/fullchain.pem /etc/ssl/certs/cacert.pem
+    cp /etc/mailad/le/privkey.pem /etc/ssl/private/mail.key
 
 else
-    echo "Generating a Self Signed Certificate for this node"
+    # generate the certs only of not present already
+    if [ -f /etc/ssl/private/mail.key -a -f /etc/ssl/certs/mail.crt -a -f /etc/ssl/certs/cacert.pem ] ; then
+        # already present, not generating the certs
+        echo "===> Certs aready present, skiping the generation"
+        exit 0
+    fi
+
+    echo "===> Generating a Self Signed Certificate for this node"
 
     # moving to a temp dir to work
     TMP=`mktemp -d`
@@ -62,18 +62,18 @@ else
     chmod 0600 /etc/ssl/certs/cacert.pem
 
     # clan the workspace for dhparam generation
-    rm *
+    cd ~
+    rm -rdf "$TMP"
 fi
 
-## dhparms generation
-echo "Generation of SAFE dhparam, this will take a time, be patient..."
-openssl dhparam -out RSA2048.pem -5 2048
+# generate the strong DH if not there already
+if [ ! -f /etc/ssl/dh/RSA2048.pem ] ; then
+    ## dhparms generation
+    echo "===> Generation of SAFE dhparam, this will take a time, be patient..."
+    openssl dhparam -out RSA2048.pem -5 2048
 
-# copy to final destination
-mkdir -p /etc/ssl/dh &> /dev/null
-mv -f RSA2048.pem /etc/ssl/dh
-chmod 0644 /etc/ssl/dh/RSA2048.pem
-
-# clean the house
-cd ~
-rm -rdf "$TMP"
+    # copy to final destination
+    mkdir -p /etc/ssl/dh &> /dev/null
+    mv -f RSA2048.pem /etc/ssl/dh
+    chmod 0644 /etc/ssl/dh/RSA2048.pem
+fi
