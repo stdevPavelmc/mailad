@@ -125,22 +125,31 @@ Oh wait! We need to generate the SSL certificates first.
 
 All client communications in this setup will be encrypted, so you will need at least a self signed certificate for internal use. This certificate will be used by postfix & dovecot
 
+IF you proceed MailAD script will generate a self-signed certificate that will last for 10 years, or if you have a cert from Let's Encrypt (LE for short) (standalone or wildcard) you can use it also. In the case you have a LE cert, using it is simple:
+
+Just pick the ones that are named "fullchain*" and "privkey*" and place them on the folder `/etc/mailad/le/` and name it like this: `fullchain.pem` and `privkey.pem` and the provision scripts will use it
+
 
 ``` sh
 make certs
 ```
 
-If you have a custom certificate, then just use the generated one during config and test stage, and at the end replace it with yours, the certs are in:
+Final certs will lay on this places (if LE then certs will be copied over & secured):
 
 - Certificate: `/etc/ssl/certs/mail.crt`
 - Private Key: `/etc/ssl/private/mail.key`
 - CA certificate: `/etc/ssl/certs/cacert.pem`
 
-If you have a Let's Encrypt certificate for your server (or a wildcard one) just place them in `/root/certs`, erase the created ones and link yours to the above shown locations; The mapping is as this:
+If you obtain a LE certs for your server after using the self-signed or you need to update them; then just place them (like we described above) on the `/etc/mailad/le/` folder on the config and do the following from the folder you have the cloned MailAD install
 
-- fullchain.pem > `/etc/ssl/certs/mail.crt`
-- fullchain.pem > `/etc/ssl/certs/cacert.pem`
-- privkey.pem > `/etc/ssl/private/mail.key`
+``` sh
+rm certs &2> /dev/null
+make certs
+systemctl restart postfix dovecot
+systemctl status postfix dovecot
+```
+
+The last two steps restart the services and shows it's state for you to check if all gone well, if you get in trouble just remove the files from the `/etc/mailad/le/` and repeat the above steps, that will re-create a self signed certificate and place it on service
 
 ### Software installs
 

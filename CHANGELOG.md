@@ -18,6 +18,11 @@ This is a note for developers about the recommended tags to keep track of the ch
 Dates must be YEAR-MONTH-DAY
 -->
 
+## 2020-07-31
+
+- Added: Support for using Let's Encrypt certificates out of the box or after a period of time, see README.md
+- Fixed: Improved the install script, now it will fail on any repository or installation issue
+
 ## 2020-07-29
 
 - Changed: The configuration file is now on /etc/mailad/ in a file called mailad.conf; this change give us more freedom in a few scenarios and make testing over multiple OS/versions more easily, also improve the backups procedure
