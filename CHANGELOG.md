@@ -22,6 +22,7 @@ Dates must be YEAR-MONTH-DAY
 
 - Added: Support for using Let's Encrypt certificates out of the box or after a period of time, see README.md
 - Fixed: Improved the install script, now it will fail on any repository or installation issue
+- Changes: Moved the tech explanation to a own file: INSTALL.md
 
 ## 2020-07-29
 
