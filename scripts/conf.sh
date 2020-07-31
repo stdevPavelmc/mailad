@@ -9,7 +9,7 @@
 #
 
 # Create the dir with no warning
-mkdir -p /etc/mailad/ &2> /dev/null
+mkdir -p /etc/mailad/le &2> /dev/null
 
 # check if there is a conf there
 if [ -f /etc/mailad/mailad.conf ] ; then

@@ -4,6 +4,7 @@ This is a long page, so here is an index:
 
 * [Low resource footprint](Features.md#low-resource-footprint)
 * [Active directory integration and management](Features.md#active-directory-integration-and-management)
+* [Let's Encrypt certificates](Features.md#let-s-encrypt-certificates)
 * [Enforced quota control](Features.md#enforced-quota-control)
 * [Optional everyone list with custom address](Features.md#optional-everyone-list-with-custom-address)
 * [Automatic alias using AD groups](Features.md#automatic-alias-using-ad-groups)
@@ -31,6 +32,10 @@ The server created will only handle the authentication, processing, routing and 
 The user base details are grabbed from a Windows Active Directory server (I recommend Samba 4 in linux, but works with a Windows server too) so user management and control is delegated to the interface you use to control de Active directory, no other service is needed, ZERO touching the mail server to make & apply some changes
 
 For a Windows sysadmin this will be easy, just config and deploy on the mail server, then control the users in the AD interface in your PC via RSAT, see the details on the file [AD_Requirements.md](AD_Requirements.md). If you are a Linux user then you can use `samba-tool` to control the users properties in the CLI or put a Windows VM with RSAT tools in your server with remote access to manage the domain users
+
+## Let's Encrypt certificates
+
+You can now use a Let's Encrypt certificate out of the box, just read the section [Certificate creation](README.md#certificate-creation) in the README.md for details
 
 ## Enforced quota control
 

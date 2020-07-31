@@ -33,11 +33,11 @@ function already_installed_debian {
         LIST=`dpkg -l | grep $p`
         if [ "$LIST" != "" ] ; then
             # fail, some of the packages are installed
-            echo "ERROR!"
-            echo "    Some of the pkgs we are about to install are already installed"
-            echo "    so, this system is dirty and it's not recommended to install it"
-            echo "    here; or you can force a purge runnig: 'make install-purge'"
-            echo "    and run 'make install' again"
+            echo "===> ERROR!"
+            echo "     Some of the pkgs we are about to install are already installed"
+            echo "     so, this system is dirty and it's not recommended to install it"
+            echo "     here; or you can force a purge runnig: 'make install-purge'"
+            echo "     and run 'make install' again"
             echo " "
             exit 1
         fi
@@ -48,6 +48,14 @@ function already_installed_debian {
 function install_debian {
     # do it
     env DEBIAN_FRONTEND=noninteractive apt install $PKGS -y
+
+    # checking for success
+    R=$?
+    if [ $R -ne 0 ] ; then
+        # apt install failed on any way
+        echo "===> Oops! Install failed, please check your repo configuration"
+        exit 1
+    fi
 }
 
 # loading the os-release file
@@ -58,41 +66,15 @@ if [ -f /etc/os-release ] ; then
     ##### Distros check
 
     # Ubuntu bionic/focal (18.04/20.04) LTS
-    if [ "$VERSION_CODENAME" == "bionic" -o "$VERSION_CODENAME" == "focal" ] ; then
+    if [ "$VERSION_CODENAME" == "bionic" -o "$VERSION_CODENAME" == "focal" -o "$VERSION_CODENAME" == "buster"  ] ; then
         # notice
-        echo "We are working with $PRETTY_NAME"
+        echo "===> We are working with $PRETTY_NAME"
 
         # check
         already_installed_debian
 
         # Install
         install_debian
-
-        # checking for success
-        R=$?
-        if [ $R -eq 0 ] ; then
-            # success finish
-            echo "done" > install
-        fi
-    fi
-
-    # Debian Buster 10.x
-    if [ "$VERSION_CODENAME" == "buster" ] ; then
-        # notice
-        echo "We are working with $PRETTY_NAME"
-
-        # check
-        already_installed_debian
-
-        # Install
-        install_debian
-
-        # checking for success
-        R=$?
-        if [ $R -eq 0 ] ; then
-            # success finish
-            echo "done" > install
-        fi
     fi
 
 else

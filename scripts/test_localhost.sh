@@ -90,7 +90,7 @@ else
         HOST=`echo $SOAREC | awk '{print $1}' | rev | cut -d "." -f 2- | rev`
         IP=`dig A $HOST +short`
         if [ "IP" == "$HOSTAD" ] ; then
-             # success
+            # success
             echo "The SOA record points to the HOSTAD value (HOSTAD is an IP), nice!"
             echo "Success!"
         else
