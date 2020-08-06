@@ -10,7 +10,19 @@
 
 # load the conf and locate the common
 source /etc/mailad/mailad.conf
-source /root/mailad/.mailadmin.auth
+
+# check for the local credentials for the test
+if [ -f /root/mailad/.mailadmin.auth ] ; then
+    # load the credentials and go on
+    source /root/mailad/.mailadmin.auth
+else
+    # no credential file, notice and stop
+    echo "===> There is no local credentials file, aborting tests"
+    echo " "
+    echo " You can learn about test in the README.md file inside the"
+    echo " test directory of the repository"
+    exit 1
+fi
 
 # Capture the destination server or use the default
 if [ "$1" == "" ] ; then
