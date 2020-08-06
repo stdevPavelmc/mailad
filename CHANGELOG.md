@@ -18,6 +18,11 @@ This is a note for developers about the recommended tags to keep track of the ch
 Dates must be YEAR-MONTH-DAY
 -->
 
+## 2020-08-6
+
+- Changed: Improved SSL/TLS security on dovecot & postfix
+- Changed: Optimized some scripts related to SSL and testing
+
 ## 2020-07-31
 
 - Added: Support for using Let's Encrypt certificates out of the box or after a period of time, see README.md
