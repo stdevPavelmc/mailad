@@ -11,6 +11,14 @@
 # load the conf file
 source /etc/mailad/mailad.conf
 
+# secure the SSL cert files
+function secure_certs {
+    # secure the files
+    chmod 0444 /etc/ssl/certs/mail.crt
+    chmod 0444 /etc/ssl/certs/cacert.pem
+    chmod 0400 /etc/ssl/private/mail.key
+}
+
 # Check if a LE certificate is on the config
 if [ -f /etc/mailad/le/fullchain.pem -a -f /etc/mailad/le/privkey.pem ] ; then
     echo "===> Let's Encrypt certificates found, using them"
@@ -26,9 +34,7 @@ if [ -f /etc/mailad/le/fullchain.pem -a -f /etc/mailad/le/privkey.pem ] ; then
     cp /etc/mailad/le/privkey.pem /etc/ssl/private/mail.key
 
     # secure the files
-    chmod 0640 /etc/ssl/certs/mail.crt
-    chmod 0640 /etc/ssl/certs/cacert.pem
-    chmod 0640 /etc/ssl/private/mail.key
+    secure_certs
 
 else
     # generate the certs only of not present already
@@ -62,9 +68,9 @@ else
     mv -f mail.key /etc/ssl/private/
     mv -f mail.crt /etc/ssl/certs/
     mv -f cacert.pem /etc/ssl/certs/
-    chmod 0600 /etc/ssl/private/mail.key
-    chmod 0600 /etc/ssl/certs/mail.crt
-    chmod 0600 /etc/ssl/certs/cacert.pem
+
+    # secure the files
+    secure_certs
 
     # clan the workspace for dhparam generation
     cd ~

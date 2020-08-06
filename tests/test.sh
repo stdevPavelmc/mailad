@@ -10,17 +10,17 @@
 
 # load the conf and locate the common
 source /etc/mailad/mailad.conf
-if [ -f mailad.conf ] ; then
-    source common.conf
-    PATHPREF=$(realpath "./")
-elif [ -f ../mailad.conf ] ; then
-    source ../common.conf
-    PATHPREF=$(realpath "../")
-elif [ -f /root/mailad/mailad.conf ] ; then
-    source /root/mailad/common.conf
-    PATHPREF="/root/mailad"
+
+# check for the local credentials for the test
+if [ -f /root/mailad/.mailadmin.auth ] ; then
+    # load the credentials and go on
+    source /root/mailad/.mailadmin.auth
 else
-    echo "Can't find the common config file, aborting"
+    # no credential file, notice and stop
+    echo "===> There is no local credentials file, aborting tests"
+    echo " "
+    echo " You can learn about test in the README.md file inside the"
+    echo " test directory of the repository"
     exit 1
 fi
 
@@ -84,7 +84,6 @@ fi
 cat $LOGP > $LOG
 
 ### Send an email to the mail admin with auth as sender
-. $PATHPREF/.mailadmin.auth
 $SOFT -s "$SERVER" -p 587 -tls -a PLAIN -au "$ADMINMAIL" -ap "$PASS" -t "$ADMINMAIL" -f "$ADMINMAIL"  > $LOGP
 R=$?
 if [ $R -ne 0 ] ; then
@@ -351,7 +350,7 @@ cat $LOGP >> $LOG
 ### LOCAL
 
 ### Send an email to a local user from an international account: port 25
-$SOFT -s $SERVER --protocol SMTP -t $LOCUSER -f "testing@example.com" > $LOGP
+$SOFT -s $SERVER --protocol SMTP -t "$LOCUSER" -f "testing@example.com" > $LOGP
 R=$?
 if [ $R -ne 24 ] ; then
     # error

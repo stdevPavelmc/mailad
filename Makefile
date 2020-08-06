@@ -50,7 +50,7 @@ all: provision ## Run all targets in the logic order, run this to make it all
 	echo "done" > all
 	echo "Done!"
 
-force-provision: ## Force a re-provisioning of the system
+force-provision: install-purge ## Force a re-provisioning of the system
 	rm provision || exit 0
 	$(MAKE) provision
 
