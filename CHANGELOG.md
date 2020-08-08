@@ -18,7 +18,11 @@ This is a note for developers about the recommended tags to keep track of the ch
 Dates must be YEAR-MONTH-DAY
 -->
 
-## 2020-08-6
+## 2020-08-08
+
+- Changed: Modified the comments on the mailad.conf file about the exclusion of one or more IP form the net segment
+
+## 2020-08-06
 
 - Changed: Improved SSL/TLS security on dovecot & postfix
 - Changed: Optimized some scripts related to SSL and testing
