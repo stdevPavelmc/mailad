@@ -12,46 +12,8 @@
 #
 # And not doing that after failure, that way it will not install on a unknown distro
 
-# loading the os-release file
-if [ -f /etc/os-release ] ; then
-    # import the file
-    source /etc/os-release
-
-    ##### Distros check
-
-    # Ubuntu bionic/focal (18.04/20.04) LTS
-    if [ "$VERSION_CODENAME" == "bionic" -o "$VERSION_CODENAME" == "focal" ] ; then
-        # notice
-        echo "We are working with $PRETTY_NAME"
-
-        # install dependencies
-        apt update -q &&  apt install ldap-utils bind9-dnsutils
-
-        # checking for success
-        R=$?
-        if [ $R -eq 0 ] ; then
-            # success finish
-            echo "done" > deps
-        fi
-    fi
-
-    # Debian Buster 10.x
-    if [ "$VERSION_CODENAME" == "buster" ] ; then
-        # notice
-        echo "We are working with $PRETTY_NAME"
-        
-        # install dependencies
-        apt update -q && apt install ldap-utils dnsutils
-
-        # checking for success
-        R=$?
-        if [ $R -eq 0 ] ; then
-            # success finish
-            echo "done" > deps
-        fi
-    fi
-
-else
+# default error when I hit a distro I can't identify
+function os_not_supported {
     # not known
     echo "==========================================================================="
     echo "ERROR: This linux box has a not known distro, if you feel this is wrong"
@@ -60,4 +22,38 @@ else
     echo "==========================================================================="
     echo "       The install process will stop now"
     echo "==========================================================================="
+
+    # exit 1
+    exit 1
+}
+
+# loading the os-release file
+if [ -f /etc/os-release ] ; then
+    # import the file
+    source /etc/os-release
+
+    ##### Distros check
+
+    # Ubuntu bionic/focal (18.04/20.04) LTS & Debian Buster10.x
+    if [ "$VERSION_CODENAME" == "bionic" -o "$VERSION_CODENAME" == "focal" -o "$VERSION_CODENAME" == "buster" ] ; then
+        # notice
+        echo "We are working with $PRETTY_NAME"
+
+        # install dependencies
+        apt update -q &&  apt install ldap-utils dnsutils
+
+        # checking for success
+        R=$?
+        if [ $R -eq 0 ] ; then
+            # success finish
+            echo "done" > deps
+        fi
+    else
+        # not supported OS
+        os_not_supported
+    fi
+
+else
+    # not supported OS
+    os_not_supported
 fi
