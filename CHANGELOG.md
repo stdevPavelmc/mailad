@@ -21,6 +21,7 @@ Dates must be YEAR-MONTH-DAY
 ## 2020-08-08
 
 - Changed: Modified the comments on the mailad.conf file about the exclusion of one or more IP form the net segment
+- Changed: Improved the handling of the 'make deps' target, fixing one error and improving the detection of the OS
 
 ## 2020-08-06
 
