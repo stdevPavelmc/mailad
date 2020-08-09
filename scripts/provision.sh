@@ -20,8 +20,8 @@ source "/etc/mailad/mailad.conf"
 
 # check the root of the repository
 # try to use the localpath
-if [ -f ./mailad.conf -a -f ./mailad.conf -a -f ./Features.md ] ; then 
-    # it appears that it's located on the repo 
+if [ -f ./mailad.conf -a -f ./mailad.conf -a -f ./Features.md ] ; then
+    # it appears that it's located on the repo
     PATHPREF=`pwd`
 else
     # try the default path
