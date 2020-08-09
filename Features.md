@@ -62,7 +62,8 @@ You have the option to enable a everyone address that has a few cool features:
 
 - All users of the domain can send a mail to the list, but the list address is hidden every time
 - The address is hidden, when you send a mail to it all mail users will receive a copy of the mail coming from you, and if they reply to the email it will return only to you, so keep the address to you and you will be safe
-- The address will not receive emails from outside the domain, to avoid external access and security implications
+- The address will not receive emails from outside the domain (by default), to avoid external access and security implications
+- You can get external access for the list as an option, check the mailad.conf file, the variable named `EVERYONE_ALLOW_EXTERNAL_ACCESS`
 
 ## Automatic alias using AD groups
 
