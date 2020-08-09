@@ -34,7 +34,7 @@ else
         exit 1
     else
         # Success
-        echo "Success, $EVERYONE list crearted"
+        echo "Success, $EVERYONE list created"
         echo "# Everyone list" > /etc/postfix/aliases/auto_aliases
         echo "$EVERYONE     $RESULT" >> /etc/postfix/aliases/auto_aliases
         echo " " >> /etc/postfix/aliases/auto_aliases

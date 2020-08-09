@@ -16,14 +16,35 @@
 #           - send an email and verify it's placed on the users folder
 
 # locate the conf files
-source /etc/mailad/mailad.conf
-if [ -f mailad.conf ] ; then 
-    source common.conf
-    PATHPREF=$(realpath "./")
+source "/etc/mailad/mailad.conf"
+
+# check the root of the repository
+# try to use the localpath
+if [ -f ./mailad.conf -a -f ./mailad.conf -a -f ./Features.md ] ; then
+    # it appears that it's located on the repo
+    PATHPREF=`pwd`
 else
-    source ../common.conf
-    PATHPREF=$(realpath "../")
+    # try the default path
+    if [ -d "/root/mailad" ] ; then
+        # default recommended path
+        PATHPREF="/root/mailad"
+    else
+        # warn about that we can't locate the default path
+        echo "==========================================================================="
+        echo "ERROR: can't locate the default path for the repository, the default path"
+        echo "       is /root/mailad/ this error is common when you cloned the repository"
+        echo "       not in this path"
+        echo "==========================================================================="
+        echo "       The install process will stop now, please fix that"
+        echo "==========================================================================="
+
+        # exit
+        exit 1
+    fi
 fi
+
+# source the common config
+source "${PATHPREF}/common.conf"
 
 # mailad install path
 echo " "
@@ -61,6 +82,7 @@ rsync -rv "${PATHPREF}/var/dovecot/" /etc/dovecot/
 
 # replace the vars in the folders
 for f in `echo "/etc/postfix /etc/dovecot" | xargs` ; do
+    echo " "
     echo "On folder $f..."
     for v in `echo $VARS | xargs` ; do
         # get the var content
@@ -119,14 +141,29 @@ if [ "$SPAM_FILTER_ENABLED" == "yes" -o "$SPAM_FILTER_ENABLED" == "Yes" -o "$SPA
     sievec /var/lib/dovecot/sieve/default.sieve
 fi
 
-# everyone list protection from outside
+# everyone list protection from outside (blank file as default)
 FILE=/etc/postfix/rules/everyone_list_check
 echo '# DO NOT EDIT BY HAND' > $FILE
 echo '# this file is used to protect the inside everyone list from outside' >> $FILE
 echo ' ' >> $FILE
 
 if [ "$EVERYONE" != "" ] ; then
-    echo "$EVERYONE         everyone_list" >> $FILE
+    # alias active
+
+    # check no access from outside
+    if [ "$EVERYONE_ALLOW_EXTERNAL_ACCESS" == "no" -o "$EVERYONE_ALLOW_EXTERNAL_ACCESS" == "No" ] ; then
+        # need protection from outside
+        echo "$EVERYONE         everyone_list" >> $FILE
+    fi
+
+    # grant access from outside
+    if [ "$EVERYONE_ALLOW_EXTERNAL_ACCESS" == "yes" -o "$EVERYONE_ALLOW_EXTERNAL_ACCESS" == "Yes" ] ; then
+        # disable the outside protection from the main.cf file
+        T=`mktemp`
+        cat /etc/postfix/main.cf | grep -v "veryone" > $T
+        cat $T > /etc/postfix/main.cf
+        rm $T
+    fi
 fi
 
 # process postmap files

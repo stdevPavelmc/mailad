@@ -22,6 +22,7 @@ Dates must be YEAR-MONTH-DAY
 
 - Changed: Modified the comments on the mailad.conf file about the exclusion of one or more IP form the net segment
 - Changed: Improved the handling of the 'make deps' target, fixing one error and improving the detection of the OS
+- Added: The everyone alias access (by default not allowed from outside the domain) is now made optional in the config
 
 ## 2020-08-06
 
