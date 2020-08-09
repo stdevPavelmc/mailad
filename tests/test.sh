@@ -455,26 +455,49 @@ if [ "$EVERYONE" != "" ] ; then
     ### Send an email to a the everyone alias from an international account: port 25
     $SOFT -s $SERVER --protocol SMTP -t "$EVERYONE" -f "testing@invalid.com" > $LOGP
     R=$?
-    if [ $R -eq 0 ] ; then
-        # error
-        echo "======================================================"
-        echo "ERROR: Can send a mail to the defined everyone alias"
-        echo "       from an international address: using SMTP (25)"
-        echo " "
-        echo "COMMENT: It's expected that your server block this"
-        echo "         emails as the everyone list must be used"
-        echo "         inside your domain only, please check your"
-        echo "         configuration"
-        echo " "
-        echo "Exit code: $R"
-        echo "Logs follow"
-        echo "======================================================"
-        cat $LOGP
-        exit 1
+    if [ "$EVERYONE_ALLOW_EXTERNAL_ACCESS" == "no" ] ; then
+        # no access from the outside
+        if [ $R -eq 0 ] ; then
+            # error
+            echo "======================================================"
+            echo "ERROR: Can send a mail to the defined everyone alias"
+            echo "       from an international address: using SMTP (25)"
+            echo "       and your config does not allow that"
+            echo " "
+            echo "COMMENT: It's expected that your server block this"
+            echo "         emails as the main config does not allow"
+            echo "         this explicitely"
+            echo " "
+            echo "Exit code: $R"
+            echo "Logs follow"
+            echo "======================================================"
+            cat $LOGP
+            exit 1
+        else
+            # ok
+            echo "===> Ok: EVERYONE alias can't receive emails from outside"
+        fi
     else
-        # ok
-        echo "===> Ok: EVERYONE alias can't receive emails from outside"
-    fi
+        if [ $R -ne 0 ] ; then
+            # error
+            echo "======================================================"
+            echo "ERROR: Can't send a mail to the defined everyone alias"
+            echo "       from an international address: using SMTP (25)"
+            echo "       and your config does allow that"
+            echo " "
+            echo "COMMENT: It's expected that your server allows this"
+            echo "         emails as the main config does allow this"
+            echo "         explicitely"
+            echo " "
+            echo "Exit code: $R"
+            echo "Logs follow"
+            cat $LOGP
+            exit 1
+        else
+            # ok
+            echo "===> Ok: EVERYONE alias can receive emails from outside"
+        fi
+    fi 
     # sum the logs
     cat $LOGP >> $LOG
 fi
