@@ -18,6 +18,13 @@ This is a note for developers about the recommended tags to keep track of the ch
 Dates must be YEAR-MONTH-DAY
 -->
 
+## 2020-08-12
+
+- Changed: We split the Dovecot config templates, as we are dealing with two versions (2.2 & 2.3) and are options that clash, the provision script now picks the right one based on the version you has installed
+- Changed: Added curl to the test-deps target install, we use it to check the user's email delivery
+- Added: The test script now checks for the email on the user's mailbox (IMAPS) and will warn you if it can find the delivered emails, see tests/README.md for more details
+- Fixed: In Dovecot version 2.3 there are a new stats plugins that needs specific permissions and some changed new SSL options
+
 ## 2020-08-08
 
 - Changed: Modified the comments on the mailad.conf file about the exclusion of one or more IP form the net segment

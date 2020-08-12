@@ -62,7 +62,7 @@ test-setup: ## Setup a test env to perform tests
 	tests/test_env.sh up
 
 test-deps: ## install test dependencies
-	apt update && apt install -y swaks coreutils mawk bc
+	apt update && apt install -y swaks coreutils mawk bc curl
 
 test: ## Make all tests (must be on other PC than the server, outside the my_networks segment)
 	tests/test.sh $(ip)
