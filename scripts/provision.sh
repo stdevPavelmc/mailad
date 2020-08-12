@@ -105,23 +105,20 @@ fi
 
 # copy over the relevan files
 echo "Sync postfix files..."
-rsync -rv "${PATHPREF}/var/postfix/" /etc/postfix/
+rsync -r "${PATHPREF}/var/postfix/" /etc/postfix/
 echo "Sync dovecot files..."
-rsync -rv "${PATHPREF}/var/dovecot-${DOVERSION}/" /etc/dovecot/
+rsync -r "${PATHPREF}/var/dovecot-${DOVERSION}/" /etc/dovecot/
 
 # replace the vars in the folders
 for f in `echo "/etc/postfix /etc/dovecot" | xargs` ; do
     echo " "
-    echo "On folder $f..."
+    echo "Provisioning on folder $f..."
     for v in `echo $VARS | xargs` ; do
         # get the var content
         CONTp=${!v}
 
         # escape possible "/" in there
         CONT=`echo ${CONTp//\//\\\\/}`
-
-        # note
-        echo "replace $v by \"$CONT\""
 
         find "$f/" -type f -exec \
             sed -i s/"\_$v\_"/"$CONT"/g {} \;
