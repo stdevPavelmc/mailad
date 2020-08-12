@@ -65,6 +65,19 @@ function services() {
     done
 }
 
+# warna about a not supported dovecot version
+function devecot_version {
+    echo "==========================================================================="
+    echo "ERROR: can't locate the dovecot version or it's a not supported one"
+    echo "       detected version is: '$1' and it must be v2.2 or v 2.3"
+    echo "==========================================================================="
+    echo "       The install process will stop now, please fix that"
+    echo "==========================================================================="
+
+    # exit
+    exit 1
+}
+
 #### Some previous processing of the vars
 
 # calc the max size of the message from the MB paramater in the vars
@@ -74,11 +87,27 @@ MESSAGESIZE=`echo "$t*1024*1024*1.08" | bc -q | cut -d '.' -f 1`
 # stop the runnig services
 services stop
 
+# detect the dovecot version to pick the right files to sync
+DOVERSION=`dpkg -l | grep dovecot-core | awk '{print $3}' | cut -c3-5`
+if [ "$DOVERSION" == "" ] ; then
+    # error, must not be empty
+    dovecot_version
+else
+    # ok, check if it's a supported version
+    if [ "$DOVERSION" == "2.2" -o "$DOVERSION" == "2.3" ] ; then
+        # supported versions
+        echo "===> Detected a compatible dovecot version: $DOVERSION"
+    else
+        # error not compatible
+        dovecot_version $DOVERSION
+    fi
+fi
+
 # copy over the relevan files
 echo "Sync postfix files..."
 rsync -rv "${PATHPREF}/var/postfix/" /etc/postfix/
 echo "Sync dovecot files..."
-rsync -rv "${PATHPREF}/var/dovecot/" /etc/dovecot/
+rsync -rv "${PATHPREF}/var/dovecot-${DOVERSION}/" /etc/dovecot/
 
 # replace the vars in the folders
 for f in `echo "/etc/postfix /etc/dovecot" | xargs` ; do
