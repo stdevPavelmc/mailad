@@ -11,12 +11,9 @@
 #       - Telephone = not empty
 #       - WebPage = not empty and end in "/"
 
-# locate the source file (makefile or run by hand)
-if [ -f mailad.conf ] ; then 
-    source mailad.conf
-else
-    source ../mailad.conf
-fi
+# load conf file
+source /etc/mailad/mailad.conf
+
 
 echo "Searching for the user that owns the email: $ADMINMAIL"
 

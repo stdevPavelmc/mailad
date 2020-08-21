@@ -100,7 +100,7 @@ Algunas de las funcionalidades que se plantean a futuro para la herramienta
 ## Reconocimientos
 
 - Inicialmente a mi empresa, Consultores Asociados S.A. por permitirme trabajar en algo que disfruto
-- A [Gabriel Alejandro López López](https://about.me/glpzzz) por invitarme a partipar en este evento 
+- A [Gabriel Alejandro López López](https://about.me/glpzzz) por invitarme a participar en este evento 
 - A muchos otros miembros de la comunidad [SysadminsdeCuba](https://www.sysadminsdecuba.com) por las ayudas y dudas solucionadas para la confección de esta herramienta
 
 ## Referencias

@@ -48,21 +48,30 @@ Let's explain:
 
 This file is and will be not tracked by git if you push your particular repo to a public server, but it's recommended that you erase the file ASAP when you are done testing
 
-You need to copy the default config for your domain in a special file named `.mailad.test`, simply run this on the folder if your `mailad.conf` file is a copy of the one in teh mail server:
+You need to copy the default config for your domain in a special file named `.mailad.auth`, simply run this on the folder if your `mailad.conf` file is a copy of the one in teh mail server:
 
 ``` sh
-cp mailad.conf .mailad.test
+cp mailad.conf .mailad.auth
 ```
 
 ## How to test it
 
 0. Clone the repository or copy over the mailad folder from the server to the PC you will use for testing
-0. Create a file named `.mailadmin.auth` with the mail administrator password (see the previous section)
-0. Create a local copy of the config used in the server in a test point (see the previous section regarding the `.mailad.test` file)
+0. Create a file named `.mailadmin.auth` with some tests credentials (see the previous section)
+0. Copy the default config file from the server in `/etc/mailad/mailad.conf` to the same location on the PC you will use for testing
 0. Install test dependencies with `make test-deps`
-0. Setup the test env with the command `make test-setup` this will prepare the tests and configs (remember the `.mailad.test` file?)
-0. Run the tests with `make test`
-
-Developers my take a peek on the Makefile for targets like "test-reset" and others
+0. Run the tests with `make test ip=1.2.3.4` where the IP is the IP of the server
 
 If the script found an error it will output an error in the console and then a transaction log tail about the error.
+
+### Extra care
+
+Test script checks the user's mailbox for the email to check if it arrived as expected _[when applicable, remember we have test meant to fail]_, in this process it waits 5 seconds to allow to deliver the mail to the user's Inbox
+
+If you se a line like this in your test:
+
+`===> Ok: You can receive emails for your domain [No Confirmation Yet]`
+
+That **"[No Confirmation Yet]"** note implies that we waited for 5 seconds and checked the last 10 emails and the test emails did not arrived, it can be a false positive, as your mailserver is under heavy load and 5 seconds are not enough to deliver or a slow network, or overloaded hardware, etc
+
+In any case it worth to look at the mailserver for possible delayed fails or bad performance.

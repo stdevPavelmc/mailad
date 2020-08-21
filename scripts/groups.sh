@@ -13,17 +13,8 @@
 
 echo $ADGROUPS
 
-# locate the source file (makefile or run by hand)
-if [ -f mailad.conf ] ; then 
-    source mailad.conf
-elif [ -f ../mailad.conf ] ; then
-    source ../mailad.conf
-elif [ -f /root/mailad/mailad.conf ] ; then
-    source /root/mailad/mailad.conf
-else
-    echo "Can't find the mailad.conf file, default path is /root/mailad/mailad/conf"
-    exit 1
-fi
+# load the conf file
+source /etc/mailad/mailad.conf
 
 # check if we need to get the everyone group
 if [ -z "$EVERYONE" ] ; then
@@ -43,7 +34,7 @@ else
         exit 1
     else
         # Success
-        echo "Success, $EVERYONE list crearted"
+        echo "Success, $EVERYONE list created"
         echo "# Everyone list" > /etc/postfix/aliases/auto_aliases
         echo "$EVERYONE     $RESULT" >> /etc/postfix/aliases/auto_aliases
         echo " " >> /etc/postfix/aliases/auto_aliases

@@ -12,12 +12,9 @@
 #       - conectivity to the HOSTAD
 #       - Check if we are in a non testing domain the password must be changed
 
-# locate the source file (makefile or run by hand)
-if [ -f mailad.conf ] ; then 
-    source mailad.conf
-else
-    source ../mailad.conf
-fi
+# load conf files
+source /etc/mailad/mailad.conf
+
 
 echo "Testing the configurations on the local host"
 
@@ -93,7 +90,7 @@ else
         HOST=`echo $SOAREC | awk '{print $1}' | rev | cut -d "." -f 2- | rev`
         IP=`dig A $HOST +short`
         if [ "IP" == "$HOSTAD" ] ; then
-             # success
+            # success
             echo "The SOA record points to the HOSTAD value (HOSTAD is an IP), nice!"
             echo "Success!"
         else

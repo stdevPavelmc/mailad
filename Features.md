@@ -4,6 +4,7 @@ This is a long page, so here is an index:
 
 * [Low resource footprint](Features.md#low-resource-footprint)
 * [Active directory integration and management](Features.md#active-directory-integration-and-management)
+* [Let's Encrypt certificates](Features.md#let-s-encrypt-certificates)
 * [Enforced quota control](Features.md#enforced-quota-control)
 * [Optional everyone list with custom address](Features.md#optional-everyone-list-with-custom-address)
 * [Automatic alias using AD groups](Features.md#automatic-alias-using-ad-groups)
@@ -32,6 +33,10 @@ The user base details are grabbed from a Windows Active Directory server (I reco
 
 For a Windows sysadmin this will be easy, just config and deploy on the mail server, then control the users in the AD interface in your PC via RSAT, see the details on the file [AD_Requirements.md](AD_Requirements.md). If you are a Linux user then you can use `samba-tool` to control the users properties in the CLI or put a Windows VM with RSAT tools in your server with remote access to manage the domain users
 
+## Let's Encrypt certificates
+
+You can now use a Let's Encrypt certificate out of the box, just read the section [Certificate creation](README.md#certificate-creation) in the README.md for details
+
 ## Enforced quota control
 
 Yes, this is not optional, when you setup an user to use the email services as we discussed in the file [AD_Requirements.md](AD_Requirements.md) you must specify a size for the mailbox a good value to start is from 20 to 100 MB depending on your available space and user's behavior.
@@ -57,7 +62,8 @@ You have the option to enable a everyone address that has a few cool features:
 
 - All users of the domain can send a mail to the list, but the list address is hidden every time
 - The address is hidden, when you send a mail to it all mail users will receive a copy of the mail coming from you, and if they reply to the email it will return only to you, so keep the address to you and you will be safe
-- The address will not receive emails from outside the domain, to avoid external access and security implications
+- The address will not receive emails from outside the domain (by default), to avoid external access and security implications
+- You can get external access for the list as an option, check the mailad.conf file, the variable named `EVERYONE_ALLOW_EXTERNAL_ACCESS`
 
 ## Automatic alias using AD groups
 
@@ -156,7 +162,7 @@ You will be tempted to make alias for a group, I know, that feature is described
 But, that's not all, postfix can't understand this file so far! you need to compile it and instruct postfix to apply the changes, this commands does precisely that:
 
 ```sh
-postmap /etc/postfix/alias_virtuales
+postmap /etc/postfix/aliases/alias_virtuales
 postfix reload
 ```
 
@@ -205,16 +211,18 @@ No problem, we have it covered, to upgrade the software you just need to follow 
 
 I assume you moved to the mailad folder `/root/mailad` to make the next steps
 
-0. Backup your mailad.conf file to a temp file, like this `cp mailad.conf /root/mailad-old.conf`
 0. Upgrade the new code from github with the command `git pull && git reset --hard`
-0. Open the files `mailad.conf` and `/root/mailad-old.conf` and copy var values from the old one to the new one
 0. Run the upgrade process with `make upgrade` and follow instructions if you hit some rock
 
-The first step of the upgrade is to backup your configuration file and the last one will make a FULL backup of the actual software configs before try anything. No matter if the upgrade worked or failed you will end with a backup file in the folder `/var/backups/mailad/` whose name is the date and time of the `make upgrade`; so in the unlikely outcome of a broken system you can do this to restore your system state
+The last step will make a FULL backup of the actual software configs before try anything
+
+Since August 2020 we have a procedure to upgrade your custom config to the new file in the case of we upgraded the file, in that case you will receive a notice about the need to check the file `/etc/mailad/mailad.conf` for new options, also check the `Changelog.md` file for news about the changes and new features
+
+No matter if the upgrade worked or failed you will end with a backup file in the folder `/var/backups/mailad/` whose name is the date and time of the `make upgrade`; so in the unlikely outcome of a broken system you can do this to restore your system state:
 
 ### how to revert a failed upgrade?
 
-- Move to the mailad folder `/root/mailad` and run this: `make reset && make install`
+- Move to the mailad folder `/root/mailad` and run this: `install-purge && make install`
 - Move to the folder `/var/backups/mailad/` and identify the backup file you want to restore, for example: "/var/backups/mailad/20200626_145845.tar.gz"
 - Restore the files with this commands:
 
@@ -226,4 +234,6 @@ reboot
 
 The PC will restart and all must be working as before the failed upgrade
 
-We have tested the process extensively and the chances of corruption or failure are very low, if you hit a broken "upgrade" process feel free to contact me via Telegram, my nick there is @pavelmc, As usual in FLOSS no bonding warranty, make and keep backups before the upgrade to restore it
+We have tested the process extensively and the chances of corruption or failure are very low, if you hit a broken "upgrade" process feel free to contact me via Telegram, my nick there is @pavelmc
+
+As usual in FLOSS I give only my word as warranty, make and keep backups before the upgrade to restore it in case of trouble

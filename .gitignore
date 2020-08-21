@@ -1,0 +1,8 @@
+*.auth
+.vscode/
+deps
+all
+certs
+conf-check
+provision
+*.log

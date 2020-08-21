@@ -15,16 +15,36 @@
 #           - services init wwith no fail
 #           - send an email and verify it's placed on the users folder
 
-# locate the source file (makefile or run by hand)
-if [ -f mailad.conf ] ; then 
-    source mailad.conf
-    source common.conf
-    PATHPREF=$(realpath "./")
+# locate the conf files
+source "/etc/mailad/mailad.conf"
+
+# check the root of the repository
+# try to use the localpath
+if [ -f ./mailad.conf -a -f ./mailad.conf -a -f ./Features.md ] ; then
+    # it appears that it's located on the repo
+    PATHPREF=`pwd`
 else
-    source ../mailad.conf
-    source ../common.conf
-    PATHPREF=$(realpath "../")
+    # try the default path
+    if [ -d "/root/mailad" ] ; then
+        # default recommended path
+        PATHPREF="/root/mailad"
+    else
+        # warn about that we can't locate the default path
+        echo "==========================================================================="
+        echo "ERROR: can't locate the default path for the repository, the default path"
+        echo "       is /root/mailad/ this error is common when you cloned the repository"
+        echo "       not in this path"
+        echo "==========================================================================="
+        echo "       The install process will stop now, please fix that"
+        echo "==========================================================================="
+
+        # exit
+        exit 1
+    fi
 fi
+
+# source the common config
+source "${PATHPREF}/common.conf"
 
 # mailad install path
 echo " "
@@ -39,10 +59,23 @@ function services() {
     for s in `echo $SERVICENAMES | xargs` ; do
         # do it
         echo "Doing $1 with $s..."
-        sudo systemctl --no-pager $1 $s
+        systemctl --no-pager $1 $s
         sleep 2
         systemctl --no-pager status $s
     done
+}
+
+# warna about a not supported dovecot version
+function devecot_version {
+    echo "==========================================================================="
+    echo "ERROR: can't locate the dovecot version or it's a not supported one"
+    echo "       detected version is: '$1' and it must be v2.2 or v 2.3"
+    echo "==========================================================================="
+    echo "       The install process will stop now, please fix that"
+    echo "==========================================================================="
+
+    # exit
+    exit 1
 }
 
 #### Some previous processing of the vars
@@ -54,15 +87,32 @@ MESSAGESIZE=`echo "$t*1024*1024*1.08" | bc -q | cut -d '.' -f 1`
 # stop the runnig services
 services stop
 
+# detect the dovecot version to pick the right files to sync
+DOVERSION=`dpkg -l | grep dovecot-core | awk '{print $3}' | cut -c3-5`
+if [ "$DOVERSION" == "" ] ; then
+    # error, must not be empty
+    dovecot_version
+else
+    # ok, check if it's a supported version
+    if [ "$DOVERSION" == "2.2" -o "$DOVERSION" == "2.3" ] ; then
+        # supported versions
+        echo "===> Detected a compatible dovecot version: $DOVERSION"
+    else
+        # error not compatible
+        dovecot_version $DOVERSION
+    fi
+fi
+
 # copy over the relevan files
 echo "Sync postfix files..."
-sudo rsync -rv "${PATHPREF}/var/postfix/" /etc/postfix/
+rsync -r "${PATHPREF}/var/postfix/" /etc/postfix/
 echo "Sync dovecot files..."
-sudo rsync -rv "${PATHPREF}/var/dovecot/" /etc/dovecot/
+rsync -r "${PATHPREF}/var/dovecot-${DOVERSION}/" /etc/dovecot/
 
 # replace the vars in the folders
 for f in `echo "/etc/postfix /etc/dovecot" | xargs` ; do
-    echo "On folder $f..."
+    echo " "
+    echo "Provisioning on folder $f..."
     for v in `echo $VARS | xargs` ; do
         # get the var content
         CONTp=${!v}
@@ -70,10 +120,7 @@ for f in `echo "/etc/postfix /etc/dovecot" | xargs` ; do
         # escape possible "/" in there
         CONT=`echo ${CONTp//\//\\\\/}`
 
-        # note
-        echo "replace $v by \"$CONT\""
-
-        sudo find "$f/" -type f -exec \
+        find "$f/" -type f -exec \
             sed -i s/"\_$v\_"/"$CONT"/g {} \;
     done
 done
@@ -120,22 +167,34 @@ if [ "$SPAM_FILTER_ENABLED" == "yes" -o "$SPAM_FILTER_ENABLED" == "Yes" -o "$SPA
     sievec /var/lib/dovecot/sieve/default.sieve
 fi
 
-# improve dh crypto for dovecot
-dd if=/var/lib/dovecot/ssl-parameters.dat bs=1 skip=88 | openssl dhparam -inform der > /etc/dovecot/dh.pem
-
-# everyone list protection from outside
+# everyone list protection from outside (blank file as default)
 FILE=/etc/postfix/rules/everyone_list_check
 echo '# DO NOT EDIT BY HAND' > $FILE
 echo '# this file is used to protect the inside everyone list from outside' >> $FILE
 echo ' ' >> $FILE
 
 if [ "$EVERYONE" != "" ] ; then
-    echo "$EVERYONE         everyone_list" >> $FILE
+    # alias active
+
+    # check no access from outside
+    if [ "$EVERYONE_ALLOW_EXTERNAL_ACCESS" == "no" -o "$EVERYONE_ALLOW_EXTERNAL_ACCESS" == "No" ] ; then
+        # need protection from outside
+        echo "$EVERYONE         everyone_list" >> $FILE
+    fi
+
+    # grant access from outside
+    if [ "$EVERYONE_ALLOW_EXTERNAL_ACCESS" == "yes" -o "$EVERYONE_ALLOW_EXTERNAL_ACCESS" == "Yes" ] ; then
+        # disable the outside protection from the main.cf file
+        T=`mktemp`
+        cat /etc/postfix/main.cf | grep -v "veryone" > $T
+        cat $T > /etc/postfix/main.cf
+        rm $T
+    fi
 fi
 
 # process postmap files
 for f in `echo "$PMFILES" | xargs` ; do
-    sudo postmap $f
+    postmap $f
 done
 
 # start services

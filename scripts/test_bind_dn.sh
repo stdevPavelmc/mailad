@@ -7,12 +7,8 @@
 # Goal:
 #   - Pass or Fail by logging into the AD with the bind DN provided
 
-# locate the source file (makefile or run by hand)
-if [ -f mailad.conf ] ; then 
-    source mailad.conf
-else
-    source ../mailad.conf
-fi
+# load conf files
+source /etc/mailad/mailad.conf
 
 echo "Installing the server certificate for ldap connection"
 openssl s_client -connect ${HOSTAD}:636 -showcerts < /dev/null > /etc/ssl/certs/samba.crt
