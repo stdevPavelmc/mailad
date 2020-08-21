@@ -214,7 +214,11 @@ I assume you moved to the mailad folder `/root/mailad` to make the next steps
 0. Upgrade the new code from github with the command `git pull && git reset --hard`
 0. Run the upgrade process with `make upgrade` and follow instructions if you hit some rock
 
-The last step will make a FULL backup of the actual software configs before try anything. No matter if the upgrade worked or failed you will end with a backup file in the folder `/var/backups/mailad/` whose name is the date and time of the `make upgrade`; so in the unlikely outcome of a broken system you can do this to restore your system state:
+The last step will make a FULL backup of the actual software configs before try anything
+
+Since August 2020 we have a procedure to upgrade your custom config to the new file in the case of we upgraded the file, in that case you will receive a notice about the need to check the file `/etc/mailad/mailad.conf` for new options, also check the `Changelog.md` file for news about the changes and new features
+
+No matter if the upgrade worked or failed you will end with a backup file in the folder `/var/backups/mailad/` whose name is the date and time of the `make upgrade`; so in the unlikely outcome of a broken system you can do this to restore your system state:
 
 ### how to revert a failed upgrade?
 
@@ -232,4 +236,4 @@ The PC will restart and all must be working as before the failed upgrade
 
 We have tested the process extensively and the chances of corruption or failure are very low, if you hit a broken "upgrade" process feel free to contact me via Telegram, my nick there is @pavelmc
 
-As usual in FLOSS no bonding warranty, make and keep backups before the upgrade to restore it in case of trouble
+As usual in FLOSS I give only my word as warranty, make and keep backups before the upgrade to restore it in case of trouble
