@@ -18,6 +18,11 @@ This is a note for developers about the recommended tags to keep track of the ch
 Dates must be YEAR-MONTH-DAY
 -->
 
+## 2020-08-21
+
+- Added: From today the mailad.conf file has a variable to declare the version of the file, and a specific procedure to port/migrate the configs from an old file to the new one, allowing the addition of new variables and its default values, so we pre-configure new features with this tricks
+- Changed: The "make upgrade" now is more consistent, upgrading to the users mailad.conf file, see above
+
 ## 2020-08-12
 
 - Changed: We split the Dovecot config templates, as we are dealing with two versions (2.2 & 2.3) and are options that clash, the provision script now picks the right one based on the version you has installed
