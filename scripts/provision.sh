@@ -18,38 +18,8 @@
 # locate the conf files
 source "/etc/mailad/mailad.conf"
 
-# check the root of the repository
-# try to use the localpath
-if [ -f ./mailad.conf -a -f ./mailad.conf -a -f ./Features.md ] ; then
-    # it appears that it's located on the repo
-    PATHPREF=`pwd`
-else
-    # try the default path
-    if [ -d "/root/mailad" ] ; then
-        # default recommended path
-        PATHPREF="/root/mailad"
-    else
-        # warn about that we can't locate the default path
-        echo "==========================================================================="
-        echo "ERROR: can't locate the default path for the repository, the default path"
-        echo "       is /root/mailad/ this error is common when you cloned the repository"
-        echo "       not in this path"
-        echo "==========================================================================="
-        echo "       The install process will stop now, please fix that"
-        echo "==========================================================================="
-
-        # exit
-        exit 1
-    fi
-fi
-
 # source the common config
-source "${PATHPREF}/common.conf"
-
-# mailad install path
-echo " "
-echo "NOTICE: mailad install is: $PATHPREF"
-echo " "
+source common.conf
 
 # postfix files to make postmap, with full path
 PMFILES="/etc/postfix/rules/lista_negra /etc/postfix/rules/everyone_list_check /etc/postfix/aliases/alias_virtuales"
@@ -105,9 +75,9 @@ fi
 
 # copy over the relevan files
 echo "Sync postfix files..."
-rsync -r "${PATHPREF}/var/postfix/" /etc/postfix/
+rsync -r ./var/postfix/ /etc/postfix/
 echo "Sync dovecot files..."
-rsync -r "${PATHPREF}/var/dovecot-${DOVERSION}/" /etc/dovecot/
+rsync -r ./var/dovecot-${DOVERSION}/ /etc/dovecot/
 
 # replace the vars in the folders
 for f in `echo "/etc/postfix /etc/dovecot" | xargs` ; do
@@ -142,9 +112,9 @@ sed -i s/"_ESCNATIONAL_"/"$ESCNATIONAL"/g /etc/postfix/rules/filter_nat
 # rm if there
 rm -f /etc/cron.daily/mail_groups_update > /dev/null
 # fix exec perms just in case it was lost
-chmod +x "${PATHPREF}/scripts/groups.sh"
+chmod +x ./scripts/groups.sh
 # create the link
-ln -s "${PATHPREF}/scripts/groups.sh" /etc/cron.daily/mail_groups_update
+ln -s ./scripts/groups.sh /etc/cron.daily/mail_groups_update
 # run it
 /etc/cron.daily/mail_groups_update
 
