@@ -24,6 +24,9 @@ source common.conf
 # postfix files to make postmap, with full path
 PMFILES="/etc/postfix/rules/lista_negra /etc/postfix/rules/everyone_list_check /etc/postfix/aliases/alias_virtuales"
 
+# capture the local path
+P=`pwd`
+
 # Control services, argument $1 is the action (start/stop)
 function services() {
     for s in `echo $SERVICENAMES | xargs` ; do
@@ -112,9 +115,9 @@ sed -i s/"_ESCNATIONAL_"/"$ESCNATIONAL"/g /etc/postfix/rules/filter_nat
 # rm if there
 rm -f /etc/cron.daily/mail_groups_update > /dev/null
 # fix exec perms just in case it was lost
-chmod +x ./scripts/groups.sh
+chmod +x "$P/scripts/groups.sh"
 # create the link
-ln -s ./scripts/groups.sh /etc/cron.daily/mail_groups_update
+ln -s "$P/scripts/groups.sh" /etc/cron.daily/mail_groups_update
 # run it
 /etc/cron.daily/mail_groups_update
 
