@@ -43,6 +43,9 @@ install-purge: deps ## Uninstall postfix and dovecot already installed software 
 	rm install || exit 0
 
 provision: install ## Provision the server, this will copy over the config files and set the vars
+	# test the binddn user and search for the admin user (in case of switch to LDAPS)
+	scripts/test_bind_dn.sh
+	# make the provisioning
 	scripts/provision.sh
 	echo "done" > provision
 
