@@ -9,11 +9,7 @@
 
 # load the conf file
 source /etc/mailad/mailad.conf
-if [ -f mailad.conf ] ; then 
-    source common.conf
-else
-    source ../common.conf
-fi
+source common.conf
 
 # list of pkgs to install came from common.conf
 

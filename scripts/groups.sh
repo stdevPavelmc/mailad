@@ -11,10 +11,17 @@
 #     property of a group
 #
 
-echo $ADGROUPS
-
 # load the conf file
 source /etc/mailad/mailad.conf
+
+# Generate the LDAPURI based on the settings of the mailad.conf file
+if [ "$SECURELDAP" == "" -o "$SECURELDAP" == "no" -o "$SECURELDAP" = "No" ] ; then
+    # not secure
+    LDAPURI="ldap://${HOSTAD}:389/"
+else
+    # use a secure layer
+    LDAPURI="ldaps://${HOSTAD}:636/"
+fi
 
 # check if we need to get the everyone group
 if [ -z "$EVERYONE" ] ; then
@@ -26,7 +33,7 @@ else
     echo "Trying to retrieve all the emails to form login into $HOSTAD as $LDAPBINDUSER"
 
     # LDAP query
-    RESULT=`ldapsearch -H "ldaps://${HOSTAD}:636/" -D "$LDAPBINDUSER" -w "$LDAPBINDPASSWD" -b "$LDAPSEARCHBASE" "(&(objectCategory=person)(objectClass=user)(sAMAccountName=*))" mail | grep "mail: " | grep "@$DOMAIN" | awk '{print $2}' | tr '\n' ','`
+    RESULT=`ldapsearch -H "$LDAPURI" -D "$LDAPBINDUSER" -w "$LDAPBINDPASSWD" -b "$LDAPSEARCHBASE" "(&(objectCategory=person)(objectClass=user)(sAMAccountName=*))" mail | grep "mail: " | grep "@$DOMAIN" | awk '{print $2}' | tr '\n' ','`
 
     if [ "$RESULT" == "" ] ; then
         # empy result: Fail
@@ -43,7 +50,7 @@ fi
 
 # Getting the list of the groups in the search base
 TEMP=`mktemp`
-ldapsearch -H "ldaps://${HOSTAD}:636/" -D "$LDAPBINDUSER" -w "$LDAPBINDPASSWD" -b "$LDAPSEARCHBASE" "(&(objectClass=group)(mail=*))" dn | grep "^dn:" > $TEMP
+ldapsearch -H "$LDAPURI" -D "$LDAPBINDUSER" -w "$LDAPBINDPASSWD" -b "$LDAPSEARCHBASE" "(&(objectClass=group)(mail=*))" dn | grep "^dn:" > $TEMP
 
 RESULT=""
 # parsing the group names, as it can be coded in base64 when non default charset is used
@@ -63,10 +70,10 @@ rm $TEMP
 
 for G in `echo $RESULT | xargs `; do
     # search the group dn
-    GEM=`ldapsearch -H "ldaps://${HOSTAD}:636/" -D "$LDAPBINDUSER" -w "$LDAPBINDPASSWD" -b "$LDAPSEARCHBASE" "(&(objectClass=group)(distinguishedName=$G))" mail | grep "mail: " | awk '{print $2}'`
+    GEM=`ldapsearch -H "$LDAPURI" -D "$LDAPBINDUSER" -w "$LDAPBINDPASSWD" -b "$LDAPSEARCHBASE" "(&(objectClass=group)(distinguishedName=$G))" mail | grep "mail: " | awk '{print $2}'`
 
     if [ "$GEM" != "" ] ; then
-        RESULT=`ldapsearch -H "ldaps://${HOSTAD}:636/" -D "$LDAPBINDUSER" -w "$LDAPBINDPASSWD" -b "$LDAPSEARCHBASE" "(&(objectCategory=person)(objectClass=user)(sAMAccountName=*)(memberOf=$G))" mail | grep "mail: " | awk '{print$2}' | tr '\n' ','`
+        RESULT=`ldapsearch -H "$LDAPURI" -D "$LDAPBINDUSER" -w "$LDAPBINDPASSWD" -b "$LDAPSEARCHBASE" "(&(objectCategory=person)(objectClass=user)(sAMAccountName=*)(memberOf=$G))" mail | grep "mail: " | awk '{print$2}' | tr '\n' ','`
 
         echo "# Group: $G" >> /etc/postfix/aliases/auto_aliases
         echo "$GEM   $RESULT" >> /etc/postfix/aliases/auto_aliases

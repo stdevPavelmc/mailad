@@ -14,11 +14,19 @@
 # load conf file
 source /etc/mailad/mailad.conf
 
+# Generate the LDAPURI based on the settings of the mailad.conf file
+if [ "$SECURELDAP" == "" -o "$SECURELDAP" == "no" -o "$SECURELDAP" = "No" ] ; then
+    # not secure
+    LDAPURI="ldap://${HOSTAD}:389/"
+else
+    # use a secure layer
+    LDAPURI="ldaps://${HOSTAD}:636/"
+fi
 
 echo "Searching for the user that owns the email: $ADMINMAIL"
 
 TEMP=`mktemp`
-ldapsearch -H "ldaps://${HOSTAD}:636/" -D "$LDAPBINDUSER" -w "$LDAPBINDPASSWD" -b "$LDAPSEARCHBASE" "(&(objectClass=person)(mail=$ADMINMAIL))" > $TEMP
+ldapsearch -H "$LDAPURI" -D "$LDAPBINDUSER" -w "$LDAPBINDPASSWD" -b "$LDAPSEARCHBASE" "(&(objectClass=person)(mail=$ADMINMAIL))" > $TEMP
 RESULTS=`cat $TEMP | grep "numEntries: " | awk '{print $3}'`
 
 if [ -z "$RESULTS" ] ; then

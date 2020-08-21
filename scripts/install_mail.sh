@@ -15,12 +15,7 @@
 
 # load the conf file
 source /etc/mailad/mailad.conf
-if [ -f mailad.conf ] ; then 
-    source common.conf
-else
-    source ../common.conf
-fi
-
+source common.conf
 
 # debian already installed check
 function already_installed_debian {

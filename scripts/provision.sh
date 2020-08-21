@@ -82,6 +82,18 @@ rsync -r ./var/postfix/ /etc/postfix/
 echo "Sync dovecot files..."
 rsync -r ./var/dovecot-${DOVERSION}/ /etc/dovecot/
 
+# Generate the LDAPURI based on the settings of the mailad.conf file
+if [ "$SECURELDAP" == "" -o "$SECURELDAP" == "no" -o "$SECURELDAP" = "No" ] ; then
+    # not secure
+    LDAPURI="ldap://${HOSTAD}:389/"
+else
+    # use a secure layer
+    LDAPURI="ldaps://${HOSTAD}:636/"
+fi
+
+# add the LDAPURI to the vars
+VARS="${VARS} LDAPURI"
+
 # replace the vars in the folders
 for f in `echo "/etc/postfix /etc/dovecot" | xargs` ; do
     echo " "

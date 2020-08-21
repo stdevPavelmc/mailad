@@ -1,6 +1,5 @@
 # LDAP to postfix link
-server_host = ldaps://_HOSTAD_
-server_port = 636
+server_host = _LDAPURI_
 timeout = 10
 search_base = _LDAPSEARCHBASE_
 # Filter                      account active         password don't expire     password had expired

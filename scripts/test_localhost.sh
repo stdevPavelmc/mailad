@@ -15,8 +15,7 @@
 # load conf files
 source /etc/mailad/mailad.conf
 
-
-echo "Testing the configurations on the local host"
+echo "===> Testing the configurations on the local host"
 
 #vmail user
 GROUP=`cat /etc/group | grep $VMAILNAME | grep $VMAILGID`
