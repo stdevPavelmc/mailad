@@ -9,14 +9,13 @@
 #   - Create a backup of the postfix and dovecot folders in /var/backups/mailad
 
 # locate the source file (makefile or run by hand)
-source /etc/mailad/mailad.conf
-if [ -f mailad.conf ] ; then 
-    source common.conf
-    PATHPREF=$(realpath "./")
-else
-    source ../common.conf
-    PATHPREF=$(realpath "../")
-fi
+source source ./common.conf
+
+# advice
+echo "===> Check if we have to upgrade the config"
+
+# upgrade the user's mailad.conf
+./scripts/confupgrade.sh
 
 # Control services, argument $1 is the action (start/stop)
 function services() {
@@ -58,11 +57,8 @@ function extract() {
     fi
 }
 
-# move to the mailad root to work on
-cd $PATHPREF
-
 # some local vars
-FOLDERS="/etc/postfix /etc/dovecot /etc/mailad"
+FOLDERS="/etc/postfix /etc/dovecot /etc/mailad /etc/ssl/certs/mail* /etc/ssl/private/mail*"
 BKPFOLDER="/var/backups/mailad"
 
 # advice
