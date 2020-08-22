@@ -18,6 +18,11 @@ This is a note for developers about the recommended tags to keep track of the ch
 Dates must be YEAR-MONTH-DAY
 -->
 
+## 2020-08-22
+
+- Added: Daily "Yesterday's mail traffic summary" in the mailbox of the mail admin declared in the mailad.conf file, built with pflogsumm
+- Added: comment in the features about best security practices and collective knowledge of the sysadminsdecuba community
+
 ## 2020-08-21
 
 - Added: Optional encryption for the LDAP communications, simple for Samba, complicated for Windows, see the Features.md file

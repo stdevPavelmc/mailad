@@ -3,6 +3,8 @@
 This is a long page, so here is an index:
 
 * [Low resource footprint](Features.md#low-resource-footprint)
+* [Security protection against most well known SSL & mail attacks](Features.md#security-protection-against-most-well-known-SSL-and-mail-attacks)
+* [Daily mail traffic summary](Features.md#daily-mail-traffic-summary)
 * [Active directory integration and management](Features.md#active-directory-integration-and-management)
 * [Optional encryption for LDAP communications](Features.md#optional-encryption-for-LDAP-communications)
 * [Let's Encrypt certificates](Features.md#let-s-encrypt-certificates)
@@ -23,6 +25,19 @@ This is a long page, so here is an index:
 This solution is working on about 5 sites on production to my knowledge until the time I wrote this, the most active one has a traffic of about 3k emails monthly (~100 daily) and it's happily running on a Proxmox CT with 2 cores @1.8GHz, 512 MB of RAM & 64MB of swap.
 
 If you are using it under a heavier load, please share with me the statistics and hardware details to update this section
+
+## Security protection against most well known SSL and mail attacks
+
+- Well known SSL/TLS vulnerabilities like LOGJAM, SSL FREAK, POODLE are covered
+- Postfix and Dovecot known vulnerabilities are covered too
+- Built using established best security practices
+- We will keep it updated against emerging threats
+
+Backed up by the collective knowledge of the [SysAdminsdeCuba](https://t.me/sysadmincuba) SysAdmins community
+
+## Daily mail traffic summary
+
+The account configured as the mail administrator will receive a daily summary of yesterday's mail traffic; the resume is built with the pflogsumm tool
 
 ## Active directory integration and management
 
