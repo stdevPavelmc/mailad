@@ -17,11 +17,11 @@
 #        by * none
 
 # Space separated list of LDAP hosts to use. host:port is allowed too.
-hosts = _HOSTAD_
+#hosts = _HOSTAD_
 
 # LDAP URIs to use. You can use this instead of hosts list. Note that this
 # setting isn't supported by all LDAP libraries.
-#uris = 
+uris = _LDAPURI_
 
 # Distinguished Name - the username used to login to the LDAP server.
 # Leave it commented out to bind anonymously (useful with auth_bind=yes).

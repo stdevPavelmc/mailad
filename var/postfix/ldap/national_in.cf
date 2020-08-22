@@ -1,6 +1,5 @@
 # LDAP to postfix link
-server_host = _HOSTAD_
-server_port = 389
+server_host = _LDAPURI_
 timeout = 10
 search_base = _LDAPSEARCHBASE_
 query_filter = (&(mail=%u@%d)(memberOf=cn=National_mail,ou=MAIL_ACCESS,_LDAPSEARCHBASE_))

@@ -11,10 +11,19 @@
 # load the conf and locate the common
 source /etc/mailad/mailad.conf
 
+# Generate the LDAPURI based on the settings of the mailad.conf file
+if [ "$SECURELDAP" == "" -o "$SECURELDAP" == "no" -o "$SECURELDAP" = "No" ] ; then
+    # not secure
+    LDAPURI="ldap://${HOSTAD}:389/"
+else
+    # use a secure layer
+    LDAPURI="ldaps://${HOSTAD}:636/"
+fi
+
 # check for the local credentials for the test
-if [ -f /root/mailad/.mailadmin.auth ] ; then
+if [ -f .mailadmin.auth ] ; then
     # load the credentials and go on
-    source /root/mailad/.mailadmin.auth
+    source .mailadmin.auth
 else
     # no credential file, notice and stop
     echo "===> There is no local credentials file, aborting tests"
@@ -26,7 +35,7 @@ fi
 
 # Capture the destination server or use the default
 if [ "$1" == "" ] ; then
-    SERVER="10.0.3.3"
+    SERVER="10.0.3.7"
 else
     SERVER="$1"
 fi

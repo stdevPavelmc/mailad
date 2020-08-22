@@ -37,7 +37,7 @@ if [ -f /etc/os-release ] ; then
     # Ubuntu bionic/focal (18.04/20.04) LTS & Debian Buster10.x
     if [ "$VERSION_CODENAME" == "bionic" -o "$VERSION_CODENAME" == "focal" -o "$VERSION_CODENAME" == "buster" ] ; then
         # notice
-        echo "We are working with $PRETTY_NAME"
+        echo "===> We are working with $PRETTY_NAME"
 
         # install dependencies
         apt update -q &&  apt install ldap-utils dnsutils

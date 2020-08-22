@@ -4,6 +4,7 @@ This is a long page, so here is an index:
 
 * [Low resource footprint](Features.md#low-resource-footprint)
 * [Active directory integration and management](Features.md#active-directory-integration-and-management)
+* [Optional encryption for LDAP communications](Features.md#optional-encryption-for-LDAP-communications)
 * [Let's Encrypt certificates](Features.md#let-s-encrypt-certificates)
 * [Enforced quota control](Features.md#enforced-quota-control)
 * [Optional everyone list with custom address](Features.md#optional-everyone-list-with-custom-address)
@@ -32,6 +33,23 @@ The server created will only handle the authentication, processing, routing and 
 The user base details are grabbed from a Windows Active Directory server (I recommend Samba 4 in linux, but works with a Windows server too) so user management and control is delegated to the interface you use to control de Active directory, no other service is needed, ZERO touching the mail server to make & apply some changes
 
 For a Windows sysadmin this will be easy, just config and deploy on the mail server, then control the users in the AD interface in your PC via RSAT, see the details on the file [AD_Requirements.md](AD_Requirements.md). If you are a Linux user then you can use `samba-tool` to control the users properties in the CLI or put a Windows VM with RSAT tools in your server with remote access to manage the domain users
+
+## Optional encryption for LDAP communications
+
+By default the MailAD provision script will use plain text LDAP communications, but you can switch to secure (encrypted) communications if you like. The instructions are different based on the Active Directory software you are using, let's see
+
+### Samba 4 AD
+
+With Samba 4 Active Directory you are set, it's as easy as this:
+
+0. Find the option `SECURELDAP=no` in the `/etc/mailad/mailad.conf` file and change it from **no** to **yes** (Case matters!)
+0. Run the `make force-provision` from the mailad folder and wait for it to finish (this will stop the mail services for a few minutes)
+
+After that all communications between the mail server and the AD DC will be via port 636 [LDAPS] and secured (Samba 4 uses TLSv1.2 by default)
+
+### Windows Server AD
+
+Well, for windows it's a bit more complicated: you need to enable the secure protocols for the LDAP service in windows, [this article from Microsoft is the starting point of the process](https://support.microsoft.com/en-us/help/321051/how-to-enable-ldap-over-ssl-with-a-third-party-certification-authority) once done and tested that LDAP has secure protocols in place (with the test described in the mentioned article) just follows the steps described for the Samba 4 AD above
 
 ## Let's Encrypt certificates
 

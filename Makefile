@@ -43,6 +43,9 @@ install-purge: deps ## Uninstall postfix and dovecot already installed software 
 	rm install || exit 0
 
 provision: install ## Provision the server, this will copy over the config files and set the vars
+	# test the binddn user and search for the admin user (in case of switch to LDAPS)
+	scripts/test_bind_dn.sh
+	# make the provisioning
 	scripts/provision.sh
 	echo "done" > provision
 
@@ -57,9 +60,6 @@ force-provision: install-purge ## Force a re-provisioning of the system
 force-certs: ## Force a re-creation of the SSL & dhparm certs
 	rm certs
 	$(MAKE) certs
-
-test-setup: ## Setup a test env to perform tests
-	tests/test_env.sh up
 
 test-deps: ## install test dependencies
 	apt update && apt install -y swaks coreutils mawk bc curl
