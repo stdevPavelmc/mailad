@@ -36,7 +36,7 @@ For a Windows sysadmin this will be easy, just config and deploy on the mail ser
 
 ## Optional encryption for LDAP communications
 
-By default the MailAD provision script will use plan text LDAP communications, but you can switch to secure (encrypted) communications if you like. The instructions are different based on the Active Directory software you are using, let's see
+By default the MailAD provision script will use plain text LDAP communications, but you can switch to secure (encrypted) communications if you like. The instructions are different based on the Active Directory software you are using, let's see
 
 ### Samba 4 AD
 
