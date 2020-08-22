@@ -30,27 +30,31 @@ HOST=`hostname`
 FQDN=`hostname -f`
 if [ "$HOST" == "$FQDN" ] ; then
     # fail
+    echo "================================================================================="
     echo "ERROR!"
     echo "    Your hostname does not have a domain or it's configured wrong!"
     echo "    A 'hostname' command must return just the name of the host with no domain"
     echo "    A 'hostname -f' command must return the name with the domain"
+    echo "================================================================================="
     echo " "
+
     exit 1
 else
-    echo "You have a correct fqdn in the hostname"
-    echo "Success!"
+    echo "===> You have a correct fqdn in the hostname"
 fi
 
 # localhost is localhost?
 if [ "$HOSTNAME" == "$FQDN" ] ; then
-    echo "You have a correct HOSTNAME configured"
-    echo "Success!"
+    echo "===> You have a correct HOSTNAME configured"
 else
-     # fail
+    # fail
+    echo "================================================================================="
     echo "ERROR!"
     echo "    Your HOSTNAME var in mailad.conf does not match the FQDN of this host!"
     echo "    Please fix that"
+    echo "================================================================================="
     echo " "
+
     exit 1
 fi
 
@@ -58,14 +62,16 @@ fi
 ping -c 3 "$HOSTAD"
 R=$?
 if [ $R -eq 0 ] ; then
-    echo "The domain host listed in HOSTAD is network reacheable!"
-    echo "Success!"
+    echo "===> The domain host listed in HOSTAD is network reacheable!"
 else
     # fail
+    echo "================================================================================="
     echo "ERROR!"
     echo "    Domain host seems to be down or not reacheable!"
     echo "    Check your network settings and cable"
+    echo "================================================================================="
     echo " "
+
     exit 1
 fi
 
@@ -73,15 +79,17 @@ fi
 SOAREC=`dig SOA $DOMAIN +short`
 if [ "$SOAREC" == "" ] ; then
     # fail
+    echo "================================================================================="
     echo "ERROR!"
     echo "    The DOMAIN you declared in mailad.conf has no SOA record in the actual DNS"
     echo "    That, or your DNS is not configurated correctly in this host"
+    echo "================================================================================="
+    echo " "
 
     exit 1
 else
     # returned values so DNS is configured OK, but need more testing
-    echo "SOA record acquired, testing that HOSTAD points to the SOA..."
-    echo "Success!"
+    echo "===> SOA record acquired, testing that HOSTAD points to the SOA..."
 
     HOST=`echo $SOAREC | grep $HOSTAD`
     if [ "$HOST" == "" ] ; then
@@ -90,29 +98,35 @@ else
         IP=`dig A $HOST +short`
         if [ "IP" == "$HOSTAD" ] ; then
             # success
-            echo "The SOA record points to the HOSTAD value (HOSTAD is an IP), nice!"
-            echo "Success!"
+            echo "===> The SOA record points to the HOSTAD value (HOSTAD is an IP), nice!"
         else
             # fail
+            echo "================================================================================="
             echo "ERROR!"
             echo "    The DNS answer with a value for the SOA of $DOMAIN, but the value does"
             echo "    not match the one configured in HOSTAD, please fix that"
             echo "    HOSTAD=$HOSTAD vs SOA_IP=$IP "
+            echo "================================================================================="
             echo " "
+
             exit 1
         fi
     else
         # success
-        echo "The SOA record points to the HOSTAD value (HOSTAD is a hostname), nice!"
-        echo "Success!"
+        echo "===> The SOA record points to the HOSTAD value (HOSTAD is a hostname), nice!"
     fi
 fi
 
 
 # testing that the password is different if we are in a non  testing domain
 if [ $DOMAIN != "mailad.cu" -a "$LDAPBINDPASSWD" == "Passw0rd---" ] ; then
+    echo "================================================================================="
     echo "ERROR!"
-    echo "    You has a default password in the bind dn user 'LDAPBINDUSER', that's a very bad practice"
-    echo "    please change the password for the user in the AD and update it on the file 'mailad.conf'"
+    echo "    You has a default password in the bind dn user 'LDAPBINDUSER', that's a very"
+    echo "    bad practice, please change the password for the user in the AD and update"
+    echo "    it on the file 'mailad.conf'"
+    echo "================================================================================="
+    echo " "
+
     exit 1
 fi

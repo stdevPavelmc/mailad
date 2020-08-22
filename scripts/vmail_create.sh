@@ -14,12 +14,12 @@ userdel -rf "$VMAILNAME" &> /dev/null
 groupdel -f "$VMAILNAME" &> /dev/null
 
 # create the user
-echo "Creating the VMAILUSER"
+echo "===> Creating the VMAILUSER"
 groupadd "$VMAILNAME" -g "$VMAILGID"
 useradd "$VMAILNAME" -u "$VMAILUID" -g "$VMAILGID"
 
 # create the storage folder
-echo "Creating the mail storage and setting perms"
+echo "===> Creating the mail storage and setting perms"
 mkdir -p "$VMAILSTORAGE" &> /dev/null
 chown -R "$VMAILUID:$VMAILGID" "$VMAILSTORAGE"
 find "$VMAILSTORAGE" -type f -exec chmod 0660 {} \;
