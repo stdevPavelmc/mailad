@@ -133,6 +133,15 @@ ln -s "$P/scripts/groups.sh" /etc/cron.daily/mail_groups_update
 # run it
 /etc/cron.daily/mail_groups_update
 
+# configure the daily mail summary
+rm -f /etc/cron.daily/daily_mail_resume > /dev/null
+# fix exec perms just in case it was lost
+chmod +x "$P/scripts/resume.sh"
+# create the link
+ln -s "$P/scripts/resume.sh" /etc/cron.daily/daily_mail_resume
+# run it
+/etc/cron.daily/daily_mail_resume
+
 # Dovecot Sieve config: create the directory if not present
 mkdir -p /var/lib/dovecot/sieve/ || exit 0
 
