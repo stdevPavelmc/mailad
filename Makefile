@@ -61,9 +61,6 @@ force-certs: ## Force a re-creation of the SSL & dhparm certs
 	rm certs
 	$(MAKE) certs
 
-test-setup: ## Setup a test env to perform tests
-	tests/test_env.sh up
-
 test-deps: ## install test dependencies
 	apt update && apt install -y swaks coreutils mawk bc curl
 
