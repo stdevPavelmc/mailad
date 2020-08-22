@@ -7,7 +7,6 @@
 # Goals:
 #   - Create a resume of yesterday mail services
 #   - Send it to the mail admin
-#   - Must be preogrammed to run about 7:30am every morning
 
 # import config
 source /etc/mailad/mailad.conf
