@@ -20,8 +20,10 @@ Dates must be YEAR-MONTH-DAY
 
 ## 2020-08-21
 
+- Added: Optional encryption for the LDAP communications, simple for Samba, complicated for Windows, see the Features.md file
 - Added: From today the mailad.conf file has a variable to declare the version of the file, and a specific procedure to port/migrate the configs from an old file to the new one, allowing the addition of new variables and its default values, so we pre-configure new features with this tricks
 - Changed: The "make upgrade" now is more consistent, upgrading to the users mailad.conf file, see above
+- Removed: the Make target test-setup, this has no more use after the change to configs on /etc/mailad/mailad.conf
 
 ## 2020-08-12
 
