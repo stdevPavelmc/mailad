@@ -99,6 +99,8 @@ if [ "$SYSADMINS" != "" ] ; then
         echo "but the group checking & updating procedure can't find the group you mention in the config," >> $F
         echo "that means you are losing notification emails, daily mail summaries, etc." >> $F
         echo " " >> $F
+        echo "The non-existent group is: $SYSADMINS" >> $F
+        echo " " >> $F
         echo "Please check here https://github.com/stdevPavelmc/mailad/blob/master/Features.md to know" >> $F
         echo "how to create the needed group, or simply empty the var in the mailad.conf file and force" >> $F
         echo "a provision of mailad to apply the changes \"make force-provision\"" >> $F
