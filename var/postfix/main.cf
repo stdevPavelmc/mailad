@@ -56,9 +56,10 @@ mailbox_size_limit = 0
 # filtro de contenido de amavisd
 # OJO en los upgrades a amavis le encanta resetar esto y poner
 # [localhost], debes cambiarlo a mano y poner [127.0.0.1] si usas LXC/Docker
-# ===== DISABLED BY NOW =========
-#content_filter = smtp-amavis:[127.0.0.1]:10024
-#policy-spf_time_limit = 3600s
+content_filter = smtp-amavis:[localhost]:10024
+
+# timeout para el filtro del spf
+policy-spf_time_limit = 3600s
 
 # SASL con dovecot
 smtpd_sasl_type = dovecot
@@ -184,6 +185,9 @@ smtpd_sender_restrictions =
 smtpd_recipient_restrictions =
     # politicas de buzón de correos (quota devecot)
     check_policy_service inet:127.0.0.1:12340
+
+    # check spf settings
+    check_policy_service unix:private/policy-spf
 
     # tengo que dejar permit mynetworks arriba, porque ahora permit soy yo
     permit_mynetworks
