@@ -128,7 +128,10 @@ ESCNATIONAL=${ESCNATIONAL//./\\\\\\.}
 sed -i s/"_ESCDOMAIN_"/"$ESCDOMAIN"/g /etc/postfix/rules/filter_loc
 sed -i s/"_ESCNATIONAL_"/"$ESCNATIONAL"/g /etc/postfix/rules/filter_nat
 
-### install the group.sh scripts as a daily task and run it
+#notice
+echo "===> Installing the daily group update task"
+
+# install the group.sh scripts as a daily task and run it
 # rm if there
 rm -f /etc/cron.daily/mail_groups_update > /dev/null
 # fix exec perms just in case it was lost
@@ -137,6 +140,18 @@ chmod +x "$P/scripts/groups.sh"
 ln -s "$P/scripts/groups.sh" /etc/cron.daily/mail_groups_update
 # run it
 /etc/cron.daily/mail_groups_update
+
+#notice
+echo "===> Installing the daily stats resume"
+
+# configure the daily mail summary
+rm -f /etc/cron.daily/daily_mail_resume > /dev/null
+# fix exec perms just in case it was lost
+chmod +x "$P/scripts/resume.sh"
+# create the link
+ln -s "$P/scripts/resume.sh" /etc/cron.daily/daily_mail_resume
+# run it
+/etc/cron.daily/daily_mail_resume
 
 # Dovecot Sieve config: create the directory if not present
 mkdir -p /var/lib/dovecot/sieve/ || exit 0
