@@ -94,6 +94,11 @@ fi
 # add the LDAPURI to the vars
 VARS="${VARS} LDAPURI"
 
+# Check the SYSADMINS var and populate it if needed
+if [ "$SYSADMINS" == "" ] ; then
+    SYSADMINS = $ADMINMAIL
+fi
+
 # replace the vars in the folders
 for f in `echo "/etc/postfix /etc/dovecot" | xargs` ; do
     echo " "

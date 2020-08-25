@@ -18,6 +18,10 @@ This is a note for developers about the recommended tags to keep track of the ch
 Dates must be YEAR-MONTH-DAY
 -->
 
+## 2020-08-25
+
+- Added: Optional feature to redirect all notifications to a group instead of the mail admin
+
 ## 2020-08-22
 
 - Added: Daily "Yesterday's mail traffic summary" in the mailbox of the mail admin declared in the mailad.conf file, built with pflogsumm
