@@ -7,8 +7,8 @@
 # TIENEN que apuntar a una direccion valida
 # incluso puede apuntar a otro alias
 # #####################################################
-abuse@_DOMAIN_			_ADMINMAIL_
-postmaster@_DOMAIN_		_ADMINMAIL_
+abuse@_DOMAIN_			_SYSADMINS_
+postmaster@_DOMAIN_		_SYSADMINS_
 
 # Cargos
 #direccion@mailad.cu		director@mailad.cu
