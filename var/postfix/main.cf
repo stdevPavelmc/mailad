@@ -56,7 +56,7 @@ mailbox_size_limit = 0
 # filtro de contenido de amavisd
 # OJO en los upgrades a amavis le encanta resetar esto y poner
 # [localhost], debes cambiarlo a mano y poner [127.0.0.1] si usas LXC/Docker
-content_filter = smtp-amavis:[localhost]:10024
+content_filter = smtp-amavis:[127.0.0.1]:10024
 
 # timeout para el filtro del spf
 policy-spf_time_limit = 3600s
@@ -180,6 +180,7 @@ smtpd_sender_restrictions =
 
     # Permite solo envios con LOGIN
     permit_sasl_authenticated
+
 
 # Restricciones de destinatarios
 smtpd_recipient_restrictions =
