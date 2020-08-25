@@ -20,13 +20,18 @@ TMP=`tempfile`
 # check for soft
 if [ "$PFSL" == "" ] ; then
     # no soft installed, warining
-    echo "MailAD: Can't make the mail traffic summary because pflogsumm sotware is missing!"
+    echo "MailAD: Can't make the mail traffic summary because pflogsumm software is missing!"
     exit 1
 fi
 
 # ejecutando
 $PFSL $OPTS $FILE > $TMP
 
+# emails to the sysadmins group or the mailadmin?
+if [ "$SYSADMINS" == "" ] ; then
+    SYSADMINS = $ADMINMAIL
+fi
+
 # enviar el correo
-cat $TMP | mail -s "MailAD: Yesterday's mail traffic Summary" ${ADMINMAIL}
+cat $TMP | mail -s "MailAD: Yesterday's mail traffic Summary" ${SYSADMINS}
 rm $TMP
