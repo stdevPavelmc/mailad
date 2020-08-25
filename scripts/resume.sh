@@ -29,7 +29,7 @@ $PFSL $OPTS $FILE > $TMP
 
 # emails to the sysadmins group or the mailadmin?
 if [ "$SYSADMINS" == "" ] ; then
-    SYSADMINS = $ADMINMAIL
+    SYSADMINS=$ADMINMAIL
 fi
 
 # enviar el correo
