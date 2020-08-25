@@ -84,3 +84,31 @@ done
 # updating postfix about the change
 cd /etc/postfix/aliases && postmap auto_aliases
 postfix reload
+
+# check foir the sysadmin group alias if set
+if [ "$SYSADMINS" != "" ] ; then
+    # search for it on the aliases files
+    R=`cat /etc/postfix/aliases/auto_aliases /etc/postfix/aliases/alias_virtuales | awk '{print $1}' | grep "$SYSADMINS"`
+    if [ "$R" == "" ] ; then
+        # notice
+        echo "===> Warning: SYSADMIN group not configured, check your mail for details!"
+
+        # build the email
+        F=`mktemp`
+        echo "You have a SYSADMIN group configured to recieve notifications in /etc/mailad/mailad.conf" > $F
+        echo "but the group checking & updating procedure can't find the group you mention in the config," >> $F
+        echo "that means you are losing notification emails, daily mail summaries, etc." >> $F
+        echo " " >> $F
+        echo "Please check here https://github.com/stdevPavelmc/mailad/blob/master/Features.md to know" >> $F
+        echo "how to create the needed group, or simply empty the var in the mailad.conf file and force" >> $F
+        echo "a provision of mailad to apply the changes \"make force-provision\"" >> $F
+        echo " " >> $F
+        echo "Cheers, MailAD dev team." >> $F
+        echo " " >> $F
+        echo "PS: you will recieve this email daily until you solve that issue." >> $F
+
+        # sending the email to the ADMINMAIL declared
+        cat $F | mail ${ADMINMAIL} -s "MailAD need your attention: incomplete configuration detected!"
+        rm $F
+    fi
+fi
