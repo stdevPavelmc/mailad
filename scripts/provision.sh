@@ -223,7 +223,7 @@ else
     if [ "$USE_AV_ALTERNATE_MIRROR" != "no" -o "$USE_AV_ALTERNATE_MIRROR" != "No" -o "$USE_AV_ALTERNATE_MIRROR" != "" ] ; then
         # must activate the alternate mirror, but first clean the actual values
         FILE="/etc/clamav/freshclam.conf"
-        cat $FILE | grep -v DatabaseMirror > /tmp/1
+        cat $FILE | grep -v DatabaseMirror | grep -v PrivateMirror | grep -v DatabaseCustomURL > /tmp/1
         cat /tmp/1 > $FILE
 
         # dump the config
