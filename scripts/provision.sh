@@ -207,6 +207,19 @@ for f in `echo "$PMFILES" | xargs` ; do
     postmap $f
 done
 
+# check for SPF activation
+if [ "$ENABLE_SPF" == "no" -o "$ENABLE_SPF" == "No" -o -z "$ENABLE_SPF" ] ; then
+    # disable SPF
+    FILE="/etc/postfix/main.cf"
+    cat $FILE | grep -v "spf" > /tmp/1
+
+    # dump
+    cat /tmp/1 > $FILE
+
+    # notice
+    echo "===> Disabing SPF as requested by the config"
+fi
+
 # check if AV activation is needed
 if [ "$ENABLE_AV" == "no" -o "$ENABLE_AV" == "No" -o -z "$ENABLE_AV" ] ; then
     # no AV, stop services to save resources
