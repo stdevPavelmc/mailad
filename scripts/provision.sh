@@ -252,7 +252,7 @@ else
     systemctl restart clamav-daemon
 
     # set the hourly task to activate the filtering when fresclam end the update
-    ln -s var/clamav_alternates/activate_clamav_on_alive.sh /etc/cron.hourly/av_filter_on_clamav_alive
+    ln -s "$P/var/clamav_alternates/activate_clamav_on_alive.sh" /etc/cron.hourly/av_filter_on_clamav_alive
     echo "===> AV filtering provision is in place, but activation is delayed, we must wait for frashclam"
     echo "===> to update the AV database before enabling it or you will lose emails in the mean time"
     echo "===> you will be notified by mail when it's activated."
