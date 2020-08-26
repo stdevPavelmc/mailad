@@ -257,9 +257,6 @@ else
     echo "===> AV filtering provision is in place, but activation is delayed, we must wait for frashclam"
     echo "===> to update the AV database before enabling it or you will lose emails in the mean time"
     echo "===> you will be notified by mail when it's activated."
-
-    # run the hourly check to notify the user
-    /etc/cron.hourly/av_filter_on_clamav_alive
 fi
 
 # start services
