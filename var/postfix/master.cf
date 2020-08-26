@@ -141,6 +141,7 @@ smtp-amavis unix    -       -       -       -       2     smtp
 
 127.0.0.1:10025 inet n    -       -       -       -     smtpd
      -o content_filter=
+     -o receive_override_options=no_unknown_recipient_checks,no_header_body_checks,no_milters
      -o smtpd_delay_reject=no
      -o smtpd_client_restrictions=permit_mynetworks,reject
      -o smtpd_helo_restrictions=
@@ -150,11 +151,9 @@ smtp-amavis unix    -       -       -       -       2     smtp
      -o smtpd_end_of_data_restrictions=
      -o smtpd_restriction_classes=
      -o mynetworks=127.0.0.0/8
+     -o smtpd_authorized_xforward_hosts=127.0.0.0/8
      -o smtpd_error_sleep_time=0
      -o smtpd_soft_error_limit=1001
      -o smtpd_hard_error_limit=1000
      -o smtpd_client_connection_count_limit=0
      -o smtpd_client_connection_rate_limit=0
-     -o always_bcc=
-
-

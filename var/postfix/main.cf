@@ -214,6 +214,9 @@ smtpd_recipient_restrictions =
 # !!! OJO debes crear el user y ponerle un email valido en el AD!!!
 always_bcc = _ALWAYSBCC_
 
+# evitar la doble copia del always_bcc
+receive_override_options = no_address_mappings
+
 # Debug para diagnosticos sobre esta IP...
 # revisar /var/log/mail.log, recuerda desactivarlo al final
 #debug_peer_list = 10.0.3.161
