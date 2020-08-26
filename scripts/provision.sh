@@ -77,10 +77,12 @@ else
 fi
 
 # copy over the relevan files
-echo "Sync postfix files..."
+echo "===> Sync postfix files..."
 rsync -r ./var/postfix/ /etc/postfix/
-echo "Sync dovecot files..."
+echo "===> Sync dovecot files..."
 rsync -r ./var/dovecot-${DOVERSION}/ /etc/dovecot/
+echo "===> Sync amavis files..."
+rsync -r ./var/amavis/ /etc/amavis/
 
 # Generate the LDAPURI based on the settings of the mailad.conf file
 if [ "$SECURELDAP" == "" -o "$SECURELDAP" == "no" -o "$SECURELDAP" = "No" ] ; then
@@ -100,7 +102,7 @@ if [ "$SYSADMINS" == "" ] ; then
 fi
 
 # replace the vars in the folders
-for f in `echo "/etc/postfix /etc/dovecot" | xargs` ; do
+for f in `echo "/etc/postfix /etc/dovecot /etc/amavis" | xargs` ; do
     echo " "
     echo "Provisioning on folder $f..."
     for v in `echo $VARS | xargs` ; do
