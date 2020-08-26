@@ -290,10 +290,35 @@ if [ "$ENABLE_SPAMD" == "yes" -o "$ENABLE_SPAMD" == "Yes" -o -z "$ENABLE_SPAMD" 
         systemctl restart amavis
     fi
 
+    ### configure proxy if needed
+    SA_PROXY=""
+
+    # build the chain
+    if [ ! -z "$PROXY_HOST" -a ! -z "$PROXY_PORT" ] ; then
+        # check for auth
+        if [ ! -z "$PROXY_USER" -a ! -z "$PROXY_PASS" ] ; then
+            SA_PROXY="http://${PROXY_USER}:${PROXY_PASS}@${$PROXY_HOST}:${$PROXY_PORT}/"
+        else
+            SA_PROXY="http://${$PROXY_HOST}:${$PROXY_PORT}/"
+        fi
+    fi
+
+    # set it up if needed
+    if [ ! -z "${SA_PROXY}" ] ; then
+        # add it to the default config
+        echo "SA_PROXY=${SA_PROXY}" >> /etc/default/spamassassin
+    fi
+
     # enable the service
-    systemctl umask spamassassin
+    systemctl unmask spamassassin
     systemctl enable spamassassin
     systemctl restart spamassassin
+
+    # replace the default cron job if proxy enabled
+    if [ ! -z "${SA_PROXY}" ] ; then
+        rm -f /etc/cron.daily/spamassassin
+        cp "$P/var/spamassassin-related/spamassassin" /etc/cron.daily/spamassassin
+    fi
 else
     # disable the SPAMD
 
@@ -312,6 +337,9 @@ else
     systemctl stop spamassassin
     systemctl disable spamassassin
     systemctl mask spamassassin
+
+    # remove the daily job if there
+    test -x "/etc/cron.daily/spamassassin" && rm -f /etc/cron.daily/spamassassin
 fi
 
 # start services
