@@ -244,15 +244,15 @@ else
     fi
 
     ### configure proxy if needed
-    if [ ! -z "$AV_PROXY_HOST" -a ! -z "$AV_PROXY_PORT" ] ; then
+    if [ ! -z "$PROXY_HOST" -a ! -z "$PROXY_PORT" ] ; then
         # add proxy
-        echo "HTTPProxyServer $AV_PROXY_HOST" >> $FILE
-        echo "HTTPProxyPort $AV_PROXY_PORT" >> $FILE
+        echo "HTTPProxyServer $PROXY_HOST" >> $FILE
+        echo "HTTPProxyPort $PROXY_PORT" >> $FILE
 
         # check for auth
-        if [ ! -z "$AV_PROXY_USER" -a ! -z "$AV_PROXY_PASS" ] ; then
-            echo "HTTPProxyUsername $AV_PROXY_USER" >> $FILE
-            echo "HTTPProxyPassword $AV_PROXY_PASS" >> $FILE
+        if [ ! -z "$PROXY_USER" -a ! -z "$PROXY_PASS" ] ; then
+            echo "HTTPProxyUsername $PROXY_USER" >> $FILE
+            echo "HTTPProxyPassword $PROXY_PASS" >> $FILE
         fi
     fi
 
