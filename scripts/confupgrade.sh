@@ -31,6 +31,9 @@ fi
 ### needs upgrade
 echo "===> Different versions of config file, doing upgrade"
 
+### Update the version for the update
+CONFVER=$NCONFVER
+
 # backup the actual config with a timestamp
 TS=`date +"%Y%m%d_%H%M%S"`
 cp /etc/mailad/mailad.conf /etc/mailad/mailad.conf_$TS
