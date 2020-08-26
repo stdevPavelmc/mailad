@@ -220,7 +220,7 @@ if [ "$ENABLE_SPF" == "no" -o "$ENABLE_SPF" == "No" -o -z "$ENABLE_SPF" ] ; then
     echo "===> Disabing SPF as requested by the config"
 fi
 
-# check if AV activation is needed
+### check if AV activation is needed
 if [ "$ENABLE_AV" == "no" -o "$ENABLE_AV" == "No" -o -z "$ENABLE_AV" ] ; then
     # no AV, stop services to save resources
     systemctl stop clamav-freshclam
@@ -270,6 +270,36 @@ else
     echo "===> AV filtering provision is in place, but activation is delayed, we must wait for frashclam"
     echo "===> to update the AV database before enabling it or you will lose emails in the mean time"
     echo "===> you will be notified by mail when it's activated."
+fi
+
+### SPAMD setting
+if [ "$ENABLE_SPAMD" == "yes" -o "$ENABLE_SPAMD" == "Yes" -o -z "$ENABLE_SPAMD" ] ; then
+    # enable the SPAMD
+
+    # enable the cron job in the default
+    sed -i /"^CRON=.*$"/"CRON=1"/ /etc/default/spamassassin
+
+    # configure SMA filtering on amavis if not already active
+    FILE="/etc/amavis/conf.d/15-content_filter_mode"
+    ACTIVE=`cat $FILE | grep "^#@bypass_spam_checks_maps.*"`
+    if [ ! -z "$ACTIVE" ] ; then
+        # not active, activating
+        sed -i s/"#@bypass_spam_checks_maps"/"@bypass_spam_checks_maps"/g $FILE
+
+        # reload services
+        systemctl restart amavis
+    fi
+
+    # enable the service
+    systemctl umask spamassassin
+    systemctl enable spamassassin
+    systemctl restart spamassassin
+else
+    # disable the SPAMD
+    # disable the service
+    systemctl stop spamassassin
+    systemctl disable spamassassin
+    systemctl mask spamassassin
 fi
 
 # start services
