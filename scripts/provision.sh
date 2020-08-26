@@ -296,6 +296,18 @@ if [ "$ENABLE_SPAMD" == "yes" -o "$ENABLE_SPAMD" == "Yes" -o -z "$ENABLE_SPAMD" 
     systemctl restart spamassassin
 else
     # disable the SPAMD
+
+    # disable spamassasin on amavis
+    FILE="/etc/amavis/conf.d/15-content_filter_mode"
+    ACTIVE=`cat $FILE | grep "^@bypass_spam_checks_maps.*"`
+    if [ ! -z "$ACTIVE" ] ; then
+        # not active, activating
+        sed -i s/"@bypass_spam_checks_maps"/"#@bypass_spam_checks_maps"/g $FILE
+
+        # reload services
+        systemctl restart amavis
+    fi
+
     # disable the service
     systemctl stop spamassassin
     systemctl disable spamassassin
