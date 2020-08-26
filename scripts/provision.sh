@@ -5,7 +5,7 @@
 # LICENCE: GPL 3.0 and later  
 #
 # Goals:
-#   - Provision the system followinf this tasks
+#   - Provision the system following this tasks
 #       - stop the services
 #       - copy over the relevant config files
 #       - setup the vars in the files
@@ -84,8 +84,16 @@ rsync -r ./var/dovecot-${DOVERSION}/ /etc/dovecot/
 echo "===> Sync amavis files..."
 rsync -r ./var/amavis/ /etc/amavis/
 
+# Check the SYSADMINS var and populate it if needed
+if [ -z "$SYSADMINS" ] ; then
+    SYSADMINS=$ADMINMAIL
+fi
+
+# add the escaped sysadmins var
+ESC_SYSADMINS=`echo $SYSADMINS | sed s/"@"/"\\\@"/`
+
 # Generate the LDAPURI based on the settings of the mailad.conf file
-if [ "$SECURELDAP" == "" -o "$SECURELDAP" == "no" -o "$SECURELDAP" = "No" ] ; then
+if [ "$SECURELDAP" == "" -o "$SECURELDAP" == "no" -o "$SECURELDAP" == "No" ] ; then
     # not secure
     LDAPURI="ldap://${HOSTAD}:389/"
 else
@@ -93,13 +101,8 @@ else
     LDAPURI="ldaps://${HOSTAD}:636/"
 fi
 
-# add the LDAPURI to the vars
-VARS="${VARS} LDAPURI"
-
-# Check the SYSADMINS var and populate it if needed
-if [ "$SYSADMINS" == "" ] ; then
-    SYSADMINS = $ADMINMAIL
-fi
+# add the LDAPURI & ESC_SYSADMINS to the vars
+VARS="${VARS} LDAPURI ESC_SYSADMINS"
 
 # replace the vars in the folders
 for f in `echo "/etc/postfix /etc/dovecot /etc/amavis" | xargs` ; do
@@ -203,6 +206,60 @@ fi
 for f in `echo "$PMFILES" | xargs` ; do
     postmap $f
 done
+
+# check if AV activation is needed
+if [ "$ENABLE_AV" == "no" -o "$ENABLE_AV" == "No" -o -z "$ENABLE_AV" ] ; then
+    # no AV, stop services to save resources
+    systemctl stop clamav-freshclam
+    systemctl stop clamav-daemon
+    # disable them
+    systemctl disable clamav-freshclam
+    systemctl disable clamav-daemon
+    # mask them to avoid being called as dependencies
+    systemctl mask clamav-freshclam
+    systemctl mask clamav-daemon
+else
+    ### Configure the services
+    if [ "$USE_AV_ALTERNATE_MIRROR" != "no" -o "$USE_AV_ALTERNATE_MIRROR" != "No" -o "$USE_AV_ALTERNATE_MIRROR" != "" ] ; then
+        # must activate the alternate mirror, but first clean the actual values
+        FILE="/etc/clamav/freshclam.conf"
+        cat $FILE | grep -v DatabaseMirror > /tmp/1
+        cat /tmp/1 > $FILE
+
+        # dump the config
+        cat var/clamav-related/clamav_alternates.txt >> $FILE
+    fi
+
+    ### configure proxy if needed
+    if [ ! -z "$AV_PROXY_HOST" -a ! -z "$AV_PROXY_PORT" ] ; then
+        # add proxy
+        echo "HTTPProxyServer $AV_PROXY_HOST" >> $FILE
+        echo "HTTPProxyPort $AV_PROXY_PORT" >> $FILE
+
+        # check for auth
+        if [ ! -z "$AV_PROXY_USER" -a ! -z "$AV_PROXY_PASS" ] ; then
+            echo "HTTPProxyUsername $AV_PROXY_USER" >> $FILE
+            echo "HTTPProxyPassword $AV_PROXY_PASS" >> $FILE
+        fi
+    fi
+
+    ### Activating the services
+    systemctl unmask clamav-freshclam
+    systemctl unmask clamav-daemon
+    systemctl enable clamav-freshclam
+    systemctl enable clamav-daemon
+    systemctl restart clamav-freshclam
+    systemctl restart clamav-daemon
+
+    # set the hourly task to activate the filtering when fresclam end the update
+    ln -s var/clamav_alternates/activate_clamav_on_alive.sh /etc/cron.hourly/av_filter_on_clamav_alive
+    echo "===> AV filtering provision is in place, but activation is delayed, we must wait for frashclam"
+    echo "===> to update the AV database before enabling it or you will lose emails in the mean time"
+    echo "===> you will be notified by mail when it's activated."
+
+    # run the hourly check to notify the user
+    /etc/cron.hourly/av_filter_on_clamav_alive
+fi
 
 # start services
 services start
