@@ -277,7 +277,7 @@ if [ "$ENABLE_SPAMD" == "yes" -o "$ENABLE_SPAMD" == "Yes" -o -z "$ENABLE_SPAMD" 
     # enable the SPAMD
 
     # enable the cron job in the default
-    sed -i /"^CRON=.*$"/"CRON=1"/ /etc/default/spamassassin
+    sed -i s/"^CRON=.*$"/"CRON=1"/ /etc/default/spamassassin
 
     # configure SMA filtering on amavis if not already active
     FILE="/etc/amavis/conf.d/15-content_filter_mode"
