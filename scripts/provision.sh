@@ -162,7 +162,7 @@ ln -s "$P/scripts/resume.sh" /etc/cron.daily/daily_mail_resume
 mkdir -p /var/lib/dovecot/sieve/ || exit 0
 
 # Create a default junk filter if required to
-if [ "$SPAM_FILTER_ENABLED" == "yes" -o "$SPAM_FILTER_ENABLED" == "Yes" -o "$SPAM_FILTER_ENABLED" == "YES" ] ; then
+if [ "$DOVECOT_SPAM_FILTER_ENABLED" == "yes" -o "$DOVECOT_SPAM_FILTER_ENABLED" == "Yes" -o "$DOVECOT_SPAM_FILTER_ENABLED" == "YES" ] ; then
     # create the default filter
     FILE=/var/lib/dovecot/sieve/default.sieve
     echo 'require "fileinto";' > $FILE
