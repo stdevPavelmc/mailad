@@ -107,7 +107,7 @@ VARS="${VARS} LDAPURI ESC_SYSADMINS"
 # replace the vars in the folders
 for f in `echo "/etc/postfix /etc/dovecot /etc/amavis" | xargs` ; do
     echo " "
-    echo "Provisioning on folder $f..."
+    echo "===> Provisioning $f..."
     for v in `echo $VARS | xargs` ; do
         # get the var content
         CONTp=${!v}
@@ -236,7 +236,7 @@ else
     if [ "$USE_AV_ALTERNATE_MIRROR" != "no" -o "$USE_AV_ALTERNATE_MIRROR" != "No" -o "$USE_AV_ALTERNATE_MIRROR" != "" ] ; then
         # must activate the alternate mirror, but first clean the actual values
         FILE="/etc/clamav/freshclam.conf"
-        cat $FILE | grep -v DatabaseMirror | grep -v PrivateMirror | grep -v DatabaseCustomURL > /tmp/1
+        cat $FILE | grep -v DatabaseMirror | grep -v PrivateMirror | grep -v DatabaseCustomURL | grep -v Proxy> /tmp/1
         cat /tmp/1 > $FILE
 
         # dump the config
@@ -276,6 +276,9 @@ fi
 if [ "$ENABLE_SPAMD" == "yes" -o "$ENABLE_SPAMD" == "Yes" -o -z "$ENABLE_SPAMD" ] ; then
     # enable the SPAMD
 
+    # notice
+    echo "===> Enabling SpamAssassin"
+
     # enable the cron job in the default
     sed -i s/"^CRON=.*$"/"CRON=1"/ /etc/default/spamassassin
 
@@ -295,18 +298,30 @@ if [ "$ENABLE_SPAMD" == "yes" -o "$ENABLE_SPAMD" == "Yes" -o -z "$ENABLE_SPAMD" 
 
     # build the chain
     if [ ! -z "$PROXY_HOST" -a ! -z "$PROXY_PORT" ] ; then
+        # notice
+        echo "===> SpamAssassin need proxy"
+
         # check for auth
         if [ ! -z "$PROXY_USER" -a ! -z "$PROXY_PASS" ] ; then
-            SA_PROXY="http://${PROXY_USER}:${PROXY_PASS}@${$PROXY_HOST}:${$PROXY_PORT}/"
+            SA_PROXY="http://${PROXY_USER}:${PROXY_PASS}@${PROXY_HOST}:${PROXY_PORT}/"
+
+            # notice
+            echo "===> SpamAssassin proxy needs auth"
         else
-            SA_PROXY="http://${$PROXY_HOST}:${$PROXY_PORT}/"
+            SA_PROXY="http://${PROXY_HOST}:${PROXY_PORT}/"
         fi
     fi
 
     # set it up if needed
     if [ ! -z "${SA_PROXY}" ] ; then
+        # clean proxy if there and then set
+        sed -i s/"^.*SA_PROXY.*$"/""/g /etc/default/spamassassin
+
         # add it to the default config
         echo "SA_PROXY=${SA_PROXY}" >> /etc/default/spamassassin
+
+        # notice
+        echo "===> Setting the SpamAssassin proxy in the default config file"
     fi
 
     # enable the service
@@ -315,7 +330,7 @@ if [ "$ENABLE_SPAMD" == "yes" -o "$ENABLE_SPAMD" == "Yes" -o -z "$ENABLE_SPAMD" 
     systemctl restart spamassassin
 
     # replace the default cron job if proxy enabled
-    if [ ! -z "${SA_PROXY}" ] ; then
+    if [ ! -z "$SA_PROXY" ] ; then
         rm -f /etc/cron.daily/spamassassin
         cp "$P/var/spamassassin-related/spamassassin" /etc/cron.daily/spamassassin
     fi
