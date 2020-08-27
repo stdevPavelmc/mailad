@@ -12,8 +12,10 @@ test -f /etc/default/spamassassin && . /etc/default/spamassassin
 
 # export proxy settings if activated
 if [ ! -z "$SA_PROXY" ] ; then
-    export http_proxy="$SA_PROXY"
-    export https_proxy="$SA_PROXY"
+    http_proxy="$SA_PROXY"
+    https_proxy="$SA_PROXY"
+    export http_proxy
+    export https_proxy
 fi
 
 test -x /usr/bin/sa-update || exit 0
