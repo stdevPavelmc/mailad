@@ -1,4 +1,3 @@
-# clamav alternate database mirror from Cuba
 PrivateMirror clamavdb.c3sl.ufpr.br
 DatabaseCustomURL http://clamavdb.c3sl.ufpr.br/main.cvd
 DatabaseCustomURL http://clamavdb.c3sl.ufpr.br/daily.cvd
