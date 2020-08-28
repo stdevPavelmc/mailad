@@ -34,6 +34,7 @@ If you are using it under a heavier load, please share with me the statistics an
 - Postfix and Dovecot known vulnerabilities are covered too.
 - Built using established best security practices.
 - We will keep it updated against emerging threats.
+- Fix for a recent spammer trick: forgery of the From/Return-Path to make the users think the mails are legitimate when they are not.
 
 Backed up by the collective knowledge of the [SysAdminsdeCuba](https://t.me/sysadmincuba) SysAdmins community.
 
