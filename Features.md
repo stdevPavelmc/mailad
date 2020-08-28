@@ -14,6 +14,7 @@ This is a long page, so here is an index:
 * [Automatic alias using AD groups](Features.md#automatic-alias-using-ad-groups)
 * [Optional user privilege access via AD groups](Features.md#optional-user-privilege-access-via-ad-groups)
 * [Dovecot filtering](Features.md#dovecot-filtering-sieve)
+* [Advanced mail filtering: extensions, mime types and optionals AV, SPAM and SPF](advanced-mail-filtering-extensions-mime-types-and-optionals-AV-SPAM-and-SPF)
 * [Centralized mail storage](Features.md#centralized-mail-storage)
 * [Manual alias to handle typos or enterprise positions](Features.md#manual-alias-to-handle-typos-or-enterprise-positions)
 * [Manual ban list for trouble some address](Features.md#manual-ban-list-for-trouble-some-address)
@@ -159,6 +160,44 @@ In the config file `mailad.conf` there is a setting that enables the global SPAM
 If you have clients that use POP don't use this feature as SPAM tagged mails will be delivered but not shown when receiving emails, move them to use IMAP instead.
 
 With this feature your users will have the choice to re-route emails to their personal emails while on a business trip, create a "vacation auto-response" or simply parse an classify their emails in the webmail.
+
+## Advanced mail filtering: extensions, mime types and optionals AV, SPAM and SPF
+
+Advanced mail filtering using Amavisd-new, that bring us the default filter by extensions and mime-types, by default most dangerous extensions and mime-types are baned, but you can tweak it to suffice your needs
+
+**Note:** The file to change that is `/etc/amavis/conf.d/20-debian_defaults` and be aware that if you made modifications to this file **it will not me preserved on an upgrade**
+
+### Optional Antivirus protection
+
+By default we setup ClamAV as the default AV solutions, if you are in Cuba you need to keep the option `USE_AV_ALTERNATE_MIRROR=yes` as the official updates of ClamAV are served via Cloudflare service and that services are banned from Cuba because the Embargo/Blockade of USA to our country.
+
+The AV activation will not be instantaneous, as it needs to update the AV database (about 300MB) and that can take some time on busy or slow networks; a background job is set to check for AV database update every hour (will generate a follow up mail to the mail admin or the sysadmins group) and a final notice mail up on the activation.
+
+The AV filtering is made optional and it's default value is set to "no" (disabled) as it will need further configuration for your to activate it fully, to do so you must configure:
+
+- The PC must have access to a DNS server that can reach the internet.
+- Allow the PC to get internet access (in your firewall or a configured proxy, keep reading)
+
+If you are behind a proxy you must setup the proxy as per the configs in the `mailad.conf` file.
+
+### Optional SPAM protection
+
+By default we pass all mails by SpamAssasin a trusted spam detection utility, but you can disable it if you like, see the config in the `mailad.conf` file.
+
+SpamAssassin will process and keep tracks of the mails but to squeeze the bet performance of it you must allow it to get updates from the internet, for that you need:
+
+- The PC must have access to a DNS server that can reach the internet.
+- Allow the PC to get internet access (in your firewall or a configured proxy, keep reading)
+
+If you are behind a proxy you must setup the proxy as per the configs in the `mailad.conf` file.
+
+### Optional SPF filtering
+
+The Sender Policy Framework is a nice way to check for bad incoming mails, but it's only useful in a scenario where you server is internet facing, aka: no mail gateway or smart host.
+
+If your mail server is behind a mail gateway or in general not internet facing it's recommended to disable the SPF filtering as it can generate more troubles than solutions.
+
+For that reason it's shipped with that option disabled by default. If you activate it be sure to have a working DNS in the PC or it will not be able to process the queries.
 
 ## Centralized mail storage
 
