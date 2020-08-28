@@ -21,6 +21,7 @@ It's recommended that the instance of MailAD sits inside your DMZ net with a fir
 This will provision a mail server in a enterprise/SOHO as a real server facing the users and behind a Mail Gateway to the outside world, you can see the major features in the [Features.md](Features.md) file, among others you will find:
 
 0. Low resource footprint
+0. Advanced (and optional) mail filtering features that includes attachments, SPF, AntiVirus & Spam 
 0. Daily mail traffic summary in you inbox
 0. Encrypted LDAP communication as an option
 0. In place protection to major and known SSL & mail services attacks
