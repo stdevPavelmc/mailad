@@ -146,6 +146,10 @@ mail_local_out = check_recipient_access regexp:/etc/postfix/rules/filter_loc
 ## Everyone
 everyone_list = check_sender_access regexp:/etc/postfix/rules/filter_loc
 
+# postscreen, filtro para smtp (25) para clientes jodedores
+#postscreen_command_filter = pcre:${config_directory}/rules/command_filter.pcre
+#postscreen_access_list = permit_mynetworks
+
 # restricciones del que envia
 smtpd_sender_restrictions =
     # tengo que dejar permit mynetworks arriba, porque ahora permit soy yo
