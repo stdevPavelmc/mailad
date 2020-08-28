@@ -26,6 +26,7 @@ Dates must be YEAR-MONTH-DAY
 - Added: Headers checks to bounce emails that fake the sender or return path.
 - Added: Options SPF checking.
 - Changed: Features.md with updates of the new features.
+- Changed: mailad.conf arranged by sections and the sections was labeled.
 
 ## 2020-08-25
 
