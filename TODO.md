@@ -10,8 +10,8 @@ This is a TODO list with no particular order
 - Odoo integration for management
 - UI? (web?)
 - Any other (Use the Issues tab for that)
-- Daily statistics via pflogsumm?
 
 ## Done Items
 
 - Users access segregation via AD groups (local/national/international access) [July/2020]
+- Daily statistics via pflogsumm [August/2020]

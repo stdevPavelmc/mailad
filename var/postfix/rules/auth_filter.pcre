@@ -1,0 +1,3 @@
+# Filter to prevent auth in plain smtp, this will close the connection
+
+/^AUTH LOGIN$/  QUIT

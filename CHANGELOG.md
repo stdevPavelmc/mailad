@@ -18,6 +18,16 @@ This is a note for developers about the recommended tags to keep track of the ch
 Dates must be YEAR-MONTH-DAY
 -->
 
+## 2020-08-28
+
+- Added: Advanced filtering of mails via Amavisd-new, potential attachments are baden by default, including mime-type detection to avoid extension changes.
+- Added: Optional AV filtering using ClamAV, with a delayed activation mechanism, also a pre-configured alternate mirror for clamav if you are in Cuba.
+- Added: Optional SpamAssassin filtering with automatic updates.
+- Added: Headers checks to bounce emails that fake the sender or return path.
+- Added: Options SPF checking.
+- Changed: Features.md with updates of the new features.
+- Changed: mailad.conf arranged by sections and the sections was labeled.
+
 ## 2020-08-25
 
 - Added: Optional feature to redirect all notifications to a group instead of the mail admin

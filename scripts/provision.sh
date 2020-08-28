@@ -5,7 +5,7 @@
 # LICENCE: GPL 3.0 and later  
 #
 # Goals:
-#   - Provision the system followinf this tasks
+#   - Provision the system following this tasks
 #       - stop the services
 #       - copy over the relevant config files
 #       - setup the vars in the files
@@ -77,13 +77,23 @@ else
 fi
 
 # copy over the relevan files
-echo "Sync postfix files..."
+echo "===> Sync postfix files..."
 rsync -r ./var/postfix/ /etc/postfix/
-echo "Sync dovecot files..."
+echo "===> Sync dovecot files..."
 rsync -r ./var/dovecot-${DOVERSION}/ /etc/dovecot/
+echo "===> Sync amavis files..."
+rsync -r ./var/amavis/ /etc/amavis/
+
+# Check the SYSADMINS var and populate it if needed
+if [ -z "$SYSADMINS" ] ; then
+    SYSADMINS=$ADMINMAIL
+fi
+
+# add the escaped sysadmins var
+ESC_SYSADMINS=`echo $SYSADMINS | sed s/"@"/"\\\@"/`
 
 # Generate the LDAPURI based on the settings of the mailad.conf file
-if [ "$SECURELDAP" == "" -o "$SECURELDAP" == "no" -o "$SECURELDAP" = "No" ] ; then
+if [ "$SECURELDAP" == "" -o "$SECURELDAP" == "no" -o "$SECURELDAP" == "No" ] ; then
     # not secure
     LDAPURI="ldap://${HOSTAD}:389/"
 else
@@ -91,18 +101,18 @@ else
     LDAPURI="ldaps://${HOSTAD}:636/"
 fi
 
-# add the LDAPURI to the vars
-VARS="${VARS} LDAPURI"
-
-# Check the SYSADMINS var and populate it if needed
-if [ "$SYSADMINS" == "" ] ; then
-    SYSADMINS = $ADMINMAIL
+# add the mail gateway as a trusted source, aka the mynetworks
+if [ ! -z "$RELAY" ] ; then
+    MYNETWORK="$MYNETWORK $RELAY"
 fi
 
+# add the LDAPURI & ESC_SYSADMINS to the vars
+VARS="${VARS} LDAPURI ESC_SYSADMINS"
+
 # replace the vars in the folders
-for f in `echo "/etc/postfix /etc/dovecot" | xargs` ; do
+for f in `echo "/etc/postfix /etc/dovecot /etc/amavis" | xargs` ; do
     echo " "
-    echo "Provisioning on folder $f..."
+    echo "===> Provisioning $f..."
     for v in `echo $VARS | xargs` ; do
         # get the var content
         CONTp=${!v}
@@ -157,7 +167,7 @@ ln -s "$P/scripts/resume.sh" /etc/cron.daily/daily_mail_resume
 mkdir -p /var/lib/dovecot/sieve/ || exit 0
 
 # Create a default junk filter if required to
-if [ "$SPAM_FILTER_ENABLED" == "yes" -o "$SPAM_FILTER_ENABLED" == "Yes" -o "$SPAM_FILTER_ENABLED" == "YES" ] ; then
+if [ "$DOVECOT_SPAM_FILTER_ENABLED" == "yes" -o "$DOVECOT_SPAM_FILTER_ENABLED" == "Yes" -o "$DOVECOT_SPAM_FILTER_ENABLED" == "YES" ] ; then
     # create the default filter
     FILE=/var/lib/dovecot/sieve/default.sieve
     echo 'require "fileinto";' > $FILE
@@ -201,6 +211,156 @@ fi
 for f in `echo "$PMFILES" | xargs` ; do
     postmap $f
 done
+
+# check for SPF activation
+if [ "$ENABLE_SPF" == "no" -o "$ENABLE_SPF" == "No" -o -z "$ENABLE_SPF" ] ; then
+    # disable SPF
+    FILE="/etc/postfix/main.cf"
+    cat $FILE | grep -v "spf" > /tmp/1
+
+    # dump
+    cat /tmp/1 > $FILE
+
+    # notice
+    echo "===> Disabing SPF as requested by the config"
+fi
+
+### check if AV activation is needed
+if [ "$ENABLE_AV" == "no" -o "$ENABLE_AV" == "No" -o -z "$ENABLE_AV" ] ; then
+    # no AV, stop services to save resources
+    systemctl stop clamav-freshclam
+    systemctl stop clamav-daemon
+    # disable them
+    systemctl disable clamav-freshclam
+    systemctl disable clamav-daemon
+    # mask them to avoid being called as dependencies
+    systemctl mask clamav-freshclam
+    systemctl mask clamav-daemon
+else
+    ### Configure the services
+    if [ "$USE_AV_ALTERNATE_MIRROR" != "no" -o "$USE_AV_ALTERNATE_MIRROR" != "No" -o "$USE_AV_ALTERNATE_MIRROR" != "" ] ; then
+        # must activate the alternate mirror, but first clean the actual values
+        FILE="/etc/clamav/freshclam.conf"
+        cat $FILE | grep -v DatabaseMirror | grep -v PrivateMirror | grep -v DatabaseCustomURL | grep -v Proxy> /tmp/1
+        cat /tmp/1 > $FILE
+
+        # dump the config
+        cat var/clamav-related/clamav_alternates.txt >> $FILE
+    fi
+
+    ### configure proxy if needed
+    if [ ! -z "$PROXY_HOST" -a ! -z "$PROXY_PORT" ] ; then
+        # add proxy
+        echo "HTTPProxyServer $PROXY_HOST" >> $FILE
+        echo "HTTPProxyPort $PROXY_PORT" >> $FILE
+
+        # check for auth
+        if [ ! -z "$PROXY_USER" -a ! -z "$PROXY_PASS" ] ; then
+            echo "HTTPProxyUsername $PROXY_USER" >> $FILE
+            echo "HTTPProxyPassword $PROXY_PASS" >> $FILE
+        fi
+    fi
+
+    ### Activating the services
+    systemctl unmask clamav-freshclam
+    systemctl unmask clamav-daemon
+    systemctl enable clamav-freshclam
+    systemctl enable clamav-daemon
+    systemctl restart clamav-freshclam
+    systemctl restart clamav-daemon
+
+    # set the hourly task to activate the filtering when fresclam end the update
+    rm -f /etc/cron.hourly/av_filter_on_clamav_alive
+    ln -s "$P/var/clamav-related/activate_clamav_on_alive.sh" /etc/cron.hourly/av_filter_on_clamav_alive
+    echo "===> AV filtering provision is in place, but activation is delayed, we must wait for frashclam"
+    echo "===> to update the AV database before enabling it or you will lose emails in the mean time"
+    echo "===> you will be notified by mail when it's activated."
+fi
+
+### SPAMD setting
+if [ "$ENABLE_SPAMD" == "yes" -o "$ENABLE_SPAMD" == "Yes" -o -z "$ENABLE_SPAMD" ] ; then
+    # enable the SPAMD
+
+    # notice
+    echo "===> Enabling SpamAssassin"
+
+    # enable the cron job in the default
+    sed -i s/"^CRON=.*$"/"CRON=1"/ /etc/default/spamassassin
+
+    # configure SMA filtering on amavis if not already active
+    FILE="/etc/amavis/conf.d/15-content_filter_mode"
+    ACTIVE=`cat $FILE | grep "^#@bypass_spam_checks_maps.*"`
+    if [ ! -z "$ACTIVE" ] ; then
+        # not active, activating
+        sed -i s/"#@bypass_spam_checks_maps"/"@bypass_spam_checks_maps"/g $FILE
+
+        # reload services
+        systemctl restart amavis
+    fi
+
+    ### configure proxy if needed
+    SA_PROXY=""
+
+    # build the chain
+    if [ ! -z "$PROXY_HOST" -a ! -z "$PROXY_PORT" ] ; then
+        # notice
+        echo "===> SpamAssassin need proxy"
+
+        # check for auth
+        if [ ! -z "$PROXY_USER" -a ! -z "$PROXY_PASS" ] ; then
+            SA_PROXY="http://${PROXY_USER}:${PROXY_PASS}@${PROXY_HOST}:${PROXY_PORT}/"
+
+            # notice
+            echo "===> SpamAssassin proxy needs auth"
+        else
+            SA_PROXY="http://${PROXY_HOST}:${PROXY_PORT}/"
+        fi
+    fi
+
+    # set it up if needed
+    if [ ! -z "${SA_PROXY}" ] ; then
+        # clean proxy if there and then set
+        sed -i s/"^.*SA_PROXY.*$"/""/g /etc/default/spamassassin
+
+        # add it to the default config
+        echo "SA_PROXY=${SA_PROXY}" >> /etc/default/spamassassin
+
+        # notice
+        echo "===> Setting the SpamAssassin proxy in the default config file"
+    fi
+
+    # enable the service
+    systemctl unmask spamassassin
+    systemctl enable spamassassin
+    systemctl restart spamassassin
+
+    # replace the default cron job if proxy enabled
+    if [ ! -z "$SA_PROXY" ] ; then
+        rm -f /etc/cron.daily/spamassassin
+        cp "$P/var/spamassassin-related/spamassassin" /etc/cron.daily/spamassassin
+    fi
+else
+    # disable the SPAMD
+
+    # disable spamassasin on amavis
+    FILE="/etc/amavis/conf.d/15-content_filter_mode"
+    ACTIVE=`cat $FILE | grep "^@bypass_spam_checks_maps.*"`
+    if [ ! -z "$ACTIVE" ] ; then
+        # not active, activating
+        sed -i s/"@bypass_spam_checks_maps"/"#@bypass_spam_checks_maps"/g $FILE
+
+        # reload services
+        systemctl restart amavis
+    fi
+
+    # disable the service
+    systemctl stop spamassassin
+    systemctl disable spamassassin
+    systemctl mask spamassassin
+
+    # remove the daily job if there
+    test -x "/etc/cron.daily/spamassassin" && rm -f /etc/cron.daily/spamassassin
+fi
 
 # start services
 services start

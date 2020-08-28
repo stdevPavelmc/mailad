@@ -12,7 +12,7 @@
 source /etc/mailad/mailad.conf
 
 # Generate the LDAPURI based on the settings of the mailad.conf file
-if [ "$SECURELDAP" == "" -o "$SECURELDAP" == "no" -o "$SECURELDAP" = "No" ] ; then
+if [ "$SECURELDAP" == "" -o "$SECURELDAP" == "no" -o "$SECURELDAP" == "No" ] ; then
     # not secure
     LDAPURI="ldap://${HOSTAD}:389/"
 else
