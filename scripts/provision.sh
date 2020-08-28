@@ -101,6 +101,11 @@ else
     LDAPURI="ldaps://${HOSTAD}:636/"
 fi
 
+# add the mail gateway as a trusted source, aka the mynetworks
+if [ ! -z "$RELAY" ] ; then
+    MYNETWORK="$MYNETWORK $RELAY"
+fi
+
 # add the LDAPURI & ESC_SYSADMINS to the vars
 VARS="${VARS} LDAPURI ESC_SYSADMINS"
 
