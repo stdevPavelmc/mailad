@@ -1,5 +1,2 @@
-PrivateMirror clamavdb.c3sl.ufpr.br
-DatabaseCustomURL http://clamavdb.c3sl.ufpr.br/main.cvd
-DatabaseCustomURL http://clamavdb.c3sl.ufpr.br/daily.cvd
-DatabaseCustomURL http://clamavdb.c3sl.ufpr.br/bytecode.cvd
-DatabaseCustomURL http://clamavdb.c3sl.ufpr.br/safebrowsing.cvd
+
+DatabaseMirror http://103.230.76.202/clamav/
