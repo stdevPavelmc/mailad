@@ -21,7 +21,7 @@ fi
 
 # test if clamav-daemon is runnig already, it will run only when freshclam manages to get a full db download
 R=`systemctl show -p SubState --value clamav-daemon`
-if [ "$R" == "runnig" ] ; then
+if [ "$R" == "running" ] ; then
     # it's alive!, doing our thing
 
     # configure AV filtering on amavis if not already active
