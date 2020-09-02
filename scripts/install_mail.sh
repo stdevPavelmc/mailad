@@ -70,8 +70,11 @@ if [ -f /etc/os-release ] ; then
 
         # Install
         install_debian
-    fi
 
+        # Ad the clamav user to the amavis group, or it will not be able to reach emails to scan
+        echo "===> Setting correct Perms for clamav and amavis."
+        adduser clamav amavis
+    fi
 else
     # not known
     echo "==========================================================================="
