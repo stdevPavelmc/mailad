@@ -54,9 +54,12 @@ all: provision ## Run all targets in the logic order, run this to make it all
 	echo "done" > all
 	echo "Done!"
 
-force-provision: install-purge ## Force a re-provisioning of the system
+force-provision: ## Force a re-provisioning of the system
 	rm provision || exit 0
+	scripts/backup.sh
+	$(MAKE) install-purge
 	$(MAKE) provision
+	scripts/custom_restore.sh
 
 force-certs: ## Force a re-creation of the SSL & dhparm certs
 	rm certs
@@ -69,7 +72,7 @@ test: ## Make all tests (must be on other PC than the server, outside the my_net
 	tests/test.sh $(ip)
 
 upgrade: ## Upgrade a setup, see README.md for details
-	scripts/backup_upgrade.sh
+	scripts/upgrade.sh
 
 help:
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
