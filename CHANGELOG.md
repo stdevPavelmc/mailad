@@ -18,6 +18,11 @@ This is a note for developers about the recommended tags to keep track of the ch
 Dates must be YEAR-MONTH-DAY
 -->
 
+## 2020-09-01
+
+- Fixed: Delayed activation for the AV in amavis failed as the script has a wrong check in an if statement, a typo from my side (that generates an annoying hourly mail and never activated the AV checking)
+- Fixed: Once AV filtering kicks is the clamav-daemon can't check the files for viruses as it has no permissions, added clamav user to amavis group solve that.
+
 ## 2020-08-28
 
 - Added: Advanced filtering of mails via Amavisd-new, potential attachments are baden by default, including mime-type detection to avoid extension changes.
