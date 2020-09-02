@@ -37,6 +37,7 @@ certs: conf-check ## Generate a self-signed certificate for the server SSL/TLS o
 
 install: deps certs ## Install all the software from the repository
 	scripts/install_mail.sh
+	echo "done" > install
 
 install-purge: deps ## Uninstall postfix and dovecot already installed software (purge config also)
 	scripts/install_purge.sh
