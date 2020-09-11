@@ -7,7 +7,10 @@
 # analyze it 
 
 # Expresion				        Action  No  Reason
-/^Subject: .* [P|p]uta .*/		REJECT (#1) No se permiten Mala palabras
+/^Subject:\s.* [Pp]uta .*/		REJECT (#1) No se permiten Mala palabras
 
-# Evitar truco de doble source que confunde al user
+# Ban sender/return forgery
 /^((Envelope\-)?From|Return\-Path):\s*[^<]*<[^@]+@[^@>]+>[^<]*<[^@]+@[^@>]+>/     REJECT No double address in the From or Return-path allowed
+
+# Ban subject less emails
+/^Subject:\s*$/		REJECT No se permiten mensajes sin asunto / No subject-less email please

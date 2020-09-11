@@ -18,6 +18,10 @@ This is a note for developers about the recommended tags to keep track of the ch
 Dates must be YEAR-MONTH-DAY
 -->
 
+## 2020-09-11
+
+- Add: Subject-less emails are rejected by default, thanks to Danny Paula (Telegram: @danny920825)
+
 ## 2020-09-01
 
 - Fixed: Delayed activation for the AV in amavis failed as the script has a wrong check in an if statement, a typo from my side (that generates an annoying hourly mail and never activated the AV checking)
