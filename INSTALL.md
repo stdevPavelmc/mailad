@@ -127,6 +127,34 @@ After the software install you must provision the configuration, that's accompli
 make provision
 ```
 
-This stage will copy the template files in the var folder of this repo replacing the values with the ones in your `mailad.conf` file. If any problem is found you will be warned about it and will need to re-run the command `make provision` to continue. There is also a `make force-provision` target in case you need to force the provision by hand
+This stage will copy the template files in the var folder of this repo replacing the values with the ones in your `mailad.conf` file. If any problem is found you will be warned about it and will need to re-run the command `make provision` to continue. There is also a `make force-provision` target in case you need to force the provision by hand.
 
 When you reach a success message after the provision you are ready to test your new mail server, congrats!
+
+## Reconfiguring
+
+There must be some time in the future when you need to change some config parameter without reinstalling/upgrading the server (painless upgrades are covered on the [Features.md](Features.md#painless-upgrades) file)
+
+The make target `force-provision` is just for that, change a parameter in your config file, go to the maildir repo folder and run:
+
+
+``` sh
+make provision
+```
+
+You will se as it makes a backup of all the config and the reinstalls the whole server with the new parameters, that's normal that's the way it's programmed; take a peek on the last part of the install process, you will see a part like this:
+
+```
+[...]
+===> Latest backup is: /var/backups/mailad/20200912_033525.tar.gz
+===> Extracting custom files from the backup...
+etc/postfix/aliases/alias_virtuales
+etc/postfix/rules/body_checks
+etc/postfix/rules/header_checks
+etc/postfix/rules/lista_negra
+[...]
+```
+
+Yes, the `force-provision` as well as the `upgrade` make targets preserve the user modified data.
+
+If you need to reset some of those files to the defaults just erase them from the filesystem and make a force-provision, as simple as that.

@@ -6,11 +6,11 @@
 # that way you will be able to identify which rule baned a mail to
 # analyze it 
 
-# Expresion				        Action  No  Reason
+# Expression				        Action  No  Reason
 /^Subject:\s.* [Pp]uta .*/		REJECT (#1) No se permiten Mala palabras
 
 # Ban sender/return forgery
-/^((Envelope\-)?From|Return\-Path):\s*[^<]*<[^@]+@[^@>]+>[^<]*<[^@]+@[^@>]+>/     REJECT No double address in the From or Return-path allowed
+/^((Envelope\-)?From|Return\-Path):\s*[^<]*<[^@]+@[^@>]+>[^<]*<[^@]+@[^@>]+>/     REJECT No double address in the From or Return-path header allowed
 
 # Ban subject less emails
 /^Subject:\s*$/		REJECT No se permiten mensajes sin asunto / No subject-less email please

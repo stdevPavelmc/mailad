@@ -8,14 +8,12 @@
 #   - Check for updates/upgrades and if needed
 #   - Create a backup of the postfix and dovecot folders in /var/backups/mailad
 
-# locate the source file (makefile or run by hand)
-source source ./common.conf
+# import the common vars
+source ./common.conf
 
-# advice
-echo "===> Check if we have to upgrade the config"
-
-# upgrade the user's mailad.conf
-./scripts/confupgrade.sh
+# some local vars
+LIBFOLDER="/var/lib/mailad"
+LASTBACKUPFILE="${LIBFOLDER}/latest_backup"
 
 # Control services, argument $1 is the action (start/stop)
 function services() {
@@ -57,39 +55,45 @@ function extract() {
     fi
 }
 
-# some local vars
-FOLDERS="/etc/postfix /etc/dovecot /etc/mailad /etc/ssl/certs/mail* /etc/ssl/private/mail*"
-BKPFOLDER="/var/backups/mailad"
-
 # advice
-echo "===> Starting a backup of all actual configs to $BKPFOLDER"
+echo "===> Starting a selective restore of custom data"
 
-# create the backup folder 
-mkdir -p ${BKPFOLDER} 2> /dev/null || exit 0
+# check if the last backup file exist
+if [ -f "${LASTBACKUPFILE}" ] ; then
+    # check if the content exist
+    BKPFILE=`cat ${LASTBACKUPFILE}`
 
-# create the backup
-TIMESTAMP=`date +%Y%m%d_%H%M%S`
-BKPFILE="${BKPFOLDER}/${TIMESTAMP}.tar.gz"
-tar -cvzf ${BKPFILE} ${FOLDERS}
+    if [ ! -f "${BKPFILE}" ] ; then
+        # backup trace there but no backup?
+        echo "==========================================================================="
+        echo "ERROR: The backup trace points to a non-existent file, so will reset it"
+        echo "       and no custom restore will be made"
+        echo " "
+        echo "       This is only a notice, no custom restore will be made"
+        echo "==========================================================================="
 
-# secure the file
-chown root:root ${BKPFILE}
-chmod 0440 ${BKPFILE}
+        rm "${LASTBACKUPFILE}"
+        sleep 5
+        exit 0
+    fi
+else
+    # no latest backup detected
+    echo "==========================================================================="
+    echo "NOTICE: There is no trace of a latest backup made, this is not an error,"
+    echo "        maybe you have not made a backup or upgrade process yet"
+    echo " "
+    echo "       This is only a notice, no custom restore will be made"
+    echo "==========================================================================="
+
+    sleep 5
+    exit 0
+fi
 
 # show the properties
-echo "===> Your backup is on: ${BKPFILE}"
-
-# stoping services
-services stop
-
-# remove old install
-make install-purge
-
-# force a re-provision
-make all
+echo "===> Latest backup is: ${BKPFILE}"
 
 # extract some user modified files
-echo "===> Extracting custom domain files from the backup: ${BKPFILE}"
+echo "===> Extracting custom files from the backup..."
 
 # try to extract the old one
 # alias
@@ -110,5 +114,8 @@ cd /etc/postfix
 postmap aliases/alias_virtuales
 postmap rules/lista_negra
 
-# restarting services
-services start
+# extract some user modified files
+echo "===> Restarting services to apply changes"
+
+# restart services
+services restart

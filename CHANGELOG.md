@@ -23,6 +23,9 @@ Dates must be YEAR-MONTH-DAY
 - Add: Subject-less emails are rejected by default, thanks to Danny Paula (Telegram: @danny920825)
 - Fixed: On Debian Buster the install target was failing, all was about a non existent debian package: amavisd-new-postfix. Thanks to Eduardo R. Barrera Pérez to report the bug.
 - Changed: Now we split the packages to install in the common.conf file, so you can separately handle the Ubuntu ones from the Debian ones; also make the changes on each one to make it work.
+- Fixed: Now the 'make force-provision' command preserver the users modified (custom) data for postfix.
+- Changed: some of the scripts was moved and modified to allow better handling of backups and allow to backup & restore files from the last backup to support latest fix.
+- Changed: INSTALL.md gained a new section on reconfiguring.
 
 ## 2020-09-01
 
