@@ -17,9 +17,12 @@
 source /etc/mailad/mailad.conf
 source common.conf
 
-# debian already installed check
-function already_installed_debian {
-    # list of pkgs to install came from common.conf
+# this is the list to handle, will load it from the specific OS below
+PKGS=""
+
+# debian alike pkgs already installed check
+function already_installed_debs {
+    # list of pkgs are dynamically assigned by the code below
 
     # Check if there is already one of them installed and warn the user about it
     # offering a way to uninstall
@@ -40,7 +43,7 @@ function already_installed_debian {
 }
 
 # debian packages install
-function install_debian {
+function install_debs {
     # do it
     env DEBIAN_FRONTEND=noninteractive apt install $PKGS -y
 
@@ -61,15 +64,37 @@ if [ -f /etc/os-release ] ; then
     ##### Distros check
 
     # Ubuntu bionic/focal (18.04/20.04) LTS
-    if [ "$VERSION_CODENAME" == "bionic" -o "$VERSION_CODENAME" == "focal" -o "$VERSION_CODENAME" == "buster"  ] ; then
+    if [ "$VERSION_CODENAME" == "bionic" -o "$VERSION_CODENAME" == "focal" ] ; then
         # notice
         echo "===> We are working with $PRETTY_NAME"
 
+        # load the correct pkgs to be installed
+        PKGS=${UBUNTU_PKGS}
+
         # check
-        already_installed_debian
+        already_installed_debs
 
         # Install
-        install_debian
+        install_debs
+
+        # Ad the clamav user to the amavis group, or it will not be able to reach emails to scan
+        echo "===> Setting correct Perms for clamav and amavis."
+        adduser clamav amavis
+    fi
+
+    # Debian Buster (10.x)
+    if [ "$VERSION_CODENAME" == "buster"  ] ; then
+        # notice
+        echo "===> We are working with $PRETTY_NAME"
+
+        # load the correct pkgs to be installed
+        PKGS=${DEBIAN_PKGS}
+
+        # check
+        already_installed_debs
+
+        # Install
+        install_debs
 
         # Ad the clamav user to the amavis group, or it will not be able to reach emails to scan
         echo "===> Setting correct Perms for clamav and amavis."
