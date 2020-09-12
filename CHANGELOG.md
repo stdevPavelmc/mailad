@@ -18,6 +18,12 @@ This is a note for developers about the recommended tags to keep track of the ch
 Dates must be YEAR-MONTH-DAY
 -->
 
+## 2020-09-11
+
+- Add: Subject-less emails are rejected by default, thanks to Danny Paula (Telegram: @danny920825)
+- Fixed: On Debian Buster the install target was failing, all was about a non existent debian package: amavisd-new-postfix. Thanks to Eduardo R. Barrera Pérez to report the bug.
+- Changed: Now we split the packages to install in the common.conf file, so you can separately handle the Ubuntu ones from the Debian ones; also make the changes on each one to make it work.
+
 ## 2020-09-01
 
 - Fixed: Delayed activation for the AV in amavis failed as the script has a wrong check in an if statement, a typo from my side (that generates an annoying hourly mail and never activated the AV checking)
