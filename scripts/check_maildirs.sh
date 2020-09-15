@@ -80,7 +80,7 @@ for md in `ls ${VMAILSTORAGE} | xargs` ; do
             # older than 75 % of a year
             if [ ${days} -gt 365 ] ; then
                 # delete!
-                #   rm -rdf "${VMAILSTORAGE}\${md}"
+                rm -rdf "$maildir"
                 printf "%s months/(%s days)\t%s\t%s\n" "${months}" "${days}" "${size}" "${maildir}" >> ${erasedlist}
             else
                 # warn
