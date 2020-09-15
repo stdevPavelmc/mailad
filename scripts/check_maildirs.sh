@@ -80,8 +80,21 @@ for md in `ls ${VMAILSTORAGE} | xargs` ; do
             # older than 75 % of a year
             if [ ${days} -gt 365 ] ; then
                 # delete!
-                rm -rdf "$maildir"
                 printf "%s months/(%s days)\t%s\t%s\n" "${months}" "${days}" "${size}" "${maildir}" >> ${erasedlist}
+
+                # check for real deletion
+                if [ "$MAILDIRREMOVAL" == "" -o "$MAILDIRREMOVAL" == "no" -o "$MAILDIRREMOVAL" == "No" ] ; then
+                    # no deletion, warn abut the option
+                    echo  " " >> ${erasedlist}
+                    echo  "WARNING!: There was no deletion at all, as it's a dangerous action it" >> ${erasedlist}
+                    echo  "          cames disbled by default; you can enable this option in your"  >> ${erasedlist}
+                    echo  "          /etc/mailad/mailad.conf file setting the option"  >> ${erasedlist}
+                    echo  "          MAILDIRREMOVAL='yes', remember to make a 'make force-provision'"  >> ${erasedlist}
+                    echo  "          in your mailad local repo folder to apply the change."  >> ${erasedlist}
+                else
+                    # delete it for good
+                    rm -rdf "${maildir}"
+                fi
             else
                 # warn
                 printf "%s months/(%s days)\t%s\t%s\n" "${months}" "${days}" "${size}" "${maildir}" >> ${warnlist}

@@ -60,6 +60,14 @@ Here we play a trick:
 - Maildirs for deleted users between 10 to 11.999 months will be warned about imminent removal.
 - Maildirs for deleted users older than 365 days (1 year) will be removed and you will receive the removal notification.
 
+Well no quite, the first time you will not get the maildirs removed, you will be notified about the maildirs that _will be_ erased and the way to activate that feature.
+
+To activate that option you need to set the option `MAILDIRREMOVAL="yes"` in the config file `/etc/mailad/mailad.conf` _(you don't have that option? it's time to upgrade... see [Painless upgrades](Features.md#painless-upgrades))_ and then reprovision the server with this command:
+
+``` sh
+make force-provision
+```
+
 We think that a year is time enough to recover something from that mailbox; also that date as a legal implication: in some scenarios you are required to maintain a copy of all users digital footprint for at least one year.
 
 Here you can see an notification sample from the first implementation of this feature:
