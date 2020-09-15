@@ -91,7 +91,6 @@ for md in `ls ${VMAILSTORAGE} | xargs` ; do
                     echo  "          /etc/mailad/mailad.conf file setting the option"  >> ${erasedlist}
                     echo  "          MAILDIRREMOVAL='yes', remember to make a 'make force-provision'"  >> ${erasedlist}
                     echo  "          in your mailad local repo folder to apply the change."  >> ${erasedlist}
-                    echo  " " >> ${erasedlist}
                 else
                     # delete it for good
                     rm -rdf "${maildir}"
