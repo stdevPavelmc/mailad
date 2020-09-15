@@ -163,6 +163,13 @@ ln -s "$P/scripts/resume.sh" /etc/cron.daily/daily_mail_resume
 # run it
 /etc/cron.daily/daily_mail_resume
 
+# configure the left behind maildirs check/alert/warn
+rm -f /etc/cron.monthly/check_maildirs > /dev/null
+# fix exec perms just in case it was lost
+chmod +x "$P/scripts/check_maildirs.sh"
+# create the link
+ln -s "$P/scripts/check_maildirs.sh" /etc/cron.monthly/check_maildirs
+
 # Dovecot Sieve config: create the directory if not present
 mkdir -p /var/lib/dovecot/sieve/ || exit 0
 

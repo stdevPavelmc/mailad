@@ -5,6 +5,7 @@ This is a long page, so here is an index:
 * [Low resource footprint](Features.md#low-resource-footprint)
 * [Security protection against most well known SSL & mail attacks](Features.md#security-protection-against-most-well-known-SSL-and-mail-attacks)
 * [Daily mail traffic summary](Features.md#daily-mail-traffic-summary)
+* [Data from deleted users is handled with extreme care](Features.md#data-from-deleted-users-is-handled-with-extreme-care)
 * [Active directory integration and management](Features.md#active-directory-integration-and-management)
 * [Optional encryption for LDAP communications](Features.md#optional-encryption-for-LDAP-communications)
 * [Let's Encrypt certificates](Features.md#let-s-encrypt-certificates)
@@ -42,6 +43,29 @@ Backed up by the collective knowledge of the [SysAdminsdeCuba](https://t.me/sysa
 ## Daily mail traffic summary
 
 The account configured as the mail administrator will receive a daily summary of yesterday's mail traffic; the resume is built with the pflogsumm tool.
+
+## Data from deleted users is handled with extreme care
+
+In almost all mailservers when you remove a user from the user's list his mail storage (maildir in our case) is automatically erased. In our case we choose to act with more caution: the user's maildir will not be deleted at once.
+
+We will left the user's maildir intact for you to review or recover a business-critical email from a big boss to that user if this is the case. Yes, all sysadmins had been in this situation, a "ultra big boss" needs a mail from that erased mailbox, ouch!
+
+You can recover the mail by re-creating the user account in the AD and giving the big boss the credentials.
+
+Each month you will receive a mail from your mail server notifying you about left behind maildirs, you are free to take action about them (usually making a backup and then erase the offending maildir is enough)
+
+Here we play a trick:
+
+- Maildirs for deleted users between 0 to 10 months (actually 9.7) will be notified to take action.
+- Maildirs for deleted users between 10 to 11.999 months will be warned about imminent removal.
+- Maildirs for deleted users older than 365 days (1 year) will be removed and you will receive the removal notification.
+
+We think that a year is time enough to recover something from that mailbox; also that date as a legal implication: in some scenarios you are required to maintain a copy of all users digital footprint for at least one year.
+
+Here you can see an notification sample from the first implementation of this feature:
+
+![Picture of an email notifying left behind maildirs](imgs/check_maildirs_sample.png)
+
 
 ## Active directory integration and management
 
