@@ -16,6 +16,8 @@ This tool is tested and supported on:
 
 It's recommended that the instance of MailAD sits inside your DMZ net with a firewall between it and your users and a mail gateway like [Proxmox Mail Gateway](https://www.proxmox.com/en/proxmox-mail-gateway) between it and the outside world
 
+_**Note:** If you are using a Debian Buster Container on LXC (Proxmox for example) you need to tweak the dovecot install or it will not work, see [this fix](https://serverfault.com/questions/976250/dovecot-lxc-apparmor-denied-buster) for more info_
+
 ## Features
 
 This will provision a mail server in a enterprise/SOHO as a real server facing the users and behind a Mail Gateway to the outside world, you can see the major features in the [Features.md](Features.md) file, among others you will find:
