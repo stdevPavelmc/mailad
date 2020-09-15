@@ -163,8 +163,8 @@ ln -s "$P/scripts/resume.sh" /etc/cron.daily/daily_mail_resume
 # run it
 /etc/cron.daily/daily_mail_resume
 
-# configure the left behind maildirs
-rm -f /etc/cron.daily/check_maildirs > /dev/null
+# configure the left behind maildirs check/alert/warn
+rm -f /etc/cron.monthly/check_maildirs > /dev/null
 # fix exec perms just in case it was lost
 chmod +x "$P/scripts/check_maildirs.sh"
 # create the link
