@@ -18,6 +18,10 @@ This is a note for developers about the recommended tags to keep track of the ch
 Dates must be YEAR-MONTH-DAY
 -->
 
+## 2020-09-15
+
+- Changed: Made the maildir removal optional and disabled by default
+
 ## 2020-09-14
 
 - Added: new feature: we don't erase the user's maildir up on removal from the AD, we will keep it and warn the sysadmin to take actions with them, after a year the maildir is automatically erased
