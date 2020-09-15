@@ -12,11 +12,11 @@ This tool is tested and supported on:
 
 - Ubuntu Bionic 18.04 (last LTS)
 - Ubuntu Focal 20.04 (Actual LTS and actual dev env)
-- Debian Buster 10 (Stable)
-
-It's recommended that the instance of MailAD sits inside your DMZ net with a firewall between it and your users and a mail gateway like [Proxmox Mail Gateway](https://www.proxmox.com/en/proxmox-mail-gateway) between it and the outside world
+- Debian Buster 10 (see note below please)
 
 _**Note:** If you are using a Debian Buster Container on LXC (Proxmox for example) you need to tweak the dovecot install or it will not work, see [this fix](https://serverfault.com/questions/976250/dovecot-lxc-apparmor-denied-buster) for more info_
+
+It's recommended that the instance of MailAD sits inside your DMZ net with a firewall between it and your users and a mail gateway like [Proxmox Mail Gateway](https://www.proxmox.com/en/proxmox-mail-gateway) between it and the outside world.
 
 ## Features
 
