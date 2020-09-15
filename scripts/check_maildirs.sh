@@ -60,12 +60,17 @@ mail=0
 
 # check every mailbox
 for md in `ls ${VMAILSTORAGE} | xargs` ; do
+    maildir="$VMAILSTORAGE/$md"
+
+    # only dirs
+    if [ -f "$maildir" ] ; then
+        continue
+    fi
+
     R=`isthere ${md}/`
     if [ -z "$R" ] ; then
         mail=1
-        maildir="$VMAILSTORAGE/$md"
         data=`getdetails ${md}`
-        echo $data
         days=`echo $data | cut -d '|' -f2`
         months=$((${days} / 30))
         size=`echo $data | cut -d '|' -f1 | awk '{print $1}'`
