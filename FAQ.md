@@ -9,7 +9,7 @@ Here you can find a resume of the most frequently asked questions, this file wil
 
 ## Usage related
 
-- [All works fine with some email clients, but other fails with errors related to SSL and cyphers](hFAQ.md#all-works-fine-with-some-email-clients-but-other-fails-with-errors-related-to-ssl-and-cyphers)
+- [All works fine with some email clients, but other fails with errors related to SSL and cyphers](FAQ.md#all-works-fine-with-some-email-clients-but-other-fails-with-errors-related-to-ssl-and-cyphers)
 
 **============================== ANSWERS =========================**
 
