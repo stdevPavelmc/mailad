@@ -18,6 +18,10 @@ This is a note for developers about the recommended tags to keep track of the ch
 Dates must be YEAR-MONTH-DAY
 -->
 
+## 2020-09-16
+
+- Added: We have now a FAQ file!
+
 ## 2020-09-15
 
 - Changed: Made the maildir removal optional and disabled by default

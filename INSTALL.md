@@ -158,3 +158,7 @@ etc/postfix/rules/lista_negra
 Yes, the `force-provision` as well as the `upgrade` make targets preserve the user modified data.
 
 If you need to reset some of those files to the defaults just erase them from the filesystem and make a force-provision, as simple as that.
+
+## Now what
+
+There is a [FAQ](FAQ.md) file to search for common problems; or you can reach me  via telegram under my nickname: [@pavelmc](https://t.me/pavelmc)
