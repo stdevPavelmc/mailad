@@ -51,15 +51,12 @@ Remember the comment at top of the page about _"...with some constraints in mind
 
 ## How to install or try it?
 
-We have a [INSTALL.md](INSTALL.md) file just for that
+We have a [INSTALL.md](INSTALL.md) file just for that, and also a [FAQ](FAQ.md) file with common problems.
 
-## This is free software
+## This is free software!
 
 Have a comment, question, contributions or fix?
 
-Don't hesitate, use the Issues tab in the repository URL or drop me a message via my social media accounts:
+Use the Issues tab in the repository URL or drop me a message via [Twitter](https://twitter.com/co7wt) or [Telegram](https://t.me/pavelmc)
 
-- Twitter: @co7wt
-- Telegram: @pavelmc
-
-We have a file to register the contributions to this Software, you can check it [here](Contributors.md)
+We have a [file to register the contributions](Contributors.md) to this Software.
