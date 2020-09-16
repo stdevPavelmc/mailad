@@ -4,12 +4,12 @@ Here you can find a resume of the most frequently asked questions, this file wil
 
 ## Installation related
 
-- [I have installed ok by the instruction in the INSTALL.md file, I can check and send the mails, but they don't reach the users inbox?](FAQ.md#)
-- [I'm using Debian buster and can send emails but can't check emails via IMAPS/POP3S?](FAQ.md#)
+- [I have installed ok by the instruction in the INSTALL.md file, I can check and send the mails, but they don't reach the users inbox?](FAQ.md#i-have-installed-ok-by-the-instruction-in-the-installmd-file-i-can-check-and-send-the-mails-but-they-dont-reach-the-users-inbox)
+- [I'm using Debian buster and can send emails but can't check emails via IMAPS/POP3S?](FAQ.md#im-using-debian-buster-and-can-send-emails-but-cant-check-emails-via-imapspop3s)
 
 ## Usage related
 
-- [All works fine with some email clients, but other fails with errors related to SSL and cyphers](FAQ.md#)
+- [All works fine with some email clients, but other fails with errors related to SSL and cyphers](hFAQ.md#all-works-fine-with-some-email-clients-but-other-fails-with-errors-related-to-ssl-and-cyphers)
 
 **============================== ANSWERS =========================**
 
