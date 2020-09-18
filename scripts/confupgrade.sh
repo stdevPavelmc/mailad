@@ -64,7 +64,9 @@ echo "# option is added for a new feature, also take a peek on   #"
 echo "# the CHANGELOG.md file to see that was the change         #"
 echo "############################################################"
 echo " "
-echo "===> Upgrade will resume in short (15 seconds)"
+echo "===> Just re-run the last command to continue"
+echo " "
+echo " "
 
-sleep 10
+exit 1
 
