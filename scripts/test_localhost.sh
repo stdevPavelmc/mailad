@@ -135,7 +135,6 @@ fi
 if [ "$ENABLE_AV" == "yes" -o "$ENABLE_AV" == "Yes" ] ; then
     # check if we can get the database fingerprint for clamav
     DBF=`dig +short TXT current.cvd.clamav.net | grep -P "([0-9]+:){7}"`
-    echo "==== ==== ==== $DBF"
     if [ -z "$DBF" ] ;  then
         # DNS nor working
         echo "================================================================================="
