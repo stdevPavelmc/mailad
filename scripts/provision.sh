@@ -111,7 +111,6 @@ VARS="${VARS} LDAPURI ESC_SYSADMINS"
 
 # replace the vars in the folders
 for f in `echo "/etc/postfix /etc/dovecot /etc/amavis" | xargs` ; do
-    echo " "
     echo "===> Provisioning $f..."
     for v in `echo $VARS | xargs` ; do
         # get the var content
