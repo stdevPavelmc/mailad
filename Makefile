@@ -35,17 +35,18 @@ certs: conf-check ## Generate a self-signed certificate for the server SSL/TLS o
 	scripts/gen_cert.sh
 	echo "done" > certs
 
-install: deps certs ## Install all the software from the repository
+install: conf-check deps certs ## Install all the software from the repository
+	apt update -q && apt upgrade -qy
 	scripts/install_mail.sh
 	echo "done" > install
 
 install-purge: deps ## Uninstall postfix and dovecot already installed software (purge config also)
 	scripts/install_purge.sh
 	rm install || exit 0
+	rm conf-check || exit 0
+	rm deps || exit 0
 
 provision: install ## Provision the server, this will copy over the config files and set the vars
-	# test the binddn user and search for the admin user (in case of switch to LDAPS)
-	scripts/test_bind_dn.sh
 	# make the provisioning
 	scripts/provision.sh
 	echo "done" > provision
@@ -56,6 +57,7 @@ all: provision ## Run all targets in the logic order, run this to make it all
 
 force-provision: ## Force a re-provisioning of the system
 	rm provision || exit 0
+	scripts/confupgrade.sh
 	scripts/backup.sh
 	$(MAKE) install-purge
 	$(MAKE) provision

@@ -20,7 +20,9 @@ Dates must be YEAR-MONTH-DAY
 
 ## 2020-09-17
 
-- Fixed: the script that checks for clamav database upgrade via freshclam had a bug, it was closed in a chicken-egg dilema as freshclam reports to clamd but it's dead and can not reload. Now it reset the clamd before testing for it.
+- Fixed: The script that checks for clamav database upgrade via freshclam had a bug, it was closed in a chicken-egg dilema as freshclam reports to clamd but it's dead and can not reload. Now it reset the clamd before testing for it.
+- Fixed: If you enable the AV filtering and the DNS does not works properly to resolve the TXT record of the update the provision will fail with an error and a comment about the need to fix the DNS issue or disable the AV filtering
+- Changed: Every time we need to make a provision it will check if a configuration upgrade is needed, if so the user will receive a notification to take a peek on the changes and continue
 
 ## 2020-09-16
 

@@ -27,8 +27,8 @@ function services() {
 # advice
 echo "===> Check if we have to upgrade the config"
 
-# upgrade the user's mailad.conf
-./scripts/confupgrade.sh
+# upgrade the user's mailad.conf (stop on upgrade!)
+./scripts/confupgrade.sh || exit 1
 
 # do the backup
 ./scripts/backup.sh
