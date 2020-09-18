@@ -19,6 +19,10 @@ if [ -z "$SYSADMINS" ] ; then
     SYSADMINS=$ADMINMAIL
 fi
 
+# restart the clamav-daemon service to load the changes if the clamv-freshclam managed to update the database
+systemctl restart clamav-daemon
+sleep 5
+
 # test if clamav-daemon is runnig already, it will run only when freshclam manages to get a full db download
 R=`systemctl show -p SubState --value clamav-daemon`
 if [ "$R" == "running" ] ; then
