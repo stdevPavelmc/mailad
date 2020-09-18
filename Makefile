@@ -36,7 +36,7 @@ certs: conf-check ## Generate a self-signed certificate for the server SSL/TLS o
 	echo "done" > certs
 
 install: conf-check deps certs ## Install all the software from the repository
-	apt update && apt upgrade -y
+	apt update -q && apt upgrade -qy
 	scripts/install_mail.sh
 	echo "done" > install
 
