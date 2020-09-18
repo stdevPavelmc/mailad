@@ -18,6 +18,10 @@ This is a note for developers about the recommended tags to keep track of the ch
 Dates must be YEAR-MONTH-DAY
 -->
 
+## 2020-09-17
+
+- Fixed: the script that checks for clamav database upgrade via freshclam had a bug, it was closed in a chicken-egg dilema as freshclam reports to clamd but it's dead and can not reload. Now it reset the clamd before testing for it.
+
 ## 2020-09-16
 
 - Added: We have now a FAQ file!
