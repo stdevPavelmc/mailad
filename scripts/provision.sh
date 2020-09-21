@@ -251,7 +251,7 @@ else
         cat /tmp/1 > $FILE
 
         # dump the config
-        cat var/clamav-related/clamav_alternates.txt >> $FILE
+        echo "DatabaseMirror ${AV_ALT_MIRROR}" >> $FILE
     fi
 
     ### configure proxy if needed
