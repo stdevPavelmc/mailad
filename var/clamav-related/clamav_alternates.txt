@@ -1,2 +1,0 @@
-
-DatabaseMirror http://103.230.76.202/clamav/
