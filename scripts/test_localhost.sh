@@ -131,19 +131,20 @@ if [ $DOMAIN != "mailad.cu" -a "$LDAPBINDPASSWD" == "Passw0rd---" ] ; then
     exit 1
 fi
 
-# testing if a working DNS is configured if AV is set ton enabled
+# testing if a working DNS is configured if AV is set to enabled
 if [ "$ENABLE_AV" == "yes" -o "$ENABLE_AV" == "Yes" ] ; then
     # check if we can get the database fingerprint for clamav
     DBF=`dig +short TXT current.cvd.clamav.net | grep -P "([0-9]+:){7}"`
     if [ -z "$DBF" ] ;  then
-        # DNS nor working
+        # DNS not working
         echo "================================================================================="
         echo "ERROR!"
         echo "    You enabled the AV in the config file but no working DNS server is configured"
         echo "    in the PC, if we don't have a working DNS to check for AV updates or internet"
         echo "    access, we can not provide a working ClamAV configuration."
         echo " "
-        echo "    Please check your DNS with this command: dig +short TXT current.cvd.clamav.net"
+        echo "    Please check your DNS with this command:"
+        echo "        dig +short TXT current.cvd.clamav.net"
         echo " "
         echo "    If that doest not return a long string you have a not working DNS, and must"
         echo "    set the var 'ENABLE_AV=no' in the /etc/mailad/mailad.conf file until you fix"
@@ -154,5 +155,33 @@ if [ "$ENABLE_AV" == "yes" -o "$ENABLE_AV" == "Yes" ] ; then
         exit 1
     else
         echo "===> Working DNS for ClamAV found!"
+    fi
+fi
+
+
+# testing if a working DNS is configured if SPAMD is set to enabled
+if [ "$ENABLE_SPAMD" == "yes" -o "$ENABLE_SPAMD" == "Yes" ] ; then
+    # check if we can get the database fingerprint for spamassassin
+    DBF=`dig TXT +short 2.4.3.updates.spamassassin.org | grep -P "\"[0-9]{5,}\""`
+    if [ -z "$DBF" ] ;  then
+        # DNS not working
+        echo "=================================================================================="
+        echo "ERROR!"
+        echo "    You enabled the SPAMD in the config file but no working DNS server is detected"
+        echo "    in the PC, if we don't have a working DNS to check for updates or internet"
+        echo "    access, we can not provide a working SpamAssassin configuration."
+        echo " "
+        echo "    Please check your DNS with this command:"
+        echo "        dig TXT +short 2.4.3.updates.spamassassin.org"
+        echo " "
+        echo "    If that doest not return a number like \"1881840\" you have a not working DNS"
+        echo "    and must set the var 'ENABLE_SPAMD=no' in the /etc/mailad/mailad.conf file"
+        echo "    until you fix that, or the installation will not work."
+        echo "=================================================================================="
+        echo " "
+
+        exit 1
+    else
+        echo "===> Working DNS for SpamAssassin found!"
     fi
 fi
