@@ -18,6 +18,10 @@ This is a note for developers about the recommended tags to keep track of the ch
 Dates must be YEAR-MONTH-DAY
 -->
 
+## 2020-09-20
+
+- Fixed: If you had a non working DNS after 48 ours the databases for SpamAssassin (SA) will trip and SA will lock amavis and all your mail will got locked on the processing queue towards amavis. Fixed now: we test the DNS for the SA DB update check, if not the the install/upgrade/provision fails with a warning; no SA config is possible if you don; t have a working DNS
+
 ## 2020-09-17
 
 - Fixed: The script that checks for clamav database upgrade via freshclam had a bug, it was closed in a chicken-egg dilema as freshclam reports to clamd but it's dead and can not reload. Now it reset the clamd before testing for it.
