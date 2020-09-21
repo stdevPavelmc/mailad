@@ -6,6 +6,7 @@ Here you can find the most frequently asked questions, this file will grow with 
 
 - [I have installed by the instruction in the INSTALL.md file, I can check and send the mails, but they don't reach the users inbox?](FAQ.md#i-have-installed-by-the-instruction-in-the-installmd-file-i-can-check-and-send-the-mails-but-they-dont-reach-the-users-inbox)
 - [I'm using Debian buster and can send emails but can't check emails via IMAPS/POP3S?](FAQ.md#im-using-debian-buster-and-can-send-emails-but-cant-check-emails-via-imapspop3s)
+- [Why MailAD refuses to install ClamAV and/or SpamAssassin claiming some DNS problem?](FAQ.md#why-mailad-refuses-to-install-clamav-andor-spamassassin-claiming-some-dns-problem)
 
 ## Usage related
 
@@ -53,6 +54,14 @@ The most common is to enable nesting for that CT:
 - Restart the CT.
 
 Check now, it will work.
+
+## Why MailAD refuses to install ClamAV and/or SpamAssassin claiming some DNS problem?
+
+There is a simple fact behind that: both (SpamAssassin & ClamAV) uses a DNS query to a specific TXT record to get his database fingerprint details.
+
+If you don't have a working DNS it will work some time after the provision and in 12-48 hours one of them will refuse to work, then Amavis will die and all your mail (going in or out the domain) will get caught in the postfix queue to amavis for 4 hours, then users will start to see MAILER-DAEMON notifications and you will get in trouble...
+
+To avoid that, we have place a failsafe in the check stage of the install: if you enable the AV or the SA filtering on the config file, then we will check if we can get the respective DB updates via DNS, if not then you see the errors.
 
 ## All works fine with some email clients, but other fails with errors related to SSL and cyphers?
 
