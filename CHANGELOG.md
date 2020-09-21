@@ -21,6 +21,7 @@ Dates must be YEAR-MONTH-DAY
 ## 2020-09-20
 
 - Fixed: If you had a non working DNS after 48 ours the databases for SpamAssassin (SA) will trip and SA will lock amavis and all your mail will got locked on the processing queue towards amavis. Fixed now: we test the DNS for the SA DB update check, if not the the install/upgrade/provision fails with a warning; no SA config is possible if you don; t have a working DNS
+- Fixed: Make the ClamAV alternate database mirror configurable and ship some tested ones by default, some organizations with restrictive parent proxys are denying some address (IP based address mostly)
 
 ## 2020-09-17
 
