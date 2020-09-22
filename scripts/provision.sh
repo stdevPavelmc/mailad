@@ -249,7 +249,7 @@ fi
 ### check if AV activation is needed
 if [ "$ENABLE_AV" == "no" -o "$ENABLE_AV" == "No" -o -z "$ENABLE_AV" ] ; then
     # diable AV services to save resources
-    disable_av()
+    disable_av
 else
     ### Configure the services
     if [ "$USE_AV_ALTERNATE_MIRROR" != "no" -o "$USE_AV_ALTERNATE_MIRROR" != "No" -o "$USE_AV_ALTERNATE_MIRROR" != "" ] ; then
@@ -257,7 +257,7 @@ else
         FILE="/etc/clamav/freshclam.conf"
 
         # check if the alternates mirror haves an address
-        R=`echo ${AV_ALT_MIRROR}" | grep -P "(.*\.)+"`
+        R=`echo "${AV_ALT_MIRROR}" | grep -P "(.*\.)+"`
         if [ -z "$R" ] ; then
             # no alternate mirror detected on the config file
             echo "========================================================================"
@@ -305,7 +305,7 @@ else
     echo "ReceiveTimeout 3600" >> $FILE
 
     ### Activating the services
-    enable_av()
+    enable_av
 
     # set the hourly task to activate the filtering when fresclam end the update
     rm -f /etc/cron.hourly/av_filter_on_clamav_alive
