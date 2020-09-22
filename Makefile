@@ -58,8 +58,8 @@ all: provision ## Run all targets in the logic order, run this to make it all
 force-provision: ## Force a re-provisioning of the system
 	rm provision || exit 0
 	rm conf-check || exit 0
-	$(MAKE) conf-check
 	scripts/confupgrade.sh
+	$(MAKE) conf-check
 	scripts/backup.sh
 	$(MAKE) install-purge
 	$(MAKE) provision
