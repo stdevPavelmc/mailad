@@ -253,13 +253,34 @@ if [ "$ENABLE_AV" == "no" -o "$ENABLE_AV" == "No" -o -z "$ENABLE_AV" ] ; then
 else
     ### Configure the services
     if [ "$USE_AV_ALTERNATE_MIRROR" != "no" -o "$USE_AV_ALTERNATE_MIRROR" != "No" -o "$USE_AV_ALTERNATE_MIRROR" != "" ] ; then
-        # must activate the alternate mirror, but first clean the actual values
-        FILE="/etc/clamav/freshclam.conf"
-        cat $FILE | grep -v DatabaseMirror | grep -v PrivateMirror | grep -v DatabaseCustomURL | grep -v Proxy> /tmp/1
-        cat /tmp/1 > $FILE
+        # check if the alternates mirror haves an address
+        R=`echo ${AV_ALT_MIRROR}" | grep -P "(.*\.)+"`
+        if [ -z "$R" ] ; then
+            # no alternate mirror detected on the config file
+            echo "========================================================================"
+            echo "                             WARNING NOTICE!!!"
+            echo " "
+            echo "You especified an alternate mirror on the AV, but we can't detect a"
+            echo "valid address on that variable, please check 'AV_ALT_MIRROR' in the"
+            echo "config file"
+            echo " "
+            echo "We will continue, but no alternate AV mirror will be set in palce, do"
+            echo "not abort the install, Intead let it finish, fix the issue and make a"
+            echo "'make force-provision' to apply the new changes"
+            echo " "
+            echo "======================================================================="
+            sleep 10
+        else
+            # must activate the alternate mirror, but first clean the actual values
+            FILE="/etc/clamav/freshclam.conf"
+            cat $FILE | grep -v DatabaseMirror | grep -v PrivateMirror | grep -v DatabaseCustomURL | grep -v Proxy> /tmp/1
+            cat /tmp/1 > $FILE
 
-        # dump the config
-        echo "DatabaseMirror ${AV_ALT_MIRROR}" >> $FILE
+            # dump the config
+            for M in `echo "${AV_ALT_MIRROR}" | xargs` ;  do
+                echo "DatabaseMirror ${M}" >> $FILE
+            done
+        fi
     fi
 
     ### configure proxy if needed
