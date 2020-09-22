@@ -45,7 +45,7 @@ function already_installed_debs {
 # debian packages install
 function install_debs {
     # do it
-    env DEBIAN_FRONTEND=noninteractive apt install $PKGS -y
+    env DEBIAN_FRONTEND=noninteractive apt-get install $PKGS -y
 
     # checking for success
     R=$?
