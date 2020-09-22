@@ -51,6 +51,21 @@ function devecot_version {
     exit 1
 }
 
+# disable AV services
+function disable_av() {
+    # no AV, stop services to save resources
+    systemctl stop clamav-freshclam clamav-daemon
+    systemctl disable clamav-freshclam clamav-daemon
+    systemctl mask clamav-freshclam clamav-daemon
+}
+
+# enable AV services
+function enable_av() {
+    systemctl unmask clamav-freshclam clamav-daemon
+    systemctl enable clamav-freshclam clamav-daemon
+    systemctl restart clamav-freshclam clamav-daemon
+}
+
 #### Some previous processing of the vars
 
 # calc the max size of the message from the MB paramater in the vars
@@ -233,15 +248,8 @@ fi
 
 ### check if AV activation is needed
 if [ "$ENABLE_AV" == "no" -o "$ENABLE_AV" == "No" -o -z "$ENABLE_AV" ] ; then
-    # no AV, stop services to save resources
-    systemctl stop clamav-freshclam
-    systemctl stop clamav-daemon
-    # disable them
-    systemctl disable clamav-freshclam
-    systemctl disable clamav-daemon
-    # mask them to avoid being called as dependencies
-    systemctl mask clamav-freshclam
-    systemctl mask clamav-daemon
+    # diable AV services to save resources
+    disable_av()
 else
     ### Configure the services
     if [ "$USE_AV_ALTERNATE_MIRROR" != "no" -o "$USE_AV_ALTERNATE_MIRROR" != "No" -o "$USE_AV_ALTERNATE_MIRROR" != "" ] ; then
@@ -268,12 +276,7 @@ else
     fi
 
     ### Activating the services
-    systemctl unmask clamav-freshclam
-    systemctl unmask clamav-daemon
-    systemctl enable clamav-freshclam
-    systemctl enable clamav-daemon
-    systemctl restart clamav-freshclam
-    systemctl restart clamav-daemon
+    enable_av()
 
     # set the hourly task to activate the filtering when fresclam end the update
     rm -f /etc/cron.hourly/av_filter_on_clamav_alive
