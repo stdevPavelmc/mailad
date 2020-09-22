@@ -64,6 +64,9 @@ force-provision: ## Force a re-provisioning of the system
 	scripts/backup.sh
 	$(MAKE) install-purge
 	$(MAKE) provision
+	# if you reach this point the latest backup is working
+	cat /var/lib/mailad/latest_backup > /var/lib/mailad/latest_working_backup
+	# restore the custom files
 	scripts/custom_restore.sh
 
 force-certs: ## Force a re-creation of the SSL & dhparm certs

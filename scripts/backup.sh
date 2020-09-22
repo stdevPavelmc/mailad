@@ -14,6 +14,7 @@ FOLDERS="/etc/postfix /etc/dovecot /etc/mailad /etc/ssl/certs/mail* /etc/ssl/pri
 BKPFOLDER="/var/backups/mailad"
 LIBFOLDER="/var/lib/mailad"
 LASTBACKUPFILE="${LIBFOLDER}/latest_backup"
+LASTWORKINGBACKUPFILE="${LIBFOLDER}/latest_working_backup"
 
 # advice
 echo "===> Starting a backup of all actual configs to $BKPFOLDER"
