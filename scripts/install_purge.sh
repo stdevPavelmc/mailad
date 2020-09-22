@@ -48,10 +48,11 @@ else
     echo "==========================================================================="
 fi
 
-# sort pkgs
+# add and sterisk at the end of the PKGS to wipe al related packages
+P=`echo "$PKGCOMMON $PKGS" | sed s/" "/"* "/g`
 
 # remove all pkgs letting apt build the tree
-env DEBIAN_FRONTEND=noninteractive apt-get purge $PKGCOMMON $PKGS -y
+env DEBIAN_FRONTEND=noninteractive apt-get purge $P* -y
 
 # autoremove some of the pkgs left over
 env DEBIAN_FRONTEND=noninteractive apt autoremove -y
