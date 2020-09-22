@@ -20,7 +20,7 @@ It's recommended that the instance of MailAD sits inside your DMZ net with a fir
 
 ## Features
 
-This will provision a mail server in a enterprise/SOHO as a real server facing the users and behind a Mail Gateway to the outside world, you can see the major features in the [Features.md](Features.md) file, among others you will find:
+This will provision a mail server in a enterprise as a real server facing the users, you can see the major features in the [Features.md](Features.md) file, among others you will find:
 
 0. Low resource footprint.
 0. Advanced (and optional) mail filtering features that includes attachments, SPF, AntiVirus & Spam.
@@ -32,11 +32,12 @@ This will provision a mail server in a enterprise/SOHO as a real server facing t
 0. Manual alias to handle typos or enterprise positions.
 0. Manual ban list for trouble some address (aka blacklist).
 0. Manual headers & body checks lists.
+0. On demand Backup and restore of raw configurations.
 0. Painless upgrades (Really!).
 
 ## TODO
 
-There is a [TODO list](TODO.md), a kind of a "roadmap" for new features, but as I (only one dev so far) have a life, a family and a daily job, you know...
+There is a [TODO list](TODO.md), a kind of "roadmap" for new features, but as I (only one dev so far) have a life, a family and a daily job, you know...
 
 All dev is made on weekend or late at night (seriously take a peek on the commit dates!) if you need a feature or fix ASAP, please take into account making a donation or found me and I will be happy to help you ASAP, my contact info is on the bottom of this page.
 
