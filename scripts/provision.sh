@@ -69,8 +69,9 @@ function enable_av() {
 #### Some previous processing of the vars
 
 # calc the max size of the message from the MB paramater in the vars
+# plus a little percernt to allow for encoding grow
 t="$MESSAGESIZE"
-MESSAGESIZE=`echo "$t*1024*1024*1.08" | bc -q | cut -d '.' -f 1`
+MESSAGESIZE=`echo $(( $t * 1132462))`
 
 # stop the runnig services
 services stop
