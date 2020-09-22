@@ -40,7 +40,7 @@ if [ -f /etc/os-release ] ; then
         echo "===> We are working with $PRETTY_NAME"
 
         # install dependencies
-        apt update -q && apt install ldap-utils dnsutils
+        env DEBIAN_FRONTEND=noninteractive apt update -q && apt-get install ldap-utils dnsutils -qy
 
         # checking for success
         R=$?
