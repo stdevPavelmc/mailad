@@ -253,6 +253,9 @@ if [ "$ENABLE_AV" == "no" -o "$ENABLE_AV" == "No" -o -z "$ENABLE_AV" ] ; then
 else
     ### Configure the services
     if [ "$USE_AV_ALTERNATE_MIRROR" != "no" -o "$USE_AV_ALTERNATE_MIRROR" != "No" -o "$USE_AV_ALTERNATE_MIRROR" != "" ] ; then
+        # subject config file
+        FILE="/etc/clamav/freshclam.conf"
+
         # check if the alternates mirror haves an address
         R=`echo ${AV_ALT_MIRROR}" | grep -P "(.*\.)+"`
         if [ -z "$R" ] ; then
@@ -272,8 +275,7 @@ else
             sleep 10
         else
             # must activate the alternate mirror, but first clean the actual values
-            FILE="/etc/clamav/freshclam.conf"
-            cat $FILE | grep -v DatabaseMirror | grep -v PrivateMirror | grep -v DatabaseCustomURL | grep -v Proxy> /tmp/1
+            cat $FILE | grep -v DatabaseMirror | grep -v PrivateMirror | grep -v DatabaseCustomURL | grep -v Proxy > /tmp/1
             cat /tmp/1 > $FILE
 
             # dump the config
@@ -295,6 +297,12 @@ else
             echo "HTTPProxyPassword $PROXY_PASS" >> $FILE
         fi
     fi
+
+    # increase the Timeouts
+    cat $FILE | grep -v ConnectTimeout | grep -v ReceiveTimeout > /tmp/1
+    cat /tmp/1 > $FILE
+    echo "ConnectTimeout 300" >> $FILE
+    echo "ReceiveTimeout 3600" >> $FILE
 
     ### Activating the services
     enable_av()
