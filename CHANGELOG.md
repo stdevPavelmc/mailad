@@ -18,6 +18,14 @@ This is a note for developers about the recommended tags to keep track of the ch
 Dates must be YEAR-MONTH-DAY
 -->
 
+## 2020-09-22
+
+- Fixed: ClamaV update repository configuration was not right (via freshclam.conf), fixed now: it includes multiple custom mirrors and improve timeouts for slow networks, and some other validations.
+- Changed: The "upgrade" target is the same of a "force-provision" one, so we merge them and upgrade is just now an alias of force-provision.
+- Removed: To match the above change we removed the upgrade script.
+- Changed: Improved the apt repository handling on the install/purge options, a lot of little tweaks on this field.
+- Changed: The conf upgrade check is not up front of any provision target
+
 ## 2020-09-20
 
 - Fixed: If you had a non working DNS after 48 ours the databases for SpamAssassin (SA) will trip and SA will lock amavis and all your mail will got locked on the processing queue towards amavis. Fixed now: we test the DNS for the SA DB update check, if not the the install/upgrade/provision fails with a warning; no SA config is possible if you don; t have a working DNS
