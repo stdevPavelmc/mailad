@@ -252,20 +252,20 @@ if [ "$ENABLE_AV" == "no" -o "$ENABLE_AV" == "No" -o -z "$ENABLE_AV" ] ; then
     # diable AV services to save resources
     disable_av
 else
+    # subject config file
+    FILE="/etc/clamav/freshclam.conf"
+
     ### Configure the services
     if [ "$USE_AV_ALTERNATE_MIRROR" != "no" -o "$USE_AV_ALTERNATE_MIRROR" != "No" -o "$USE_AV_ALTERNATE_MIRROR" != "" ] ; then
-        # subject config file
-        FILE="/etc/clamav/freshclam.conf"
-
         # check if the alternates mirror haves an address
-        R=`echo "${AV_ALT_MIRROR}" | grep -P "(.*\.)+"`
+        R=`echo "${AV_ALT_MIRRORS}" | grep -P "(.*\.)+"`
         if [ -z "$R" ] ; then
             # no alternate mirror detected on the config file
             echo "========================================================================"
             echo "                             WARNING NOTICE!!!"
             echo " "
             echo "You especified an alternate mirror on the AV, but we can't detect a"
-            echo "valid address on that variable, please check 'AV_ALT_MIRROR' in the"
+            echo "valid address on that variable, please check 'AV_ALT_MIRRORS' in the"
             echo "config file"
             echo " "
             echo "We will continue, but no alternate AV mirror will be set in palce, do"
@@ -280,7 +280,7 @@ else
             cat /tmp/1 > $FILE
 
             # dump the config
-            for M in `echo "${AV_ALT_MIRROR}" | xargs` ;  do
+            for M in `echo "${AV_ALT_MIRRORS}" | xargs` ;  do
                 echo "DatabaseMirror ${M}" >> $FILE
             done
         fi
