@@ -13,7 +13,7 @@ source ./common.conf
 
 # some local vars
 LIBFOLDER="/var/lib/mailad"
-LASTBACKUPFILE="${LIBFOLDER}/latest_backup"
+LASTWORKINGBACKUPFILE="${LIBFOLDER}/latest_working_backup"
 
 # Control services, argument $1 is the action (start/stop)
 function services() {
@@ -59,9 +59,9 @@ function extract() {
 echo "===> Starting a selective restore of custom data"
 
 # check if the last backup file exist
-if [ -f "${LASTBACKUPFILE}" ] ; then
+if [ -f "${LASTWORKINGBACKUPFILE}" ] ; then
     # check if the content exist
-    BKPFILE=`cat ${LASTBACKUPFILE}`
+    BKPFILE=`cat ${LASTWORKINGBACKUPFILE}`
 
     if [ ! -f "${BKPFILE}" ] ; then
         # backup trace there but no backup?
@@ -72,7 +72,7 @@ if [ -f "${LASTBACKUPFILE}" ] ; then
         echo "       This is only a notice, no custom restore will be made"
         echo "==========================================================================="
 
-        rm "${LASTBACKUPFILE}"
+        rm "${LASTWORKINGBACKUPFILE}"
         sleep 5
         exit 0
     fi

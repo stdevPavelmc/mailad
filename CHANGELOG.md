@@ -25,6 +25,12 @@ Dates must be YEAR-MONTH-DAY
 - Removed: To match the above change we removed the upgrade script.
 - Changed: Improved the apt repository handling on the install/purge options, a lot of little tweaks on this field.
 - Changed: The conf upgrade check is not up front of any provision target
+- Fixed: Backups, formerly if you (or an error) stop the provision process (targets: all/provision/force-provision/upgrade) your backup will get left behind and a new backup will be created on the next command, that new backup may be mangled and you will end with mangled or missing data. Now we have a simple mechanism to get sure it's the right backup and use only the backups of proven validity.
+- Changed: Added a check to avoid non working (temporal) backups to fill the backup folder.
+- Added: New target: "backup" it will make a backup of the actual state and tag it as working.
+- Added: New target, please use it wisely: "purge-backups", yes it will wipe your backups.
+- Added: New target: "restore" allows you to pick one of the recent backups to restore.
+- Changed: Improved the Features file with the new options and updated the section on the painless upgrades
 
 ## 2020-09-20
 

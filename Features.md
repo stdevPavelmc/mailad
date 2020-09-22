@@ -21,6 +21,7 @@ This is a long page, so here is an index:
 * [Manual ban list for trouble some address](Features.md#manual-ban-list-for-trouble-some-address)
 * [Manual headers and body checks lists](Features.md#manual-headers-and-body-checks-lists)
 * [Test suite](Features.md#test-suite)
+* [Raw backup and restore options](Features.md#raw_backup_and_restore_options)
 * [Painless upgrades](Features.md#painless-upgrades)
 
 ## Low resource footprint
@@ -327,6 +328,40 @@ With some care and testing you can even filter MIME types or attachments.
 
 Since June 2020 we have a basic test suite to test our fresh provisioned server and during development as a checkpoint to know that your new feature is not breaking the security or basic features, see [Testing the mail server](tests/README.md) for more details.
 
+## Raw backup and restore options
+
+Raw backups?
+
+Yes, a raw backup is a file that stores the configuration for all the services in the mail service along with SSL certificates, keys and the mailad.conf file.
+
+To do a manual backup is simple, just move to the folder where you cloned MailAD (usually /root/mailad/ ) and just type:
+
+``` sh
+make backup
+```
+
+This will wrap up all the needed data and will place a file on the `/var/backups/mailad` with the format `YYYYMMDD_hhmmss.tar.gz`
+
+To restore a backup yo need to switch to the MailAD folder an type on the console:
+
+``` sh
+make restore
+```
+
+And follow the options to pick one of the existent backups.
+
+Please note that for the backup to be functional you need to have all the software in place or it will fail; that leads us to the next question:
+
+### What if I need a backup to migrate to another server? Is that backup good for that?
+
+There is no black magic on that, to migrate to another server you only need to this:
+
+0. Get sure you copied, mapped or mounted the mail storage (usually /hom/vmail).
+0. Install MailAD (see [INSTALL.md](INSTALL.md) file)
+0. Copy the folder /etc/mailad with all it's contents to the new server
+0. Adjust the vars on `/etc/mailad/mailad.conf` (hostname or so, you can fetch it from any backup file)
+0. Make a "force-provision" to install MailAD with the adjusted configs  
+
 ## Painless upgrades
 
 There will be a point on the future when we add a new cool feature and you want to use it, then you face the question: how to upgrade?
@@ -336,28 +371,69 @@ No problem, we have it covered, to upgrade the software you just need to follow 
 I assume you moved to the mailad folder `/root/mailad` to make the next steps.
 
 0. Upgrade the new code from github with the command `git pull && git reset --hard`.
+0. Make a raw backup with the command `make backup` and note the filename it shows to you (seriously: **WRITE IT DOWN** on paper)
 0. Run the upgrade process with `make upgrade` and follow instructions if you hit some rock.
 
-The last step will make a FULL backup of the actual software configs before try anything.
+The last step will make a second automatic raw backup "just in case".
 
-Since August 2020 we have a procedure to upgrade your custom config to the new file in the case of we upgraded the file, in that case you will receive a notice about the need to check the file `/etc/mailad/mailad.conf` for new options, also check the `Changelog.md` file for news about the changes and new features.
+**Note:** _Since August 2020 we have a procedure to upgrade your custom config to the new file in the case of we upgraded the file, in that case you will receive a notice about the need to check the file `/etc/mailad/mailad.conf` for new options, also check the `Changelog.md` file for news about the changes and new features._
 
-No matter if the upgrade worked or failed you will end with a backup file in the folder `/var/backups/mailad/` whose name is the date and time of the `make upgrade`; so in the unlikely outcome of a broken system you can do this to restore your system state:
+Some times we introduce a new feature and that feature needs your attention or a specific configuration or tweak in your environment, if that's the case please complete the suggested steps or fixes and re-run the `make upgrade` command until it finish ok.
 
-### how to revert a failed upgrade?
+If al goes well you will be the proud owner of a MailAD instance, or not?
 
-- Move to the mailad folder `/root/mailad` and run this: `install-purge && make install`.
-- Move to the folder `/var/backups/mailad/` and identify the backup file you want to restore, for example: "/var/backups/mailad/20200626_145845.tar.gz".
-- Restore the files with this commands:
+### GGGRRR! The upgrade failed! how I revert the failed upgrade?
+
+Did you noted the backup file on the second step from the list above right? If not scroll up to the terminal log and search for it.
+
+Once you have identified the file, it's just to run the following command:
 
 ```sh
-cd /
-tar -zxvf /var/backups/mailad/20200626_145845.tar.gz
-reboot
+make restore
 ```
 
-The PC will restart and all must be working as before the failed upgrade.
+And follow the steps to select the proper backup file, I will wrote a (shortened) version of a successfull restore for you to see it:
 
-We have tested the process extensively and the chances of corruption or failure are very low, if you hit a broken "upgrade" process feel free to contact me via Telegram, my nick there is @pavelmc.
+```sh
+root@mail:~/mailad# make restore
+scripts/restore.sh
+===> We found the following backups, pick one to restore:
+    1)	20200922_172643
+    2)	20200922_161622
+    3)	20200922_161557
+    4)	20200922_161543
+    5)	20200922_161240
+Pick the number of the backup file to restore, #1 is latest
+any other value or simply an enter to abort 1
+===> You selected the file:
+     /var/backups/mailad/20200922_172643.tar.gz
+===> Starting to restore the selected backup...
+etc/postfix/
+etc/postfix/postfix-files
+etc/postfix/makedefs.out
+etc/postfix/aliases/
+[...DATA...]
+etc/clamav/clamd.conf
+etc/clamav/onupdateexecute.d/
+etc/clamav/freshclam.conf
+etc/clamav/virusevent.d/
+etc/clamav/onerrorexecute.d/
+Doing restart with dovecot...
+● dovecot.service - Dovecot IMAP/POP3 email server
+[...DATA...]
+● postfix.service - Postfix Mail Transport Agent
+[...DATA...]
+● amavis.service - LSB: Starts amavisd-new mailfilter
+[...DATA...]
+● spamassassin.service
+[...DATA...]
+● clamav-daemon.service
+[...DATA...]
+● clamav-freshclam.service
+[...DATA...]
+===> Selected backup restored!
+root@mail:~/mailad#
 
-As usual in FLOSS I give only my word as warranty, make and keep backups before the upgrade to restore it in case of trouble.
+```
+
+We have tested the process extensively and the chances of corruption or failure are very low. As usual in FLOSS I give only my word as warranty, make and keep backups before the upgrade to restore it in case of trouble.
