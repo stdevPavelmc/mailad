@@ -48,12 +48,6 @@ done
 echo "Pick the number of the backup file to restore, #1 is latest"
 read -p "any other value or simply an enter to abort " BKPINDEX
 
-R=`$?`
-if [ $R -ne 0  ] ; then
-    echo "===> You selected a non valid option, abort!"
-    exit 0
-fi
-
 # notice you selected a correct number
 if [ $BKPINDEX -ge $c ] ; then
     # not valid
