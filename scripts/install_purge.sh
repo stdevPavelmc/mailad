@@ -13,11 +13,8 @@ source common.conf
 
 # list of pkgs to install came from common.conf
 
-# iterate over the common name of the pkgs
-for p in `echo $PKGCOMMON | xargs` ; do
-    # do it
-    env DEBIAN_FRONTEND=noninteractive apt-get purge "$p*" -y
-done
+# remove all pkgs letting apt build the tree
+env DEBIAN_FRONTEND=noninteractive apt-get purge $PKGCOMMON -y
 
 # autoremove some of the pkgs left over
 env DEBIAN_FRONTEND=noninteractive apt autoremove -y
