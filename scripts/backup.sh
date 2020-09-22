@@ -10,7 +10,7 @@
 #     the full path of the backup file 
 
 # some local vars
-FOLDERS="/etc/postfix /etc/dovecot /etc/mailad /etc/ssl/certs/mail* /etc/ssl/private/mail* /etc/amavis"
+FOLDERS="/etc/postfix /etc/dovecot /etc/mailad /etc/ssl/certs/mail* /etc/ssl/private/mail* /etc/amavis /etc/clamav/"
 BKPFOLDER="/var/backups/mailad"
 LIBFOLDER="/var/lib/mailad"
 LASTBACKUPFILE="${LIBFOLDER}/latest_backup"
