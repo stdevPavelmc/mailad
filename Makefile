@@ -75,8 +75,8 @@ test-deps: ## install test dependencies
 test: ## Make all tests (must be on other PC than the server, outside the my_networks segment)
 	tests/test.sh $(ip)
 
-upgrade: ## Upgrade a setup, see README.md for details
-	scripts/upgrade.sh
+upgrade: force-provision ## Upgrade a setup, see README.md for details
+	echo "Upgrade done!"
 
 help:
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
