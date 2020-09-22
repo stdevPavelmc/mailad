@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := help
 
-.PHONY : conf clean reset fix-vmail install-purge all force-provision force-certs test_deps test_setup test upgrade help
+.PHONY : conf clean reset fix-vmail install-purge all force-provision force-certs test_deps test_setup test upgrade purge-backups help
 
 PWD = $(shell pwd)
 
@@ -81,6 +81,10 @@ test: ## Make all tests (must be on other PC than the server, outside the my_net
 
 upgrade: force-provision ## Upgrade a setup, see README.md for details
 	echo "Upgrade done!"
+
+purge-backups: ## WARNING, DANGEROUS! this command will erase the backup folder
+	rm -rdf /var/lib/mailad || exit 0
+	rm -rdf /var/backups/mailad || exit 0
 
 help:
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
