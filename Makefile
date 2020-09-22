@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := help
 
-.PHONY : conf clean reset fix-vmail install-purge all force-provision force-certs test_deps test_setup test upgrade purge-backups help
+.PHONY : conf clean reset fix-vmail install-purge all force-provision force-certs test_deps test_setup test upgrade backup purge-backups help
 
 PWD = $(shell pwd)
 
@@ -81,6 +81,11 @@ test: ## Make all tests (must be on other PC than the server, outside the my_net
 
 upgrade: force-provision ## Upgrade a setup, see README.md for details
 	echo "Upgrade done!"
+
+backup: ## Make a backup of the configs to be restored in the event of a failed upgrade or provision
+	scripts/backup.sh
+	# make it working
+	cat /var/lib/mailad/latest_backup > /var/lib/mailad/latest_working_backup
 
 purge-backups: ## WARNING, DANGEROUS! this command will erase the backup folder
 	rm -rdf /var/lib/mailad || exit 0
