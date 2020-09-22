@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := help
 
-.PHONY : conf clean reset fix-vmail install-purge all force-provision force-certs test_deps test_setup test upgrade backup purge-backups help
+.PHONY : conf clean reset fix-vmail install-purge all force-provision force-certs test_deps test_setup test upgrade backup restore purge-backups help
 
 PWD = $(shell pwd)
 
@@ -86,6 +86,9 @@ backup: ## Make a backup of the configs to be restored in the event of a failed 
 	scripts/backup.sh
 	# make it working
 	cat /var/lib/mailad/latest_backup > /var/lib/mailad/latest_working_backup
+
+restore: ## Restore a previous raw backup
+	scripts/restore.sh
 
 purge-backups: ## WARNING, DANGEROUS! this command will erase the backup folder
 	rm -rdf /var/lib/mailad || exit 0
