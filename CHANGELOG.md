@@ -31,6 +31,7 @@ Dates must be YEAR-MONTH-DAY
 - Added: New target, please use it wisely: "purge-backups", yes it will wipe your backups.
 - Added: New target: "restore" allows you to pick one of the recent backups to restore.
 - Changed: Improved the Features file with the new options and updated the section on the painless upgrades
+- Added: There is a optional feature; if you don't disable it will send me (author) a simple email up on provision or upgrading. You will receive a copy of the email, there is no hidden data or intentions. You could get notified about urgent fixes or very outdated setups. This is only for statistics purposes.
 
 ## 2020-09-20
 
