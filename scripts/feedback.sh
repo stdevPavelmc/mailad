@@ -18,7 +18,7 @@ source /etc/mailad/mailad.conf
 
 # Infos to send
 TO="pavelmc@gmail.com,pavel@conas.cu,$ADMINMAIL"
-DATE=`date +"%x %X %Z"`
+DATE=`date +"%Y/%m/%d %X %Z"`
 VERSION=`cat CHANGELOG.md  | grep "##" | head -n 1 | cut -d ' ' -f 2`
 
 # build the email
