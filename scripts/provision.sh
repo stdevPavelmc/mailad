@@ -15,11 +15,9 @@
 #           - services init wwith no fail
 #           - send an email and verify it's placed on the users folder
 
-# locate the conf files
-source "/etc/mailad/mailad.conf"
-
-# source the common config
+# source configs
 source common.conf
+source /etc/mailad/mailad.conf
 
 # postfix files to make postmap, with full path
 PMFILES="/etc/postfix/rules/lista_negra /etc/postfix/rules/everyone_list_check /etc/postfix/aliases/alias_virtuales"
@@ -29,15 +27,24 @@ P=`pwd`
 
 # Control services, argument $1 is the action (start/stop)
 function services() {
-    for s in `echo $SERVICENAMES | xargs` ; do
+    # disble optional AV
+    if [ "$ENABLE_AV" == "no" -o "$ENABLE_AV" == "No" -o "$ENABLE_AV" == "" ] ; then
+        SERVICENAMES=`echo "$SERVICENAMES" | tr ' ' '\n' |  grep -v 'clamav' | xargs`
+    fi
+
+    # disble optional spamassasin
+    if [ "$ENABLE_SPAMD" == "no" -o "$ENABLE_SPAMD" == "No" -o "$ENABLE_SPAMD" == "" ] ; then
+        SERVICENAMES=`echo "$SERVICENAMES" | tr ' ' '\n' |  grep -v 'spamassassin' | xargs`
+    fi
+
+    for S in `echo $SERVICENAMES | xargs` ; do
         # do it
-        echo "Doing $1 with $s..."
-        systemctl --no-pager $1 $s
+        echo "===> Doing $1 with $S..."
+        systemctl --no-pager $1 $S
         sleep 2
-        systemctl --no-pager status $s
+        systemctl --no-pager status $S
     done
 }
-
 # warna about a not supported dovecot version
 function devecot_version {
     echo "==========================================================================="
