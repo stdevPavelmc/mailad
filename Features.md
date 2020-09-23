@@ -21,7 +21,7 @@ This is a long page, so here is an index:
 * [Manual ban list for trouble some address](Features.md#manual-ban-list-for-trouble-some-address)
 * [Manual headers and body checks lists](Features.md#manual-headers-and-body-checks-lists)
 * [Test suite](Features.md#test-suite)
-* [Raw backup and restore options](Features.md#raw_backup_and_restore_options)
+* [Raw backup and restore options](Features.md#raw-backup-and-restore-options)
 * [Painless upgrades](Features.md#painless-upgrades)
 
 ## Low resource footprint
@@ -360,7 +360,7 @@ There is no black magic on that, to migrate to another server you only need to t
 0. Install MailAD (see [INSTALL.md](INSTALL.md) file)
 0. Copy the folder /etc/mailad with all it's contents to the new server
 0. Adjust the vars on `/etc/mailad/mailad.conf` (hostname or so, you can fetch it from any backup file)
-0. Make a "force-provision" to install MailAD with the adjusted configs  
+0. Make a "force-provision" to install MailAD with the adjusted configs.
 
 ## Painless upgrades
 
