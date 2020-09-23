@@ -403,3 +403,11 @@ fi
 
 # start services
 services start
+
+# optional stats
+if [ "$OPT_STATS" == "yes" -o "$OPT_STATS" == "Yes" ] ; then
+    # install swaks to handle the forged email as the mailadmin
+    apt install swaks
+    # and we have stats, thanks
+    ./scripts/feedback.sh
+fi
