@@ -63,7 +63,7 @@ fi
 PORT=""
 if [ "$SECURELDAP" == "" -o "$SECURELDAP" == "no" -o "$SECURELDAP" == "No" ] ; then
     # no sec, plain ldap
-    PORT=398
+    PORT=389
 else
     # secure ldap
     PORT=636
