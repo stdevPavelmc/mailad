@@ -58,17 +58,30 @@ else
     exit 1
 fi
 
-# ping the hostad
-ping -c 3 "$HOSTAD"
+# No ping, some users have VLANs with no ping allowed, we switch to nc to test if
+# the port is open, but we need to know the correct por if LDAP or LDAPS
+PORT=""
+if [ "$SECURELDAP" == "" -o "$SECURELDAP" == "no" -o "$SECURELDAP" == "No" ] ; then
+    # no sec, plain ldap
+    PORT=389
+else
+    # secure ldap
+    PORT=636
+fi
+
+# command
+nc "$HOSTAD" "$PORT" -vz  2> /dev/null
+
+# testing
 R=$?
 if [ $R -eq 0 ] ; then
-    echo "===> The domain host listed in HOSTAD is network reacheable!"
+    echo "===> We can reach the domain server listed in the configs!"
 else
     # fail
     echo "================================================================================="
     echo "ERROR!"
-    echo "    Domain host seems to be down or not reacheable!"
-    echo "    Check your network settings and cable"
+    echo "    We can't connect to the port $PORT of the AD server ($HOSTAD) specified in"
+    echo "    the config, check your network settings, firewalls, etc"
     echo "================================================================================="
     echo " "
 

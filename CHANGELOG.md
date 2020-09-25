@@ -18,6 +18,10 @@ This is a note for developers about the recommended tags to keep track of the ch
 Dates must be YEAR-MONTH-DAY
 -->
 
+## 2020-09-23
+
+- Changed: Some users reported that we use ping to test for the AD-DC and in his envs there is no ping between it's networks, and that makes sense, we switched to test for the specific LDAP port connectivity instead pings (thanks Danny Paula for the tip)
+
 ## 2020-09-22
 
 - Fixed: ClamaV update repository configuration was not right (via freshclam.conf), fixed now: it includes multiple custom mirrors and improve timeouts for slow networks, and some other validations.
