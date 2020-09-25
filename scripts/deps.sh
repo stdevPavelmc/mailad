@@ -46,7 +46,7 @@ if [ -f /etc/os-release ] ; then
                 # success finish
                 echo "done" > deps
             else
-                # not known
+                # install failed
                 echo "==========================================================================="
                 echo "ERROR: The update and install of the dependencies failed, this is mostly"
                 echo "       a problem related to a bad configured repository or a not reacheable"
