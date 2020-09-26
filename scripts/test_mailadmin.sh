@@ -11,17 +11,14 @@
 #       - Telephone = not empty
 #       - WebPage = not empty and end in "/"
 
+# source the common config
+source common.conf
+
 # load conf file
 source /etc/mailad/mailad.conf
 
-# Generate the LDAPURI based on the settings of the mailad.conf file
-if [ "$SECURELDAP" == "" -o "$SECURELDAP" == "no" -o "$SECURELDAP" == "No" ] ; then
-    # not secure
-    LDAPURI="ldap://${HOSTAD}:389/"
-else
-    # use a secure layer
-    LDAPURI="ldaps://${HOSTAD}:636/"
-fi
+# get the LDAP URI
+LDAPURI=`get_ldap_uri`
 
 echo "===> Searching for the user that owns the email: $ADMINMAIL"
 

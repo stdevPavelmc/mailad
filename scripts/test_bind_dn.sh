@@ -13,6 +13,7 @@ source /etc/mailad/mailad.conf
 echo "===> Trying to login into $HOSTAD as $LDAPBINDUSER"
 
 # Generate the LDAPURI based on the settings of the mailad.conf file
+# locally and not using the one in common.conf as this is more rich
 if [ "$SECURELDAP" == "" -o "$SECURELDAP" == "no" -o "$SECURELDAP" == "No" ] ; then
     # not secure
     LDAPURI="ldap://${HOSTAD}:389/"

@@ -9,7 +9,9 @@
 #       - there is not an user with that maildir?
 #       - check the time of the latest modification time
 #           - Warn the sysadmins about the folder, size and stalled time
-
+#
+# NOTE: This file does not link to the common.conf as this is run as standalone
+# in the system...
 
 # load conf files
 source /etc/mailad/mailad.conf

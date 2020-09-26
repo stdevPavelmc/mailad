@@ -10,6 +10,8 @@
 #   - You can create instantaneous group aliases if you fill the "Email"
 #     property of a group
 #
+# NOTE: This file does not link to the common.conf as this is run as standalone
+# in the system...
 
 # load the conf file
 source /etc/mailad/mailad.conf
@@ -30,7 +32,8 @@ if [ -z "$EVERYONE" ] ; then
     echo "# Everyone list DISABLED in config" > /etc/postfix/aliases/auto_aliases
     echo " " >> /etc/postfix/aliases/auto_aliases
 else
-    echo "===> Trying to retrieve all the emails to form login into $HOSTAD as $LDAPBINDUSER"
+    echo "===> Trying to retrieve all the emails to form the EVERYONE list"
+    echo "===> login into $HOSTAD as $LDAPBINDUSER"
 
     # LDAP query
     RESULT=`ldapsearch -H "$LDAPURI" -D "$LDAPBINDUSER" -w "$LDAPBINDPASSWD" -b "$LDAPSEARCHBASE" "(&(objectCategory=person)(objectClass=user)(sAMAccountName=*))" mail | grep "mail: " | grep "@$DOMAIN" | awk '{print $2}' | tr '\n' ','`
@@ -41,7 +44,7 @@ else
         exit 1
     else
         # Success
-        echo "Success, $EVERYONE list created"
+        echo "===> Success, $EVERYONE list created"
         echo "# Everyone list" > /etc/postfix/aliases/auto_aliases
         echo "$EVERYONE     $RESULT" >> /etc/postfix/aliases/auto_aliases
         echo " " >> /etc/postfix/aliases/auto_aliases
@@ -85,7 +88,7 @@ done
 cd /etc/postfix/aliases && postmap auto_aliases
 postfix reload
 
-# check foir the sysadmin group alias if set
+# check for the sysadmin group alias
 if [ "$SYSADMINS" != "" ] ; then
     # search for it on the aliases files
     R=`cat /etc/postfix/aliases/auto_aliases /etc/postfix/aliases/alias_virtuales | awk '{print $1}' | grep "$SYSADMINS"`

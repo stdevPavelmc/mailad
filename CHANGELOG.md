@@ -18,6 +18,11 @@ This is a note for developers about the recommended tags to keep track of the ch
 Dates must be YEAR-MONTH-DAY
 -->
 
+## 2020-09-XX
+
+- Changed: We modified almost all bash script extensively: unifying functions on the common.conf file, that allow us to clean the scripts and improve the overall maintenance of the code.
+- Changed: also fix some low level bugs in the bash scripts as well a comments and print string fixing
+
 ## 2020-09-23
 
 - Changed: Some users reported that we use ping to test for the AD-DC and in his envs there is no ping between it's networks, and that makes sense, we switched to test for the specific LDAP port connectivity instead pings (thanks Danny Paula for the tip)

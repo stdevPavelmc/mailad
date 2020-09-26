@@ -9,51 +9,11 @@
 #   - Create a backup of the postfix and dovecot folders in /var/backups/mailad
 
 # import the common vars
-source ./common.conf
+source common.conf
 
 # some local vars
 LIBFOLDER="/var/lib/mailad"
 LASTWORKINGBACKUPFILE="${LIBFOLDER}/latest_working_backup"
-
-# Control services, argument $1 is the action (start/stop)
-function services() {
-    for s in `echo $SERVICENAMES | xargs` ; do
-        # do it
-        echo "Doing $1 with $s..."
-        systemctl --no-pager $1 $s
-        sleep 2
-        systemctl --no-pager status $s
-    done
-}
-
-# restore a individual files
-function extract() {
-    # 3 Arguments
-    #   1 - backup file full path
-    #   2 - file to extract
-    #   3 - [optional] alternative path to extract
-
-    BKPFILE="$1"
-    FILE="$2"
-    ALT="$3"
-
-    # move to root
-    cd /
-
-    ISTHERE=`tar -ztf ${BKPFILE} | grep "$FILE" | grep -v .db`
-    if [ "$ISTHERE" == "$FILE" ] ; then
-        # it's there
-        if [ "$ALT" != "" ] ; then
-            # place it under $ALT
-            tar -zxvf ${BKPFILE} ${FILE}
-            mv ${FILE} ${ALT}
-            echo "Moved to ${ALT}"
-        else
-            # place it on the default file path
-            tar -zxvf ${BKPFILE} ${FILE}
-        fi
-    fi
-}
 
 # advice
 echo "===> Starting a selective restore of custom data"
@@ -116,6 +76,4 @@ postmap rules/lista_negra
 
 # extract some user modified files
 echo "===> Restarting services to apply changes"
-
-# restart services
 services restart

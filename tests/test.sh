@@ -8,17 +8,14 @@
 #   - Test a few properties of the email server
 #     see the README.md on this directory for deatils
 
+# source the common config
+source common.conf
+
 # load the conf and locate the common
 source /etc/mailad/mailad.conf
 
-# Generate the LDAPURI based on the settings of the mailad.conf file
-if [ "$SECURELDAP" == "" -o "$SECURELDAP" == "no" -o "$SECURELDAP" == "No" ] ; then
-    # not secure
-    LDAPURI="ldap://${HOSTAD}:389/"
-else
-    # use a secure layer
-    LDAPURI="ldaps://${HOSTAD}:636/"
-fi
+# get the LDAP URI
+LDAPURI=`get_ldap_uri`
 
 # check for the local credentials for the test
 if [ -f .mailadmin.auth ] ; then
@@ -66,7 +63,8 @@ function check_email {
     # get the count of emails
     ID=`curl --insecure --silent --url "imaps://${SERVER}/" \
         --user "${2}:${3}" --request "EXAMINE Inbox" \
-        | grep "EXISTS" | awk '{print \$2}'`
+        | grep "EXISTS" | awk '{print $2}'`
+
 
     # cycle from last to back in the last 10 emails to find the fingerprint
     if [ $ID -le 10 ] ; then
