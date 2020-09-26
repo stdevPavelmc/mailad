@@ -33,12 +33,16 @@ cat >in.$$ || { echo Cannot save mail to file; exit $EX_TEMPFAIL; }
 DIS_FOLDER='/etc/mailad'
 DIS_TXT="${DIS_FOLDER}/disclaimer.txt"
 DIS_HTML="${DIS_FOLDER}/disclaimer.html.txt"
+
+# arguments to altermine
+TXT="--disclaimer=${DIS_TXT}"
+HTML="--disclaimer-html=${DIS_TXT}"
+
 # Failsafe, if no disclaimer exit
 if [ -f ${DIS_TXT} ] ; then
     # ok, there is a disclaimer
 
     # HTML one?
-    HTML=""
     if [ -f ${DIS_HTML} ] ; then
         HTML="--disclaimer-html=${DIS_HTML}"
     fi
@@ -47,7 +51,7 @@ if [ -f ${DIS_TXT} ] ; then
     from_domain=`grep -m 1 "From:" in.$$ | cut -d "<" -f 2 | cut -d ">" -f 1 | cut -d "@" -f 2`
 
     if [ `grep -wi "^${from_domain}$" ${DISCLAIMER_DOMAINS}` ]; then
-        ${ALTERMIME} --input=in.$$ --disclaimer=${DIS_TXT} $HTML || { echo Message content rejected; exit $EX_UNAVAILABLE; }
+        ${ALTERMIME} --input=in.$$ $TXT $HTML || { echo Message content rejected; exit $EX_UNAVAILABLE; }
     fi
 fi
 
