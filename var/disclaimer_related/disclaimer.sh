@@ -12,7 +12,8 @@
 
 # Localize these.
 INSPECT_DIR=/var/spool/filter
-SENDMAIL=`which sendmail`
+SENDMAIL=/usr/sbin/sendmail
+ALTERMIME=/usr/bin/altermime
 
 # disclaimer domain to filter
 DISCLAIMER_DOMAINS=/etc/postfix/rules/disclaimer_domains
@@ -33,26 +34,23 @@ DIS_FOLDER='/etc/mailad'
 DIS_TXT="${DIS_FOLDER}/disclaimer.txt"
 DIS_HTML="${DIS_FOLDER}/disclaimer.html.txt"
 # Failsafe, if no disclaimer exit
-if [ ! -f "$DISC_TXT" ] ; then
-    # exit gracefuly
-    $SENDMAIL "$@" <in.$$
-    exit $?
-else
+if [ -f ${DIS_TXT} ] ; then
+    # ok, there is a disclaimer
+
     # HTML one?
-    if [ ! -f "$DISC_HTML" ] ; then
-        DIS_HTML=DIS_TXT
+    HTML=""
+    if [ -f ${DIS_HTML} ] ; then
+        HTML="--disclaimer-html=${DIS_HTML}"
     fi
 
     # Obtain the domain source of the message
     from_domain=`grep -m 1 "From:" in.$$ | cut -d "<" -f 2 | cut -d ">" -f 1 | cut -d "@" -f 2`
 
     if [ `grep -wi "^${from_domain}$" ${DISCLAIMER_DOMAINS}` ]; then
-    /usr/bin/altermime --input=in.$$ \
-                    --disclaimer=${DIS_TXT} \
-                    --disclaimer-html=${DIS_HTML} \
-                    || { echo Message content rejected; exit $EX_UNAVAILABLE; }
+        ${ALTERMIME} --input=in.$$ --disclaimer=${DIS_TXT} $HTML || { echo Message content rejected; exit $EX_UNAVAILABLE; }
     fi
-    $SENDMAIL "$@" <in.$$
 fi
 
+# exit gracefuly
+$SENDMAIL "$@" <in.$$
 exit $?
