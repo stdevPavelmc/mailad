@@ -15,6 +15,7 @@ smtp      inet  n       -       y       -       -       smtpd
 #dnsblog   unix  -       -       y       -       0       dnsblog
 #tlsproxy  unix  -       -       y       -       0       tlsproxy
 submission inet n       -       y       -       -       smtpd
+  -o content_filter=dfilt:
   -o syslog_name=postfix/submission
   -o smtpd_tls_security_level=encrypt
   -o smtpd_sasl_auth_enable=yes
@@ -140,7 +141,7 @@ smtp-amavis unix    -       -       -       -       2     smtp
      -o smtp_tls_note_starttls_offer=no
 
 127.0.0.1:10025 inet n    -       -       -       -     smtpd
-     -o content_filter=dfilt:
+     -o content_filter=
      -o receive_override_options=no_unknown_recipient_checks,no_header_body_checks,no_milters
      -o smtpd_delay_reject=no
      -o smtpd_client_restrictions=permit_mynetworks,reject
