@@ -267,7 +267,7 @@ else
 fi
 
 ### SPAMD setting
-if [ "$ENABLE_SPAMD" == "yes" -o "$ENABLE_SPAMD" == "Yes" -o -z "$ENABLE_SPAMD" ] ; then
+if [ "$ENABLE_SPAMD" == "yes" -o "$ENABLE_SPAMD" == "Yes" ] ; then
     # enable the SPAMD
 
     # notice
@@ -349,6 +349,43 @@ else
 
     # remove the daily job if there
     test -x "/etc/cron.daily/spamassassin" && rm -f /etc/cron.daily/spamassassin
+fi
+
+### altermime
+if [ "$ENABLE_DISCLAIMER" == "yes" -o "$ENABLE_DISCLAIMER" == "Yes" ] ; then
+    # enable the altermime pkg
+
+    # notice
+    echo "===> Enabling Altermime tweaks for disclaimer addition"
+
+    # creating the users's space
+    useradd -r -c "Postfix Filters" -d /var/spool/filter filter
+    mkdir -p /var/spool/filter || exit 0
+    chown filter:filter /var/spool/filter
+    chmod 750 /var/spool/filter
+
+    # copy the script
+    cp var/disclaimer_related/disclaimer.sh /etc/postfix/disclaimer
+    chgrp filter /etc/postfix/disclaimer
+    chmod 750 /etc/postfix/disclaimer
+
+    # file vars
+    DIS_FOLDER='/etc/mailad'
+    DIS_TXT="${DIS_FOLDER}/disclaimer.txt"
+    DIS_HTML="${DIS_FOLDER}/disclaimer.html.txt"
+
+    # copy the default disclaimer if not set (to the user config /etc/mailad/)
+    if [ ! -f ${DIS_TXT} ] ; then
+        # no default disclaimer, copy the template
+        cp var/disclaimer_related/default_disclaimer.txt ${DIS_TXT}
+    fi
+
+    # Add the filtering to the master.cf file in  
+else
+    # Disable the disclaimer
+    
+    # disable the dfilt line in the master.cf file on postfix
+    sed -i s/"content_filter=dfilt:"/"content_filter="
 fi
 
 # start services

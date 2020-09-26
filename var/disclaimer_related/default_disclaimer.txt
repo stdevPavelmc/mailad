@@ -1,0 +1,5 @@
+
+--
+Este es solo un ejemplo de "Descargo de Confidencialidad", si estas viendo esto es porque activaste esta funcionalidad en MailAD pero no has configurado tu archivo en el server.
+
+Para más detalles ve a https://github.com/stdevPavelmc/MailaAD/ o en tu repositorio local de MailAD y revisa el archivo Features.md

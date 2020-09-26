@@ -1,0 +1,58 @@
+#!/bin/bash
+
+# This script is part of MailAD, see https://github.com/stdevPavelmc/mailad/
+# Copyright 2020 Pavel Milanes Costa <pavelmc@gmail.com>
+# LICENCE: GPL 3.0 and later
+#
+# Source and idea taken from here: https://www.howtoforge.com/how-to-automatically-add-a-disclaimer-to-outgoing-emails-with-altermime-postfix-on-debian-squeeze
+# but modified to meet our goals
+#
+# Goals:
+#   - Filter the emails and test if it's from my domain, if so, add the disclaimer
+
+# Localize these.
+INSPECT_DIR=/var/spool/filter
+SENDMAIL=`which sendmail`
+
+# disclaimer domain to filter
+DISCLAIMER_DOMAINS=/etc/postfix/rules/disclaimer_domains
+
+# Exit codes from <sysexits.h>
+EX_TEMPFAIL=75
+EX_UNAVAILABLE=69
+
+# Clean up when done or when aborting.
+trap "rm -f in.$$" 0 1 2 3 15
+
+# Start processing.
+cd $INSPECT_DIR || { echo $INSPECT_DIR does not exist; exit $EX_TEMPFAIL; }
+cat >in.$$ || { echo Cannot save mail to file; exit $EX_TEMPFAIL; }
+
+# Test if we have an html disclaimer to use, or use the default txt
+DIS_FOLDER='/etc/mailad'
+DIS_TXT="${DIS_FOLDER}/disclaimer.txt"
+DIS_HTML="${DIS_FOLDER}/disclaimer.html.txt"
+# Failsafe, if no disclaimer exit
+if [ ! -f "$DISC_TXT" ] ; then
+    # exit gracefuly
+    $SENDMAIL "$@" <in.$$
+    exit $?
+else
+    # HTML one?
+    if [ ! -f "$DISC_HTML" ] ; then
+        DIS_HTML=DIS_TXT
+    fi
+
+    # Obtain the domain source of the message
+    from_domain=`grep -m 1 "From:" in.$$ | cut -d "<" -f 2 | cut -d ">" -f 1 | cut -d "@" -f 2`
+
+    if [ `grep -wi "^${from_domain}$" ${DISCLAIMER_DOMAINS}` ]; then
+    /usr/bin/altermime --input=in.$$ \
+                    --disclaimer=${DIS_TXT} \
+                    --disclaimer-html=${DIS_HTML} \
+                    || { echo Message content rejected; exit $EX_UNAVAILABLE; }
+    fi
+    $SENDMAIL "$@" <in.$$
+fi
+
+exit $?
