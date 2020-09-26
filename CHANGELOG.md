@@ -18,10 +18,12 @@ This is a note for developers about the recommended tags to keep track of the ch
 Dates must be YEAR-MONTH-DAY
 -->
 
-## 2020-09-XX
+## 2020-09-26
 
 - Changed: We modified almost all bash script extensively: unifying functions on the common.conf file, that allow us to clean the scripts and improve the overall maintenance of the code.
-- Changed: also fix some low level bugs in the bash scripts as well a comments and print string fixing
+- Changed: Also fix some low level bugs in the bash scripts as well a comments and print string fixing.
+- Changed: Re-arranged and reviewed Features.md file.
+- Added: Optional disclaimer to outgoing mails from your domain.
 
 ## 2020-09-23
 
