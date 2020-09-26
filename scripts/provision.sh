@@ -353,7 +353,8 @@ fi
 
 ### altermime
 if [ "$ENABLE_DISCLAIMER" == "yes" -o "$ENABLE_DISCLAIMER" == "Yes" ] ; then
-    # enable the altermime pkg
+    # enable disclaimer
+    echo "===> Disclaimer enabled on config, activating..."
 
     # notice
     echo "===> Enabling Altermime tweaks for disclaimer addition"
@@ -379,10 +380,9 @@ if [ "$ENABLE_DISCLAIMER" == "yes" -o "$ENABLE_DISCLAIMER" == "Yes" ] ; then
         # no default disclaimer, copy the template
         cp var/disclaimer_related/default_disclaimer.txt ${DIS_TXT}
     fi
-
-    # Add the filtering to the master.cf file in  
 else
     # Disable the disclaimer
+    echo "===> Disclaimer disabled on config, disabling"
     
     # disable the dfilt line in the master.cf file on postfix
     sed -i s/"content_filter=dfilt:"/"content_filter="
