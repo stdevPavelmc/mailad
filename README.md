@@ -29,7 +29,7 @@ This will provision a mail server in a enterprise as a real server facing the us
 0. In place protection to major and known SSL & mail services attacks.
 0. Optional user privilege access via AD groups (local/national/international).
 0. Automatic alias using AD groups.
-0. Optional disclaimer/notice/advesting on every outgoing mail.
+0. Optional disclaimer/notice/adverting on every outgoing mail.
 0. Manual alias, manual ban, manual headers & body checks.
 0. On demand Backup and restore of raw configurations.
 0. Painless upgrades (Really!).
