@@ -10,6 +10,9 @@
 # Goals:
 #   - Filter the emails and test if it's from my domain, if so, add the disclaimer
 
+# include the local config
+source /etc/mailad/mailad.conf
+
 # Localize these.
 INSPECT_DIR=/var/spool/filter
 SENDMAIL=/usr/sbin/sendmail
@@ -47,11 +50,25 @@ if [ -f ${DIS_TXT} ] ; then
         HTML="--disclaimer-html=${DIS_HTML}"
     fi
 
-    # Obtain the domain source of the message
+    # Obtain the domain source & destination of the message
     from_domain=`grep -m 1 "From:" in.$$ | cut -d "<" -f 2 | cut -d ">" -f 1 | cut -d "@" -f 2`
+    to_domain=`grep -m 1 "To:" in.$$ | cut -d "<" -f 2 | cut -d ">" -f 1 | cut -d "@" -f 2`
 
-    if [ `grep -wi "^${from_domain}$" ${DISCLAIMER_DOMAINS}` ]; then
-        ${ALTERMIME} --input=in.$$ $TXT $HTML || { echo Message content rejected; exit $EX_UNAVAILABLE; }
+    # result vars
+    LOCAL=`grep -wi "^${from_domain}$" ${DISCLAIMER_DOMAINS}`
+    DEST=`grep -wi "^${to_domain}$" ${DISCLAIMER_DOMAINS}`
+
+    # work out
+    if [ "$DISCLAIMER_REACH_LOCALS" == "yes" -o "$DISCLAIMER_REACH_LOCALS" == "Yes" ] ; then
+        # if it's generated here attach the disclaimer, no matter the recipient 
+        if [ "$LOCAL" ]; then
+            ${ALTERMIME} --input=in.$$ $TXT $HTML || { echo Message content rejected; exit $EX_UNAVAILABLE; }
+        fi
+    else
+        # only if generated here and not for here
+        if [ "$LOCAL" -a -z "$DEST" ] ; then
+            ${ALTERMIME} --input=in.$$ $TXT $HTML || { echo Message content rejected; exit $EX_UNAVAILABLE; }
+        fi
     fi
 fi
 
