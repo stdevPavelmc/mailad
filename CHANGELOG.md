@@ -25,6 +25,7 @@ Dates must be YEAR-MONTH-DAY
 - Changed: Re-arranged and reviewed Features.md file.
 - Changed: SpamAssassin is disabled by default, as it can cause problems if there is DNS or Proxy errors; be aware that the problems will trigger between 24 to 72 hours after the install. Extra steps are needed see Features.md 
 - Added: Optional disclaimer to outgoing mails from your domain.
+- Changed: Disclaimer can be configurable to reach local users or not, this on all outgoing mails from the domain.
 
 ## 2020-09-23
 
