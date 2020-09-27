@@ -16,17 +16,6 @@ LIBFOLDER="/var/lib/mailad"
 LASTWORKINGBACKUPFILE="${LIBFOLDER}/latest_working_backup"
 BKPFOLDER="/var/backups/mailad"
 
-# Control services, argument $1 is the action (start/stop)
-function services() {
-    for s in `echo $SERVICENAMES | xargs` ; do
-        # do it
-        echo "Doing $1 with $s..."
-        systemctl --no-pager $1 $s
-        sleep 2
-        systemctl --no-pager status $s
-    done
-}
-
 # fun start here
 LIST=`ls $BKPFOLDER`
 if [ -z "$LIST" ] ; then

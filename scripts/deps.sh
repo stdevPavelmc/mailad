@@ -32,27 +32,38 @@ if [ -f /etc/os-release ] ; then
     # import the file
     source /etc/os-release
 
-    ##### Distros check
+    ## Distros check
+    case "$VERSION_CODENAME" in
+        bionic|focal|buster)
+            # install dependencies
+            export DEBIAN_FRONTEND=noninteractive
+            apt update -q
+            apt-get install ldap-utils dnsutils -qy
 
-    # Ubuntu bionic/focal (18.04/20.04) LTS & Debian Buster10.x
-    if [ "$VERSION_CODENAME" == "bionic" -o "$VERSION_CODENAME" == "focal" -o "$VERSION_CODENAME" == "buster" ] ; then
-        # notice
-        echo "===> We are working with $PRETTY_NAME"
+            # checking for success
+            R=$?
+            if [ $R -eq 0 ] ; then
+                # success finish
+                echo "done" > deps
+            else
+                # install failed
+                echo "==========================================================================="
+                echo "ERROR: The update and install of the dependencies failed, this is mostly"
+                echo "       a problem related to a bad configured repository or a not reacheable"
+                echo "       one, please fix that and try again."
+                echo "==========================================================================="
+                echo "       The deps install process will stop now"
+                echo "==========================================================================="
 
-        # install dependencies
-        env DEBIAN_FRONTEND=noninteractive apt update -q && apt-get install ldap-utils dnsutils -qy
-
-        # checking for success
-        R=$?
-        if [ $R -eq 0 ] ; then
-            # success finish
-            echo "done" > deps
-        fi
-    else
-        # not supported OS
-        os_not_supported
-    fi
-
+                # exit 1
+                exit 1
+            fi
+            ;;
+        *)
+            # not supported OS
+            os_not_supported
+            ;;
+    esac
 else
     # not supported OS
     os_not_supported

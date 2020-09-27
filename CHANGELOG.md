@@ -18,6 +18,15 @@ This is a note for developers about the recommended tags to keep track of the ch
 Dates must be YEAR-MONTH-DAY
 -->
 
+## 2020-09-26
+
+- Changed: We modified almost all bash script extensively: unifying functions on the common.conf file, that allow us to clean the scripts and improve the overall maintenance of the code.
+- Changed: Also fix some low level bugs in the bash scripts as well a comments and print string fixing.
+- Changed: Re-arranged and reviewed Features.md file.
+- Changed: SpamAssassin is disabled by default, as it can cause problems if there is DNS or Proxy errors; be aware that the problems will trigger between 24 to 72 hours after the install. Extra steps are needed see Features.md 
+- Added: Optional disclaimer to outgoing mails from your domain.
+- Changed: Disclaimer can be configurable to reach local users or not, this on all outgoing mails from the domain.
+
 ## 2020-09-23
 
 - Changed: Some users reported that we use ping to test for the AD-DC and in his envs there is no ping between it's networks, and that makes sense, we switched to test for the specific LDAP port connectivity instead pings (thanks Danny Paula for the tip)

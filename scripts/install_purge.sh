@@ -18,25 +18,32 @@ if [ -f /etc/os-release ] ; then
     # import the file
     source /etc/os-release
 
-    ##### Distros check
+    ## Distros check
+    case "$VERSION_CODENAME" in
+        bionic|focal)
+            # load the correct pkgs to be installed
+            craft_pkg_list "ubuntu"
 
-    # Ubuntu bionic/focal (18.04/20.04) LTS
-    if [ "$VERSION_CODENAME" == "bionic" -o "$VERSION_CODENAME" == "focal" ] ; then
-        # notice
-        echo "===> We are working with $PRETTY_NAME"
+            # remove the pkgs
+            debian_remove_pkgs
+            ;;
+        buster)
+            # load the correct pkgs to be installed
+            craft_pkg_list "debian"
 
-        # load the correct pkgs to be installed
-        PKGS=${UBUNTU_PKGS}
-    fi
-
-    # Debian Buster (10.x)
-    if [ "$VERSION_CODENAME" == "buster"  ] ; then
-        # notice
-        echo "===> We are working with $PRETTY_NAME"
-
-        # load the correct pkgs to be installed
-        PKGS=${DEBIAN_PKGS}
-    fi
+            # remove the pkgs
+            debian_remove_pkgs
+            ;;
+        *)
+            echo "==========================================================================="
+            echo "ERROR: This linux box has a not known distro, if you feel this is wrong"
+            echo "       please visit ttps://github.com/stdevPavelmc/mailad/ and raise an"
+            echo "       issue about this."
+            echo "==========================================================================="
+            echo "       The un-install process will stop now"
+            echo "==========================================================================="
+            ;;
+    esac
 else
     # not known
     echo "==========================================================================="
@@ -47,12 +54,3 @@ else
     echo "       The uninstall process will stop now"
     echo "==========================================================================="
 fi
-
-# add and sterisk at the end of the PKGS to wipe al related packages
-P=`echo "$PKGCOMMON $PKGS" | sed s/" "/"* "/g`
-
-# remove all pkgs letting apt build the tree
-env DEBIAN_FRONTEND=noninteractive apt-get purge $P* -y
-
-# autoremove some of the pkgs left over
-env DEBIAN_FRONTEND=noninteractive apt autoremove -y

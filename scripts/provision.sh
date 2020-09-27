@@ -15,11 +15,11 @@
 #           - services init wwith no fail
 #           - send an email and verify it's placed on the users folder
 
-# locate the conf files
-source "/etc/mailad/mailad.conf"
-
 # source the common config
 source common.conf
+
+# locate the conf files
+source "/etc/mailad/mailad.conf"
 
 # postfix files to make postmap, with full path
 PMFILES="/etc/postfix/rules/lista_negra /etc/postfix/rules/everyone_list_check /etc/postfix/aliases/alias_virtuales"
@@ -27,54 +27,12 @@ PMFILES="/etc/postfix/rules/lista_negra /etc/postfix/rules/everyone_list_check /
 # capture the local path
 P=`pwd`
 
-# Control services, argument $1 is the action (start/stop)
-function services() {
-    for s in `echo $SERVICENAMES | xargs` ; do
-        # do it
-        echo "Doing $1 with $s..."
-        systemctl --no-pager $1 $s
-        sleep 2
-        systemctl --no-pager status $s
-    done
-}
-
-# warna about a not supported dovecot version
-function devecot_version {
-    echo "==========================================================================="
-    echo "ERROR: can't locate the dovecot version or it's a not supported one"
-    echo "       detected version is: '$1' and it must be v2.2 or v 2.3"
-    echo "==========================================================================="
-    echo "       The install process will stop now, please fix that"
-    echo "==========================================================================="
-
-    # exit
-    exit 1
-}
-
-# disable AV services
-function disable_av() {
-    # no AV, stop services to save resources
-    systemctl stop clamav-freshclam clamav-daemon
-    systemctl disable clamav-freshclam clamav-daemon
-    systemctl mask clamav-freshclam clamav-daemon
-}
-
-# enable AV services
-function enable_av() {
-    systemctl unmask clamav-freshclam clamav-daemon
-    systemctl enable clamav-freshclam clamav-daemon
-    systemctl restart clamav-freshclam clamav-daemon
-}
-
 #### Some previous processing of the vars
 
 # calc the max size of the message from the MB paramater in the vars
 # plus a little percernt to allow for encoding grow
 t="$MESSAGESIZE"
 MESSAGESIZE=`echo $(( $t * 1132462))`
-
-# stop the runnig services
-services stop
 
 # detect the dovecot version to pick the right files to sync
 DOVERSION=`dpkg -l | grep dovecot-core | awk '{print $3}' | cut -c3-5`
@@ -108,14 +66,8 @@ fi
 # add the escaped sysadmins var
 ESC_SYSADMINS=`echo $SYSADMINS | sed s/"@"/"\\\@"/`
 
-# Generate the LDAPURI based on the settings of the mailad.conf file
-if [ "$SECURELDAP" == "" -o "$SECURELDAP" == "no" -o "$SECURELDAP" == "No" ] ; then
-    # not secure
-    LDAPURI="ldap://${HOSTAD}:389/"
-else
-    # use a secure layer
-    LDAPURI="ldaps://${HOSTAD}:636/"
-fi
+# get the LDAP URI
+LDAPURI=`get_ldap_uri`
 
 # add the mail gateway as a trusted source, aka the mynetworks
 if [ ! -z "$RELAY" ] ; then
@@ -175,8 +127,6 @@ rm -f /etc/cron.daily/daily_mail_resume > /dev/null
 chmod +x "$P/scripts/resume.sh"
 # create the link
 ln -s "$P/scripts/resume.sh" /etc/cron.daily/daily_mail_resume
-# run it
-/etc/cron.daily/daily_mail_resume
 
 # configure the left behind maildirs check/alert/warn
 rm -f /etc/cron.monthly/check_maildirs > /dev/null
@@ -317,7 +267,7 @@ else
 fi
 
 ### SPAMD setting
-if [ "$ENABLE_SPAMD" == "yes" -o "$ENABLE_SPAMD" == "Yes" -o -z "$ENABLE_SPAMD" ] ; then
+if [ "$ENABLE_SPAMD" == "yes" -o "$ENABLE_SPAMD" == "Yes" ] ; then
     # enable the SPAMD
 
     # notice
@@ -401,8 +351,45 @@ else
     test -x "/etc/cron.daily/spamassassin" && rm -f /etc/cron.daily/spamassassin
 fi
 
+### altermime
+if [ "$ENABLE_DISCLAIMER" == "yes" -o "$ENABLE_DISCLAIMER" == "Yes" ] ; then
+    # enable disclaimer
+    echo "===> Disclaimer enabled on config, activating..."
+
+    # notice
+    echo "===> Enabling Altermime tweaks for disclaimer addition"
+
+    # creating the users's space
+    useradd -r -c "Postfix Filters" -d /var/spool/filter filter
+    mkdir -p /var/spool/filter || exit 0
+    chown filter:filter /var/spool/filter
+    chmod 750 /var/spool/filter
+
+    # copy the script
+    cp var/disclaimer_related/disclaimer.sh /etc/postfix/disclaimer
+    chgrp filter /etc/postfix/disclaimer
+    chmod 750 /etc/postfix/disclaimer
+
+    # file vars
+    DIS_FOLDER='/etc/mailad'
+    DIS_TXT="${DIS_FOLDER}/disclaimer.txt"
+    DIS_HTML="${DIS_FOLDER}/disclaimer.html.txt"
+
+    # copy the default disclaimer if not set (to the user config /etc/mailad/)
+    if [ ! -f ${DIS_TXT} ] ; then
+        # no default disclaimer, copy the template
+        cp var/disclaimer_related/default_disclaimer.txt ${DIS_TXT}
+    fi
+else
+    # Disable the disclaimer
+    echo "===> Disclaimer disabled on config, disabling"
+    
+    # disable the dfilt line in the master.cf file on postfix
+    sed -i s/"content_filter=dfilt:"/"content_filter="
+fi
+
 # start services
-services start
+services restart
 
 # optional stats
 if [ "$OPT_STATS" == "yes" -o "$OPT_STATS" == "Yes" ] ; then
