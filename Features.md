@@ -104,7 +104,7 @@ Here you can see an notification sample from the first implementation of this fe
 
 ## Let's Encrypt certificates support
 
-You can now use a Let's Encrypt certificate out of the box, just read the section [Certificate creation](README.md#certificate-creation) in the README.md for details.
+You can now use a Let's Encrypt certificate out of the box, just read the section [Certificate creation](INSTALL.md#certificate-creation) in the INSTALL.md file for details.
 
 [Return to index](Features.md#mailad-features-explained)
 
