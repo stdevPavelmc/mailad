@@ -33,7 +33,7 @@ This solution is working on about 5 sites on production (to my knowledge) and mi
 - CPU cores: 2
 - HDD space: 2GB free (no mail storage space included, as it depends on your needs)
 
-The most demanding feature is the SPAM & AV filtering, without that we can downgrade to 1GB of RAM easily; nevertheless the actual hardware requierements depends on your mail work load and must be adjusted on the spot.
+The most demanding feature is the SPAM & AV filtering, without that we can downgrade to 1GB of RAM easily; nevertheless the actual hardware requirements depends on your mail work load and must be adjusted on the spot.
 
 If you are willing please share some statistics and hardware details with me to update this section (hardware setup, features on, daily/monthly mail flux, etc).
 
@@ -88,7 +88,7 @@ Here we play a trick:
 
 Well no quite, the first time you will not get the maildirs removed, you will be notified about the maildirs that _will be_ erased and the way to activate that feature.
 
-To activate that option you need to set the option `MAILDIRREMOVAL="yes"` in the config file `/etc/mailad/mailad.conf` _(you don't have that option? it's time to upgrade... see [Painless upgrades](Features.md#painless-upgrades))_ and then reprovision the server with this command:
+To activate that option you need to set the option `MAILDIRREMOVAL="yes"` in the config file `/etc/mailad/mailad.conf` _(you don't have that option? it's time to upgrade... see [Painless upgrades](Features.md#painless-upgrades))_ and then re-provision the server with this command:
 
 ``` sh
 make force-provision
@@ -180,7 +180,7 @@ The AV filtering is made optional and it's default value is set to "no" (disable
 
 If you are behind a proxy you must setup the proxy as per the configs in the `/etc/mailad/mailad.conf` file.
 
-**Beware!**: If your DNS is restricted to the local or enterprise network it will not work: you will recieve a notice about it.
+**Beware!**: If your DNS is restricted to the local or enterprise network it will not work: you will receive a notice about it.
 
 The ClamAV updates are linked to a TXT DNS register, if the server can't fetch the content of that register there will no updates available and the system will crash between 24 to 72 hours after the fail.
 
@@ -195,7 +195,7 @@ SpamAssassin will process and keep tracks of the mails but to squeeze the bet pe
 
 If you are behind a proxy you must setup the proxy as per the configs in the `mailad.conf` file.
 
-**Beware!**: If your DNS is restricted to the local or enterprise network it will not work: you will recieve a notice about it.
+**Beware!**: If your DNS is restricted to the local or enterprise network it will not work: you will receive a notice about it.
 
 The SpamAssasin updates are linked to a TXT DNS register, if the server can't fetch the content of that register there will no updates available and the system will crash between 24 to 72 hours after the fail.
 
@@ -233,7 +233,7 @@ See the [AD_Requirements.md](AD_Requirements.md) file for more details on how to
 
 Well, for windows it's a bit more complicated: you need to enable the secure protocols for the LDAP service in windows, [this article from Microsoft](https://support.microsoft.com/en-us/help/321051/how-to-enable-ldap-over-ssl-with-a-third-party-certification-authority) is the starting point of the process; once done and tested that LDAP has secure protocols in place (with the test described in the mentioned article).
 
-When done just swith `SECURELDAP=yes` in the config and run a `make force-provision` to activate the configuration.
+When done just with `SECURELDAP=yes` in the config and run a `make force-provision` to activate the configuration.
 
 [Return to index](Features.md#mailad-features-explained)
 
@@ -258,9 +258,9 @@ If you fail to create the group alias or make a typo in it's name on configurati
 
 ## Optional disclaimer on every outgoing mail
 
-Some times you needs a legal disclaimer on each autgoing mail or a simple signature, or even a footer to promote an event or even a domain name change.
+Some times you needs a legal disclaimer on each outgoing mail or a simple signature, or even a footer to promote an event or even a domain name change.
 
-Now we have that covered, of curse as an optional feature and disabled by default; all you nedd to do is this:
+Now we have that covered, of curse as an optional feature and disabled by default; all you need to do is this:
 
 0. Upgrade the install as stated in the [Painless upgrades](Features.md#painless-upgrades) section _(Just the part to upgrade the config)_
 0. Go to your `/etc/mailad/mailad.conf` file and change the config parameter like this `ENABLE_DISCLAIMER="yes"`.
@@ -268,13 +268,20 @@ Now we have that covered, of curse as an optional feature and disabled by defaul
 0. Now you have a file like this: `/etc/mailad/disclaimer.txt`, modify it as your needs.
 0. If you like to add disclaimer text with images create a `/etc/mailad/disclaimer.html.txt` and fill it with yours _(more on this below)_
 
-A typical email message contains two versions of the message, one in plain text and other in hypertext _(HTML)_ to be formatted in your email client. 
+A typical email message contains two versions of the message, one in plain text and other in hypertext _(HTML)_ to be shown in your email client. But all emails **always** have a plain text section, so the `/etc/mailad/disclaimer.txt` must always be present for it to be added, even the HTML disclaimer. 
 
-The default disclaimer file (`/etc/mailad/disclaimer.txt`) is added to all email in the plain text section; but if no HTML discaimer is specified the plain text one it's added also to the HTML part, and that can lead to bad formatting.
+The default disclaimer file (`/etc/mailad/disclaimer.txt`) is added to all email in the plain text section; but if no HTML disclaimer is specified the plain text one it's added also to the HTML part, and that can lead to bad formatting.
 
-A hypertext disclaimer that displays well must be created by you in `/etc/mailad/disclaimer.html.txt`, with propper HTML formatting _(no html or body tags; think in the content of a div)_.
+A hypertext disclaimer that displays well must be created by you in `/etc/mailad/disclaimer.html.txt`, with proper HTML formatting _(no html or body tags; think in the content of a div)_.
 
-If you want to include images in the HTML disclaimer they must be embedded into the text in base64 format. The easiest way to do that is to create a message with a discalimer (images allowed) in the body of the email and send it to yourself. Upon receiving inspect the raw code of the email and you can copy the incumbent section to the disclaimer and test it.
+If you want to include images in the HTML disclaimer they must be embedded into the text in base64 format. The easiest way to do that is to create a message with a disclaimer (images allowed) in the body of the email and send it to yourself. Upon receiving inspect the raw code of the email and you can copy the incumbent section to the disclaimer and test it.
+
+With the disclaimer we can manoeuver in two ways:
+
+- Add it to all mails originating in my domain, even when the recipient is in my domain; aka the disclaimer will reach local users.
+- Add it to mails originating in my domain and going outside it. Aka local recipients will not see the disclaimer. 
+
+That behavior can be controlled in the `/etc/mailad/mailad.conf` file, look below the disclaimer setting for a variable called `DISCLAIMER_REACH_LOCALS=yes`. Setting "yes" here wil match the first scenario, setting "no" will match the second one.
 
 [Return to index](Features.md#mailad-features-explained)
 
@@ -293,7 +300,7 @@ You have the option to enable a everyone address that has a few cool features:
 
 In some scenarios you are required by law (or specific enterprise restrictions) to limit a group of users to get only national service, it goes beyond in other cases and you need add even users with only local access to the domain.
 
-This is now possible, it's a built-in feature. To activate it you just need to create a new Organizational Unit (OU) and two Groups inside it, the OU must be placed on the root of the ldap search base declared.
+This is now possible, it's a built-in feature. To activate it you just need to create a new Organizational Unit (OU) and two Groups inside it, the OU must be placed on the root of the LDAP search base declared.
 
 **Warning:** The feature is linked to the OU & Group's names, so you must preserve the name, place and casing of all, aka:  _DO NOT MOVE OR RENAME IT_
 
@@ -506,7 +513,7 @@ If al goes well you will be the proud owner of a MailAD instance, or not?
 
 ### GGGRRR! The upgrade failed! how I revert the failed upgrade?
 
-Did you wroted down the backup file name on the second step from the list above right? If not scroll up to the terminal log and search for it.
+Did you wrote down the backup file name on the second step from the list above right? If not scroll up to the terminal log and search for it.
 
 Once you have identified the file, it's just to run the following command:
 
