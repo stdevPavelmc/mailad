@@ -23,6 +23,7 @@ Dates must be YEAR-MONTH-DAY
 - Changed: We modified almost all bash script extensively: unifying functions on the common.conf file, that allow us to clean the scripts and improve the overall maintenance of the code.
 - Changed: Also fix some low level bugs in the bash scripts as well a comments and print string fixing.
 - Changed: Re-arranged and reviewed Features.md file.
+- Changed: SpamAssassin is disabled by default, as it can cause problems if there is DNS or Proxy errors; be aware that the problems will trigger between 24 to 72 hours after the install. Extra steps are needed see Features.md 
 - Added: Optional disclaimer to outgoing mails from your domain.
 
 ## 2020-09-23
