@@ -385,7 +385,6 @@ if [ "$ENABLE_DISCLAIMER" == "yes" -o "$ENABLE_DISCLAIMER" == "Yes" ] ; then
     # file vars
     DIS_FOLDER='/etc/mailad'
     DIS_TXT="${DIS_FOLDER}/disclaimer.txt"
-    DIS_HTML="${DIS_FOLDER}/disclaimer.html.txt"
 
     # copy the default disclaimer if not set (to the user config /etc/mailad/)
     if [ ! -f ${DIS_TXT} ] ; then
@@ -397,7 +396,7 @@ else
     echo "===> Disclaimer disabled on config, disabling"
     
     # disable the dfilt line in the master.cf file on postfix
-    sed -i s/"content_filter=dfilt:"/"content_filter="
+    sed -i s/"content_filter=dfilt:"/"content_filter="/ /etc/postfix/master.cf
 fi
 
 ### DNSBL
