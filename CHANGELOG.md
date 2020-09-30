@@ -21,6 +21,7 @@ Dates must be YEAR-MONTH-DAY
 ## 2020-09-30
 
 - Fixed: The disclaimer feature had a problem in one script with an incomplete sed statement, fixed.
+- Fixed: Altermime was not installed and the mail queue fails, added the install step
 - Fixed: Bug detected, when you use OUs with spaces in the name the alias list via AD groups failed as the parsing failed, fixed.
 
 ## 2020-09-26
