@@ -354,7 +354,10 @@ fi
 ### altermime
 if [ "$ENABLE_DISCLAIMER" == "yes" -o "$ENABLE_DISCLAIMER" == "Yes" ] ; then
     # enable disclaimer
-    echo "===> Disclaimer enabled on config, activating..."
+    echo "===> Disclaimer enabled on config, installing altermime..."
+
+    export DEBIAN_FRONTEND=noninteractive
+    apt-get install $DEBIAN_DISCLAIMER_PKGS -y
 
     # notice
     echo "===> Enabling Altermime tweaks for disclaimer addition"
