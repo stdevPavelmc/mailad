@@ -18,6 +18,11 @@ This is a note for developers about the recommended tags to keep track of the ch
 Dates must be YEAR-MONTH-DAY
 -->
 
+## 2020-09-30
+
+- Added: DNSBL support and a basic config
+- Fixed: A sed instruction from the disclaimer that was not closed properly.
+
 ## 2020-09-26
 
 - Changed: We modified almost all bash script extensively: unifying functions on the common.conf file, that allow us to clean the scripts and improve the overall maintenance of the code.
