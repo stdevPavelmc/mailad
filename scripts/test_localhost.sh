@@ -178,23 +178,50 @@ if [ "$ENABLE_SPAMD" == "yes" -o "$ENABLE_SPAMD" == "Yes" ] ; then
     DBF=`dig TXT +short 2.4.3.updates.spamassassin.org | grep -P "\"[0-9]{5,}\""`
     if [ -z "$DBF" ] ;  then
         # DNS not working
-        echo "=================================================================================="
+        echo "================================================================================"
         echo "ERROR!"
-        echo "    You enabled the SPAMD in the config file but no working DNS server is detected"
-        echo "    in the PC, if we don't have a working DNS to check for updates or internet"
-        echo "    access, we can not provide a working SpamAssassin configuration."
+        echo "    You enabled the SPAMD in the config file but no working DNS server is"
+        echo "    detected in the PC, if we don't have a working DNS to check for updates or"
+        echo "    internet access, we can not provide a working SpamAssassin configuration."
         echo " "
         echo "    Please check your DNS with this command:"
         echo "        dig TXT +short 2.4.3.updates.spamassassin.org"
         echo " "
-        echo "    If that doest not return a number like \"1881840\" you have a not working DNS"
-        echo "    and must set the var 'ENABLE_SPAMD=no' in the /etc/mailad/mailad.conf file"
-        echo "    until you fix that, or the installation will not work."
-        echo "=================================================================================="
+        echo "    If that doest not return a number like \"1881840\" you have a not working"
+        echo "    DNS and must set the var 'ENABLE_SPAMD=no' in the /etc/mailad/mailad.conf"
+        echo "    file until you fix that, or the installation will not work."
+        echo "================================================================================"
         echo " "
 
         exit 1
     else
         echo "===> Working DNS for SpamAssassin found!"
+    fi
+fi
+
+# testing if a working DNS is configured if DNSBL is set to enabled
+if [ "$ENABLE_DNSBL" == "yes" -o "$ENABLE_DNSBL" == "Yes" ] ; then
+    # check if we can get the database fingerprint for spamassassin
+    DNSBL=`dig 2.0.0.127.zen.spamhaus.org +short | grep -P "127"`
+    if [ ! -z "$DNSBL" ] ;  then
+        # DNS not working
+        echo "================================================================================"
+        echo "ERROR!"
+        echo "    You enabled the DNSBL in the config file but no working DNS server is"
+        echo "    detected in the PC, if we don't have a working DNS to ask a DNS query about"
+        echo "    a domain or IP, we can not provide a working DNSBL configuration."
+        echo " "
+        echo "    Please check your DNS with this command:"
+        echo "        dig 2.0.0.127.zen.spamhaus.org +short "
+        echo " "
+        echo "    If that doest not return some 127.* IPs you have a not working DNS and must"
+        echo "    set he var 'ENABLE_DNSBL=no' in the /etc/mailad/mailad.conf file until you"
+        echo "    fix that, or the installation will not work."
+        echo "================================================================================"
+        echo " "
+
+        exit 1
+    else
+        echo "===> Working DNS for DNSBL found!"
     fi
 fi
