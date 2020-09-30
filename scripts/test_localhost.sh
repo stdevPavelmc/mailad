@@ -217,6 +217,11 @@ if [ "$ENABLE_DNSBL" == "yes" -o "$ENABLE_DNSBL" == "Yes" ] ; then
         echo "    If that doest not return some 127.* IPs you have a not working DNS and must"
         echo "    set he var 'ENABLE_DNSBL=no' in the /etc/mailad/mailad.conf file until you"
         echo "    fix that, or the installation will not work."
+        echo " "
+        echo "    Please take into account that using the google DNS is a bad idea when you"
+        echo "    use the DNSBL, as this services has a quota and are registered per DNS"
+        echo "    server and as you can imagine the 8.8.8.8 & 8.8.4.4 server are always over"
+        echo "    due in the quota, please use your ISP DNS server or 1.0.0.1 from CloudFlare"
         echo "================================================================================"
         echo " "
 
