@@ -203,7 +203,7 @@ fi
 if [ "$ENABLE_DNSBL" == "yes" -o "$ENABLE_DNSBL" == "Yes" ] ; then
     # check if we can get the database fingerprint for spamassassin
     DNSBL=`dig 2.0.0.127.zen.spamhaus.org +short | grep -P "127"`
-    if [ ! -z "$DNSBL" ] ;  then
+    if [ -z "$DNSBL" ] ;  then
         # DNS not working
         echo "================================================================================"
         echo "ERROR!"
