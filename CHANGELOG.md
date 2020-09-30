@@ -18,6 +18,13 @@ This is a note for developers about the recommended tags to keep track of the ch
 Dates must be YEAR-MONTH-DAY
 -->
 
+## 2020-09-30
+
+- Fixed: Bug detected, the disclaimer feature had a problem in one script with an incomplete sed statement, fixed.
+- Fixed: Bug detected, altermime was not installed and the mail queue fails, added the install step (this is from the last feature or PR...)
+- Fixed: Bug detected, when you use OUs with spaces in the name the alias list via AD groups failed as the parsing failed, fixed.
+- Fixed: Bug detected, the emails sent via submission was not expanding the virtual_alias_maps, fixed. 
+
 ## 2020-09-26
 
 - Changed: We modified almost all bash script extensively: unifying functions on the common.conf file, that allow us to clean the scripts and improve the overall maintenance of the code.
