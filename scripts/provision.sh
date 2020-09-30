@@ -388,6 +388,16 @@ else
     sed -i s/"content_filter=dfilt:"/"content_filter="
 fi
 
+### DNSBL
+if [ "$ENABLE_DNSBL" == "yes" -o "$ENABLE_DNSBL" == "Yes" ] ; then
+    # DNSBL enabled by default, nothing to do 
+    echo "===> DNSBL filtering enabled"
+else
+    # disable DNSBL in the /etc/postfix/main.cf
+    sed -i s/"postscreen_dnsbl_sites =.*$"/"postscreen_dnsbl_sites ="/ /etc/postfix/main.cf
+    echo "===> DNSBL filtering disabled"
+fi
+
 # start services
 services restart
 
