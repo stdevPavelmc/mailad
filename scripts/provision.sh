@@ -385,7 +385,7 @@ else
     echo "===> Disclaimer disabled on config, disabling"
     
     # disable the dfilt line in the master.cf file on postfix
-    sed -i s/"content_filter=dfilt:"/"content_filter="
+    sed -i s/"content_filter=dfilt:"/"content_filter="/ /etc/postfix/master.cf
 fi
 
 # start services
