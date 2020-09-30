@@ -184,6 +184,18 @@ for f in `echo "$PMFILES" | xargs` ; do
     postmap $f
 done
 
+# local aliases and redirect to sysadmins all local mail
+ALIASES="/etc/aliases"
+rm -rdf $ALIASES || exit 0
+echo "# File modified at provision time, #MailAD" > $ALIASES
+echo "postmaster:       root" >> $ALIASES
+echo "clamav:		root" >> $ALIASES
+echo "amavis:       root" >> $ALIASES
+echo "spamasassin:       root" >> $ALIASES
+echo "root:     $SYSADMINS" >> $ALIASES
+# apply changes
+newaliases
+
 # check for SPF activation
 if [ "$ENABLE_SPF" == "no" -o "$ENABLE_SPF" == "No" -o -z "$ENABLE_SPF" ] ; then
     # disable SPF
