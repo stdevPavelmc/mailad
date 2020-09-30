@@ -366,7 +366,10 @@ fi
 ### altermime
 if [ "$ENABLE_DISCLAIMER" == "yes" -o "$ENABLE_DISCLAIMER" == "Yes" ] ; then
     # enable disclaimer
-    echo "===> Disclaimer enabled on config, activating..."
+    echo "===> Disclaimer enabled on config, installing altermime..."
+
+    export DEBIAN_FRONTEND=noninteractive
+    apt-get install $DEBIAN_DISCLAIMER_PKGS -y
 
     # notice
     echo "===> Enabling Altermime tweaks for disclaimer addition"
@@ -396,7 +399,7 @@ else
     echo "===> Disclaimer disabled on config, disabling"
     
     # disable the dfilt line in the master.cf file on postfix
-    sed -i s/"content_filter=dfilt:"/"content_filter="/ /etc/postfix/master.cf
+    sed -i s/"content_filter=dfilt:"/"content_filter="/g /etc/postfix/master.cf
 fi
 
 ### DNSBL
