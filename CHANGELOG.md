@@ -18,10 +18,16 @@ This is a note for developers about the recommended tags to keep track of the ch
 Dates must be YEAR-MONTH-DAY
 -->
 
-## 2020-09-30
+## 2020-10-01
 
 - Added: DNSBL support and a basic config
-- Fixed: A sed instruction from the disclaimer that was not closed properly.
+
+## 2020-09-30
+
+- Fixed: Bug detected, the disclaimer feature had a problem in one script with an incomplete sed statement, fixed.
+- Fixed: Bug detected, altermime was not installed and the mail queue fails, added the install step (this is from the last feature or PR...)
+- Fixed: Bug detected, when you use OUs with spaces in the name the alias list via AD groups failed as the parsing failed, fixed.
+- Fixed: Bug detected, the emails sent via submission was not expanding the virtual_alias_maps, fixed. 
 
 ## 2020-09-26
 
@@ -153,16 +159,16 @@ Dates must be YEAR-MONTH-DAY
 
 - Added: Users restrictions (local/national/international) based on being members of some AD groups and updated the docs
 - Added: Documented the following features:
-    - Ban list (lista_negra)
-    - Header checks
-    - Body checks
-    - Quotas
-    - Optional everyone list
+  - Ban list (lista_negra)
+  - Header checks
+  - Body checks
+  - Quotas
+  - Optional everyone list
 - Changed: Postfix better organization on the conf folder, now ldap/rules/aliases have it's own folders
 - Fixed: Group script:
-    - Processing was not starting with a clean file and you may get duplicated groups in some scenarios, that's fixed now
-    - Some groups with accent and non standard chars in the names returned in base64 encoding and the script missed that ones, that's fixed now
-    - The everyone group now works only when the sender is a member of the local domain, if not then it will reject the mail for obvious reasons
+  - Processing was not starting with a clean file and you may get duplicated groups in some scenarios, that's fixed now
+  - Some groups with accent and non standard chars in the names returned in base64 encoding and the script missed that ones, that's fixed now
+  - The everyone group now works only when the sender is a member of the local domain, if not then it will reject the mail for obvious reasons
 
 ## 2020-06-26
 
