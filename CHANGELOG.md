@@ -21,6 +21,8 @@ Dates must be YEAR-MONTH-DAY
 ## 2020-10-01
 
 - Added: DNSBL support and a basic config
+- Fixed: Remove the hourly script that checks for AV activation if not AV is enabled, that's a cleaning trick, if you are changing settings and re-provisioning frequently it may be left behind
+- Fixed: Same scenario of above, if you are on the move it can be left installed when no disclaimer is in use
 
 ## 2020-09-30
 

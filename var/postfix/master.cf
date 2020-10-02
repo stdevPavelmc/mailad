@@ -27,6 +27,7 @@ submission inet n       -       y       -       -       smtpd
   -o milter_macro_daemon_name=ORIGINATING
 
 smtps     inet  n       -       y       -       -       smtpd
+  -o receive_override_options=
   -o syslog_name=postfix/smtps
   -o smtpd_tls_wrappermode=yes
   -o smtpd_tls_security_level=encrypt
