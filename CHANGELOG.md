@@ -18,6 +18,12 @@ This is a note for developers about the recommended tags to keep track of the ch
 Dates must be YEAR-MONTH-DAY
 -->
 
+## 2020-10-01
+
+- Added: DNSBL support and a basic config
+- Fixed: Remove the hourly script that checks for AV activation if not AV is enabled, that's a cleaning trick, if you are changing settings and re-provisioning frequently it may be left behind
+- Fixed: Same scenario of above, if you are on the move it can be left installed when no disclaimer is in use
+
 ## 2020-09-30
 
 - Fixed: Bug detected, the disclaimer feature had a problem in one script with an incomplete sed statement, fixed.
@@ -155,16 +161,16 @@ Dates must be YEAR-MONTH-DAY
 
 - Added: Users restrictions (local/national/international) based on being members of some AD groups and updated the docs
 - Added: Documented the following features:
-    - Ban list (lista_negra)
-    - Header checks
-    - Body checks
-    - Quotas
-    - Optional everyone list
+  - Ban list (lista_negra)
+  - Header checks
+  - Body checks
+  - Quotas
+  - Optional everyone list
 - Changed: Postfix better organization on the conf folder, now ldap/rules/aliases have it's own folders
 - Fixed: Group script:
-    - Processing was not starting with a clean file and you may get duplicated groups in some scenarios, that's fixed now
-    - Some groups with accent and non standard chars in the names returned in base64 encoding and the script missed that ones, that's fixed now
-    - The everyone group now works only when the sender is a member of the local domain, if not then it will reject the mail for obvious reasons
+  - Processing was not starting with a clean file and you may get duplicated groups in some scenarios, that's fixed now
+  - Some groups with accent and non standard chars in the names returned in base64 encoding and the script missed that ones, that's fixed now
+  - The everyone group now works only when the sender is a member of the local domain, if not then it will reject the mail for obvious reasons
 
 ## 2020-06-26
 
