@@ -211,8 +211,11 @@ fi
 
 ### check if AV activation is needed
 if [ "$ENABLE_AV" == "no" -o "$ENABLE_AV" == "No" -o -z "$ENABLE_AV" ] ; then
-    # diable AV services to save resources
+    # disable AV services to save resources
     disable_av
+
+    # remove the link for the test of AV activation
+    rm -f /etc/cron.hourly/av_filter_on_clamav_alive || exit 0
 else
     # subject config file
     FILE="/etc/clamav/freshclam.conf"
@@ -271,7 +274,7 @@ else
     enable_av
 
     # set the hourly task to activate the filtering when fresclam end the update
-    rm -f /etc/cron.hourly/av_filter_on_clamav_alive
+    rm -f /etc/cron.hourly/av_filter_on_clamav_alive || exit 0
     ln -s "$P/var/clamav-related/activate_clamav_on_alive.sh" /etc/cron.hourly/av_filter_on_clamav_alive
     echo "===> AV filtering provision is in place, but activation is delayed, we must wait for frashclam"
     echo "===> to update the AV database before enabling it or you will lose emails in the mean time"
