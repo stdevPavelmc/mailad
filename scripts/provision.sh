@@ -397,7 +397,11 @@ if [ "$ENABLE_DISCLAIMER" == "yes" -o "$ENABLE_DISCLAIMER" == "Yes" ] ; then
 else
     # Disable the disclaimer
     echo "===> Disclaimer disabled on config, disabling"
-    
+
+    # remove the altermime package
+    export DEBIAN_FRONTEND=noninteractive
+    apt-get purge $DEBIAN_DISCLAIMER_PKGS -y | exit 0
+
     # disable the dfilt line in the master.cf file on postfix
     sed -i s/"content_filter=dfilt:"/"content_filter="/g /etc/postfix/master.cf
 fi
