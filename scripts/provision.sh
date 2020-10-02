@@ -184,6 +184,18 @@ for f in `echo "$PMFILES" | xargs` ; do
     postmap $f
 done
 
+# local aliases and redirect to sysadmins all local mail
+ALIASES="/etc/aliases"
+rm -rdf $ALIASES || exit 0
+echo "# File modified at provision time, #MailAD" > $ALIASES
+echo "postmaster:       root" >> $ALIASES
+echo "clamav:		root" >> $ALIASES
+echo "amavis:       root" >> $ALIASES
+echo "spamasassin:       root" >> $ALIASES
+echo "root:     $SYSADMINS" >> $ALIASES
+# apply changes
+newaliases
+
 # check for SPF activation
 if [ "$ENABLE_SPF" == "no" -o "$ENABLE_SPF" == "No" -o -z "$ENABLE_SPF" ] ; then
     # disable SPF
@@ -199,8 +211,11 @@ fi
 
 ### check if AV activation is needed
 if [ "$ENABLE_AV" == "no" -o "$ENABLE_AV" == "No" -o -z "$ENABLE_AV" ] ; then
-    # diable AV services to save resources
+    # disable AV services to save resources
     disable_av
+
+    # remove the link for the test of AV activation
+    rm -f /etc/cron.hourly/av_filter_on_clamav_alive || exit 0
 else
     # subject config file
     FILE="/etc/clamav/freshclam.conf"
@@ -259,7 +274,7 @@ else
     enable_av
 
     # set the hourly task to activate the filtering when fresclam end the update
-    rm -f /etc/cron.hourly/av_filter_on_clamav_alive
+    rm -f /etc/cron.hourly/av_filter_on_clamav_alive || exit 0
     ln -s "$P/var/clamav-related/activate_clamav_on_alive.sh" /etc/cron.hourly/av_filter_on_clamav_alive
     echo "===> AV filtering provision is in place, but activation is delayed, we must wait for frashclam"
     echo "===> to update the AV database before enabling it or you will lose emails in the mean time"
@@ -376,7 +391,6 @@ if [ "$ENABLE_DISCLAIMER" == "yes" -o "$ENABLE_DISCLAIMER" == "Yes" ] ; then
     # file vars
     DIS_FOLDER='/etc/mailad'
     DIS_TXT="${DIS_FOLDER}/disclaimer.txt"
-    DIS_HTML="${DIS_FOLDER}/disclaimer.html.txt"
 
     # copy the default disclaimer if not set (to the user config /etc/mailad/)
     if [ ! -f ${DIS_TXT} ] ; then
@@ -386,9 +400,23 @@ if [ "$ENABLE_DISCLAIMER" == "yes" -o "$ENABLE_DISCLAIMER" == "Yes" ] ; then
 else
     # Disable the disclaimer
     echo "===> Disclaimer disabled on config, disabling"
-    
+
+    # remove the altermime package
+    export DEBIAN_FRONTEND=noninteractive
+    apt-get purge $DEBIAN_DISCLAIMER_PKGS -y | exit 0
+
     # disable the dfilt line in the master.cf file on postfix
     sed -i s/"content_filter=dfilt:"/"content_filter="/g /etc/postfix/master.cf
+fi
+
+### DNSBL
+if [ "$ENABLE_DNSBL" == "yes" -o "$ENABLE_DNSBL" == "Yes" ] ; then
+    # DNSBL enabled by default, nothing to do 
+    echo "===> DNSBL filtering enabled"
+else
+    # disable DNSBL in the /etc/postfix/main.cf
+    sed -i s/"postscreen_dnsbl_sites =.*$"/"postscreen_dnsbl_sites ="/ /etc/postfix/main.cf
+    echo "===> DNSBL filtering disabled"
 fi
 
 # start services
