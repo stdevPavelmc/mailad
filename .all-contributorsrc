@@ -33,6 +33,16 @@
       "contributions": [
         "ideas"
       ]
+    },
+    {
+      "login": "Koratsuki",
+      "name": "Koratsuki",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/20727446?v=4",
+      "profile": "https://github.com/Koratsuki",
+      "contributions": [
+        "ideas",
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
