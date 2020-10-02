@@ -228,13 +228,13 @@ This lists are a curated community effort to list any offending DNS name or IP, 
 - [psbl.surriel.com](https://psbl.org/)
 - [bl.spamcop.net"](https://www.spamcop.net/)
 
-As you have imagined, this is only useful if you are on a server that it internet facing or any other NAT trick that makes your server the first to receive emails from the internet directly.
+As you have imagined, this is only useful if you are on a server that is internet facing or any other NAT trick that makes your server the first to receive emails from the internet directly.
 
-If you have a mail gateway or are in a institutional VPN and all mail is delivered to you via a smart host or relay, then please don't enable it as it's a waste of time, CPU and bandwidth.
+If you have a mail gateway or in a institutional VPN and all mail is delivered to you via a smart host or relay, then please don't enable it as it's a waste of time, CPU and bandwidth.
 
 As usual there is no free lunch, this free servers that are pre-configured in mailad has limits or quotas to limit the "free" usage (they have a commercial side to earn money also) the most usual pitfall is to use a very visible DNS server, so if many people use that DNS server it will trigger the quota and your service is disabled.
 
-The usual DNS on this category are the Google ones  `8.8.8.8` & `8.8.4.4`, don't use that DNS servers in any mail server that users DNSBL. Instead we recommend the use of your ISP  provided DNS or the CloudFlare DNS server pool: `1.0.0.1` & `1.1.1.1` this server are a geographical & round robin pool, so the chances you get using one that got triggered the quota is low.
+The usual DNS on this category are the Google ones `8.8.8.8` & `8.8.4.4`, don't use that DNS servers in any mail server that users DNSBL. Instead we recommend the use of your ISP provided DNS or the CloudFlare DNS server pool: `1.0.0.1` & `1.1.1.1` this server are a geographical & round robin pool, so the chances you get using one that got triggered the quota is low.
 
 You can add or remove more servers to the list of DNSBL servers, even if you buy commercial support for it, just include it on the variable `DNSBL_LIST` to know more of the format, please refers to the postfix documentation about the configuration variable named "postscreen_dnsbl_sites"
 
