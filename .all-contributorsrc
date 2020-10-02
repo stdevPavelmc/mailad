@@ -14,6 +14,16 @@
         "test",
         "ideas"
       ]
+    },
+    {
+      "login": "HugoFlorentino",
+      "name": "HugoFlorentino",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/11479345?v=4",
+      "profile": "https://github.com/HugoFlorentino",
+      "contributions": [
+        "ideas",
+        "example"
+      ]
     }
   ],
   "contributorsPerLine": 7,
