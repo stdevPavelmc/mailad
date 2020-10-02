@@ -2,7 +2,10 @@
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
 [![All Contributors](https://img.shields.io/badge/all_contributors-3-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
-[![Chat on Telegram](https://img.shields.io/badge/Chat%20on-Telegram-brightgreen.svg)](https://t.me/MailAD_dev) [![GitHub Issues](https://img.shields.io/github/issues/stdevPavelmc/mailad.svg)](https://github.com/stdevPavelmc/mailad/issues)
+
+[![Chat on Telegram](https://img.shields.io/badge/Chat%20on-Telegram-brightgreen.svg)](https://t.me/MailAD_dev) [![GitHub Issues](https://img.shields.io/github/issues/stdevPavelmc/mailad.svg)](https://github.com/stdevPavelmc/mailad/issues) [![GitHub Issues](https://img.shields.io/github/repo-size/stdevPavelmc/mailad.svg)](https://github.com/stdevPavelmc/mailad/) 
+
+/github/languages/code-size/:user/:repo
 
 This is a handy tool to provision a mail server on linux linked to an Active Directory server (Samba or Windows, it does not care) with some constraints in mind, as this is a typical mail config to be used in Cuba under certain laws and security requirements.
 
