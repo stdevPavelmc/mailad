@@ -10,7 +10,7 @@ This is a handy tool to provision a mail server on linux linked to an Active Dir
 
 See a simple install on this "video":
 
-<script src="https://asciinema.org/a/fD1LuVLfeb8RPCHOIgbR1J9d8.js" id="asciicast-14" async data-autoplay="true"></script>
+<div><script src="https://asciinema.org/a/fD1LuVLfeb8RPCHOIgbR1J9d8.js" id="asciicast-14" async data-autoplay="true"></script></div>
 
 ## Rationale
 
