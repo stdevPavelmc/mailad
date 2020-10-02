@@ -8,6 +8,10 @@
 
 This is a handy tool to provision a mail server on linux linked to an Active Directory server (Samba or Windows, it does not care) with some constraints in mind, as this is a typical mail config to be used in Cuba under certain laws and security requirements.
 
+See a simple install on this "video":
+
+<script src="https://asciinema.org/a/fD1LuVLfeb8RPCHOIgbR1J9d8.js" id="asciicast-14" async data-autoplay="true"></script>
+
 ## Rationale
 
 This repository is intended to be cloned on your fresh OS install under `/root` (you can use a LXC instance, VM, CT, etc) and setup on a main conf file as per the file comments, then run the steps on a makefile and follow the steps to configure your server.
