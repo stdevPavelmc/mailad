@@ -1,0 +1,25 @@
+{
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": false,
+  "contributors": [
+    {
+      "login": "danny920825",
+      "name": "danny920825",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/33090194?v=4",
+      "profile": "https://github.com/danny920825",
+      "contributions": [
+        "test",
+        "ideas"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7,
+  "projectName": "mailad",
+  "projectOwner": "stdevPavelmc",
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "skipCi": true
+}
