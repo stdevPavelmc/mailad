@@ -13,7 +13,7 @@ This is a long page, so here is an index:
 * [Dovecot filtering](Features.md#dovecot-filtering-sieve)
 * [Advanced mail filtering: extensions, mime types and optionals AV, SPAM and SPF](Features.md#advanced-mail-filtering-extensions-mime-types-and-optionals-av-spam-and-spf)
 * [Centralized mail storage](Features.md#centralized-mail-storage)
-* [Optional DNSBL support](Features.md#optional-dnsbl-support)
+* [Optional SPAM protection extras via DNSBL and other tricks](Features.md#optional-spam-protection-extras-via-dnsbl-and-other-tricks)
 * [Optional encryption for LDAP communications](Features.md#optional-encryption-for-LDAP-communications)
 * [Optional notifications to groups instead of only the mail admin](Features.md#optional-notifications-to-groups-instead-of-only-the-mail-admin)
 * [Optional disclaimer on every outgoing mail](Features.md#optional-disclaimer-on-every-outgoing-mail)
@@ -218,25 +218,34 @@ If you are using a virtualization solution you can configure the local mail stor
 
 [Return to index](Features.md#mailad-features-explained)
 
-## Optional DNSBL support
+## Optional SPAM protection extras via DNSBL and other tricks
 
 The DNSBL (DNS Black List) feature is simple: it makes postfix to consult the originating IP of incoming mail against a few free public list in the internet to decide if it accept the email. As simple as that, and of curse it does not play through that filter the address listed on the `mynetworks` postfix variable.
 
-This lists are a curated community effort to list any offending DNS name or IP, we use this ones:
+This lists are a curated community effort to list any offending DNS name or IP (mostly known spammers and non mail enabled networks), we use this ones:
 
 - [zen.spamhaus.org](https://www.spamhaus.org)
 - [psbl.surriel.com](https://psbl.org/)
 - [bl.spamcop.net"](https://www.spamcop.net/)
+- [bl.spameatingmonkey.net](https://www.spameatingmonkey.net)
 
 As you have imagined, this is only useful if you are on a server that is internet facing or any other NAT trick that makes your server the first to receive emails from the internet directly.
 
-If you have a mail gateway or in a institutional VPN and all mail is delivered to you via a smart host or relay, then please don't enable it as it's a waste of time, CPU and bandwidth.
+**If you have a mail gateway or in a institutional VPN and all mail is delivered to you via a smart host or relay, then please don't enable it as it's a waste of time, CPU and bandwidth; and IT WILL CAUSE MAIL LOSS.**
 
 As usual there is no free lunch, this free servers that are pre-configured in mailad has limits or quotas to limit the "free" usage (they have a commercial side to earn money also) the most usual pitfall is to use a very visible DNS server, so if many people use that DNS server it will trigger the quota and your service is disabled.
 
 The usual DNS on this category are the Google ones `8.8.8.8` & `8.8.4.4`, don't use that DNS servers in any mail server that users DNSBL. Instead we recommend the use of your ISP provided DNS or the CloudFlare DNS server pool: `1.0.0.1` & `1.1.1.1` this server are a geographical & round robin pool, so the chances you get using one that got triggered the quota is low.
 
 You can add or remove more servers to the list of DNSBL servers, even if you buy commercial support for it, just include it on the variable `DNSBL_LIST` to know more of the format, please refers to the postfix documentation about the configuration variable named "postscreen_dnsbl_sites"
+
+Also, there is a list or other nice features to fight SPAM, all of them related to the service that makes possible the DNSBL, a list of them here:
+
+- No pipelining is allowed.
+- Pre greet message is mandatory.
+- Forbids bare new line in the communication.
+- Disables the verify command.
+- No auth is allowed over port 25.
 
 [Return to index](Features.md#mailad-features-explained)
 
