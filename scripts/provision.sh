@@ -410,13 +410,37 @@ else
 fi
 
 ### DNSBL
+FILE='/etc/postfix/master.cf'
 if [ "$ENABLE_DNSBL" == "yes" -o "$ENABLE_DNSBL" == "Yes" ] ; then
-    # DNSBL enabled by default, nothing to do 
-    echo "===> DNSBL filtering enabled"
+    # DNSBL is enabled by default in the main cf
+
+    # notice
+    echo "===> Enabling DNSBL filtering "
+
+    # disable simple smtp
+    sed -i s/"^smtp      inet  n       -       y       -       -       smtpd"/"#smtp      inet  n       -       y       -       -       smtpd"/ ${FILE}
+
+    # enables postscreen, smtpd, dnsblog & tlsproxy
+    sed -i s/"^#smtp      inet  n       -       y       -       1       postscreen"/"smtp      inet  n       -       y       -       1       postscreen"/ ${FILE}
+    sed -i s/"^#smtpd     pass  -       -       y       -       -       smtpd"/"smtpd     pass  -       -       y       -       -       smtpd"/ ${FILE}
+    sed -i s/"^#dnsblog   unix  -       -       y       -       0       dnsblog"/"dnsblog   unix  -       -       y       -       0       dnsblog"/ ${FILE}
+    sed -i s/"^#tlsproxy  unix  -       -       y       -       0       tlsproxy"/"tlsproxy  unix  -       -       y       -       0       tlsproxy"/ ${FILE}
+
 else
+    # notice
+    echo "===> DNSBL filtering disabled"
+
     # disable DNSBL in the /etc/postfix/main.cf
     sed -i s/"postscreen_dnsbl_sites =.*$"/"postscreen_dnsbl_sites ="/ /etc/postfix/main.cf
-    echo "===> DNSBL filtering disabled"
+
+    # enables simple smtp
+    sed -i s/"^#smtp      inet  n       -       y       -       -       smtpd"/"smtp      inet  n       -       y       -       -       smtpd"/ ${FILE}
+
+    # disables postscreen, smtpd, dnsblog & tlsproxy
+    sed -i s/"^smtp      inet  n       -       y       -       1       postscreen"/"#smtp      inet  n       -       y       -       1       postscreen"/ ${FILE}
+    sed -i s/"^smtpd     pass  -       -       y       -       -       smtpd"/"#smtpd     pass  -       -       y       -       -       smtpd"/ ${FILE}
+    sed -i s/"^dnsblog   unix  -       -       y       -       0       dnsblog"/"#dnsblog   unix  -       -       y       -       0       dnsblog"/ ${FILE}
+    sed -i s/"^tlsproxy  unix  -       -       y       -       0       tlsproxy"/"#tlsproxy  unix  -       -       y       -       0       tlsproxy"/ ${FILE}
 fi
 
 # start services
