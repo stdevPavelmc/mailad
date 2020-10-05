@@ -412,8 +412,6 @@ fi
 ### DNSBL
 FILE='/etc/postfix/master.cf'
 if [ "$ENABLE_DNSBL" == "yes" -o "$ENABLE_DNSBL" == "Yes" ] ; then
-    # DNSBL is enabled by default in the main cf
-
     # notice
     echo "===> Enabling DNSBL filtering "
 
@@ -425,13 +423,9 @@ if [ "$ENABLE_DNSBL" == "yes" -o "$ENABLE_DNSBL" == "Yes" ] ; then
     sed -i s/"^#smtpd     pass  -       -       y       -       -       smtpd"/"smtpd     pass  -       -       y       -       -       smtpd"/ ${FILE}
     sed -i s/"^#dnsblog   unix  -       -       y       -       0       dnsblog"/"dnsblog   unix  -       -       y       -       0       dnsblog"/ ${FILE}
     sed -i s/"^#tlsproxy  unix  -       -       y       -       0       tlsproxy"/"tlsproxy  unix  -       -       y       -       0       tlsproxy"/ ${FILE}
-
 else
     # notice
     echo "===> DNSBL filtering disabled"
-
-    # disable DNSBL in the /etc/postfix/main.cf
-    sed -i s/"postscreen_dnsbl_sites =.*$"/"postscreen_dnsbl_sites ="/ /etc/postfix/main.cf
 
     # enables simple smtp
     sed -i s/"^#smtp      inet  n       -       y       -       -       smtpd"/"smtp      inet  n       -       y       -       -       smtpd"/ ${FILE}
