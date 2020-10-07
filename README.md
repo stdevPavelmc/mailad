@@ -6,6 +6,8 @@
 [![All Contributors](https://img.shields.io/badge/all_contributors-4-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
+This page is also available in the following languages: [Español](i10n/README.es.md) / [German](i10n/README.de.md)
+
 This is a handy tool to provision a mail server on linux linked to an Active Directory server (Samba or Windows, it does not care) with some constraints in mind, as this is a typical mail config to be used in Cuba under certain laws and security requirements. You can see a simple provision in [this asciinema movie](https://asciinema.org/a/fD1LuVLfeb8RPCHOIgbR1J9d8).
 
 ## Rationale
@@ -58,6 +60,8 @@ Remember the comment at top of the page about _"...with some constraints in mind
     - Port 25 (SMTP) is used to receive incoming traffic from the outside world or from a mail gateway.
     - Port 587 (SUBMISSION) is used to receive emails from the users to deliver locally or relay to other servers.
     - Port 465 (SMTPS) is used like the 587 but is only enabled as a legacy option, it's use is discourage in favor of the port 587.
+    - Port 993 (IMAPS) the preffered metod to retrieve the email form the server.
+    - Port 995 (POP3S) used like the 993, but discouraged as IMAPS is better (unless you are in a very slow link)
 
 ## How to install or try it?
 
