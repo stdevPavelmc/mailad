@@ -34,15 +34,16 @@ This will provision a mail server in a enterprise as a real server facing the us
 
 0. Low resource footprint.
 0. Advanced (and optional) mail filtering features that includes attachments, SPF, AntiVirus & Spam.
-0. Daily mail traffic summary in you inbox.
 0. Encrypted LDAP communication as an option.
 0. In place protection to major and known SSL & mail services attacks.
-0. Optional user privilege access via AD groups (local/national/international).
 0. Automatic alias using AD groups.
-0. Optional disclaimer/notice/adverting on every outgoing mail.
 0. Manual alias, manual ban, manual headers & body checks.
 0. On demand Backup and restore of raw configurations.
-0. Painless upgrades (Really!).
+0. Really painless upgrades.
+0. Daily mail traffic summary in you inbox.
+0. Optional user privilege access via AD groups (local/national/international).
+0. Optional disclaimer/notice/adverting on every outgoing mail.
+0. Optional aggressive SPAM fight measures.
 
 ## TODO
 
@@ -57,7 +58,10 @@ Remember the comment at top of the page about _"...with some constraints in mind
 0. Your user base and config came from an Active Directory (AD from now on) as mentioned, we prefer a Samba AD but works on Windows too; see [AD requirements for this tool](AD_Requirements.md)
 0. The mail storage will be a folder in `/home/vmail`, all mail will belong to a user named `vmail` with uid:5000 & gid:5000. Tip: that folder can be a NFS mount or any other type of network storage (configurable)
 0. You use a Windows PC to control and manage the domain (must be a domain member and have the RSAT installed and activated), we recommend a Windows 10 LTSC/Professional
-0. The server allows all communications protocols by default _(POP3, POP3S, IMAP, IMAPS, SMTP, SSMTP and SUBMISSION)_ it's **up to you** to restrict the users access in a way that them just use the secure versions (POP3S, IMAPS & SUBMISSION. Take into account that the SMTP service must be used only to send/receive the emails from the outside world)
+0. The communication with the server is done in this way: (See [this question](FAQ.md#what-ports-i-need-to-get-open-to-make-sure-the-servers-works-ok) on the FAQ file to know more)
+    - Port 25 (SMTP) is used to receive incoming traffic from the outside world or from a mail gateway.
+    - Port 587 (SUBMISSION) is used to receive emails from the users to deliver locally or relay to other servers.
+    - Port 465 (SMTPS) is used like the 587 but is only enabled as a legacy option, it's use is discourage in favor of the port 587.
 
 ## How to install or try it?
 

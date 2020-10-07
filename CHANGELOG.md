@@ -18,6 +18,13 @@ This is a note for developers about the recommended tags to keep track of the ch
 Dates must be YEAR-MONTH-DAY
 -->
 
+## 2020-10-04
+
+- Fixed: Bug detected, the DNSBL was not working, I missed the activation of the postscreen engine in postfix on the provision script (dumb me, I activated it on my local env and forgot to include it on the provision script) fixed now.
+- Added: New SPAM fight weapons related to the DNSBL & postscreen in postfix (see Features.md file about DNSBL)
+- Added: improved the FAQs with details of port usage.
+- Modified: README, re-arranged the featured features and improve the port usage in the readme
+
 ## 2020-10-01
 
 - Added: DNSBL support and a basic config
