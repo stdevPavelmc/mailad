@@ -1,6 +1,6 @@
 # MailAD installation instructions
 
-Check this [simple console recording](https://asciinema.org/a/fD1LuVLfeb8RPCHOIgbR1J9d8){:target="_blank"} to see how looks a simple install.
+Check this <a href="https://asciinema.org/a/fD1LuVLfeb8RPCHOIgbR1J9d8" target="_blank">console recording</a> to see how looks a simple install.
 
 ## Introduction & checks
 
