@@ -1,6 +1,8 @@
 <!-- Original translation by: @stdevPavelmc "Pavel Milanes" <pavelmc@gmail.com> -->
 # Translations
 
+This file is translated also in [ [Español](i18n/Translations.es.md) ]
+
 This document contains the guidelines for MailAD Translations
 
 ## Goal
