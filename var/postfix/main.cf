@@ -146,12 +146,24 @@ mail_local_out = check_recipient_access regexp:/etc/postfix/rules/filter_loc
 ## Everyone
 everyone_list = check_sender_access regexp:/etc/postfix/rules/filter_loc
 
-# postscreen, filtro para smtp (25) para clientes jodedores
-#postscreen_command_filter = pcre:${config_directory}/rules/command_filter.pcre
+#### POSTSCREEN filtering on port 25
 # By default postscreen withelist the mynetworks net.
 postscreen_access_list = permit_mynetworks
+# action for bad servers in blacklist
+postscreen_blacklist_action = drop
+# if new lines, bad dog!
+postscreen_bare_newline_action = drop
+# disable verify
+postscreen_disable_vrfy_command = yes
+# enforce the greet action
+postscreen_greet_action = drop
+# no pipelining
+postscreen_pipelining_action = drop
+# no auth in SMTP(25)
+postscreen_command_filter = pcre:/etc/postfix/rules/command_filter.pcre
 # DNSRBL in postscreen
-postscreen_dnsbl_threshold = 2
+postscreen_dnsbl_threshold = 3
+postscreen_dnsbl_action = enforce
 postscreen_dnsbl_sites = _DNSBL_LIST_
 
 # restricciones del que envia

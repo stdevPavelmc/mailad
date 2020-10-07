@@ -7,10 +7,12 @@ Here you can find the most frequently asked questions, this file will grow with 
 - [I have installed by the instruction in the INSTALL.md file, I can check and send the mails, but they don't reach the users inbox?](FAQ.md#i-have-installed-by-the-instruction-in-the-installmd-file-i-can-check-and-send-the-mails-but-they-dont-reach-the-users-inbox)
 - [I'm using Debian buster and can send emails but can't check emails via IMAPS/POP3S?](FAQ.md#im-using-debian-buster-and-can-send-emails-but-cant-check-emails-via-imapspop3s)
 - [Why MailAD refuses to install ClamAV and/or SpamAssassin claiming some DNS problem?](FAQ.md#why-mailad-refuses-to-install-clamav-andor-spamassassin-claiming-some-dns-problem)
+- [What ports I need to get open to make sure the servers works OK?](FAQ.md#what-ports-i-need-to-get-open-to-make-sure-the-servers-works-ok)
 
 ## Usage related
 
 - [All works fine with some email clients, but other fails with errors related to SSL and cyphers](FAQ.md#all-works-fine-with-some-email-clients-but-other-fails-with-errors-related-to-ssl-and-cyphers)
+- [The server refuses to accept or relay emails from the users on port 25](FAQ.md#the-server-refuses-to-accept-or-relay-emails-from-the-users-on-port-25)
 
 **============================== ANSWERS =========================**
 
@@ -63,6 +65,24 @@ If you don't have a working DNS it will work some time after the provision and i
 
 To avoid that, we have place a failsafe in the check stage of the install: if you enable the AV or the SA filtering on the config file, then we will check if we can get the respective DB updates via DNS, if not then you see the errors.
 
+## What ports I need to get open to make sure the servers works OK?
+
+This question is asked some times in the context of Firewalls & DMZ, the answer is easy:
+
+### Incoming traffic
+
+- Port  25/TCP (SMTP) from the outside work or from a Mail Gateway.
+- Port 465/TCP (STMPTS) from the users network for legacy clients, not recommended in favor of the below one.
+- Port 587/TCP (SUBMISSION) from the users network to send emails.
+
+### Outgoing traffic
+
+- Port  53/UDP/TCP (DNS) to query for servers to deliver mails, and also for updates of the AV and SPAM databases (if enabled)
+- Ports 80/TCP and 443/TCP (HTTP/HTTPS) to get updates of the AV & SPAMD (if enabled) and to update the OS.
+- Ports 25/TCP to send emails to the outside world.
+
+Please note that in the incoming traffic no user's traffic is allowed in port 25, DO NOT allows the users to use the port 25 to send emails, this port is reserved to receive the incoming traffic from the outside world.
+
 ## All works fine with some email clients, but other fails with errors related to SSL and cyphers?
 
 That's mainly an outdated mail client or a legacy OS, you will get this errors in Windows from XP to early Win10 versions and Microsoft clients; some other email clients as thunderbird or evolution can give this errors if they are very old (3 years or more).
@@ -77,3 +97,7 @@ Solutions:
     - Install it and run it.
     - Chose the option named "Best practices" then "Apply".
     - Reboot your computer.
+
+## The server refuses to accept or relay emails from the users on port 25?
+
+That port is reserved to receive emails from the outside world, the users can't use it to send emails, please check [this other question](FAQ.md#what-ports-i-need-to-get-open-to-make-sure-the-servers-works-ok) to know more.
