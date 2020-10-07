@@ -1,5 +1,7 @@
 # MailAD installation instructions
 
+Check this [simple console recording](https://asciinema.org/a/fD1LuVLfeb8RPCHOIgbR1J9d8) to see how looks a simple install.
+
 ## Introduction & checks
 
 To avoid permission problems we recommend you to held the files under the `/root` directory, so from this moment and forward you need to be root to runs the following commands, `sudo -i` is your friend if you are not root.
