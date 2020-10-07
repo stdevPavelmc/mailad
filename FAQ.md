@@ -74,6 +74,8 @@ This question is asked some times in the context of Firewalls & DMZ, the answer 
 - Port  25/TCP (SMTP) from the outside work or from a Mail Gateway.
 - Port 465/TCP (STMPTS) from the users network for legacy clients, not recommended in favor of the below one.
 - Port 587/TCP (SUBMISSION) from the users network to send emails.
+- Port 993/TCP (IMAPS) preffered way for the users to check and download the emails.
+- Port 995/TCP (POP3S) legacy of port 993, working but dicouraged.
 
 ### Outgoing traffic
 
