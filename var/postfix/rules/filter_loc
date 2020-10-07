@@ -1,0 +1,5 @@
+/.*\@_ESCDOMAIN_/  RELAY
+/^\@/               REJECT	550	Invalid Format / Formato invalido
+/[!%\@=].*\@/       REJECT	550	Syntax Error / Error de sintaxis
+/.*\@.*/            REJECT	550	Sorry this user has only local domain access / Lo siento este usuario solo tiene acceso en el dominio local
+/\<\>/              RELAY

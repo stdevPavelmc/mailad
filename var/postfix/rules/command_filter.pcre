@@ -1,0 +1,4 @@
+# This lines forbids authentication over port 25, no lan client must
+# come in this way
+
+/^AUTH LOGIN$/ QUIT

@@ -1,0 +1,12 @@
+# Ban list
+#
+# This is a hash table, you need to make a 'postmap [file]' after saving
+#
+# It's a good practice to put comments with the reason and not just c&p
+# them, make it unique, in that way you will be able to identify which
+# rule was triggered
+
+# EXAMPLES
+horoscopofree@ofree.com     REJECT 511 horosco is not allowed here
+jodedor@ejemplo.cu			DROP 511 jodedor not permitted
+@example.com				REJECT 511 Domain not allowed (example.com)

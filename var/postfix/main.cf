@@ -1,7 +1,7 @@
 # See /usr/share/postfix/main.cf.dist for a commented, more complete version
 
 # Banner de bienvenida
-smtpd_banner = $myhostname ESMTP $mail_name (Ubuntu GNU/Linux)
+smtpd_banner = $myhostname ESMTP
 
 # No annadir el dominio, eso es trabajo del cliente
 append_dot_mydomain = no
@@ -56,9 +56,7 @@ mailbox_size_limit = 0
 # filtro de contenido de amavisd
 # OJO en los upgrades a amavis le encanta resetar esto y poner
 # [localhost], debes cambiarlo a mano y poner [127.0.0.1] si usas LXC/Docker
-# ===== DISABLED BY NOW =========
-#content_filter = smtp-amavis:[127.0.0.1]:10024
-#policy-spf_time_limit = 3600s
+content_filter = smtp-amavis:[127.0.0.1]:10024
 
 # SASL con dovecot
 smtpd_sasl_type = dovecot
@@ -79,7 +77,7 @@ smtpd_sasl_tls_security_options = $smtpd_sasl_security_options
 smtpd_tls_auth_only = yes
 smtp_tls_loglevel = 1
 smtpd_tls_loglevel = 1
-# Proteccion contra atake LogJam
+# Proteccion contra atake LogJam, FREAK & POODLE
 smtpd_tls_eecdh_grade = strong
 smtpd_tls_ciphers = high
 smtpd_tls_mandatory_protocols = !SSLv2,!SSLv3
@@ -112,11 +110,11 @@ smtpd_helo_restrictions =
 
 # mapeos de los logins de los users contra su cuenta de correo
 # para que usuario1@ no pueda mandar email como usuario2@
-smtpd_sender_login_maps = ldap:/etc/postfix/email2user.cf
+smtpd_sender_login_maps = ldap:/etc/postfix/ldap/email2user.cf
 
 # para que el server sepa las direcciones locales validas y rechace las otras
 # que parecen validas pero no existen
-relay_recipient_maps = ldap:/etc/postfix/email2user.cf
+relay_recipient_maps = ldap:/etc/postfix/ldap/email2user.cf
 
 # parametros del server...
 smtpd_error_sleep_time = 1s
@@ -127,43 +125,46 @@ smtpd_hard_error_limit = 10
 disable_vrfy_command = yes
 
 # filtro del cuerpo y cabeceras
-header_checks = regexp:/etc/postfix/header_checks
-body_checks = regexp:/etc/postfix/body_checks
+header_checks = regexp:/etc/postfix/rules/header_checks
+body_checks = regexp:/etc/postfix/rules/body_checks
 
-# Restricciones de destinatarios
-smtpd_recipient_restrictions =
-    # politicas de buzón de correos (quota devecot)
-    check_policy_service inet:127.0.0.1:12340
+# Declaracion de las Clases de restricciones nacionales
+smtpd_restriction_classes =
+    mail_national_in, mail_national_out,
+    mail_local_in, mail_local_out,
+    everyone_list,
 
-    # tengo que dejar permit mynetworks arriba, porque ahora permit soy yo
-    permit_mynetworks
+## NACIONAL
+# si el destino no es .cu rechazo
+mail_national_in = check_sender_access regexp:/etc/postfix/rules/filter_nat
+mail_national_out = check_recipient_access regexp:/etc/postfix/rules/filter_nat
 
-    # rechazar si el destinatario no es un destino RFC compatible
-    reject_non_fqdn_recipient
+## LOCAL
+mail_local_in = check_sender_access regexp:/etc/postfix/rules/filter_loc
+mail_local_out = check_recipient_access regexp:/etc/postfix/rules/filter_loc
 
-    # no recibir email para dominios que no existan y se pergunta al DNS
-    # si confias en el DNS y no te preocupa perder correos de dominios
-    # cubanos mal configurados descomenta esto
-    #reject_unknown_recipient_domain
+## Everyone
+everyone_list = check_sender_access regexp:/etc/postfix/rules/filter_loc
 
-    # rechazar si no esta en la lista de usuarios validos
-    reject_unlisted_recipient
-
-    # chequeo de politicas
-    #check_policy_service
-        # SPF que no aplica porque no estoy de cara a internet
-        # asumimos que hay un Gateway delante
-        # unix:private/policy-spf
-
-    # rechazar si no es para mi destino cuando viene de afuera
-    reject_unauth_destination
-
-    # Permite si se ha autenticado y haz llegado hasta aqui
-    permit_sasl_authenticated
-
-# COPIA DE SEGURIDAD
-# !!! OJO debes crear el user y ponerle un email valido en el AD!!!
-always_bcc = _ALWAYSBCC_
+#### POSTSCREEN filtering on port 25
+# By default postscreen withelist the mynetworks net.
+postscreen_access_list = permit_mynetworks
+# action for bad servers in blacklist
+postscreen_blacklist_action = drop
+# if new lines, bad dog!
+postscreen_bare_newline_action = drop
+# disable verify
+postscreen_disable_vrfy_command = yes
+# enforce the greet action
+postscreen_greet_action = drop
+# no pipelining
+postscreen_pipelining_action = drop
+# no auth in SMTP(25)
+postscreen_command_filter = pcre:/etc/postfix/rules/command_filter.pcre
+# DNSRBL in postscreen
+postscreen_dnsbl_threshold = 3
+postscreen_dnsbl_action = enforce
+postscreen_dnsbl_sites = _DNSBL_LIST_
 
 # restricciones del que envia
 smtpd_sender_restrictions =
@@ -180,21 +181,68 @@ smtpd_sender_restrictions =
     # desactivado por problemas de que se pierden email por DNS mal configurados
     #reject_unknown_sender_domain
 
+    # aplicación nacional
+    check_recipient_access ldap:/etc/postfix/ldap/national_in.cf
+    check_sender_access ldap:/etc/postfix/ldap/national_out.cf
+
+    # aplicación nacional
+    check_recipient_access ldap:/etc/postfix/ldap/local_in.cf
+    check_sender_access ldap:/etc/postfix/ldap/local_out.cf
+
     # chequeo de lista negra
-    check_sender_access  hash:/etc/postfix/lista_negra
+    check_sender_access hash:/etc/postfix/rules/lista_negra
+
+    # check everyone list protection
+    check_recipient_access hash:/etc/postfix/rules/everyone_list_check
 
     # Permite solo envios con LOGIN
     permit_sasl_authenticated
 
+
+# Restricciones de destinatarios
+smtpd_recipient_restrictions =
+    # politicas de buzón de correos (quota devecot)
+    check_policy_service inet:127.0.0.1:12340
+
+    # check spf settings
+    check_policy_service unix:private/policy-spf
+
+    # tengo que dejar permit mynetworks arriba, porque ahora permit soy yo
+    permit_mynetworks
+
+    # rechazar si el destinatario no es un destino RFC compatible
+    reject_non_fqdn_recipient
+
+    # no recibir email para dominios que no existan y se pergunta al DNS
+    # si confias en el DNS y no te preocupa perder correos de dominios
+    # cubanos mal configurados descomenta esto
+    #reject_unknown_recipient_domain
+
+    # rechazar si no esta en la lista de usuarios validos
+    reject_unlisted_recipient
+
+    # rechazar si no es para mi destino cuando viene de afuera
+    reject_unauth_destination
+
+    # Permite si se ha autenticado y haz llegado hasta aqui
+    permit_sasl_authenticated
+
+# COPIA DE SEGURIDAD
+# !!! OJO debes crear el user y ponerle un email valido en el AD!!!
+always_bcc = _ALWAYSBCC_
+
+# evitar la doble copia del always_bcc
+receive_override_options = no_address_mappings
+
 # Debug para diagnosticos sobre esta IP...
 # revisar /var/log/mail.log, recuerda desactivarlo al final
-#debug_peer_list = 10.42.0.4
+#debug_peer_list = 10.0.3.161
 #debug_peer_level = 16
 
 # declaracion del dominio virtual...
 virtual_mailbox_domains = _DOMAIN_
-virtual_mailbox_maps = ldap:/etc/postfix/mailbox_maps.cf
-virtual_alias_maps = hash:/etc/postfix/alias_virtuales, hash:/etc/postfix/auto_aliases
+virtual_mailbox_maps = ldap:/etc/postfix/ldap/mailbox_maps.cf
+virtual_alias_maps = hash:/etc/postfix/aliases/alias_virtuales, hash:/etc/postfix/aliases/auto_aliases
 virtual_mailbox_base = _VMAILSTORAGE_
 virtual_minimum_uid = 100
 virtual_uid_maps = static:_VMAILUID_

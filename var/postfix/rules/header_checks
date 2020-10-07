@@ -1,0 +1,16 @@
+# Header checks
+#
+# This are regular expression filters
+#
+# It's a good practice to put a # and a Reason after the action, in
+# that way you will be able to identify which rule baned a mail to
+# analyze it 
+
+# Expression				        Action  No  Reason
+/^Subject:\s.* [Pp]uta .*/		REJECT (#1) No se permiten Mala palabras
+
+# Ban sender/return forgery
+/^((Envelope\-)?From|Return\-Path):\s*[^<]*<[^@]+@[^@>]+>[^<]*<[^@]+@[^@>]+>/     REJECT No double address in the From or Return-path header allowed
+
+# Ban subject less emails
+/^Subject:\s*$/		REJECT No se permiten mensajes sin asunto / No subject-less email please

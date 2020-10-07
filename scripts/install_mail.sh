@@ -1,38 +1,68 @@
 #!/bin/bash
 
 # This script is part of MailAD, see https://github.com/stdevPavelmc/mailad/
+# Copyright 2020 Pavel Milanes Costa <pavelmc@gmail.com>
+# LICENCE: GPL 3.0 and later  
 #
 # Goals:
 #   - Check if there is pkgs already installed and warn & fail
 #   - otherwise install the pkgs
+#
+# Notice: You need to provide a line like this after a success
+#    echo "done" > install
+#
+# And not doing that after failure, that way it will not install on a unknown distro
 
-# locate the source file (makefile or run by hand)
-if [ -f mailad.conf ] ; then 
-    source mailad.conf
-    source common.conf
-else
-    source ../mailad.conf
-    source ../common.conf
+# load the conf file
+source /etc/mailad/mailad.conf
+source common.conf
+
+# this is the list to handle, will load it from the specific OS below
+PKGS=""
+
+# loading the os-release file
+if [ -f /etc/os-release ] ; then
+    # import the file
+    source /etc/os-release
+
+    ## Distros check
+    case "$VERSION_CODENAME" in
+        bionic|focal)
+            # load the correct pkgs to be installed
+            craft_pkg_list "ubuntu"
+
+            # check
+            already_installed_debs
+
+            # Install
+            install_debs
+
+            # Ad the clamav user to the amavis group, or it will not be able to reach emails to scan
+            echo "===> Setting correct Perms for clamav and amavis."
+            adduser clamav amavis
+            ;;
+        buster)
+            # load the correct pkgs to be installed
+            craft_pkg_list "debian"
+
+            # check
+            already_installed_debs
+
+            # Install
+            install_debs
+
+            # Ad the clamav user to the amavis group, or it will not be able to reach emails to scan
+            echo "===> Setting correct Perms for clamav and amavis."
+            adduser clamav amavis
+            ;;
+        *)
+            echo "==========================================================================="
+            echo "ERROR: This linux box has a not known distro, if you feel this is wrong"
+            echo "       please visit ttps://github.com/stdevPavelmc/mailad/ and raise an"
+            echo "       issue about this."
+            echo "==========================================================================="
+            echo "       The install process will stop now"
+            echo "==========================================================================="
+            ;;
+    esac
 fi
-
-# list of pkgs to install came from common.conf
-
-# Check if there is already one of them installed and warn the user about it
-# offering a way to uninstall
-for p in `echo $PKGCOMMON | xargs` ; do
-    # test if the pkg is installed
-    LIST=`dpkg -l | grep $p`
-    if [ "$LIST" != "" ] ; then
-        # fail, some of the packages are installed
-        echo "ERROR!"
-        echo "    Some of the pkgs we are about to install are already installed"
-        echo "    so, this system is dirty and it's not recommended to install it"
-        echo "    here; or you can force a purge runnig: 'make install-purge'"
-        echo "    and run 'make install' again"
-        echo " "
-        exit 1
-    fi
-done
-
-# do it
-sudo env DEBIAN_FRONTEND=noninteractive apt install $PKGS -y

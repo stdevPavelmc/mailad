@@ -1,0 +1,7 @@
+# The domains on this file will be the one used to pick the
+# emails that will have a disclaimer attached if that feature
+# is enabled on the config
+#
+# No @ is needed, just the domain name, one per line
+
+_DOMAIN_

@@ -1,0 +1,54 @@
+{
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": false,
+  "contributors": [
+    {
+      "login": "danny920825",
+      "name": "danny920825",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/33090194?v=4",
+      "profile": "https://github.com/danny920825",
+      "contributions": [
+        "test",
+        "ideas"
+      ]
+    },
+    {
+      "login": "HugoFlorentino",
+      "name": "HugoFlorentino",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/11479345?v=4",
+      "profile": "https://github.com/HugoFlorentino",
+      "contributions": [
+        "ideas",
+        "example"
+      ]
+    },
+    {
+      "login": "armandofcom",
+      "name": "Armando Felipe",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/12705691?v=4",
+      "profile": "https://www.sysadminsdecuba.com",
+      "contributions": [
+        "ideas"
+      ]
+    },
+    {
+      "login": "Koratsuki",
+      "name": "Koratsuki",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/20727446?v=4",
+      "profile": "https://github.com/Koratsuki",
+      "contributions": [
+        "ideas",
+        "code"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7,
+  "projectName": "mailad",
+  "projectOwner": "stdevPavelmc",
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "skipCi": true
+}

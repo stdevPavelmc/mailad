@@ -1,0 +1,28 @@
+# Listado de alias virtuales para el dominio
+# 
+# hacer al terminar "postmap alias_virtuales && postfix reload"
+
+# #####################################################
+# DEFAULTS del dominio por RFC
+# TIENEN que apuntar a una direccion valida
+# incluso puede apuntar a otro alias
+# #####################################################
+abuse@_DOMAIN_			_SYSADMINS_
+postmaster@_DOMAIN_		_SYSADMINS_
+
+# Cargos
+#direccion@mailad.cu		director@mailad.cu
+#directora@mailad.cu		director@mailad.cu
+#informatico@mailad.cu		adminred@mailad.cu
+#economia#mailad.cu		jefe.econ@mailad.cu
+
+# nombres raros que la gente escribe mal
+#yadira@mailad.cu		yadyra@mailad.cu
+
+# facturas del banco (me lo vas a agradecer)
+#facturas@mailad.cu		jefe.econ@mailad.cu,contab1@mailad.cu,pagos@mailad.cu
+
+
+
+
+
