@@ -6,7 +6,7 @@
 [![All Contributors](https://img.shields.io/badge/all_contributors-4-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
-Esta es una cómoda herramienta para desplegar un server de correos en Linux, vinculado a un Directorio Activo (da igual un Windows Server o SAMBA 4), con algunas restricciones en mente; la idea es que sea una configuración básica para ser usada en Cuba bajo ciertas leyes y restricciones. Puedes ver un ejemplo de un despliegue básico en esta [animación de accinema](https://asciinema.org/a/fD1LuVLfeb8RPCHOIgbR1J9d8).
+Esta es una cómoda herramienta para desplegar un server de correos en Linux, vinculado a un Directorio Activo (da igual un Windows Server o SAMBA 4), con algunas restricciones en mente; la idea es que sea una configuración básica para ser usada en Cuba bajo ciertas leyes y restricciones. Puedes ver un ejemplo de un despliegue básico en esta [animación de aciinema](https://asciinema.org/a/fD1LuVLfeb8RPCHOIgbR1J9d8).
 
 ## Fundamentos
 
