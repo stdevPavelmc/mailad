@@ -92,6 +92,6 @@ Gracias a todos los que de alguna manera contribuyen con desarrollo de MailAD ([
 <!-- prettier-ignore-end -->
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
-Tenemos además un [fichero para registrar las contribuciones particulares](../Contributors.md) a este software.
+Por favor lee el fichero [CONTRIBUTING.es.md](CONTRIBUTING.es.md) si es que planeas contribuir a MailAD. Aceptamos todo tipo de contribuciones, ideas, parches, fallos e incluso recargas de celular para poder mantenerme conectado y desarrollando este proyecto.
 
 Este proyecto sigue las recomendaciones [all-contributors](https://github.com/all-contributors/all-contributors), cualquier tipo de contribución es bien recibida!
