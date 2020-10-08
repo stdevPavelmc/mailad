@@ -95,6 +95,6 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 <!-- prettier-ignore-end -->
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
-We have also a [file to register the contributions](Contributors.md) to this Software.
+Please read the [CONTRIBUTING.md](CONTRIBUTING.md) file if you want to contribute to MailAD to know the details of how to do it. All kinds of contributions are welcomed, ideas, fixes, bugs, improvements and even a phone top-up to keep me online.
 
 This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
