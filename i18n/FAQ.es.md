@@ -4,19 +4,19 @@ Aquí puedes encontrar las preguntas más frecuentes, este archivo crecerá con 
 
 ## Instalación
 
-- [I have installed by the instruction in the INSTALL.md file, I can check and send the mails, but they don't reach the users inbox?](FAQ.md#i-have-installed-by-the-instruction-in-the-installmd-file-i-can-check-and-send-the-mails-but-they-dont-reach-the-users-inbox)
-- [I'm using Debian buster and can send emails but can't check emails via IMAPS/POP3S?](FAQ.md#im-using-debian-buster-and-can-send-emails-but-cant-check-emails-via-imapspop3s)
-- [Why MailAD refuses to install ClamAV and/or SpamAssassin claiming some DNS problem?](FAQ.md#why-mailad-refuses-to-install-clamav-andor-spamassassin-claiming-some-dns-problem)
-- [What ports I need to get open to make sure the servers works OK?](FAQ.md#what-ports-i-need-to-get-open-to-make-sure-the-servers-works-ok)
+- [He instalado según las instrucciones en el archivo INSTALL.md, puedo comprobar y enviar los correos, pero no llegan a la bandeja de entrada de los usuarios](FAQ.es.md#he-instalado-seg%C3%BAn-las-instrucciones-en-el-archivo-installmd-puedo-comprobar-y-enviar-los-correos-pero-no-llegan-a-la-bandeja-de-entrada-de-los-usuarios)
+- [Utilizo el buster de Debian y puedo enviar emails pero no puedo revisar los emails a través de IMAPS/POP3S](FAQ.es.md#utilizo-el-buster-de-debian-y-puedo-enviar-emails-pero-no-puedo-revisar-los-emails-a-trav%C3%A9s-de-imapspop3s)
+- [¿Por qué MailAD se niega a instalar ClamAV y/o SpamAssassin alegando algún problema de DNS?](FAQ.es.md#por-qu%C3%A9-mailad-se-niega-a-instalar-clamav-yo-spamassassin-alegando-alg%C3%BAn-problema-de-dns)
+- [¿Qué puertos debo abrir para asegurarme de que los servidores funcionen bien?](FAQ.es.md#qu%C3%A9-puertos-debo-abrir-para-asegurarme-de-que-los-servidores-funcionen-bien)
 
 ## Utilización
 
-- [All works fine with some email clients, but other fails with errors related to SSL and cyphers](FAQ.md#all-works-fine-with-some-email-clients-but-other-fails-with-errors-related-to-ssl-and-cyphers)
-- [The server refuses to accept or relay emails from the users on port 25](FAQ.md#the-server-refuses-to-accept-or-relay-emails-from-the-users-on-port-25)
+- [Todo funciona bien con algunos clientes de correo electrónico, pero otros fallan con errores relacionados con el SSL y los cifrados](FAQ.es.md#todo-funciona-bien-con-algunos-clientes-de-correo-electr%C3%B3nico-pero-otros-fallan-con-errores-relacionados-con-el-ssl-y-los-cifrados)
+- [El servidor se niega a aceptar o a retransmitir correos electrónicos de los usuarios en el puerto 25](FAQ.es.md#el-servidor-se-niega-a-aceptar-o-a-retransmitir-correos-electr%C3%B3nicos-de-los-usuarios-en-el-puerto-25)
 
 **============================== Respuestas =========================**
 
-## He instalado según las instrucciones en el archivo INSTALL.md, puedo comprobar y enviar los correos, pero no llegan a la bandeja de entrada de los usuarios?
+## He instalado según las instrucciones en el archivo INSTALL.md, puedo comprobar y enviar los correos, pero no llegan a la bandeja de entrada de los usuarios
 
 Eso suele estar relacionado con que el nuevo filtrado no funciona, si compruebas en los registros `/var/log/mail.logs` puedes ver algunas líneas como esta:
 
@@ -85,7 +85,7 @@ This question is asked some times in the context of Firewalls & DMZ, the answer 
 
 Tenga en cuenta que en el tráfico entrante no se permite el tráfico de ningún usuario en el puerto 25. NO PERMITAS a los usuarios utilizar el puerto 25 para enviar correos electrónicos, este puerto está reservado para recibir el tráfico entrante del mundo exterior.
 
-## Todo funciona bien con algunos clientes de correo electrónico, pero otros fallan con errores relacionados con el SSL y los cifrados?
+## Todo funciona bien con algunos clientes de correo electrónico, pero otros fallan con errores relacionados con el SSL y los cifrados
 
 Eso es principalmente a causa de un cliente de correo anticuado o de un sistema operativo antiguo, obtendrás estos errores en Windows desde las versiones XP hasta las primeras versiones de Win10 y en clientes de Microsoft; algunos otros clientes de correo electrónico como Thunderbird o Evolution pueden dar estos errores si son muy antiguos (3 años o más).
 
@@ -100,6 +100,6 @@ Soluciones:
     - Elija la opción llamada "Mejores prácticas" y luego "Aplicar".
     - Reinicia la computadora.
 
-## ¿El servidor se niega a aceptar o a retransmitir correos electrónicos de los usuarios en el puerto 25?
+## El servidor se niega a aceptar o a retransmitir correos electrónicos de los usuarios en el puerto 25
 
-Ese puerto está reservado para recibir correos electrónicos del mundo exterior, los usuarios no pueden usarlo para enviar correos electrónicos, por favor revise [esta otra pregunta](FAQ.md#what-ports-i-need-to-get-open-to-sure-the-servers-works-ok) para saber más.
+Ese puerto está reservado para recibir correos electrónicos del mundo exterior, los usuarios no pueden usarlo para enviar correos electrónicos, por favor revise [esta otra pregunta](FAQ.es.md#qu%C3%A9-puertos-debo-abrir-para-asegurarme-de-que-los-servidores-funcionen-bien) para saber más.
