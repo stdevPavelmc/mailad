@@ -1,6 +1,8 @@
 # Mailad FAQ
 
-Here you can find the most frequently asked questions, this file will grow with the feedback from the users
+This page is also available in the following languages: [ [Español](i18n/FAQ.es.md) 🇪🇸 🇨🇺]
+
+Here you can find the most frequently asked questions, this file will grow with the feedback from the users.
 
 ## Installation related
 

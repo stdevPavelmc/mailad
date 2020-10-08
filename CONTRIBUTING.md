@@ -1,5 +1,7 @@
 # Contributing to MailAD
 
+This page is also available in the following languages: [ [Español](i18n/CONTRIBUTING.es.md) 🇪🇸 🇨🇺]
+
 ## Developer process & workflows
 
 This document stablish the process and workflows as per github and gitflow good practices (in some cases simplified and relaxed), if in doubt please take a peek [here](https://medium.com/@devmrin/learn-complete-gitflow-workflow-basics-how-to-from-start-to-finish-8756ad5b7394) or [here](https://nvie.com/posts/a-successful-git-branching-model/)

@@ -1,5 +1,7 @@
 # Contributor Covenant Code of Conduct
 
+This page is also available in the following languages: [ [Español](i18n/CODE_OF_CONDUCT.es.md) 🇪🇸 🇨🇺]
+
 ## Our Pledge
 
 In the interest of fostering an open and welcoming environment, we as
