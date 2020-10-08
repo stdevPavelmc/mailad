@@ -1,6 +1,8 @@
 {
   "files": [
     "README.md"
+    "i18n/README.es.md"
+    "i18n/README.de.md"
   ],
   "imageSize": 100,
   "commit": false,
