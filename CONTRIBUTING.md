@@ -58,6 +58,6 @@ Tip: my service provider has promotions almost every other week that will duplic
 
 - You can donate any amount in CUP (national currency) via Transfermovil:
 
-<p align="center"><img src="../imgs/donation_transfermovil_cup.png" alt="Transfermovil"></img></p>
+<p align="center"><img src="imgs/donation_transfermovil_cup.png" alt="Transfermovil"></img></p>
 
 **Thank you very much in advance!**
