@@ -5,7 +5,7 @@ Aquí puedes encontrar las preguntas más frecuentes, este archivo crecerá con 
 ## Instalación
 
 - [He instalado según las instrucciones en el archivo INSTALL.md, puedo comprobar y enviar los correos, pero no llegan a la bandeja de entrada de los usuarios](FAQ.es.md#he-instalado-seg%C3%BAn-las-instrucciones-en-el-archivo-installmd-puedo-comprobar-y-enviar-los-correos-pero-no-llegan-a-la-bandeja-de-entrada-de-los-usuarios)
-- [Utilizo el buster de Debian y puedo enviar emails pero no puedo revisar los emails a través de IMAPS/POP3S](FAQ.es.md#utilizo-el-buster-de-debian-y-puedo-enviar-emails-pero-no-puedo-revisar-los-emails-a-trav%C3%A9s-de-imapspop3s)
+- [Utilizo Debian Buster y puedo enviar emails pero no puedo revisar los emails a través de IMAPS/POP3S](FAQ.es.md#utilizo-debian-buster-y-puedo-enviar-emails-pero-no-puedo-revisar-los-emails-a-trav%C3%A9s-de-imapspop3s)
 - [¿Por qué MailAD se niega a instalar ClamAV y/o SpamAssassin alegando algún problema de DNS?](FAQ.es.md#por-qu%C3%A9-mailad-se-niega-a-instalar-clamav-yo-spamassassin-alegando-alg%C3%BAn-problema-de-dns)
 - [¿Qué puertos debo abrir para asegurarme de que los servidores funcionen bien?](FAQ.es.md#qu%C3%A9-puertos-debo-abrir-para-asegurarme-de-que-los-servidores-funcionen-bien)
 
