@@ -1,5 +1,7 @@
 # TODO
 
+This page is also available in the following languages: [ [Español](i18n/TODO.es.md) 🇪🇸 🇨🇺]
+
 This is a TODO list with no particular order
 
 ## New features/wish/TODO items
