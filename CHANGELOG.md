@@ -18,6 +18,10 @@ This is a note for developers about the recommended tags to keep track of the ch
 Dates must be YEAR-MONTH-DAY
 -->
 
+## 2020-10-09
+
+- Added: Fix to issue #107: small enterprise dovecot cache ttl to big, lower the ttl (from 1 hour to 10 minutes) and incremented the size of the cache for big enterprises (from ~5 to ~50 latest hits on cache)
+
 ## 2020-10-08
 
 - Added: More spanish translations (tks to @glpzzz) and link them to the original files.
