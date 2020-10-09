@@ -18,6 +18,13 @@ This is a note for developers about the recommended tags to keep track of the ch
 Dates must be YEAR-MONTH-DAY
 -->
 
+## 2020-10-08
+
+- Added: More spanish translations (tks to @glpzzz) and link them to the original files.
+- Added: Include more contributors @glpzzz and @oneohthree
+- Modified: Improved the README with more eye-candy badges and the asciinema recording
+- Modified: Improve the contributions sections, adding more explicit funding instructions, adding a QR code for Transfermovil (Cuba only)
+
 ## 2020-10-07
 
 - Added: Spanish and German translations of he README.
