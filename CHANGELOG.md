@@ -21,6 +21,7 @@ Dates must be YEAR-MONTH-DAY
 ## 2020-10-13
 
 - Modified: Removed the SSLv2 in the listing of forbidden protocols (even disabled) in dovecot 2.2, it's not supported in SSL library so no reason to be here. 
+- Modified: Improved the parsing of the RELAY variable, to remove the ending ':port' part and the surrounding '[]' if present.
 
 ## 2020-10-12
 

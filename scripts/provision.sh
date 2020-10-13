@@ -71,7 +71,9 @@ LDAPURI=`get_ldap_uri`
 
 # add the mail gateway as a trusted source, aka the mynetworks
 if [ ! -z "$RELAY" ] ; then
-    MYNETWORK="$MYNETWORK $RELAY"
+    # must remove the port and any other char like '[]' we ofter use to avoid lookups
+    T=`echo $RELAY | cut -d ":" -f 1 | tr -d "[" | tr -d "]"`
+    MYNETWORK="$MYNETWORK $T"
 fi
 
 # add the LDAPURI & ESC_SYSADMINS to the vars
