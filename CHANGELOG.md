@@ -18,6 +18,10 @@ This is a note for developers about the recommended tags to keep track of the ch
 Dates must be YEAR-MONTH-DAY
 -->
 
+## 2020-10-13
+
+- Modified: Removed the SSLv2 in the listing of forbidden protocols (even disabled) in dovecot 2.2, it's not supported in SSL library so no reason to be here. 
+
 ## 2020-10-12
 
 - Modified: We effectively disabled TLSv1 & TLSv1.1 in Postfix and Dovecot as both protocols are flagged as insecure. 
