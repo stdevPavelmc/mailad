@@ -248,7 +248,16 @@ else
 
             # dump the config
             for M in `echo "${AV_ALT_MIRRORS}" | xargs` ;  do
-                echo "DatabaseMirror ${M}" >> $FILE
+                # if a proxy is set remove the 'http://' and 'https://' from the variables
+
+                if [ ! -z "$PROXY_HOST" -a ! -z "$PROXY_PORT" ] ; then
+                    # there is a proxy, remove the prefix
+                    Mm=`echo ${M} | sed s/'http:\/\/'//g | sed s/'https:\/\/'//g`
+                    echo "DatabaseMirror ${Mm}" >> $FILE
+                else
+                    # no proxy
+                    echo "DatabaseMirror ${M}" >> $FILE
+                fi
             done
         fi
     fi

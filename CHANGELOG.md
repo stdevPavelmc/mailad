@@ -20,7 +20,8 @@ Dates must be YEAR-MONTH-DAY
 
 ## 2020-10-14
 
-- Fixed: AD groups with long names was not getting parsed on the automatic alias because ldapsearch tool was wrapping the output at 79 chars by default, added a fix to solve that; fixed.  
+- Fixed: AD groups with long names was not getting parsed on the automatic alias because ldapsearch tool was wrapping the output at 79 chars by default, added a fix to solve that; fixed.
+- Fixed: Updates form ClamAV failed when using proxy, it was the http/s prefix, must be omitted when using proxy, fixed 
 
 ## 2020-10-13
 
