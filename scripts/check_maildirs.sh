@@ -32,7 +32,7 @@ function isthere () {
     # return empty string or num of entries fount
 
     # LDAP query
-    RESULT=`ldapsearch -H "$LDAPURI" -D "$LDAPBINDUSER" -w "$LDAPBINDPASSWD" -b "$LDAPSEARCHBASE" "(&(objectClass=person)(wWWHomePage=${1}))" | grep "numEntries: " | awk '{print $3}'`
+    RESULT=`ldapsearch -o ldif-wrap=no -H "$LDAPURI" -D "$LDAPBINDUSER" -w "$LDAPBINDPASSWD" -b "$LDAPSEARCHBASE" "(&(objectClass=person)(wWWHomePage=${1}))" | grep "numEntries: " | awk '{print $3}'`
 
     echo $RESULT
 }

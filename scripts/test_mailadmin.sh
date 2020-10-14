@@ -23,7 +23,7 @@ LDAPURI=`get_ldap_uri`
 echo "===> Searching for the user that owns the email: $ADMINMAIL"
 
 TEMP=`mktemp`
-ldapsearch -H "$LDAPURI" -D "$LDAPBINDUSER" -w "$LDAPBINDPASSWD" -b "$LDAPSEARCHBASE" "(&(objectClass=person)(mail=$ADMINMAIL))" > $TEMP
+ldapsearch -o ldif-wrap=no -H "$LDAPURI" -D "$LDAPBINDUSER" -w "$LDAPBINDPASSWD" -b "$LDAPSEARCHBASE" "(&(objectClass=person)(mail=$ADMINMAIL))" > $TEMP
 RESULTS=`cat $TEMP | grep "numEntries: " | awk '{print $3}'`
 
 if [ -z "$RESULTS" ] ; then
