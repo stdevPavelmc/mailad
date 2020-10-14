@@ -55,7 +55,7 @@ else
 fi
 
 # LDAP query
-RESULT=`ldapsearch -H "$LDAPURI" -D "$LDAPBINDUSER" -w "$LDAPBINDPASSWD" -b "$LDAPSEARCHBASE" | grep "numResponses"`
+RESULT=`ldapsearch -o ldif-wrap=no -H "$LDAPURI" -D "$LDAPBINDUSER" -w "$LDAPBINDPASSWD" -b "$LDAPSEARCHBASE" | grep "numResponses"`
 
 if [ "$RESULT" == "" ] ; then
     # empy result: Fail
