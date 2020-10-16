@@ -18,6 +18,10 @@ This is a note for developers about the recommended tags to keep track of the ch
 Dates must be YEAR-MONTH-DAY
 -->
 
+## 2020-10-16
+
+- Added: Now the force-provison and upgrade target preserve the clamav database upgrades. This will help a lot when you are in a slow internet link o behind a proxy server.
+
 ## 2020-10-14
 
 - Fixed: AD groups with long names was not getting parsed on the automatic alias because ldapsearch tool was wrapping the output at 79 chars by default, added a fix to solve that; fixed.
