@@ -47,6 +47,7 @@ install-purge: deps ## Uninstall postfix and dovecot already installed software 
 	rm deps || exit 0
 
 provision: install ## Provision the server, this will copy over the config files and set the vars
+	# Check for config upgrades
 	scripts/confupgrade.sh
 	# make the provisioning
 	scripts/provision.sh
@@ -57,17 +58,27 @@ all: provision ## Run all targets in the logic order, run this to make it all
 	echo "Done!"
 
 force-provision: ## Force a re-provisioning of the system
+	# removing the targets files
 	rm provision || exit 0
 	rm conf-check || exit 0
+	# Check for config upgrades
 	scripts/confupgrade.sh
+	# configuration checks
 	$(MAKE) conf-check
+	# make a raw backup
 	scripts/backup.sh
+	# make a clamav backup
+	scripts/clamav_handle.sh backup
+	# remove installed files
 	$(MAKE) install-purge
+	# provision the system
 	$(MAKE) provision
 	# if you reach this point the latest backup is working
 	cat /var/lib/mailad/latest_backup > /var/lib/mailad/latest_working_backup
 	# restore the custom files
 	scripts/custom_restore.sh
+	# restore the clamav update files
+	scripts/clamav_handle.sh restore
 
 force-certs: ## Force a re-creation of the SSL & dhparm certs
 	rm certs
