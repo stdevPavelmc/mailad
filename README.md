@@ -53,7 +53,7 @@ All dev is made on weekend or late at night (seriously take a peek on the commit
 
 Remember the comment at top of the page about _"...with some constraints in mind..."_ yeah, here they are:
 
-0. Your user base and config came from an Active Directory (AD from now on) as mentioned, we prefer a Samba AD but works on Windows too; see [AD requirements for this tool](AD_Requirements.md)
+0. Your user base and config came from an Active Directory (AD from now on) as mentioned, we prefer Samba AD but it works on Windows too; see [the AD requirements for this tool](AD_Requirements.md)
 0. The mail storage will be a folder in `/home/vmail`, all mail will belong to a user named `vmail` with uid:5000 & gid:5000. Tip: that folder can be a NFS mount or any other type of network storage (configurable)
 0. You use a Windows PC to control and manage the domain (must be a domain member and have the RSAT installed and activated), we recommend a Windows 10 LTSC/Professional
 0. The communication with the server is done in this way: (See [this question](FAQ.md#what-ports-i-need-to-get-open-to-make-sure-the-servers-works-ok) on the FAQ file to know more)
