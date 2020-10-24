@@ -5,6 +5,7 @@ This is a long page, so here is an index:
 * [Low resource footprint](Features.md#low-resource-footprint)
 * [Security protection against well known SSL & mail attacks](Features.md#security-protection-against-well-known-SSL-and-mail-attacks)
 * [Active directory integration and management](Features.md#active-directory-integration-and-management)
+* [General and specific quota system](Features.md#general-and-specific-quota-system)
 * [Daily mail traffic summary](Features.md#daily-mail-traffic-summary)
 * [Data from deleted users is handled with extreme care](Features.md#data-from-deleted-users-is-handled-with-extreme-care)
 * [Let's Encrypt certificates Support](Features.md#lets-encrypt-certificates-support)
@@ -62,6 +63,35 @@ The user base details are grabbed from a Windows Active Directory server (I reco
 For a Windows sysadmin this will be easy, just config and deploy on the mail server, then control the users in the AD interface in your PC via RSAT, see the details on the file [AD_Requirements.md](AD_Requirements.md).
 
 If you are a Linux user then you can use `samba-tool` to control the users properties in the CLI or put a Windows VM with RSAT tools in your server with remote access to manage the domain users.
+
+[Return to index](Features.md#mailad-features-explained)
+
+## General and specific quota system
+
+_**Notice:** This feature was introduced in October/2020 and if you has MailAD from a date earlier than that please **after** reading this go to the file [Simplify_AD_config.md](Simplify_AD_config.md) and read there how to migrate._
+
+Eventually or from start you need a quota system, users are lazy and have the nasty habbit of pile unused mail on their mailboxes, so we propose a General and individual quota system, like this:
+
+### General quota
+
+There is a general quota declared by default for each individual user's mailbox, you can find that in the `/etc/mailad/mailad.conf` file as a variable named `DEFAULT_MAILBOX_SIZE` and it's set by default ar 200 MB. So any new user will get tied to that quota with no extras config.
+
+But what happens with the high volume users? I need to rise the bar for some specific users... (or lower it for others...)
+
+### Specific quota
+
+This is a nice trick, you need to rise **(or lower)** the quota limit for a specific user, simply go to it's properties in the Active Directory and set the not default value in the property named Web Page ("Página Web" in the example) like in this picture for the user "Pavel" that has a special 1G (1 GByte)  quota.
+
+![admin use details](imgs/admin_user_details.png)
+
+The units are standard:
+
+- #K: KBytes like 800K
+- #M: MBbytes like 500M
+- #G: GBytes like 1G
+- #T: TBytes like 1T
+
+There is a soft restriction here: you are not alowed to use decimals, but you can use the lower unit to get the same effect: instead of 1.5G you can say 1500M.
 
 [Return to index](Features.md#mailad-features-explained)
 
@@ -124,27 +154,6 @@ The trigger for this feature is the setting of a email for a group, once you set
 **Tip:** The users must belong to a group directly for this feature to work properly, you can't create a group whish members are other groups, that does not work.
 
 **Warning:** it's up to you to check that you don't assign a list a email address that is previously assigned in the `virtual_aliases` file or from a real users, if you fall on this one you will have delivery problems.
-
-[Return to index](Features.md#mailad-features-explained)
-
-## Enforced quota control
-
-Yes, this is not optional, when you setup an user to use the email services as we discussed in the file [AD_Requirements.md](AD_Requirements.md) you must specify a size for the mailbox a good value to start is 100 MB; but finally it depends on your available space and user's behavior.
-
-You can use any of the following letter multiplier to specify that:
-
-- K: Kilo bytes, available but not practical as it's very small for example 900 Kbytes will be specified as "900K".
-- M: Mega bytes, most used unit, for example "100M" or "2048M" for a 2GB size, but...
-- G: Giga bytes, 1024M = 1G.
-- T: Tera byte, this is used by heavy lifters.
-
-**Tip:** You need to avoid using decimal units, dovecot quota is picky about that, instead of using "1.5G" use "1500M".
-
-For example this are equivalent:
-
-- 2048K = 2M.
-- 4096M = 4G.
-- 1024G = 1T.
 
 [Return to index](Features.md#mailad-features-explained)
 
