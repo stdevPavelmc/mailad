@@ -18,6 +18,11 @@ This is a note for developers about the recommended tags to keep track of the ch
 Dates must be YEAR-MONTH-DAY
 -->
 
+## 2020-10-26
+
+- Fixed: The quota warnings emails (85 & 95% of the mailbox) was not being sent in Dovecot 2.3 (Ubuntu 20.04 & possibly also on Debian 10.x), was a permission problem on the script, fixed.
+- Changed: The quota warning email is now full mime capable (plaintext + html versions inside) and has more info for the user (in spanish for now.)
+
 ## 2020-10-16
 
 - Added: Now the force-provison and upgrade target preserve the clamav database upgrades. This will help a lot when you are in a slow internet link o behind a proxy server.
