@@ -36,10 +36,6 @@ if [ -f /etc/os-release ] ; then
 
             # Install
             install_debs
-
-            # Ad the clamav user to the amavis group, or it will not be able to reach emails to scan
-            echo "===> Setting correct Perms for clamav and amavis."
-            adduser clamav amavis
             ;;
         buster)
             # load the correct pkgs to be installed
@@ -50,10 +46,6 @@ if [ -f /etc/os-release ] ; then
 
             # Install
             install_debs
-
-            # Ad the clamav user to the amavis group, or it will not be able to reach emails to scan
-            echo "===> Setting correct Perms for clamav and amavis."
-            adduser clamav amavis
             ;;
         *)
             echo "==========================================================================="
@@ -65,4 +57,11 @@ if [ -f /etc/os-release ] ; then
             echo "==========================================================================="
             ;;
     esac
+
+    # fix permissions for clamav into amavis if AV is enabled
+    if [ "$ENABLE_AV" == "yes" -o "$ENABLE_AV" == "Yes" ] ; then
+        # Ad the clamav user to the amavis group, or it will not be able to reach emails to scan
+        echo "===> Setting correct Perms for clamav and amavis to work together"
+        adduser clamav amavis
+    fi
 fi
