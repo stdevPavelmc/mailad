@@ -64,6 +64,15 @@
       "contributions": [
         "ideas"
       ]
+    },
+    {
+      "login": "edelvalle",
+      "name": "Eddy Ernesto del Valle Pino",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/6555851?v=4",
+      "profile": "http://iskra.ml",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,
