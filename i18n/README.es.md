@@ -29,7 +29,7 @@ La idea es desplegar un server final de correos de cara a los usuarios, como son
 
 0. Bajo consumo de recursos.
 0. Filtro avanzados y opcionales de filtrado de adjuntos, DPF, Anti Virus y anti Spam.
-0. Puedes encriptar las comunicaciones LDAP si lop deseas.
+0. Puedes encriptar las comunicaciones LDAP si lo deseas.
 0. Protección por defecto para los principales tipos de ataques a server de correos, criptográficos, etc.
 0. Alias de grupos automáticos con los grupos del Direcotrio Activo. 
 0. Alias manuales, bloqueos manuales para cuantas y dominios, chequeo de cabeceras y cuerpo.
