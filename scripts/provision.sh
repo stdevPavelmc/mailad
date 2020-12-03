@@ -29,8 +29,8 @@ P=`pwd`
 
 #### Some previous processing of the vars
 
-# calc the max size of the message from the MB paramater in the vars
-# plus a little percernt to allow for encoding grow
+# calc the max size of the message from the MB parameter in the vars
+# plus a little percent to allow for encoding grow
 t="$MESSAGESIZE"
 MESSAGESIZE=`echo $(( $t * 1132462))`
 
@@ -68,13 +68,6 @@ ESC_SYSADMINS=`echo $SYSADMINS | sed s/"@"/"\\\@"/`
 
 # get the LDAP URI
 LDAPURI=`get_ldap_uri`
-
-# add the mail gateway as a trusted source, aka the mynetworks
-if [ ! -z "$RELAY" ] ; then
-    # must remove the port and any other char like '[]' we ofter use to avoid lookups
-    T=`echo $RELAY | cut -d ":" -f 1 | tr -d "[" | tr -d "]"`
-    MYNETWORK="$MYNETWORK $T"
-fi
 
 # add the LDAPURI & ESC_SYSADMINS to the vars
 VARS="${VARS} LDAPURI ESC_SYSADMINS"
