@@ -18,6 +18,10 @@ This is a note for developers about the recommended tags to keep track of the ch
 Dates must be YEAR-MONTH-DAY
 -->
 
+## 2020-12-03
+
+- Fixed: a bug (#128) was setting the MGW in the mys ny_networks in postfix, and that lead to all mail reaching recipients, even the restricted ones by any rule, foxed that on this commit.
+
 ## 2020-11-12
 
 - HAPPY BIRTHDAY #1 MailAD!!!
