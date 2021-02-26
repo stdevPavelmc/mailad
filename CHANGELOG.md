@@ -22,6 +22,7 @@ Dates must be YEAR-MONTH-DAY
 
 - Changed: back-porting all the work on the master brach to fix identified bugs to get it to the new simplified AD schema.
 - Changed: Doc updates to fill the new feature.
+- Added: new translation template.
 
 ## 2020-12-03
 
