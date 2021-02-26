@@ -26,6 +26,9 @@
 DOMAIN=""
 DOU=""
 
+# install ldb-tools
+env DEBIAN_FRONTEND=noninteractive apt-get install ldb-tools -y
+
 # function to show help
 function show_help() {
     echo "$1 script help"

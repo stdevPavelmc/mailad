@@ -61,73 +61,42 @@ fi
 # Extract the office parameter "physicalDeliveryOfficeName"
 OFFICE=`cat $TEMP | grep physicalDeliveryOfficeName | awk '{print $2}'`
 if [ "$OFFICE" == "$VMAILSTORAGE" ] ; then
-    # success
-    echo "===> Found the vmail storage and it's configured ok..."
-else
-    # fail
+    # fail, old config
     echo "================================================================================="
     echo "ERROR!:"
-    echo "    VMAILSTORAGE parameter in mailad.conf does not match the one in the user field 'Office'"
-    echo "    Config file vs AD value: '$VMAILSTORAGE' != '$OFFICE'"
+    echo "    Office property has the VMAILSTORAGE parameter, this is a legacy system, so"
+    echo "    you need to upgrade, see the file Simplify_AD_config.md and do the changes"
+    echo "    before continuing with the install/upgrade."
     echo "================================================================================="
     echo " "
     rm $TEMP
     exit 1
 fi
 
-# Extract the telephone parameter "telephoneNumber"
-TELEF=`cat $TEMP | grep telephoneNumber | awk '{print $2}'`
-if [ "$TELEF" == "" ] ; then
-    # fail
-    echo "================================================================================="
-    echo "ERROR!:"
-    echo "    The user has no quota value configured, it will not work!"
-    echo "    You must use the field Telephone to store a value like "
-    echo "    '10M', 500M or '1G'"
-    echo "================================================================================="
-    echo " "
-    rm $TEMP
-    exit 1
-else
-    # success
-    echo "===> Quota value configured ok..."
-fi
-
-# Extract the web page arameter "wWWHomePage"
+# Extract the web page parameter "wWWHomePage"
 WP=`cat $TEMP | grep wWWHomePage | awk '{print $2}'`
 if [ "$WP" != "" ] ; then
     # success 1/2
-    echo "===> Found the users folder on the 'WebPage' attribute..."
+    echo "===> Found some text on the wWWHomePage parameter... hum..."
     LAST=`echo "${WP: -1}"`
     if [ "$LAST" == "/" ] ; then
-        # success
-        echo "===> And it ends with '/' as expected..."
-    else
-        # fail
+        # fail old config
         echo "================================================================================="
         echo "ERROR!:"
-        echo "    WebPage is configured for this user, but does not end with '/'"
-        echo "    please put an '/' at the end"
+        echo "    wWWHomePage property appears to have the home folder for the user, this is a"
+        echo "    sign of a legacy system; you need to upgrade, see the file: "
+        echo "    Simplify_AD_config.md and do the changes before continuing with the"
+        echo "    install/upgrade."
         echo "================================================================================="
         echo " "
         rm $TEMP
         exit 1
     fi
-else
-    # fail
-    echo "================================================================================="
-    echo "ERROR!:"
-    echo "    WebPage is not configured for this user, you must "
-    echo "    put a folder, ussually the username followed by a '/'"
-    echo "================================================================================="
-    echo " "
-    rm $TEMP
-    exit 1
 fi
 
 # succcess
 USER=`cat $TEMP | grep givenName`
 echo "===> User $USER is configured ok"
 echo "===> You can use that user as an example to set up the others!"
-rm $TEMP
+rm $TEMP || exit 0
 exit 0

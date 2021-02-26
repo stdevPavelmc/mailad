@@ -24,6 +24,7 @@ But first the usual warnings; to update the data in the LDAP directory to the ne
 
 [upgrade_simple_ad.sh](upgrade_simple_ad.sh) is the script, follow the steps.
 
+0. Get sure your DC has a repository configured and do a `apt update && apt upgrade`
 0. Copy the upgrade_simple_ad.sh script to your samba AD server, no matter the path (you home or /root is fine
 0. Make it executable `chmod +x upgrade_simple_ad.sh`
 0. Run it as root (sudo) and pass the correct parameters (or just run it and follow the instructions)

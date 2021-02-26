@@ -18,7 +18,7 @@ Since the last update we only need one required property and one optional, see i
 
 ![admin use details new](imgs/admin_user_details.png)
 
-Why the maildir quota is optional?
+Why the quota is optional?
 
 Simple, the general per user's quota is set now in the `/etc/mailad/mailad.conf` file as a variable named `DEFAULT_MAILBOX_SIZE` and it's set by default at 200 MB, see the section named [General and individual quota system](Features.md#general-and-individual-quota-system) in the Features.md file for more details.
 
