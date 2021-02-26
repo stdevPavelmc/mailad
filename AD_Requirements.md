@@ -2,15 +2,15 @@
 
 As we mentioned earlier, this tool trust you has a well configured active directory server and has admin access to it.
 
-_**Notice:** since August 2020 we simplified the user property handling in the active directory, if you has a server installed before that date please take a peek at the [Simplify_AD_config.md](Simplify_AD_config.md) file to know how to migrate to this new simplified way_
+_**Notice:** since the end of February 2021 we simplified the user property handling in the active directory, if you has a server installed before that date please take a peek at the [Simplify_AD_config.md](Simplify_AD_config.md) file to know how to migrate to this new simplified way_
 
 **Note:** We encourage the use of Samba AD, the internet is full of good tutorials about how to use samba as an AD controller
 
 ## LDAPS or securing your LDAP communications
 
-If you use Samba 4 you can start using secure LDAP (LDAPS) from start, you just need to specify `SECURELDAP=yes` in the `/etc/mailad/mailad.conf` file when configuring the provision
+If you use Samba 4 you can start using secure LDAP (LDAPS) from start, you just need to specify `SECURELDAP=yes` in the `/etc/mailad/mailad.conf` file when configuring the provision.
 
-If you need or want to run it in plain text you need to make a change in the Samba configuration (from version 4.x ots defaults to LDAPS, aka: plain LDAP is disabled), to enable plain LDAP locate the [global] section on your's `/etc/samba/smb.conf` file and add this to the end of the section. Please note that you must avoid to use plain LDAP in any scenario: use LDAPS instead.
+If you need or want to run it in plain text you need to make a change in the Samba configuration (from version 4.x it has it's defaults to LDAPS, aka: plain LDAP is disabled), to enable plain LDAP locate the [global] section on your's `/etc/samba/smb.conf` file and add this to the end of the section. Please note that you must avoid to use plain LDAP in any scenario: use LDAPS instead.
 
 ``` sh
 [global]
@@ -25,7 +25,7 @@ If you use a Windows AD server then by default you need to use plain LDAP (no se
 
 ## RSAT (Remote Server Administration Toolkit)
 
-To handle the user's adminstration we recommend to use a windows PC with the RSAT tools installed. Sure you can use the Command Line interface in linux to handle that but it's hard for newcommers, if you like to venture in that field the command is `samba-tool` and has all the options you need, but we will not cover that item here (yet)
+To handle the user's adminstration we recommend to use a windows PC with the RSAT tools installed. Sure you can use the Command Line Interface (CLI) in linux to handle that but it's hard for newcomers, if you like to venture in that field the command is `samba-tool` and has all the options you need, but we will not cover that item here.
 
 ## Linux - AD link
 
@@ -49,4 +49,4 @@ The only detail you need to pay attention here is the user's Email property ("Co
 
 - User active and not locked.
 - Email property set and matching the domanin you are configuring.
-- Optionaly a specific quota for this user in the "Web Page" property ("Página Web" in this case, see the Features file for more details)
+- Optionally a specific quota for this user in the "Web Page" property ("Página Web" in this case, see the Features file for more details)

@@ -68,9 +68,9 @@ If you are a Linux user then you can use `samba-tool` to control the users prope
 
 ## General and specific quota system
 
-_**Notice:** This feature was introduced in October/2020 and if you has MailAD from a date earlier than that please **after** reading this go to the file [Simplify_AD_config.md](Simplify_AD_config.md) and read there how to migrate._
+_**Notice:** This feature was introduced in February/2021 and if you has MailAD from a date earlier than that please **after** reading this go to the file [Simplify_AD_config.md](Simplify_AD_config.md) and read there how to migrate._
 
-Eventually or from start you need a quota system, users are lazy and have the nasty habbit of pile unused mail on their mailboxes, so we propose a General and individual quota system, like this:
+Eventually or from start you need a quota system, users are lazy and have the nasty habit of pile unused mail on their mailboxes, so we propose a General and individual quota system.
 
 ### General quota
 
@@ -91,7 +91,7 @@ The units are standard:
 - #G: GBytes like 1G
 - #T: TBytes like 1T
 
-There is a soft restriction here: you are not alowed to use decimals, but you can use the lower unit to get the same effect: instead of 1.5G you can say 1500M.
+There is a soft restriction here: you are not allowed to use decimals, but you can use the lower unit to get the same effect: instead of 1.5G you can say 1500M.
 
 [Return to index](Features.md#mailad-features-explained)
 

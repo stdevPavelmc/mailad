@@ -1,6 +1,6 @@
 # Simplify the AD configuration for the users
 
-Since August 2020 we introduced a simplified version of AD user's properties configuration schema.
+Since the end of February 2020 we introduced a simplified version of AD user's properties configuration schema.
 
 Formerly you had to setup 4 properties for a single user, a tedious task if you has many users, the properties was this (for the record):
 
@@ -28,6 +28,6 @@ To migrate you need to read the [related explanation](utils/README.md#upgrade-to
 
 ## Why you changed?
 
-- Simplicity: practice has revealed that the sysadmins or the tech people are prone to make typos or miss a field and then spend a few hours chasing their tial to find the fix.
-- Productivitiy: think in 300 users, how many tame will take to set 4 fields vs fill 1 field.
-- User's advice: Some users was using the fields in the old schema for things on their setups, and that will rule MailAD as a viable option.
+- Simplicity: practice has revealed that the sysadmins or the tech people are prone to make typos or miss a field and then spend a few hours chasing their tail to find the fix.
+- Productivity: think in 300 users, how many time will take to set 4 fields vs fill 1 field on those 300 users?
+- User's advice: Some users was using the fields in the old schema for things on their setups, and that will rule out MailAD as a viable option.
