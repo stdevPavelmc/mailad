@@ -4,7 +4,8 @@ timeout = 10
 search_base = _LDAPSEARCHBASE_
 # Filter                      account active         password don't expire     password had expired
 query_filter = (&(mail=%u@%d)(|(userAccountControl=512)(userAccountControl=66048)(userAccountControl=8398120)))
-result_attribute = wWWHomePage
+result_attribute = sAMAccountName
+result_format = %s/
 bind = yes
 bind_dn = _LDAPBINDUSER_
 bind_pw = _LDAPBINDPASSWD_

@@ -34,7 +34,30 @@ The merge action by the repo owner (@stdevPavelmc) will automatically close the 
 
 ## Monetary contributions
 
-This is free software and you can use it without charges, but if you want to express your gratitude in monetary form we are gratefull for that, we have a few ways
+This is free software and you can use it without charges, but if you want to express your gratitude in monetary form here is how:
 
-- Phone top up, this will help me staty connected to the internet: +53 53 847 819
-- For other contribution please contact me via Telegram messenger, my handle there is @pavelmc or by my phone on the line above
+Este es un software libre y puedes usarlo sin cargos, pero si quieres expresar tu gratitud en forma monetaria estamos agradecidos por ello:
+
+### Top my cell phone up!
+
+That will allow me to stay online to develop & improve MailAD, my cell number is: **`(+53) 53 847 819`**, You can donate the amount you want.
+
+Tip: my service provider has promotions almost every other week that will duplicate any amount over USD $20.00!
+
+- The official top-up sites are this (you can also check www.etecsa.cu to verify them):
+    - [Ding](https://www.ding.com)
+    - [Recargas a Cuba](https://www.recargasacuba.com)
+    - [CSQWorl](https://www.csqworld.com)
+    - [Compra dtodo](https://moviles.compra-dtodo.com)
+    - [Global DSD](https://www.globaldsd.com)
+    - [Boss Revolution](https://www.bossrevolution.com)
+    - [E-Topup Online](https://cubacel.etopuponline.com)
+- By using **Crypto currencies**, use [BilRefill](https://www.bitrefill.com/buy/cubacel-cuba/?hl=en) for that.
+
+### Direct money transfers (Only in Cuba)
+
+- You can donate any amount in CUP (national currency) via Transfermovil:
+
+<p align="center"><img src="imgs/donation_transfermovil_cup.png" alt="Transfermovil"></img></p>
+
+**Thank you very much in advance!**

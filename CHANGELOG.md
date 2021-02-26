@@ -18,6 +18,55 @@ This is a note for developers about the recommended tags to keep track of the ch
 Dates must be YEAR-MONTH-DAY
 -->
 
+## 2021-02-26
+
+- Changed: back-porting all the work on the master brach to fix identified bugs to get it to the new simplified AD schema.
+- Changed: Doc updates to fill the new feature.
+- Added: new translation template.
+
+## 2020-12-03
+
+- Fixed: a bug (#128) was setting the MGW in the mys ny_networks in postfix, and that lead to all mail reaching recipients, even the restricted ones by any rule, foxed that on this commit.
+
+## 2020-11-12
+
+- HAPPY BIRTHDAY #1 MailAD!!!
+- Fixed: A bug in the mail install script, the group tweaking for clamav was in place even if the user choose not to install an AV, fixed now.
+
+## 2020-10-26
+
+- Fixed: The quota warnings emails (85 & 95% of the mailbox) was not being sent in Dovecot 2.3 (Ubuntu 20.04 & possibly also on Debian 10.x), was a permission problem on the script, fixed.
+- Changed: The quota warning email is now full mime capable (plaintext + html versions inside) and has more info for the user (in spanish for now.)
+
+## 2020-10-16
+
+- Added: Now the force-provison and upgrade target preserve the clamav database upgrades. This will help a lot when you are in a slow internet link o behind a proxy server.
+
+## 2020-10-14
+
+- Fixed: AD groups with long names was not getting parsed on the automatic alias because ldapsearch tool was wrapping the output at 79 chars by default, added a fix to solve that; fixed.
+- Fixed: Updates form ClamAV failed when using proxy, it was the http/s prefix, must be omitted when using proxy, fixed 
+
+## 2020-10-13
+
+- Modified: Removed the SSLv2 in the listing of forbidden protocols (even disabled) in dovecot 2.2, it's not supported in SSL library so no reason to be here. 
+- Modified: Improved the parsing of the RELAY variable, to remove the ending ':port' part and the surrounding '[]' if present.
+
+## 2020-10-12
+
+- Modified: We effectively disabled TLSv1 & TLSv1.1 in Postfix and Dovecot as both protocols are flagged as insecure. 
+
+## 2020-10-09
+
+- Added: Fix to issue #107: small enterprise dovecot cache ttl to big, lower the ttl (from 1 hour to 10 minutes) and incremented the size of the cache for big enterprises (from ~5 to ~50 latest hits on cache)
+
+## 2020-10-08
+
+- Added: More spanish translations (tks to @glpzzz) and link them to the original files.
+- Added: Include more contributors @glpzzz and @oneohthree
+- Modified: Improved the README with more eye-candy badges and the asciinema recording
+- Modified: Improve the contributions sections, adding more explicit funding instructions, adding a QR code for Transfermovil (Cuba only)
+
 ## 2020-10-07
 
 - Added: Spanish and German translations of he README.

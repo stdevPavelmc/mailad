@@ -29,8 +29,8 @@ P=`pwd`
 
 #### Some previous processing of the vars
 
-# calc the max size of the message from the MB paramater in the vars
-# plus a little percernt to allow for encoding grow
+# Calc the max size of the message from the MB parameter in the vars
+# plus a little percent to allow for encoding grow
 t="$MESSAGESIZE"
 MESSAGESIZE=`echo $(( $t * 1132462))`
 
@@ -68,11 +68,6 @@ ESC_SYSADMINS=`echo $SYSADMINS | sed s/"@"/"\\\@"/`
 
 # get the LDAP URI
 LDAPURI=`get_ldap_uri`
-
-# add the mail gateway as a trusted source, aka the mynetworks
-if [ ! -z "$RELAY" ] ; then
-    MYNETWORK="$MYNETWORK $RELAY"
-fi
 
 # add the LDAPURI & ESC_SYSADMINS to the vars
 VARS="${VARS} LDAPURI ESC_SYSADMINS"
@@ -246,7 +241,16 @@ else
 
             # dump the config
             for M in `echo "${AV_ALT_MIRRORS}" | xargs` ;  do
-                echo "DatabaseMirror ${M}" >> $FILE
+                # if a proxy is set remove the 'http://' and 'https://' from the variables
+
+                if [ ! -z "$PROXY_HOST" -a ! -z "$PROXY_PORT" ] ; then
+                    # there is a proxy, remove the prefix
+                    Mm=`echo ${M} | sed s/'http:\/\/'//g | sed s/'https:\/\/'//g`
+                    echo "DatabaseMirror ${Mm}" >> $FILE
+                else
+                    # no proxy
+                    echo "DatabaseMirror ${M}" >> $FILE
+                fi
             done
         fi
     fi

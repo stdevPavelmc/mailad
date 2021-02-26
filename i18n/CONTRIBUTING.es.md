@@ -32,7 +32,26 @@ El __merge__ por parte del dueño del repo (@stdevPavelmc) cerrará automáticam
 
 ## Contribuciones monetarias
 
-Este es un software libre y puedes usarlo sin cargos, pero si quieres expresar tu gratitud en forma monetaria estamos agradecidos por ello, tenemos algunas formas
+Este es un software libre y puedes usarlo sin cargos, pero si quieres expresar tu gratitud en forma monetaria estamos agradecidos por ello:
 
-- Recarga de teléfono, esto me ayudará a estar conectado a Internet: +53 53 847 819
-- Para otras contribuciones, por favor contácteme a través de Telegram, mi alias es @pavelmc o a través de mi teléfono en la número anterior.
+### Ponme una recarga a mi celular para mantenerme conectado
+
+Mi número de celular es: **`(+53) 53 847 819`**, puedes donar el monto que quieras.
+
+- Los sitios oficiales para realizar las recargas son los siguientes:
+    - [Ding](https://www.ding.com)
+    - [Recargas a Cuba](https://www.recargasacuba.com)
+    - [CSQWorl](https://www.csqworld.com)
+    - [Compra dtodo](https://moviles.compra-dtodo.com)
+    - [Global DSD](https://www.globaldsd.com)
+    - [Boss Revolution](https://www.bossrevolution.com)
+    - [E-Topup Online](https://cubacel.etopuponline.com)
+- Usando **Criptomonedas** usando [BilRefill](https://www.bitrefill.com/buy/cubacel-cuba/?hl=es)
+
+### Transferencia directa de dinero (SOLO EN CUBA)
+
+- Donando el monto que quieras a mi cuenta de CUP usando el Transfermovil:
+
+<p align="center"><img src="../imgs/donation_transfermovil_cup.png" alt="Transfermovil"></img></p>
+
+De antemano: **Muchas Gracias!**

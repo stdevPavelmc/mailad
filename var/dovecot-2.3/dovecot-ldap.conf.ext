@@ -111,7 +111,7 @@ user_attrs = \
   =home=_VMAILSTORAGE_/%n, \
   =uid=_VMAILUID_, \
   =gid=_VMAILGID_, \
-  =quota_rule=*:bytes=%{ldap:telephoneNumber}
+  =quota_rule=*:bytes=%{ldap:wWWHomePage:_DEFAULT_MAILBOX_SIZE_}
 
 # Filter for user lookup. Some variables can be used (see
 # http://wiki2.dovecot.org/Variables for full list):
