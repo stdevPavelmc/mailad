@@ -29,7 +29,7 @@ P=`pwd`
 
 #### Some previous processing of the vars
 
-# calc the max size of the message from the MB parameter in the vars
+# Calc the max size of the message from the MB parameter in the vars
 # plus a little percent to allow for encoding grow
 t="$MESSAGESIZE"
 MESSAGESIZE=`echo $(( $t * 1132462))`

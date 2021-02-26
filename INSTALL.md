@@ -2,6 +2,12 @@
 
 Check this [simple console recording](https://asciinema.org/a/fD1LuVLfeb8RPCHOIgbR1J9d8) to see how looks a simple install.
 
+⚠️ ⚠️ ⚠️ ⚠️ ⚠️ ⚠️
+
+**WARNING:** Since the end of February 2020 we changed the integration with the AD to be more simpler, you **need** to check [this document](Simplify-AD-config.md) if you want to upgrade your setup.
+
+Users of new install have no problem, just follow the install procedure below and you will be safe.
+
 ## Introduction & checks
 
 To avoid permission problems we recommend you to held the files under the `/root` directory, so from this moment and forward you need to be root to runs the following commands, `sudo -i` is your friend if you are not root.
@@ -20,7 +26,7 @@ echo "[http]" >> ~/.gitconfig
 echo "    proxy = http://user:password@proxy.enterprise.cu:3128/" >> ~/.gitconfig
 ```
 
-If your setup use a proxy without username and password authentication just omit the "user:password@" part in the lines above
+If your setup use a proxy without username and password authentication just omit the "user:password@" part in the lines above, like this: `http://proxy.enterprise.cu:3128/`
 
 ## Initial setup
 
@@ -84,9 +90,9 @@ We are ready to install now, Oh wait! We need to generate the SSL certificates f
 
 ## Certificate creation
 
-All client communications in this setup will be encrypted, so you will need at least a self signed certificate for internal use. This certificate will be used by postfix & dovecot
+All client communications must be encrypted, so you will need at least a self signed certificate for internal use. This certificate will be used by postfix & dovecot.
 
-IF you proceed MailAD script will generate a self-signed certificate that will last for 10 years, or if you have a cert from Let's Encrypt (LE for short) (standalone or wildcard) you can use it also. In the case you have a LE cert, using it is simple:
+If you proceed MailAD script will generate a self-signed certificate that will last for 10 years, or if you have a cert from Let's Encrypt (LE for short) (standalone or wildcard) you can use it also. In the case you have a LE cert, using it is simple:
 
 Just pick the ones that are named "fullchain*" and "privkey*" and place them on the folder `/etc/mailad/le/` and name it like this: `fullchain.pem` and `privkey.pem` and the provision scripts will use it
 
@@ -101,7 +107,7 @@ Final certs will lay on this places (if LE then certs will be copied over & secu
 - Private Key: `/etc/ssl/private/mail.key`
 - CA certificate: `/etc/ssl/certs/cacert.pem`
 
-If you obtain a LE certs for your server after using the self-signed or you need to update them; then just place them (like we described above) on the `/etc/mailad/le/` folder on the config and do the following from the folder you have the cloned MailAD install
+If you obtain a LE certs for your server after using the self-signed or you need to update or replace them; then just place them (like we described above) on the `/etc/mailad/le/` folder on the config and do the following from the folder you have the cloned MailAD install
 
 ``` sh
 rm certs &2> /dev/null
@@ -141,10 +147,10 @@ The make target `force-provision` is just for that, change a parameter in your c
 
 
 ``` sh
-make provision
+make force-provision
 ```
 
-You will se as it makes a backup of all the config and the reinstalls the whole server with the new parameters, that's normal that's the way it's programmed; take a peek on the last part of the install process, you will see a part like this:
+You will see as it makes a backup of all the config and the reinstalls the whole server with the new parameters _(this process will last about 8 minutes on up to date hardware)_, that's normal that's the way it's programmed; take a peek on the last part of the install process, you will see a part like this:
 
 ```
 [...]
@@ -163,4 +169,4 @@ If you need to reset some of those files to the defaults just erase them from th
 
 ## Now what
 
-There is a [FAQ](FAQ.md) file to search for common problems; or you can reach me  via telegram under my nickname: [@pavelmc](https://t.me/pavelmc)
+There is a [FAQ](FAQ.md) file to search for common problems; or you can reach me via telegram under my nickname: [@pavelmc](https://t.me/pavelmc)

@@ -10,6 +10,12 @@ This page is also available in the following languages: [ [Español](i18n/README
 
 This is a handy tool to provision a mail server on linux linked to an Active Directory server (Samba or Windows, it does not care) with some constraints in mind, as this is a typical mail config to be used in Cuba under certain laws and security requirements. You can see a simple provision in [this asciinema movie](https://asciinema.org/a/fD1LuVLfeb8RPCHOIgbR1J9d8).
 
+⚠️ ⚠️ ⚠️ ⚠️ ⚠️ ⚠️
+
+**WARNING:** Since the end of February 2020 we changed the integration with the AD to be more simpler, you **need** to check [this document](Simplify-AD-config.md) if you want to upgrade your setup.
+
+Users of new install have no problem, just follow the [install procedure](INSTALL.md) and you are set.
+
 ## Rationale
 
 This repository is intended to be cloned on your fresh OS install under `/root` (you can use a LXC instance, VM, CT, etc) and setup on a main conf file as per the file comments, then run the steps on a makefile and follow the steps to configure your server.
@@ -53,7 +59,7 @@ All dev is made on weekend or late at night (seriously take a peek on the commit
 
 Remember the comment at top of the page about _"...with some constraints in mind..."_ yeah, here they are:
 
-0. Your user base and config came from an Active Directory (AD from now on) as mentioned, we prefer a Samba AD but works on Windows too; see [AD requirements for this tool](AD_Requirements.md)
+0. Your user base and config came from an Active Directory (AD from now on) as mentioned, we prefer Samba AD but it works on Windows too; see [the AD requirements for this tool](AD_Requirements.md)
 0. The mail storage will be a folder in `/home/vmail`, all mail will belong to a user named `vmail` with uid:5000 & gid:5000. Tip: that folder can be a NFS mount or any other type of network storage (configurable)
 0. You use a Windows PC to control and manage the domain (must be a domain member and have the RSAT installed and activated), we recommend a Windows 10 LTSC/Professional
 0. The communication with the server is done in this way: (See [this question](FAQ.md#what-ports-i-need-to-get-open-to-make-sure-the-servers-works-ok) on the FAQ file to know more)

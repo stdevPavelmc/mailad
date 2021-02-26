@@ -18,6 +18,12 @@ This is a note for developers about the recommended tags to keep track of the ch
 Dates must be YEAR-MONTH-DAY
 -->
 
+## 2021-02-26
+
+- Changed: back-porting all the work on the master brach to fix identified bugs to get it to the new simplified AD schema.
+- Changed: Doc updates to fill the new feature.
+- Added: new translation template.
+
 ## 2020-12-03
 
 - Fixed: a bug (#128) was setting the MGW in the mys ny_networks in postfix, and that lead to all mail reaching recipients, even the restricted ones by any rule, foxed that on this commit.
