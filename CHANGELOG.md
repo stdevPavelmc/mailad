@@ -21,7 +21,7 @@ Dates must be YEAR-MONTH-DAY
 ## 2021-06-03
 
 - Fixed: Bug #132, the garbage collector script was flagging all mailboxes on the vmailstorage folder as garbage, was a human error, I failed to update that script when doing the las feature.
-
+- Fixed: Broken link on the README, fixed.
 
 ## 2021-02-26
 
