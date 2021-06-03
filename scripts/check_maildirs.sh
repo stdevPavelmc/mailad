@@ -2,7 +2,7 @@
 
 # This script is part of MailAD, see https://github.com/stdevPavelmc/mailad/
 # Copyright 2020 Pavel Milanes Costa <pavelmc@gmail.com>
-# LICENCE: GPL 3.0 and later  
+# LICENCE: GPL 3.0 and later
 #
 # Goal:
 #   - Cycle trough the list of maildirs in the mail storage and check
@@ -27,14 +27,12 @@ fi
 
 function isthere () {
     # Just one parameter:
-    #   -  the maildir folder
+    #   -  the maildir folder, aka the sAMAccountName property of an existing user
     #
-    # return empty string or num of entries fount
+    # return empty string or num of entries found
 
     # LDAP query
-    RESULT=`ldapsearch -o ldif-wrap=no -H "$LDAPURI" -D "$LDAPBINDUSER" -w "$LDAPBINDPASSWD" -b "$LDAPSEARCHBASE" "(&(objectClass=person)(wWWHomePage=${1}))" | grep "numEntries: " | awk '{print $3}'`
-
-    echo $RESULT
+    ldapsearch -o ldif-wrap=no -H "$LDAPURI" -D "$LDAPBINDUSER" -w "$LDAPBINDPASSWD" -b "$LDAPSEARCHBASE" "(&(objectClass=person)(sAMAccountName=${1}))" | grep "numEntries: " | awk '{print $3}'
 }
 
 function getdetails() {
@@ -69,14 +67,14 @@ for md in `ls ${VMAILSTORAGE} | xargs` ; do
         continue
     fi
 
-    R=`isthere ${md}/`
+    R=`isthere ${md}`
     if [ -z "$R" ] ; then
         mail=1
         data=`getdetails ${md}`
         days=`echo $data | cut -d '|' -f2`
         months=$((${days} / 30))
         size=`echo $data | cut -d '|' -f1 | awk '{print $1}'`
-        
+
         # check to see to what list it's sended
         if [ ${days} -gt 273 ] ; then
             # older than 75 % of a year
@@ -118,7 +116,7 @@ if [ $mail -ne 0 ] ; then
     echo "the user) may lose valuable information, so we will limit our action to" >> $mail
     echo "sending you a monthly reminder of the unused maildirs for you to take action" >> $mail
     echo " " >> $mail
-    # stalled les tha 10 months
+    # stalled less than 10 months
     if [ -s "${stalledlist}" ] ; then
         echo "=== MAILBOXES THAT NEED ATTENTION ========================================" >> $mail
         printf "Age\t\t\tSize\tMaildir\n" >> $mail
@@ -126,7 +124,7 @@ if [ $mail -ne 0 ] ; then
         echo " " >> $mail
         echo " " >> $mail
     fi
-    # warn zone > 10 < 12 months 
+    # warn zone > 10 < 12 months
     if [ -s "${warnlist}" ] ; then
         echo "=== MAILBOXES THAT WILL BE ERASED SOON! ==================================" >> $mail
         printf "Age\t\t\tSize\tMaildir\n" >> $mail
@@ -134,7 +132,7 @@ if [ $mail -ne 0 ] ; then
         echo " " >> $mail
         echo " " >> $mail
     fi
-    # deleted 
+    # deleted
     if [ -s "${erasedlist}" ] ; then
         echo "=== ERASED MAILBOXES =====================================================" >> $mail
         printf "Age\t\t\tSize\tMaildir\n" >> $mail
@@ -142,7 +140,7 @@ if [ $mail -ne 0 ] ; then
         echo " " >> $mail
         echo " " >> $mail
     fi
-    
+
     echo "Please take action to save what's important and erase the" >> $mail
     echo "used maildirs before they are cleaned automatically." >> $mail
     echo " " >> $mail
