@@ -12,7 +12,7 @@ This is a handy tool to provision a mail server on linux linked to an Active Dir
 
 ⚠️ ⚠️ ⚠️ ⚠️ ⚠️ ⚠️
 
-**WARNING:** Since the end of February 2020 we changed the integration with the AD to be more simpler, you **need** to check [this document](Simplify-AD-config.md) if you want to upgrade your setup.
+**WARNING:** Since the end of February 2020 we changed the integration with the AD to be more simpler, you **need** to check [this document](Simplify_AD_config.md) if you want to upgrade your setup.
 
 Users of new install have no problem, just follow the [install procedure](INSTALL.md) and you are set.
 
