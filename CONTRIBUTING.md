@@ -56,7 +56,7 @@ Tip: my service provider has promotions almost every other week that will duplic
 
 ### Direct money donations
 
-- You can donate using any of the available payment gateways, choose the most convenient for you: QvaPay, Transfermovil, EnZona:
+- You can donate using any of the available payment gateways, choose the most convenient for you.
 
 <p>
     <table>
