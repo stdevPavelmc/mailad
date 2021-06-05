@@ -50,7 +50,7 @@ Mi número de celular es: **`(+53) 53 847 819`**, puedes donar el monto que quie
 
 ### Donaciones en dinero
 
-- PPuedes donar usando cualquiera de las pasarelas de pago disponibles, escoge la más conveniente para ti: Transfermovil, EnZona or QvaPay:
+- Puedes donar usando cualquiera de las pasarelas de pago disponibles, escoge la más conveniente para ti.
 
 <p>
     <table>
