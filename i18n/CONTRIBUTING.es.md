@@ -50,7 +50,7 @@ Mi número de celular es: **`(+53) 53 847 819`**, puedes donar el monto que quie
 
 ### Donaciones en dinero
 
-- Puedes donar lo que quieras en CUP (moneda cubana), USD/BTC/ETH/EUR y otras usando Transfermovil, EnZona or QvaPay:
+- PPuedes donar usando cualquiera de las pasarelas de pago disponibles, escoge la más conveniente para ti: Transfermovil, EnZona or QvaPay:
 
 <p>
     <table>
