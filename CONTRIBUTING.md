@@ -54,10 +54,35 @@ Tip: my service provider has promotions almost every other week that will duplic
     - [E-Topup Online](https://cubacel.etopuponline.com)
 - By using **Crypto currencies**, use [BilRefill](https://www.bitrefill.com/buy/cubacel-cuba/?hl=en) for that.
 
-### Direct money transfers (Only in Cuba)
+### Direct money donations
 
-- You can donate any amount in CUP (national currency) via Transfermovil:
+- You can donate any amount in CUP (national currency), USD/BTC/ETH/EUR or others by using Transfermovil, EnZona or QvaPay:
 
-<p align="center"><img src="imgs/donation_transfermovil_cup.png" alt="Transfermovil"></img></p>
+<p>
+    <table>
+        <tr>
+            <td style="text-align=center">
+                With Transfermovil
+            </td>
+            <td style="text-align=center">
+                With EnZona
+            </td>
+            <td style="text-align=center">
+                With <a href="https://qvapay.com/payme/pavelmc">QvaPay</a>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <img src="imgs/donation_transfermovil_cup.png" alt="Transfermovil"></img>
+            </td>
+            <td>
+                <img src="imgs/donation_enzona_cup.jpg" alt="EnZona"></img>
+            </td>
+            <td>
+                <img src="imgs/donation_qvapay.png" alt="QvaPay"></img>
+            </td>
+        </tr>
+    </table>
+</p>
 
 **Thank you very much in advance!**
