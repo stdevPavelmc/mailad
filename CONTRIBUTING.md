@@ -56,7 +56,7 @@ Tip: my service provider has promotions almost every other week that will duplic
 
 ### Direct money donations
 
-- You can donate any amount in CUP (national currency), USD/BTC/ETH/EUR or others by using Transfermovil, EnZona or QvaPay:
+- You can donate using any of the available payment gateways, choose the most convenient for you: QvaPay, Transfermovil, EnZona:
 
 <p>
     <table>
