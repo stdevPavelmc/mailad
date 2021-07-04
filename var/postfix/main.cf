@@ -25,7 +25,7 @@ myorigin = $myhostname
 
 # host a quien debo entragarle el email para la salida hacia el exterior
 # si estas directo a internet debes dejarlo en blanco
-# Si es un IP sedebe poer entre [1.2.3.4] para que postfix sepa
+# Si es un IP se debe poner entre [1.2.3.4] para que postfix sepa
 # que es IP y no haga consulta DNS
 relayhost = _RELAY_
 
