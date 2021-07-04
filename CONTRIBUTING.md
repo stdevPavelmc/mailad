@@ -36,7 +36,9 @@ The merge action by the repo owner (@stdevPavelmc) will automatically close the 
 
 This is free software and you can use it without charges, but if you want to express your gratitude in monetary form here is how:
 
-Este es un software libre y puedes usarlo sin cargos, pero si quieres expresar tu gratitud en forma monetaria estamos agradecidos por ello:
+### Open Collective
+
+Yes, we have a organization registered under the Open Collecive initiative for Open and Public funding and finances, you can be a backer for this proyect, just visit us at our [OpenCollective Page](https://opencollective.com/mailad)
 
 ### Top my cell phone up!
 
