@@ -2,19 +2,19 @@
 
 Since the end of February 2020 we introduced a simplified version of AD user's properties configuration schema.
 
-Formerly you had to setup 4 properties for a single user, a tedious task if you has many users, the properties was this (for the record):
+Formerly you had to setup 4 properties for a single user, a tedious task if you has many users, the properties were these (just for the record):
 
-- Email: the user's emails
-- Office: With the general mail storage folder
-- Telephone: with the user's mailbox quota
-- Web Page: The particular user's mailbox inside the general mail storage folder (must end in a explicit "/" to sing a folder)
+- E-mail: The user's email address
+- Office: The general mail storage folder
+- Telephone: The user's mailbox quota
+- Web Page: The name for the particular user's mailbox within the general mail storager folder followed by an explicit forward slash "/")
 
 ![admin use details old](imgs/admin_user_details_old.png)
 
-Since the last update we only need one required property and one optional, see it here:
+After the Feb'2020 update we only need one required property and one optional, which are:
 
-- Email: the user's emails
-- Web Page: **[Optional]** with the user's **specific** mailbox quota
+- E-mail: The user's email address
+- Web Page: **[Optional]** The user's **specific** mailbox quota
 
 ![admin use details new](imgs/admin_user_details.png)
 
