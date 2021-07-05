@@ -7,11 +7,11 @@ Formerly you had to setup 4 properties for a single user, a tedious task if you 
 - E-mail: The user's email address
 - Office: The general mail storage folder
 - Telephone: The user's mailbox quota
-- Web Page: The name for the particular user's mailbox within the general mail storager folder followed by an explicit forward slash "/")
+- Web Page: The name for the particular user's mailbox within the general mail storage folder followed by an explicit forward slash "/")
 
 ![admin use details old](imgs/admin_user_details_old.png)
 
-After the Feb'2020 update we only need one required property and one optional, which are:
+After the Feb'2020 update you only have one mandatory and one optional field, those are:
 
 - E-mail: The user's email address
 - Web Page: **[Optional]** The user's **specific** mailbox quota
