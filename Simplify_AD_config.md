@@ -1,8 +1,28 @@
-# Simplify the AD configuration for the users
+# Simplified the user configuration in the Active Directory
 
-Since the end of February 2020 we introduced a simplified version of AD user's properties configuration schema.
+Since the end of February 2021 the fields required for MailAD configuration in the AD were reduced. Now only one field is required and you have the option to input a user-specific quota:
 
-Formerly you had to setup 4 properties for a single user, a tedious task if you has many users, the properties were these (just for the record):
+- E-mail: **[Mandatory]** The user's email address
+- Web Page: **[Optional]** The user's **specific** mailbox quota
+
+![admin use details new](imgs/admin_user_details.png)
+
+## What is the process to migrate to this simplified schema if I have an old MailAD version already?
+
+To migrate you need to read the [related explanation](utils/README.md#upgrade-to-the-simplified-ad-configuration) in the utill's README file, and follow the steps there.
+
+## Why the quota is optional?
+
+Simple, the general per user's quota is set now in the `/etc/mailad/mailad.conf` file as a variable named `DEFAULT_MAILBOX_SIZE` and it's set by default at 200 MB, see the section named [General and individual quota system](Features.md#general-and-individual-quota-system) in the Features.md file for more details.
+
+## Why you changed?
+
+- Simplicity: Practice has revealed that humans are prone to typos or missing fields.
+- Productivity: Think in 300 users: how many time will take to set 4 fields vs just 1 field on those 300 users?
+- User's advice: Some users was using the fields in the old schema for things on their setups, and that will rule out MailAD as a viable option.
+
+## Reference of previous fields
+Previously you had to setup four properties for a single user, a tedious task if you has many users, the properties were these:
 
 - E-mail: The user's email address
 - Office: The general mail storage folder
@@ -11,23 +31,4 @@ Formerly you had to setup 4 properties for a single user, a tedious task if you 
 
 ![admin use details old](imgs/admin_user_details_old.png)
 
-After the Feb'2020 update we only need one required property and one optional, which are:
 
-- E-mail: The user's email address
-- Web Page: **[Optional]** The user's **specific** mailbox quota
-
-![admin use details new](imgs/admin_user_details.png)
-
-Why the quota is optional?
-
-Simple, the general per user's quota is set now in the `/etc/mailad/mailad.conf` file as a variable named `DEFAULT_MAILBOX_SIZE` and it's set by default at 200 MB, see the section named [General and individual quota system](Features.md#general-and-individual-quota-system) in the Features.md file for more details.
-
-## What is the process to migrate to this simplified schema if I have an old MailAD version already?
-
-To migrate you need to read the [related explanation](utils/README.md#upgrade-to-the-simplified-ad-configuration) in the util's README file, and follow the steps there.
-
-## Why you changed?
-
-- Simplicity: practice has revealed that the sysadmins or the tech people are prone to make typos or miss a field and then spend a few hours chasing their tail to find the fix.
-- Productivity: think in 300 users, how many time will take to set 4 fields vs fill 1 field on those 300 users?
-- User's advice: Some users was using the fields in the old schema for things on their setups, and that will rule out MailAD as a viable option.
