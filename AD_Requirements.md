@@ -1,6 +1,6 @@
 # Active Directory requirements for this tool
 
-As we mentioned earlier, this tool trust you has a well configured active directory server and has admin access to it.
+As was mentioned earlier, this tool requires that you has a correctly configured Active Directory (AD) server and has administrative access to it.
 
 _**Notice:** since the end of February 2021 we simplified the user property handling in the active directory, if you has a server installed before that date please take a peek at the [Simplify_AD_config.md](Simplify_AD_config.md) file to know how to migrate to this new simplified way_
 
