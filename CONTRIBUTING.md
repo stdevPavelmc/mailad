@@ -50,7 +50,7 @@ Tip: My service provider has promotions almost every other week that will duplic
     - [Global DSD](https://www.globaldsd.com)
     - [Boss Revolution](https://www.bossrevolution.com)
     - [E-Topup Online](https://cubacel.etopuponline.com)
-- By using **Crypto currencies**, use [BilRefill](https://www.bitrefill.com/buy/cubacel-cuba/?hl=en) for that.
+- By using **Crypto currencies**, use [BitRefill](https://www.bitrefill.com/buy/cubacel-cuba/?hl=en) for that.
 
 ### Direct money transfers (Only in Cuba)
 
