@@ -28,7 +28,7 @@ Pull request are intentions to merge some code into the main tree, you can open 
 
 In fact is a recommended practice, open an issue, analyze, make your first commit and open the pull request ride away; in this way changes will be picked by travis and CI/CD will fire to tell you if your changes are good o broke something.
 
-As a general rule a pulll request must end with a comment on which you mentions @stdevPavelmc and estate that the pull request is ready to merge
+As a general rule a pull request must end with a comment on which you mention @stdevPavelmc and estate that the pull request is ready to merge
 
 The merge action by the repo owner (@stdevPavelmc) will automatically close the corresponding pull request and the issue just by adding a comment like this to the comment of the merge "Closing issue #8..." github will do the magic and will (if travis build is a success) close the PR and the matching issue, all in just one place.
 
@@ -36,13 +36,11 @@ The merge action by the repo owner (@stdevPavelmc) will automatically close the 
 
 This is free software and you can use it without charges, but if you want to express your gratitude in monetary form here is how:
 
-Este es un software libre y puedes usarlo sin cargos, pero si quieres expresar tu gratitud en forma monetaria estamos agradecidos por ello:
-
 ### Top my cell phone up!
 
 That will allow me to stay online to develop & improve MailAD, my cell number is: **`(+53) 53 847 819`**, You can donate the amount you want.
 
-Tip: my service provider has promotions almost every other week that will duplicate any amount over USD $20.00!
+Tip: My service provider has promotions almost every other week that will duplicate any amount over USD $20.00!
 
 - The official top-up sites are this (you can also check www.etecsa.cu to verify them):
     - [Ding](https://www.ding.com)
