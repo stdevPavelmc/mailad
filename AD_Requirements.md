@@ -49,4 +49,4 @@ Only one detail is required, the user's E-mail field ("Correo electrónico" in S
 
 - User enabled and not locked in the AD.
 - E-mail property set and matching the email domanin you are configuring.
-- Optionally a user-specific quota for this user in the "Web Page" property ("Página Web" in this case, see the Features file for more details)
+- Optionally a user-specific quota can be set for the user in the "Web Page" field ("Página Web" in Spanish, see the Features file for more details).
