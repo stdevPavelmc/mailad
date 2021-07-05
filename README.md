@@ -46,7 +46,7 @@ This will provision a mail server in a enterprise as a real server facing the us
 0. Really painless upgrades.
 0. Daily mail traffic summary in you inbox.
 0. Optional user privilege access via AD groups (local/national/international).
-0. Optional disclaimer/notice/adverting on every outgoing mail.
+0. Optional disclaimer/notice/warning on every outgoing mail.
 0. Optional aggressive SPAM fight measures.
 
 ## TODO
