@@ -8,7 +8,7 @@
 
 This page is also available in the following languages: [ [Español](i18n/README.es.md) 🇪🇸 🇨🇺] [ [Deutsch](i18n/README.de.md) 🇩🇪]
 
-This is a handy tool to provision a mail server on linux linked to an Active Directory server (Samba or Windows, it does not care) with some constraints in mind, as this is a typical mail config to be used in Cuba under certain laws and security requirements. You can see a simple provision in [this asciinema movie](https://asciinema.org/a/fD1LuVLfeb8RPCHOIgbR1J9d8).
+This is a handy tool to provision a mail server on linux linked to an Active Directory server (Samba or Windows, it does not care) with some constraints in mind, as this is a typical mail config to be used in Cuba under certain laws and security requirements(1). You can see a simple provision in [this asciinema movie](https://asciinema.org/a/fD1LuVLfeb8RPCHOIgbR1J9d8).
 
 ⚠️ ⚠️ ⚠️ ⚠️ ⚠️ ⚠️
 
@@ -109,3 +109,5 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 Please read the [CONTRIBUTING.md](CONTRIBUTING.md) file if you want to contribute to MailAD to know the details of how to do it. All kinds of contributions are welcomed, ideas, fixes, bugs, improvements and even a phone top-up to keep me online.
 
 This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
+
+(1) As stated mainly in Resolution 121 dated 5 April 2017 by Ministerio de Comunicaciones of the Republic of Cuba (https://www.mincom.gob.cu/sites/default/files/marcoregulatorio/r_121-17_configuracion_de_servidores_de_correo_electronico.pdf)
