@@ -24,7 +24,7 @@ Dates must be YEAR-MONTH-DAY
 
 ## 2021-06-03
 
-- Fixed: Bug #132, the garbage collector script was flagging all mailboxes on the vmailstorage folder as garbage, was a human error, I failed to update that script when doing the las feature.
+- Fixed: Bug #132, the garbage collector script was flagging all mailboxes on the vmail storage folder as garbage, was a human error, I failed to update that script when doing the last feature.
 - Fixed: Broken link on the README, fixed.
 
 ## 2021-02-26
@@ -35,7 +35,7 @@ Dates must be YEAR-MONTH-DAY
 
 ## 2020-12-03
 
-- Fixed: a bug (#128) was setting the MGW in the mys ny_networks in postfix, and that lead to all mail reaching recipients, even the restricted ones by any rule, foxed that on this commit.
+- Fixed: Bug #128 was setting the MGW in the my_networks in postfix, and that lead to all mail reaching recipients, even the restricted ones by any rule.
 
 ## 2020-11-12
 
@@ -45,7 +45,7 @@ Dates must be YEAR-MONTH-DAY
 ## 2020-10-26
 
 - Fixed: The quota warnings emails (85 & 95% of the mailbox) was not being sent in Dovecot 2.3 (Ubuntu 20.04 & possibly also on Debian 10.x), was a permission problem on the script, fixed.
-- Changed: The quota warning email is now full mime capable (plaintext + html versions inside) and has more info for the user (in spanish for now.)
+- Changed: The quota warning email is now full mime capable (plaintext + html versions inside) and has more info for the user (in Spanish for now.)
 
 ## 2020-10-16
 
@@ -54,7 +54,7 @@ Dates must be YEAR-MONTH-DAY
 ## 2020-10-14
 
 - Fixed: AD groups with long names was not getting parsed on the automatic alias because ldapsearch tool was wrapping the output at 79 chars by default, added a fix to solve that; fixed.
-- Fixed: Updates form ClamAV failed when using proxy, it was the http/s prefix, must be omitted when using proxy, fixed 
+- Fixed: Updates from ClamAV failed when using proxy, it was the http/s prefix, must be omitted when using proxy, fixed 
 
 ## 2020-10-13
 
@@ -71,14 +71,14 @@ Dates must be YEAR-MONTH-DAY
 
 ## 2020-10-08
 
-- Added: More spanish translations (tks to @glpzzz) and link them to the original files.
+- Added: More Spanish translations (tks to @glpzzz) and link them to the original files.
 - Added: Include more contributors @glpzzz and @oneohthree
 - Modified: Improved the README with more eye-candy badges and the asciinema recording
 - Modified: Improve the contributions sections, adding more explicit funding instructions, adding a QR code for Transfermovil (Cuba only)
 
 ## 2020-10-07
 
-- Added: Spanish and German translations of he README.
+- Added: Spanish and German translations of README.
 
 ## 2020-10-04
 
@@ -126,11 +126,11 @@ Dates must be YEAR-MONTH-DAY
 - Added: New target, please use it wisely: "purge-backups", yes it will wipe your backups.
 - Added: New target: "restore" allows you to pick one of the recent backups to restore.
 - Changed: Improved the Features file with the new options and updated the section on the painless upgrades
-- Added: There is a optional feature; if you don't disable it will send me (author) a simple email up on provision or upgrading. You will receive a copy of the email, there is no hidden data or intentions. You could get notified about urgent fixes or very outdated setups. This is only for statistics purposes.
+- Added: There is an optional feature; if you don't disable it, it will send me (author) a simple email up on provision or upgrading. You will receive a copy of the email, there is no hidden data or intentions. You could get notified about urgent fixes or very outdated setups. This is only for statistics purposes.
 
 ## 2020-09-20
 
-- Fixed: If you had a non working DNS after 48 ours the databases for SpamAssassin (SA) will trip and SA will lock amavis and all your mail will got locked on the processing queue towards amavis. Fixed now: we test the DNS for the SA DB update check, if not the the install/upgrade/provision fails with a warning; no SA config is possible if you don; t have a working DNS
+- Fixed: If you had a non working DNS after 48 ours the databases for SpamAssassin (SA) will trip and SA will lock amavis and all your mail will got locked on the processing queue towards amavis. Fixed now: we test the DNS for the SA DB update check, if not the the install/upgrade/provision fails with a warning; no SA config is possible if you don't have a working DNS
 - Fixed: Make the ClamAV alternate database mirror configurable and ship some tested ones by default, some organizations with restrictive parent proxys are denying some address (IP based address mostly)
 
 ## 2020-09-17
@@ -145,7 +145,7 @@ Dates must be YEAR-MONTH-DAY
 
 ## 2020-09-15
 
-- Changed: Made the maildir removal optional and disabled by default
+- Changed: Make the maildir removal optional and disabled by default
 
 ## 2020-09-14
 
@@ -157,18 +157,18 @@ Dates must be YEAR-MONTH-DAY
 - Add: Subject-less emails are rejected by default, thanks to Danny Paula (Telegram: @danny920825)
 - Fixed: On Debian Buster the install target was failing, all was about a non existent debian package: amavisd-new-postfix. Thanks to Eduardo R. Barrera Pérez to report the bug.
 - Changed: Now we split the packages to install in the common.conf file, so you can separately handle the Ubuntu ones from the Debian ones; also make the changes on each one to make it work.
-- Fixed: Now the 'make force-provision' command preserver the users modified (custom) data for postfix.
-- Changed: some of the scripts was moved and modified to allow better handling of backups and allow to backup & restore files from the last backup to support latest fix.
+- Fixed: Now the 'make force-provision' command preserves the users modified (custom) data for postfix.
+- Changed: some of the scripts were moved and modified to allow better handling of backups and allow to backup & restore files from the last backup to support latest fix.
 - Changed: INSTALL.md gained a new section on reconfiguring.
 
 ## 2020-09-01
 
 - Fixed: Delayed activation for the AV in amavis failed as the script has a wrong check in an if statement, a typo from my side (that generates an annoying hourly mail and never activated the AV checking)
-- Fixed: Once AV filtering kicks is the clamav-daemon can't check the files for viruses as it has no permissions, added clamav user to amavis group solve that.
+- Fixed: Once AV filtering kicks in the clamav-daemon can't check the files for viruses as it has no permissions, added clamav user to amavis group solve that.
 
 ## 2020-08-28
 
-- Added: Advanced filtering of mails via Amavisd-new, potential attachments are baden by default, including mime-type detection to avoid extension changes.
+- Added: Advanced filtering of mails via Amavisd-new, potential attachments are banned by default, including mime-type detection to avoid extension changes.
 - Added: Optional AV filtering using ClamAV, with a delayed activation mechanism, also a pre-configured alternate mirror for clamav if you are in Cuba.
 - Added: Optional SpamAssassin filtering with automatic updates.
 - Added: Headers checks to bounce emails that fake the sender or return path.
@@ -194,14 +194,14 @@ Dates must be YEAR-MONTH-DAY
 
 ## 2020-08-12
 
-- Changed: We split the Dovecot config templates, as we are dealing with two versions (2.2 & 2.3) and are options that clash, the provision script now picks the right one based on the version you has installed
+- Changed: We split the Dovecot config templates, as we are dealing with two versions (2.2 & 2.3) and are options that clash, the provision script now picks the right one based on the version you have installed
 - Changed: Added curl to the test-deps target install, we use it to check the user's email delivery
 - Added: The test script now checks for the email on the user's mailbox (IMAPS) and will warn you if it can find the delivered emails, see tests/README.md for more details
 - Fixed: In Dovecot version 2.3 there are a new stats plugins that needs specific permissions and some changed new SSL options
 
 ## 2020-08-08
 
-- Changed: Modified the comments on the mailad.conf file about the exclusion of one or more IP form the net segment
+- Changed: Modified the comments on the mailad.conf file about the exclusion of one or more IP from the net segment
 - Changed: Improved the handling of the 'make deps' target, fixing one error and improving the detection of the OS
 - Added: The everyone alias access (by default not allowed from outside the domain) is now made optional in the config
 
@@ -258,9 +258,9 @@ Dates must be YEAR-MONTH-DAY
 ## 2020-04-02
 
 - Added: Creation of auto aliases based on group memberships
-- Added: added a everyone capability
+- Added: added an everyone capability
 - Added: Warning in the README.md about usage of master branch only in production
-- Changed: improved the SMTPS & AUBMISSION restrictions
+- Changed: improved the SMTPS & SUBMISSION restrictions
 - Changed: dovecot concurrency limit set to 1, to avoid collisions
 - Fixed: email vs username usage in dovecot, unified to username
 - Fixed: other minor bugs and typos
