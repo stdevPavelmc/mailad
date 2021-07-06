@@ -29,13 +29,13 @@ This is a long page, so here is an index:
 
 ## Low resource footprint
 
-This solution is working on about 5 sites on production (to my knowledge) and minimum requirements with all features on are this:
+This solution it's being used in production and the minimum requirements with all features are:
 
-- RAM memory: 2GB
-- CPU cores: 2
-- HDD space: 2GB free (no mail storage space included, as it depends on your needs)
+- RAM: 2GB
+- CPU: 2 cores
+- HDD: 2GB free (no email storage included, as it depends on your needs)
 
-The most demanding feature is the SPAM & AV filtering, without that we can downgrade to 1GB of RAM easily; nevertheless the actual hardware requirements depends on your mail work load and must be adjusted on the spot.
+The most demanding feature is the SPAM & AntiVirus (AV) filtering, without that, RAM can be downgraded to 1GB. Nevertheless the actual hardware requirements depends on your mail server usage patterns and must be adjusted on the spot.
 
 If you are willing please share some statistics and hardware details with me to update this section (hardware setup, features on, daily/monthly mail flux, etc).
 
@@ -54,40 +54,40 @@ Backed up by the collective knowledge of the [SysAdminsdeCuba](https://t.me/sysa
 
 [Return to index](Features.md#mailad-features-explained)
 
-## Active directory integration and management
+## Active Directory integration and management
 
-This script is intended to provision a corporative mail server inside a DMZ & behind a Mail Gateway solution (I use Proxmox Mail Gateway on the latest version)
+This script is intended to provision a corporate mail server inside a DMZ and behind a perimeter mail gateway solution (I use the more recent version of Proxmox Mail Gateway).
 
-The user base details are grabbed from a Windows Active Directory server (I recommend Samba 4 in linux, but works with a Windows server too) so user management and control is delegated to the interface you use to control de Active directory, no other service is needed, ZERO touching the mail server to make & apply some changes related to users.
+The user basic details (email and password) are grabbed from a Windows or Samba based Active Directory (AD) server (I recommend Samba 4 on Linux). In lieu of that user management is delegated to the interface you use to control Active Directory, no other service is needed. Do NOT touch the mail server for changes related to users.
 
-For a Windows sysadmin this will be easy, just config and deploy on the mail server, then control the users in the AD interface in your PC via RSAT, see the details on the file [AD_Requirements.md](AD_Requirements.md).
+For a Windows sysadmin this will be easy, just config and deploy the mail server, then control the users in the AD interface of your PC (RSAT), see the details on the file [AD_Requirements.md](AD_Requirements.md).
 
-If you are a Linux user then you can use `samba-tool` to control the users properties in the CLI or put a Windows VM with RSAT tools in your server with remote access to manage the domain users.
+If you are a Linux user then you can use `samba-tool` to manage domain users in the shell or use RSAT in a Windows virtual machine with remote access.
 
 [Return to index](Features.md#mailad-features-explained)
 
-## General and specific quota system
+## General and Specific quota system
 
-_**Notice:** This feature was introduced in February/2021 and if you has MailAD from a date earlier than that please **after** reading this go to the file [Simplify_AD_config.md](Simplify_AD_config.md) and read there how to migrate._
+_**Notice:** This feature was introduced in February 2021 and if you has MailAD from an earlier version please read this first and then go to the file [Simplify_AD_config.md](Simplify_AD_config.md) to see instructions on how to migrate._
 
-Eventually or from start you need a quota system, users are lazy and have the nasty habit of pile unused mail on their mailboxes, so we propose a General and individual quota system.
+Eventually or from the very beginning you will need a quota system. Emails accumulate in user mailboxes, we propose a General and a Specific (individual or per-user basis) quota system.
 
 ### General quota
 
-There is a general quota declared by default for each individual user's mailbox, you can find that in the `/etc/mailad/mailad.conf` file as a variable named `DEFAULT_MAILBOX_SIZE` and it's set by default ar 200 MB. So any new user will get tied to that quota with no extras config.
+There is a general quota declared by default for each individual user's mailbox, you can find that in the `/etc/mailad/mailad.conf` file as a variable named `DEFAULT_MAILBOX_SIZE` and it's set by default at 200 MB. So any new user will get tied to that quota with no extra config.
 
-But what happens with the high volume users? I need to rise the bar for some specific users... (or lower it for others...)
+But what happens with that high volume users? If you need to rise the bar for some specific users... (or low it for others...):
 
 ### Specific quota
 
-This is a nice trick, you need to rise **(or lower)** the quota limit for a specific user, simply go to it's properties in the Active Directory and set the not default value in the property named Web Page ("Página Web" in the example) like in this picture for the user "Pavel" that has a special 1G (1 GByte)  quota.
+If you need to rise (or low) the quota limit for a specific user, simply go to it's properties in the AD and set the new value in the property named "Web Page" ("Página Web" in Spanish, "wWWHomePage" ldap attribute) like in this picture for the user "Pavel" that has a specific 1G (1 GByte)  quota.
 
 ![admin use details](imgs/admin_user_details.png)
 
 The units are standard:
 
 - #K: KBytes like 800K
-- #M: MBbytes like 500M
+- #M: MBytes like 500M
 - #G: GBytes like 1G
 - #T: TBytes like 1T
 
@@ -97,27 +97,25 @@ There is a soft restriction here: you are not allowed to use decimals, but you c
 
 ## Daily mail traffic summary
 
-The account configured as the mail administrator _(or the ones associated to the SYSADMINS group, if specified)_ will receive a daily summary of yesterday's mail traffic; the resume is built with the pflogsumm tool.
+The account configured as the mail system administrator _(or the ones associated to the SYSADMINS group, if specified)_ will receive a daily summary of the mail traffic of the previous day. The resume is built with the pflogsumm tool.
 
 [Return to index](Features.md#mailad-features-explained)
 
 ## Data from deleted users is handled with extreme care
 
-In most mailservers when you remove a user from the user's list his mail storage (maildir in our case) is automatically erased. In our case we choose to act with more caution: the user's maildir will not be deleted at once.
+In most mailservers when you remove a user from the system its mail storage (maildir in our case) is automatically erased. In our case we choose to act with more caution: the user's maildir will not be deleted instantly.
 
-We will left the user's maildir intact for you to review or recover a business-critical email from a big boss to that user if this is the case. Yes, all sysadmins had been in this situation, a "ultra big boss" needs a mail from that erased mailbox, ouch!
+We will left the user's maildir intact for you to review or recover any business-critical email. You can recover the mail by re-creating the user account in the AD and login with the credentials.
 
-You can recover the mail by re-creating the user account in the AD and login with the credentials.
-
-Each month you will receive a mail from your mail server notifying you about left behind maildirs, you are free to take action about them (usually making a backup and then erase the offending maildir is enough)
+Each month you will receive a mail from your mail server notifying you about left-behind maildirs, you are free to take action about them (usually making a backup and then erase the offending maildir is enough).
 
 Here we play a trick:
 
-- Maildirs for deleted users between 0 to 10 months (actually 9.7) will be notified to take action.
-- Maildirs for deleted users between 10 to 11.999 months will be warned about imminent removal.
-- Maildirs for deleted users older than 365 days (1 year) will be removed and you will receive the removal notification.
+- Administrators with maildirs for deleted users between 0 to 10 months (actually 9.7) will be notified to take action.
+- Administrators with maildirs for deleted users between 10 to 11.999 months will be warned about imminent removal.
+- Maildirs for deleted users older than 365 days (1 year) will be removed and the administrator will receive the removal notification.
 
-Well no quite, the first time you will not get the maildirs removed, you will be notified about the maildirs that _will be_ erased and the way to activate that feature.
+Well not quite. The first time maildirs will not be removed, you just will be notified about the maildirs that _will be_ erased and the way to activate that feature.
 
 To activate that option you need to set the option `MAILDIRREMOVAL="yes"` in the config file `/etc/mailad/mailad.conf` _(you don't have that option? it's time to upgrade... see [Painless upgrades](Features.md#painless-upgrades))_ and then re-provision the server with this command:
 
@@ -125,9 +123,9 @@ To activate that option you need to set the option `MAILDIRREMOVAL="yes"` in the
 make force-provision
 ```
 
-We think that a year is time enough to recover something from that mailbox; also that date has a legal implication: in some scenarios you are required to maintain a copy of all users digital footprint for at least one year.
+We think that a year is time enough to recover something from that mailbox. Also that period of time has a legal implication: in some scenarios you are required to maintain a copy of all users digital footprint for at least one year.
 
-Here you can see an notification sample from the first implementation of this feature:
+Here you can see a notification sample from the first implementation of this feature:
 
 ![Picture of an email notifying left behind maildirs](imgs/check_maildirs_sample.png)
 
@@ -141,19 +139,19 @@ You can now use a Let's Encrypt certificate out of the box, just read the sectio
 
 ## Automatic alias using AD groups
 
-Suppose you have a group of specialist that need to receive all the emails for a service, a normal example are the bills, boucher, account status notifications from a bank institution, having an alias "banking@omain.tld" that points to all of them is a neat trick.
+Imagine you have a group of specialists in which all of them need to receive emails from/for a service, for example bills, vouchers, account status notifications from a bank institution, having an alias "banking@domain.tld" that points to all of them is a neat trick.
 
-You can configure that from the AD interface, just create a Organizational Group in the AD, make all user recipients as members of that group and set an email for the group, that's all! well, not quite.
+You can configure that from the AD interface, just create an Organizational Group in the AD, make all required users recipients as members of that group and set an email for the group, that's all! well, not quite.
 
-The group checking is triggered daily around ~6:00 am, if you need to trigger it now, just run the script on `/etc/cron.daily/mail_groups_update` and that will force the update. As a cron job it will report any fail or warning to the declared mail administrator.
+The group checking is triggered daily around ~6:00 am, if you need to trigger it now, just run the script on `/etc/cron.daily/mail_groups_update` and that will force the update. A cron job will report any failure or warning to the declared mail administrator.
 
-The trigger for this feature is the setting of a email for a group, once you set an email to a group you are triggering it next morning, Be aware that this feature can be exploited by malicious users as the alias created has no user control, anybody can send to the alias address, so use it wisely.
+The trigger for this feature is the setting of an email for a group, once you set an email to a group you are triggering it next morning. Be aware that this feature can be exploited by malicious users as the alias created has no user control, anybody can send emails to the alias address, so use it wisely.
 
-**Bonus:** This aliases behave not like a real distribution list (like mailman's list for example), all the generated messages have no trace of being "from" a list, and seems just like single messages from the original sender, also all answers (make it a reply or a forwards email) will have the original sender as recipient and not the list address.
+**Bonus:** This aliases behave not like a real distribution list (like mailman's list for example), all the generated messages have no trace of being "from" a list, and seems just like single messages from the original sender, also all answers (replies and forwarded emails) will have the original sender as recipient and not the list address.
 
-**Tip:** The users must belong to a group directly for this feature to work properly, you can't create a group whish members are other groups, that does not work.
+**Tip:** The users must belong to a group directly for this feature to work properly, you can't create a group which members are other groups, that does not work.
 
-**Warning:** it's up to you to check that you don't assign a list a email address that is previously assigned in the `virtual_aliases` file or from a real users, if you fall on this one you will have delivery problems.
+**Warning:** It's up to you to check that you don't assign to a list an email address that was previously assigned in the `virtual_aliases` file or to a real user, if you fall in this one you will have delivery problems.
 
 [Return to index](Features.md#mailad-features-explained)
 
