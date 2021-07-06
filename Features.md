@@ -24,7 +24,7 @@ This is a long page, so here is an index:
 * [Manual headers and body check lists](Features.md#manual-headers-and-body-check-lists)
 * [Test suite](Features.md#test-suite)
 * [Raw backup and restore options](Features.md#raw-backup-and-restore-options)
-* [Painless upgrades](Features.md#painless-upgrades)
+* [Painless Upgrades](Features.md#painless-upgrades)
 
 ## Low resource footprint
 
@@ -493,31 +493,28 @@ There is no black magic on that, to migrate to another server you only need to d
 
 [Return to index](Features.md#mailad-features-explained)
 
-## Painless upgrades
+## Painless Upgrades
 
-There will be a point on the future when we add a new cool feature and you want to use it, then you face the question: how to upgrade?
+There will be a point on the future when we add a new cool feature and you want to use it, then you face the question: how to upgrade? No problem, we have it covered (again).
 
-No problem, we have it covered (again), to upgrade the software you just need to follow this steps, all do you need is a internet connection on you mail server (or access to a local repository)
+To upgrade the software you just need to follow this steps with an internet connection on you mail server (or access to a local repository):
 
-I assume you moved to the folder where you keep your local clone copy of the MailAD repository _(`/root/mailad` in recommended)_ to make the next steps.
-
+0. Change dir to the folder where you keep your local clone copy of the MailAD repository `cd /root/mailad` is the default and recommended.
 0. Upgrade the new code from github with the command `git pull && git reset --hard`.
-0. Make a raw backup with the command `make backup` and note the filename it shows to you (seriously: **WRITE IT DOWN on paper**)
-0. Run the upgrade process with `make upgrade` and follow instructions if you hit some rock.
-
-The above last step will make a second automatic raw backup "just in case".
+0. Make a raw backup with the command `make backup` and write down the filename it shows (seriously: **WRITE IT DOWN on paper**)
+0. Run the upgrade process with `make upgrade` and follow instructions if you hit some rock. This step creates a second automatic raw backup "just in case".
 
 **Note:** _Since August 2020 we have a procedure that upgrades your custom config file to include new features, in that case you will receive a notice about the need to check the file `/etc/mailad/mailad.conf` for new options, also check the `Changelog.md` file for news about the changes and new features._
 
-From time to time we introduce a new feature and that feature needs your attention or a specific configuration or tweak in your environment, if that's the case please complete the suggested steps or fixes and re-run the `make upgrade` command until it finishes ok.
+From time to time we introduce new features and probably that features need your attention or a specific configuration or tweak in your environment, if that's the case please complete the suggested steps or fixes and re-run the `make upgrade` command until it finishes ok.
 
-If al goes well you will be the proud administrator of a MailAD instance, or not?
+If al goes well you will be the proud administrator of an upgraded MailAD instance, or not?
 
-### GGGRRR! The upgrade failed! how I revert the failed upgrade?
+### GGGRRR! The Upgrade Failed! How Do I Revert The Failed Upgrade?
 
-Did you wrote down the backup file name on the second step from the list above right? If not scroll up to the terminal log and search for it.
+Did you wrote down the backup file name on the third step from the list above right? If not scroll up to the terminal log and search for it.
 
-Once you have identified the file, it's just to run the following command:
+Once you have identified the file name, you just need to run the following command:
 
 ```sh
 make restore
