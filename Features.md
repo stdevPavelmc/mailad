@@ -3,16 +3,15 @@
 This is a long page, so here is an index:
 
 * [Low resource footprint](Features.md#low-resource-footprint)
-* [Security protection against well known SSL & mail attacks](Features.md#security-protection-against-well-known-SSL-and-mail-attacks)
-* [Active directory integration and management](Features.md#active-directory-integration-and-management)
-* [General and specific quota system](Features.md#general-and-specific-quota-system)
+* [Security protection against well known SSL and mail attacks](Features.md#security-protection-against-well-known-SSL-and-mail-attacks)
+* [Active Directory integration and management](Features.md#active-directory-integration-and-management)
+* [General and Specific quota system](Features.md#general-and-specific-quota-system)
 * [Daily mail traffic summary](Features.md#daily-mail-traffic-summary)
 * [Data from deleted users is handled with extreme care](Features.md#data-from-deleted-users-is-handled-with-extreme-care)
-* [Let's Encrypt certificates Support](Features.md#lets-encrypt-certificates-support)
+* [Let's Encrypt certificates support](Features.md#lets-encrypt-certificates-support)
 * [Automatic alias using AD groups](Features.md#automatic-alias-using-ad-groups)
-* [Enforced quota control](Features.md#enforced-quota-control)
-* [Dovecot filtering](Features.md#dovecot-filtering-sieve)
-* [Advanced mail filtering: extensions, mime types and optionals AV, SPAM and SPF](Features.md#advanced-mail-filtering-extensions-mime-types-and-optionals-av-spam-and-spf)
+* [Dovecot filtering (sieve)](Features.md#dovecot-filtering-sieve)
+* [Advanced mail filtering: extensions, mime types and optional AV, SPAM and SPF](Features.md#advanced-mail-filtering-extensions-mime-types-and-optional-av-spam-and-spf)
 * [Centralized mail storage](Features.md#centralized-mail-storage)
 * [Optional SPAM protection extras via DNSBL and other tricks](Features.md#optional-spam-protection-extras-via-dnsbl-and-other-tricks)
 * [Optional encryption for LDAP communications](Features.md#optional-encryption-for-LDAP-communications)
@@ -97,7 +96,7 @@ There is a soft restriction here: you are not allowed to use decimals, but you c
 
 ## Daily mail traffic summary
 
-The account configured as the mail system administrator _(or the ones associated to the SYSADMINS group, if specified)_ will receive a daily summary of the mail traffic of the previous day. The resume is built with the pflogsumm tool.
+The account configured as the mail system administrator _(or the ones associated to the SYSADMINS group, if specified)_ will receive a (daily) mail traffic summary of the previous day. The resume is built with the pflogsumm tool.
 
 [Return to index](Features.md#mailad-features-explained)
 
@@ -157,9 +156,9 @@ The trigger for this feature is the setting of an email for a group, once you se
 
 ## Dovecot filtering (sieve)
 
-Dovecot filtering is supported since June 2020, you can handle local filters in your webmail or even with your Mail software if you use IMAP _(don't use POP, it's not recommended for a full mail experience)_
+Dovecot filtering is supported since June 2020, you can handle local filters in your webmail or even with the mail software if you use IMAP _(don't use POP, it's not recommended for a full mail experience)_
 
-Please note that if you uses a webmail solution then you need to configure the sieve filtering for that particular webmail. How to configure the filtering support _(also called sieve filtering or just seive)_ support is out of the scope of this tutorial, but note that it will be TLS protected, so keep that in mind when configuring it.
+Please note that if you uses a webmail solution then you need to configure the sieve filtering for that particular webmail. How to configure the filtering support _(also called sieve filtering or just sieve)_ support is out of the scope of this tutorial, but note that it will be TLS protected, so keep that in mind when configuring it.
 
 In the config file `mailad.conf` there is a setting that enables the global SPAM filter, when enabled if a mail is flagged by a filter as SPAM the filter will deliver the message but to the Spam/Junk folder instead of the Inbox.
 
@@ -169,82 +168,82 @@ With this feature your users will have the choice to re-route emails to their pe
 
 [Return to index](Features.md#mailad-features-explained)
 
-## Advanced mail filtering: extensions, mime types and optionals AV, SPAM and SPF
+## Advanced mail filtering: extensions, mime types and optional AV, SPAM and SPF
 
 Advanced mail filtering is handled by Amavisd-new, that bring us the default filter by extensions and mime-types, by default most dangerous extensions and mime-types are baned, but you can tweak it to suffice your needs.
 
-**Note:** The file to change that is `/etc/amavis/conf.d/20-debian_defaults` and be aware that if you made modifications to this file **it will not me preserved on an upgrade**
+**Note:** The file to change that is `/etc/amavis/conf.d/20-debian_defaults` and beware that modifications to this file **will not be preserved on an upgrade**
 
 ### Optional Antivirus protection
 
-By default we setup ClamAV as the default AV solutions, if you are in Cuba you need to keep the option `USE_AV_ALTERNATE_MIRROR=yes` as the official updates of ClamAV are served via Cloudflare service and that services are banned from Cuba because the Embargo/Blockade of USA to our country.
+By default we setup ClamAV as the default AV solutions, if your server is in Cuba (uses a Cuban IP) you need to keep the option `USE_AV_ALTERNATE_MIRROR=yes` as the official updates of ClamAV are served via Cloudflare service which bans Cuban IPs due to the Embargo/Blockade of USA to our country.
 
-The AV activation will not be instantaneous, as it needs to update the AV database (about 300MB) and that can take some time on busy or slow networks; a background job is set to check for AV database update every hour _(will generate a follow up mail to the mail admin or the sysadmins group)_ and a final mail notice upon activation.
+The AV activation will not be instantaneous, as it needs to update the AV database (about 300MB) and that can take some time on a busy or slow internet link; a background job is set to check for AV databases updates every hour _(will generate a follow up mail to the mail admin or the sysadmins group)_ and a final mail notice upon activation.
 
-The AV filtering is made optional and it's default value is set to "no" (disabled) as it will need further configuration for your to activate it fully, to do so you must configure:
+The AV filtering is made optional and its default value is set to "no" (disabled) as it will need further configuration from you to activate it fully, to do so you must configure:
 
-- The PC must have access to a DNS server that can reach the internet.
-- Allow the PC to get internet access (in your firewall or a configured proxy, keep reading)
+- The server must have access to a DNS server that can reach the internet.
+- Allow the server to get internet access (in your firewall or a configured proxy, keep reading)
 
 If you are behind a proxy you must setup the proxy as per the configs in the `/etc/mailad/mailad.conf` file.
 
 **Beware!**: If your DNS is restricted to the local or enterprise network it will not work: you will receive a notice about it.
 
-The ClamAV updates are linked to a TXT DNS register, if the server can't fetch the content of that register there will no updates available and the system will crash between 24 to 72 hours after the fail.
+The ClamAV updates are linked to a TXT DNS record, if the server can't fetch the content of that register there will be no updates available and the system will crash between 24 to 72 hours after the failure.
 
 ### Optional SPAM protection
 
-By default we pass all mails by SpamAssasin a trusted spam detection utility, but you can disable it if you like, see the config in the `mailad.conf` file.
+By default we pass all mails by SpamAssasin a trusted spam detection utility, but you can disable it if you'd like. See the config in the `mailad.conf` file.
 
-SpamAssassin will process and keep tracks of the mails but to squeeze the bet performance of it you must allow it to get updates from the internet, for that you need:
+SpamAssassin will process and keep tracks of the mails but to squeeze the best performance of it you must allow it to get updates from the internet, for that you need:
 
-- The PC must have access to a DNS server that can reach the internet.
-- Allow the PC to get internet access (in your firewall or a configured proxy, keep reading)
+- The server must have access to a DNS server that can reach the internet.
+- Allow the server to get internet access (in your firewall or a configured proxy, keep reading)
 
-If you are behind a proxy you must setup the proxy as per the configs in the `mailad.conf` file.
+If you are behind a proxy you must setup the proxy as per the configs in the `/etc/mailad/mailad.conf` file.
 
 **Beware!**: If your DNS is restricted to the local or enterprise network it will not work: you will receive a notice about it.
 
-The SpamAssasin updates are linked to a TXT DNS register, if the server can't fetch the content of that register there will no updates available and the system will crash between 24 to 72 hours after the fail.
+The SpamAssasin updates are linked to a TXT DNS record, if the server can't fetch the content of that register there will be no updates available and the system will crash between 24 to 72 hours after the failure.
 
 ### Optional SPF filtering
 
-The Sender Policy Framework is a nice way to check for bad incoming mails, but it's only useful in a scenario where you server is internet facing, aka: no mail gateway or smart host in between.
+The Sender Policy Framework is a nice way to check for bad incoming mails, but it's only useful in a scenario where you server is facing the internet, aka: no perimeter mail gateway or smart host in between.
 
-If your mail server is behind a mail gateway or in general not internet facing it's recommended to disable the SPF filtering as it can generate more troubles than solutions.
+If your mail server is behind a perimeter mail gateway or in general is not facing the internet it's recommended to disable the SPF filtering as it can generate more trouble than solutions.
 
-For that reason it's shipped with that option disabled by default. If you activate it be sure to have a working DNS in the PC or it will not be able to process the queries.
+For that reason it's shipped with that option disabled by default. If you activate it be sure to have a working DNS in the server or it will not be able to process the queries.
 
 [Return to index](Features.md#mailad-features-explained)
 
 ## Centralized mail storage
 
-If you are using a virtualization solution you can configure the local mail storage as a network share and have all email in a safe storage on the network, generating clean & slim backups of the server.
+If you are using a virtualization solution you can configure the local mail storage as a network share and have all email in a safe storage on the network, generating clean & slim backups of that server.
 
-**Notice**: Please make it work first on a local folder and then map the folder to a network storage, this will avoid a few headaches. If you use NFS be aware of the user id mapping need to work between the email client and the NFS server.
+**Notice**: Please make it work first on a local folder and then map the folder to a network storage, this will avoid a few headaches. If you use NFS be aware that the user id mappings need to work between the email client and the NFS server.
 
 [Return to index](Features.md#mailad-features-explained)
 
 ## Optional SPAM protection extras via DNSBL and other tricks
 
-The DNSBL (DNS Black List) feature is simple: it makes postfix to consult the originating IP of incoming mail against a few free public list in the internet to decide if it accept the email. As simple as that, and of curse it does not play through that filter the address listed on the `mynetworks` postfix variable.
+The DNSBL (DNS Black List) feature is simple: it makes postfix to consult the originating IP of incoming mail against a few free public list in the internet to decide if it accept the email. As simple as that! Of course, addresses in the `mynetworks` postfix's variable are not checked against that feature.
 
-This lists are a curated community effort to list any offending DNS name or IP (mostly known spammers and non mail enabled networks), we use this ones:
+This lists are a curated community effort to list any offending DNS name or IP (mostly known spammers and non mail enabled networks). We use these ones:
 
 - [zen.spamhaus.org](https://www.spamhaus.org)
 - [psbl.surriel.com](https://psbl.org/)
 - [bl.spamcop.net"](https://www.spamcop.net/)
 - [bl.spameatingmonkey.net](https://www.spameatingmonkey.net)
 
-As you have imagined, this is only useful if you are on a server that is internet facing or any other NAT trick that makes your server the first to receive emails from the internet directly.
+As you have imagined, this is only useful if you are on a server that is facing the internet or any other NAT trick that makes your server the first to receive emails from the internet directly.
 
-**If you have a mail gateway or in a institutional VPN and all mail is delivered to you via a smart host or relay, then please don't enable it as it's a waste of time, CPU and bandwidth; and IT WILL CAUSE MAIL LOSS.**
+**If you have a perimeter mail gateway or are in an institutional VPN and all mail is delivered to you via a smart host or relay, then please don't enable it as it's a waste of time, CPU and bandwidth; and IT WILL CAUSE MAIL LOSS.**
 
-As usual there is no free lunch, this free servers that are pre-configured in mailad has limits or quotas to limit the "free" usage (they have a commercial side to earn money also) the most usual pitfall is to use a very visible DNS server, so if many people use that DNS server it will trigger the quota and your service is disabled.
+As usual there is no free lunch, those free servers that are pre-configured in mailad has limits or quotas to limit the "free" usage (they have a commercial side to earn money also) the most usual pitfall is to use a very visible DNS server, so if many people use that DNS server it will trigger the quota and your service is disabled.
 
-The usual DNS on this category are the Google ones `8.8.8.8` & `8.8.4.4`, don't use that DNS servers in any mail server that users DNSBL. Instead we recommend the use of your ISP provided DNS or the CloudFlare DNS server pool: `1.0.0.1` & `1.1.1.1` this server are a geographical & round robin pool, so the chances you get using one that got triggered the quota is low.
+Usual DNSs falling in that category are Google's `8.8.8.8` & `8.8.4.4`, don't use those in any mail server that users DNSBL. Instead we recommend the use of your ISP DNS or the CloudFlare DNS server pool: `1.0.0.1` & `1.1.1.1` those are a geographical & round robin pool, so the chances to trigger the quota are low.
 
-You can add or remove more servers to the list of DNSBL servers, even if you buy commercial support for it, just include it on the variable `DNSBL_LIST` to know more of the format, please refers to the postfix documentation about the configuration variable named "postscreen_dnsbl_sites"
+You can add or remove more servers to the list of DNSBL servers, even if you buy commercial support for it, just include it on the variable `DNSBL_LIST` to know more of the format, please refer to the postfix documentation about the configuration variable named "postscreen_dnsbl_sites"
 
 Also, there is a list or other nice features to fight SPAM, all of them related to the service that makes possible the DNSBL, a list of them here:
 
@@ -258,69 +257,69 @@ Also, there is a list or other nice features to fight SPAM, all of them related 
 
 ## Optional encryption for LDAP communications
 
-By default the MailAD provision script will use plain text LDAP communications, but you can switch to secure (encrypted) communications if you like. The instructions are different based on the Active Directory software you are using, let's see.
+By default the MailAD provision script will use plain text LDAP communications, but you can switch to secure (encrypted) communications if you like. The instructions are different based on the Active Directory software you are using. Let's see them:
 
 ### Samba 4 AD
 
 If you start with a fresh Samba 4 install and you have not integrated any other service you can set the `SECURELDAP=yes` option in the `/etc/mailad/mailad.conf` config file and go ahead, it will work out of the box.
 
-If you has a previous samba4 server with other LDAP services integrated using plain text communicattions then you need to stick to use plain text ldap for compatibility.
+If you has a previous Samba 4 server with other LDAP services integrated using plain text communicattions then you need to stick to use plain text ldap for compatibility.
 
-See the [AD_Requirements.md](AD_Requirements.md) file for more details on how to enable plain text LDAP in samba.
+See the [AD_Requirements.md](AD_Requirements.md) file for more details on how to enable plain text LDAP in Samba.
 
 ### Windows Server AD
 
-Well, for windows it's a bit more complicated: you need to enable the secure protocols for the LDAP service in windows, [this article from Microsoft](https://support.microsoft.com/en-us/help/321051/how-to-enable-ldap-over-ssl-with-a-third-party-certification-authority) is the starting point of the process; once done and tested that LDAP has secure protocols in place (with the test described in the mentioned article).
+Well, for Windows it's a bit more complicated: you need to enable the secure protocols for the LDAP service in Windows, [this article from Microsoft](https://support.microsoft.com/en-us/help/321051/how-to-enable-ldap-over-ssl-with-a-third-party-certification-authority) is the starting point of the process. Once this is done and tested, LDAP is operative with secure protocols in place (with the test described in the mentioned article).
 
-When done just with `SECURELDAP=yes` in the config and run a `make force-provision` to activate the configuration.
+When done just set `SECURELDAP=yes` in the config and run a `make force-provision` to activate the configuration.
 
 [Return to index](Features.md#mailad-features-explained)
 
 ## Optional notifications to groups instead of only the mail admin
 
-Some times in a enterprise you have a group of sysadmins or a group of tech people that need to receive the notifications and daily email usage resumes about the mail server, by default MailAD will deliver such notifications only to the mail admin declared in the `/etc/mailad/mailad.conf` file.
+Sometimes in an enterprise you have a group of sysadmins or a group of tech people that need to receive the notifications and daily email usage summaries from the mail server, by default MailAD will deliver such notifications only to the mail admin declared in the `/etc/mailad/mailad.conf` file.
 
 From August 2020 you have the option to declare a group to get all notifications, seek for the option `SYSADMINS` in the `/etc/mailad/mailad.conf` config file, if you don't have it, that means that it's time for an upgrade, see [Painless upgrades](Features.md#painless-upgrades) for that.
 
-In that variable you must declare a group alias email, you can create the group by two ways, one via text files in the mail server [by the old unix method](Features.md#manual-alias-to-handle-typos-or-enterprise-positions) or by the [group mails feature](Features.md#automatic-alias-using-ad-groups) in the Active directory, pick the one that make you happy.
+In that variable you must declare a group alias email, you can create the group by two ways: 1) via text files in the mail server [by the old unix method](Features.md#manual-alias-to-handle-typos-or-enterprise-positions) or 2) by the [group mails feature](Features.md#automatic-alias-using-ad-groups) in the Active Directory, pick the one that makes you happy.
 
 To apply this configuration you must follow this steps:
 
 0. Upgrade, see [Painless upgrades](Features.md#painless-upgrades)
-0. Create a group alias by any of the two method mentioned above, and test it (send a email to check)
+0. Create a group alias by any of the two method mentioned above, and test it (send an email to check)
 0. Fill the option `SYSADMINS` in the `/etc/mailad/mailad.conf` config file.
 0. Force a re-provision via `make force-provision`.
 
-If you fail to create the group alias or make a typo in it's name on configuration, you (mail admin) will receive a daily mail with a warning about MailAD not finding the group mentioned in the `SYSADMINS` var.
+If you fail to create the group alias or make a typo in it's name or configuration, you (mail admin) will receive a daily mail with a warning about MailAD not finding the group mentioned in the `SYSADMINS` variable.
 
 [Return to index](Features.md#mailad-features-explained)
 
 ## Optional disclaimer on every outgoing mail
 
-Some times you needs a legal disclaimer on each outgoing mail or a simple signature, or even a footer to promote an event or even a domain name change.
+Some times you need a legal disclaimer on each outgoing mail or a simple signature, or even a footer to promote an event or even a domain name change.
 
-Now we have that covered, of curse as an optional feature and disabled by default; all you need to do is this:
+Now we have that covered, of course as an optional feature and disabled by default; all you need to do is this:
 
 0. Upgrade the install as stated in the [Painless upgrades](Features.md#painless-upgrades) section _(Just the part to upgrade the config)_
 0. Go to your `/etc/mailad/mailad.conf` file and change the config parameter like this `ENABLE_DISCLAIMER="yes"`.
 0. Finish the upgrade to setup all the parts in place via `make upgrade`.
 0. Now you have a file like this: `/etc/mailad/disclaimer.txt`, modify it as your needs.
-0. If you like to add disclaimer text with images create a `/etc/mailad/disclaimer.html.txt` and fill it with yours _(more on this below)_
+0. If you'd like to add a disclaimer text with images create a `/etc/mailad/disclaimer.html.txt` and fill it with yours _(more on this below)_
 
-A typical email message contains two versions of the message, one in plain text and other in hypertext _(HTML)_ to be shown in your email client. But all emails **always** have a plain text section, so the `/etc/mailad/disclaimer.txt` must always be present for it to be added, even the HTML disclaimer. 
+A typical email message contains two versions of the message, one in plain text and other in hypertext _(HTML)_ to be shown in your email client. But all emails **always** have a plain text section, so the `/etc/mailad/disclaimer.txt` must always be present for it to be added, even with the HTML disclaimer present.
 
 The default disclaimer file (`/etc/mailad/disclaimer.txt`) is added to all email in the plain text section; but if no HTML disclaimer is specified the plain text one it's added also to the HTML part, and that can lead to bad formatting.
 
 A hypertext disclaimer that displays well must be created by you in `/etc/mailad/disclaimer.html.txt`, with proper HTML formatting _(no html or body tags; think in the content of a div)_.
 
-If you want to include images in the HTML disclaimer they must be embedded into the text in base64 format. The easiest way to do that is to create a message with a disclaimer (images allowed) in the body of the email and send it to yourself. Upon receiving inspect the raw code of the email and you can copy the incumbent section to the disclaimer and test it.
+If you want to include images in the HTML disclaimer they must be embedded into the text in base64 format. The easiest way to do this is by creating a mail message with the desired disclaimer (with images if required) in the body and send it to yourself. Upon receiving inspect the raw code of the email and you can copy the incumbent section to the disclaimer and test it.
 
 With the disclaimer we can manoeuver in two ways:
 
-- Add it to all mails originating in my domain, even when the recipient is in my domain; aka the disclaimer will reach local users.
-- Add it to mails originating in my domain and going outside it. Aka local recipients will not see the disclaimer. 
+- Add it to all mails originating in my domain, even when the recipient is in my domain. AKA the disclaimer will reach local users.
+- Add it to mails originating in my domain and going outside of it. AKA local recipients will not see the disclaimer. 
 
-That behavior can be controlled in the `/etc/mailad/mailad.conf` file, look below the disclaimer setting for a variable called `DISCLAIMER_REACH_LOCALS=yes`. Setting "yes" here wil match the first scenario, setting "no" will match the second one.
+That behavior can be controlled in the `/etc/mailad/mailad.conf` file, look below the disclaimer setting for a variable called `DISCLAIMER_REACH_LOCALS=yes`. Setting "yes" here will match the first scenario, setting "no" will match the second one.
 
 [Return to index](Features.md#mailad-features-explained)
 
