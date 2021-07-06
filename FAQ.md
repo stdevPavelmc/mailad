@@ -6,14 +6,14 @@ Here you can find the most Frequently Asked Questions, this file will grow with 
 
 ## QUESTIONS
 
-## Installation related
+## Installation Related
 
 - [I have installed following the instructions in INSTALL.md file, I can check and send emails, but they don't reach the users inbox](FAQ.md#i-have-installed-following-the-instructions-in-installmd-file-i-can-check-and-send-emails-but-they-dont-reach-the-users-inbox)
 - [I'm using Debian buster and can send emails but can't check emails via IMAPS/POP3S?](FAQ.md#im-using-debian-buster-and-can-send-emails-but-cant-check-emails-via-imapspop3s)
 - [Why MailAD refuses to install ClamAV and/or SpamAssassin claiming some DNS problem?](FAQ.md#why-mailad-refuses-to-install-clamav-andor-spamassassin-claiming-some-dns-problem)
 - [What ports I need to get open to make sure the servers works OK?](FAQ.md#what-ports-i-need-to-get-open-to-make-sure-the-servers-works-ok)
 
-## Usage related
+## Usage Related
 
 - [All works fine with some email clients, but other fails with errors related to SSL and cyphers](FAQ.md#all-works-fine-with-some-email-clients-but-other-fails-with-errors-related-to-ssl-and-cyphers)
 - [The server refuses to accept or relay emails from the users on port 25](FAQ.md#the-server-refuses-to-accept-or-relay-emails-from-the-users-on-port-25)
