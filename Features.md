@@ -1,32 +1,32 @@
-# MailAD features explained
+# MailAD Features Explained
 
 This is a long page, so here is an index:
 
-* [Low resource footprint](Features.md#low-resource-footprint)
-* [Security protection against well known SSL and mail attacks](Features.md#security-protection-against-well-known-SSL-and-mail-attacks)
-* [Active Directory integration and management](Features.md#active-directory-integration-and-management)
-* [General and Specific quota system](Features.md#general-and-specific-quota-system)
-* [Daily mail traffic summary](Features.md#daily-mail-traffic-summary)
-* [Data from deleted users is handled with extreme care](Features.md#data-from-deleted-users-is-handled-with-extreme-care)
-* [Let's Encrypt certificates support](Features.md#lets-encrypt-certificates-support)
-* [Automatic alias using AD groups](Features.md#automatic-alias-using-ad-groups)
-* [Dovecot filtering (sieve)](Features.md#dovecot-filtering-sieve)
-* [Advanced mail filtering: extensions, mime types and optional AV, SPAM and SPF](Features.md#advanced-mail-filtering-extensions-mime-types-and-optional-av-spam-and-spf)
-* [Centralized mail storage](Features.md#centralized-mail-storage)
-* [Optional SPAM protection extras via DNSBL and other tricks](Features.md#optional-spam-protection-extras-via-dnsbl-and-other-tricks)
-* [Optional encryption for LDAP communications](Features.md#optional-encryption-for-LDAP-communications)
-* [Optional notifications to groups instead of only the mail admin](Features.md#optional-notifications-to-groups-instead-of-only-the-mail-admin)
-* [Optional disclaimer on every outgoing mail](Features.md#optional-disclaimer-on-every-outgoing-mail)
-* [Optional everyone list with custom address](Features.md#optional-everyone-list-with-custom-address)
-* [Optional user privilege access via AD groups](Features.md#optional-user-privilege-access-via-ad-groups)
-* [Manual alias to handle typos or enterprise positions](Features.md#manual-alias-to-handle-typos-or-enterprise-positions)
-* [Manual ban list for troublesome address](Features.md#manual-ban-list-for-troublesome-address)
-* [Manual headers and body check lists](Features.md#manual-headers-and-body-check-lists)
-* [Test suite](Features.md#test-suite)
-* [Raw backup and restore options](Features.md#raw-backup-and-restore-options)
+* [Low Resource Footprint](Features.md#low-resource-footprint)
+* [Security Protection Against Well Known SSL And Mail Attacks](Features.md#security-protection-against-well-known-SSL-and-mail-attacks)
+* [Active Directory Integration And Management](Features.md#active-directory-integration-and-management)
+* [General And Specific Quota System](Features.md#general-and-specific-quota-system)
+* [Daily Mail Traffic Summary](Features.md#daily-mail-traffic-summary)
+* [Data From Deleted Users Is Handled With Extreme Care](Features.md#data-from-deleted-users-is-handled-with-extreme-care)
+* [Let's Encrypt Certificates Support](Features.md#lets-encrypt-certificates-support)
+* [Automatic Alias Using AD Groups](Features.md#automatic-alias-using-ad-groups)
+* [Dovecot Filtering (Sieve)](Features.md#dovecot-filtering-sieve)
+* [Advanced Mail Filtering: Extensions, Mime Types And Optional AV, SPAM And SPF](Features.md#advanced-mail-filtering-extensions-mime-types-and-optional-av-spam-and-spf)
+* [Centralized Mail Storage](Features.md#centralized-mail-storage)
+* [Optional SPAM Protection Extras Via DNSBL And Other Tricks](Features.md#optional-spam-protection-extras-via-dnsbl-and-other-tricks)
+* [Optional Encryption For LDAP Communications](Features.md#optional-encryption-for-LDAP-communications)
+* [Optional Notifications To Groups Instead Of Only The Mail Admin](Features.md#optional-notifications-to-groups-instead-of-only-the-mail-admin)
+* [Optional Disclaimer On Every Outgoing Mail](Features.md#optional-disclaimer-on-every-outgoing-mail)
+* [Optional Everyone List With Custom Address](Features.md#optional-everyone-list-with-custom-address)
+* [Optional User Privilege Access Via AD Groups](Features.md#optional-user-privilege-access-via-ad-groups)
+* [Manual Alias To Handle Typos Or Enterprise Positions](Features.md#manual-alias-to-handle-typos-or-enterprise-positions)
+* [Manual Ban List For Troublesome Address](Features.md#manual-ban-list-for-troublesome-address)
+* [Manual Headers And Body Check Lists](Features.md#manual-headers-and-body-check-lists)
+* [Test Suite](Features.md#test-suite)
+* [Raw Backup And Restore Options](Features.md#raw-backup-and-restore-options)
 * [Painless Upgrades](Features.md#painless-upgrades)
 
-## Low resource footprint
+## Low Resource Footprint
 
 This solution it's being used in production and the minimum requirements with all features are:
 
@@ -40,7 +40,7 @@ If you are willing please share some statistics and hardware details with me to 
 
 [Return to index](Features.md#mailad-features-explained)
 
-## Security protection against well known SSL and mail attacks
+## Security Protection Against Well Known SSL And Mail Attacks
 
 - Well known SSL/TLS vulnerabilities like LOGJAM, SSL FREAK, POODLE, etc are covered.
 - Postfix and Dovecot known vulnerabilities are covered too.
@@ -53,7 +53,7 @@ Backed up by the collective knowledge of the [SysAdminsdeCuba](https://t.me/sysa
 
 [Return to index](Features.md#mailad-features-explained)
 
-## Active Directory integration and management
+## Active Directory Integration And Management
 
 This script is intended to provision a corporate mail server inside a DMZ and behind a perimeter mail gateway solution (I use the more recent version of Proxmox Mail Gateway).
 
@@ -65,19 +65,19 @@ If you are a Linux user then you can use `samba-tool` to manage domain users in 
 
 [Return to index](Features.md#mailad-features-explained)
 
-## General and Specific quota system
+## General And Specific Quota System
 
 _**Notice:** This feature was introduced in February 2021 and if you has MailAD from an earlier version please read this first and then go to the file [Simplify_AD_config.md](Simplify_AD_config.md) to see instructions on how to migrate._
 
 Eventually or from the very beginning you will need a quota system. Emails accumulate in user mailboxes, we propose a General and a Specific (individual or per-user basis) quota system.
 
-### General quota
+### General Quota
 
 There is a general quota declared by default for each individual user's mailbox, you can find that in the `/etc/mailad/mailad.conf` file as a variable named `DEFAULT_MAILBOX_SIZE` and it's set by default at 200 MB. So any new user will get tied to that quota with no extra config.
 
 But what happens with that high volume users? If you need to rise the bar for some specific users... (or low it for others...):
 
-### Specific quota
+### Specific Quota
 
 If you need to rise (or low) the quota limit for a specific user, simply go to it's properties in the AD and set the new value in the property named "Web Page" ("Página Web" in Spanish, "wWWHomePage" ldap attribute) like in this picture for the user "Pavel" that has a specific 1G (1 GByte)  quota.
 
@@ -94,13 +94,13 @@ There is a soft restriction here: you are not allowed to use decimals, but you c
 
 [Return to index](Features.md#mailad-features-explained)
 
-## Daily mail traffic summary
+## Daily Mail Traffic Summary
 
 The account configured as the mail system administrator _(or the ones associated to the SYSADMINS group, if specified)_ will receive a (daily) mail traffic summary of the previous day. The resume is built with the pflogsumm tool.
 
 [Return to index](Features.md#mailad-features-explained)
 
-## Data from deleted users is handled with extreme care
+## Data From Deleted Users Is Handled With Extreme Care
 
 In most mailservers when you remove a user from the system its mail storage (maildir in our case) is automatically erased. In our case we choose to act with more caution: the user's maildir will not be deleted instantly.
 
@@ -130,13 +130,13 @@ Here you can see a notification sample from the first implementation of this fea
 
 [Return to index](Features.md#mailad-features-explained)
 
-## Let's Encrypt certificates support
+## Let's Encrypt Certificates Support
 
 You can now use a Let's Encrypt certificate out of the box, just read the section [Certificate creation](INSTALL.md#certificate-creation) in the INSTALL.md file for details.
 
 [Return to index](Features.md#mailad-features-explained)
 
-## Automatic alias using AD groups
+## Automatic Alias Using AD Groups
 
 Imagine you have a group of specialists in which all of them need to receive emails from/for a service, for example bills, vouchers, account status notifications from a bank institution, having an alias "banking@domain.tld" that points to all of them is a neat trick.
 
@@ -154,7 +154,7 @@ The trigger for this feature is the setting of an email for a group, once you se
 
 [Return to index](Features.md#mailad-features-explained)
 
-## Dovecot filtering (sieve)
+## Dovecot Filtering (Sieve)
 
 Dovecot filtering is supported since June 2020, you can handle local filters in your webmail or even with the mail software if you use IMAP _(don't use POP, it's not recommended for a full mail experience)_
 
@@ -168,13 +168,13 @@ With this feature your users will have the choice to re-route emails to their pe
 
 [Return to index](Features.md#mailad-features-explained)
 
-## Advanced mail filtering: extensions, mime types and optional AV, SPAM and SPF
+## Advanced Mail Filtering: Extensions, Mime Types And Optional AV, SPAM And SPF
 
 Advanced mail filtering is handled by Amavisd-new, that bring us the default filter by extensions and mime-types, by default most dangerous extensions and mime-types are baned, but you can tweak it to suffice your needs.
 
 **Note:** The file to change that is `/etc/amavis/conf.d/20-debian_defaults` and beware that modifications to this file **will not be preserved on an upgrade**
 
-### Optional Antivirus protection
+### Optional Antivirus Protection
 
 By default we setup ClamAV as the default AV solutions, if your server is in Cuba (uses a Cuban IP) you need to keep the option `USE_AV_ALTERNATE_MIRROR=yes` as the official updates of ClamAV are served via Cloudflare service which bans Cuban IPs due to the Embargo/Blockade of USA to our country.
 
@@ -191,7 +191,7 @@ If you are behind a proxy you must setup the proxy as per the configs in the `/e
 
 The ClamAV updates are linked to a TXT DNS record, if the server can't fetch the content of that register there will be no updates available and the system will crash between 24 to 72 hours after the failure.
 
-### Optional SPAM protection
+### Optional SPAM Protection
 
 By default we pass all mails by SpamAssasin a trusted spam detection utility, but you can disable it if you'd like. See the config in the `mailad.conf` file.
 
@@ -206,7 +206,7 @@ If you are behind a proxy you must setup the proxy as per the configs in the `/e
 
 The SpamAssasin updates are linked to a TXT DNS record, if the server can't fetch the content of that register there will be no updates available and the system will crash between 24 to 72 hours after the failure.
 
-### Optional SPF filtering
+### Optional SPF Filtering
 
 The Sender Policy Framework is a nice way to check for bad incoming mails, but it's only useful in a scenario where you server is facing the internet, aka: no perimeter mail gateway or smart host in between.
 
@@ -216,7 +216,7 @@ For that reason it's shipped with that option disabled by default. If you activa
 
 [Return to index](Features.md#mailad-features-explained)
 
-## Centralized mail storage
+## Centralized Mail Storage
 
 If you are using a virtualization solution you can configure the local mail storage as a network share and have all email in a safe storage on the network, generating clean & slim backups of that server.
 
@@ -224,7 +224,7 @@ If you are using a virtualization solution you can configure the local mail stor
 
 [Return to index](Features.md#mailad-features-explained)
 
-## Optional SPAM protection extras via DNSBL and other tricks
+## Optional SPAM Protection Extras Via DNSBL And Other Tricks
 
 The DNSBL (DNS Black List) feature is simple: it makes postfix to consult the originating IP of incoming mail against a few free public list in the internet to decide if it accept the email. As simple as that! Of course, addresses in the `mynetworks` postfix's variable are not checked against that feature.
 
@@ -255,7 +255,7 @@ Also, there is a list or other nice features to fight SPAM, all of them related 
 
 [Return to index](Features.md#mailad-features-explained)
 
-## Optional encryption for LDAP communications
+## Optional Encryption For LDAP Communications
 
 By default the MailAD provision script will use plain text LDAP communications, but you can switch to secure (encrypted) communications if you like. The instructions are different based on the Active Directory software you are using. Let's see them:
 
@@ -275,7 +275,7 @@ When done just set `SECURELDAP=yes` in the config and run a `make force-provisio
 
 [Return to index](Features.md#mailad-features-explained)
 
-## Optional notifications to groups instead of only the mail admin
+## Optional Notifications To Groups Instead Of Only The Mail Admin
 
 Sometimes in an enterprise you have a group of sysadmins or a group of tech people that need to receive the notifications and daily email usage summaries from the mail server, by default MailAD will deliver such notifications only to the mail admin declared in the `/etc/mailad/mailad.conf` file.
 
@@ -294,7 +294,7 @@ If you fail to create the group alias or make a typo in it's name or configurati
 
 [Return to index](Features.md#mailad-features-explained)
 
-## Optional disclaimer on every outgoing mail
+## Optional Disclaimer On Every Outgoing Mail
 
 Some times you need a legal disclaimer on each outgoing mail or a simple signature, or even a footer to promote an event or even a domain name change.
 
@@ -323,7 +323,7 @@ That behavior can be controlled in the `/etc/mailad/mailad.conf` file, look belo
 
 [Return to index](Features.md#mailad-features-explained)
 
-## Optional everyone list with custom address
+## Optional Everyone List With Custom Address
 
 You have the option to enable an everyone address that has a few cool features:
 
@@ -334,7 +334,7 @@ You have the option to enable an everyone address that has a few cool features:
 
 [Return to index](Features.md#mailad-features-explained)
 
-## Optional user privilege access via AD groups
+## Optional User Privilege Access Via AD Groups
 
 In some scenarios you'd be required by law or corporate restrictions to limit a group of users to have only national (.cu) email service. It can go beyond in other cases and you could be in need of adding even users with only local domain email access.
 
@@ -352,7 +352,7 @@ You can take a look at this example to see how it's structured:
 
 [Return to index](Features.md#mailad-features-explained)
 
-## Manual alias to handle typos or enterprise positions
+## Manual Alias To Handle Typos Or Enterprise Positions
 
 Imagine you have a user whose email is velkis@domain.tld or jon@domain.tld; when that users handle verbally his emails there is a big chance that the sender use the most common names _(belkis is very common vs velkis which is not so much, john vs jon)_ and their emails will never reach your users.
 
@@ -407,7 +407,7 @@ Since June 2020 this hand crafted file is preserved on upgrades, you are welcome
 
 [Return to index](Features.md#mailad-features-explained)
 
-## Manual ban list for troublesome address
+## Manual Ban List For Troublesome Address
 
 Yes, there is a list to put non desirable addresses, but not only addresses, you can put even users or domains, it's located on `/etc/postfix/rules/lista_negra`.
 
@@ -422,9 +422,9 @@ The file has some examples, you can check the [list of SMTP server return codes]
 
 [Return to index](Features.md#mailad-features-explained)
 
-## Manual headers and body check lists
+## Manual Headers And Body Check Lists
 
-### Header checks
+### Header Checks
 
 The header checks are stated in file: `/etc/postfix/rules/header_checks`.
 
@@ -441,7 +441,7 @@ If you are using a MailAD dated from July 2020 please save your personal rules i
 
 [Return to index](Features.md#mailad-features-explained)
 
-### Body checks
+### Body Checks
 
 The header checks are stated in file: `/etc/postfix/rules/body_checks`.
 
@@ -451,13 +451,13 @@ With some care and testing you can even filter MIME types or attachments, but th
 
 [Return to index](Features.md#mailad-features-explained)
 
-## Test suite
+## Test Suite
 
 Since June 2020 we have a basic test suite to test our fresh provisioned server and during development as a checkpoint to know that your new feature is not breaking the security or basic features, see [Testing the mail server](tests/README.md) for more details.
 
 [Return to index](Features.md#mailad-features-explained)
 
-## Raw backup and restore options
+## Raw Backup And Restore Options
 
 Raw backups?
 
@@ -510,7 +510,7 @@ From time to time we introduce new features and probably that features need your
 
 If al goes well you will be the proud administrator of an upgraded MailAD instance, or not?
 
-### GGGRRR! The Upgrade Failed! How Do I Revert The Failed Upgrade?
+### GGGRRR! The upgrade failed! How do I revert the failed upgrade?
 
 Did you wrote down the backup file name on the third step from the list above right? If not scroll up to the terminal log and search for it.
 
