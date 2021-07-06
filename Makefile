@@ -20,11 +20,11 @@ deps: ## Install all the needed deps to test & build it
 	scripts/deps.sh
 
 conf-check: deps ## Make some tests to validate the actual config before proceed 
-	# test the settings of the localhost
+	# Test the settings of the localhost
 	scripts/test_localhost.sh
-	# test the binddn user and search for the admin user
+	# Test the binddn user and search for the admin user
 	scripts/test_bind_dn.sh
-	# test a search on the admin user and warn about any misconfigured property
+	# Test a search on the admin user and warn about any misconfigured property
 	scripts/test_mailadmin.sh
 	echo "done" > conf-check
 
@@ -53,7 +53,7 @@ provision: install ## Provision the server, this will copy over the config files
 	scripts/provision.sh
 	echo "done" > provision
 
-all: provision ## Run all targets in the logic order, run this to make it all
+all: provision ## Run all targets logically ordered, run this to make it all
 	echo "done" > all
 	echo "Done!"
 
@@ -84,7 +84,7 @@ force-certs: ## Force a re-creation of the SSL & dhparm certs
 	rm certs
 	$(MAKE) certs
 
-test-deps: ## install test dependencies
+test-deps: ## Install test dependencies
 	apt update && apt install -y swaks coreutils mawk bc curl
 
 test: ## Make all tests (must be on other PC than the server, outside the my_networks segment)
