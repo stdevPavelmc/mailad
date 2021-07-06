@@ -1,4 +1,4 @@
-# Active Directory requirements for this tool
+# Active Directory Requirements For This Tool
 
 As we mentioned earlier, this tool trust you has a well configured active directory server and has admin access to it.
 
@@ -6,7 +6,7 @@ _**Notice:** since the end of February 2021 we simplified the user property hand
 
 **Note:** We encourage the use of Samba AD, the internet is full of good tutorials about how to use samba as an AD controller
 
-## LDAPS or securing your LDAP communications
+## LDAPS Or Securing Your LDAP Communications
 
 If you use Samba 4 you can start using secure LDAP (LDAPS) from start, you just need to specify `SECURELDAP=yes` in the `/etc/mailad/mailad.conf` file when configuring the provision.
 
@@ -27,7 +27,7 @@ If you use a Windows AD server then by default you need to use plain LDAP (no se
 
 To handle the user's adminstration we recommend to use a windows PC with the RSAT tools installed. Sure you can use the Command Line Interface (CLI) in linux to handle that but it's hard for newcomers, if you like to venture in that field the command is `samba-tool` and has all the options you need, but we will not cover that item here.
 
-## Linux - AD link
+## Linux - AD Link
 
 To link the Linux mail server with the AD we use a simple user (not an admin!) the default details for this user are show below:
 
@@ -37,7 +37,7 @@ To link the Linux mail server with the AD we use a simple user (not an admin!) t
 
 ![linux user image](imgs/sample_ad_listing_linux_user.png)
 
-## Active Directory configuration
+## Active Directory Configuration
 
 The active directory must be organized in a way that you have a main OU that contains all the users in the domain, in this example this OU is called `CO7WT` and inside it you can create the organization's structure that suits your needs. In my case the user "Pavel" belong to the OU "Informática" (see picture below)
 
