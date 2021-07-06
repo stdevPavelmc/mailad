@@ -21,7 +21,7 @@ This is a long page, so here is an index:
 * [Optional user privilege access via AD groups](Features.md#optional-user-privilege-access-via-ad-groups)
 * [Manual alias to handle typos or enterprise positions](Features.md#manual-alias-to-handle-typos-or-enterprise-positions)
 * [Manual ban list for troublesome address](Features.md#manual-ban-list-for-troublesome-address)
-* [Manual headers and body checks lists](Features.md#manual-headers-and-body-checks-lists)
+* [Manual headers and body check lists](Features.md#manual-headers-and-body-check-lists)
 * [Test suite](Features.md#test-suite)
 * [Raw backup and restore options](Features.md#raw-backup-and-restore-options)
 * [Painless upgrades](Features.md#painless-upgrades)
@@ -325,7 +325,7 @@ That behavior can be controlled in the `/etc/mailad/mailad.conf` file, look belo
 
 ## Optional everyone list with custom address
 
-You have the option to enable a everyone address that has a few cool features:
+You have the option to enable an everyone address that has a few cool features:
 
 - All users of the domain can send a mail to the list, but, the list address is hidden **every time**.
 - Yes, the alias address is hidden, when you send a mail to it users will receive a copy of the mail coming from you, and if they reply to the email it will return only to you, so keep the "everyone" address to you and you will be safe.
@@ -336,11 +336,11 @@ You have the option to enable a everyone address that has a few cool features:
 
 ## Optional user privilege access via AD groups
 
-In some scenarios you are required by law (or specific enterprise restrictions) to limit a group of users to get only national service, it goes beyond in other cases and you need add even users with only local access to the domain.
+In some scenarios you'd be required by law or corporate restrictions to limit a group of users to have only national (.cu) email service. It can go beyond in other cases and you could be in need of adding even users with only local domain email access.
 
 This is now possible, it's a built-in feature. To activate it you just need to create a new Organizational Unit (OU) and two Groups inside it, the OU must be placed on the root of the LDAP search base declared.
 
-**Warning:** The feature is linked to the OU & Group's names, so you must preserve the name, place and casing of all, aka:  _DO NOT MOVE OR RENAME IT_
+**Warning:** The feature is linked to the OU & Group's names, so you must preserve the name, place and casing of all, AKA: _DO NOT MOVE OR RENAME IT_
 
 The OU must be named `MAIL_ACCESS`, inside it you must create two groups called `Local_mail` & `National_mail`.
 
@@ -352,55 +352,19 @@ You can take a look at this example to see how it's structured:
 
 [Return to index](Features.md#mailad-features-explained)
 
-### Optional Antivirus protection
-
-By default we setup ClamAV as the default AV solutions, if you are in Cuba you need to keep the option `USE_AV_ALTERNATE_MIRROR=yes` as the official updates of ClamAV are served via Cloudflare service and that services are banned from Cuba because the Embargo/Blockade of USA to our country.
-
-The AV activation will not be instantaneous, as it needs to update the AV database (about 300MB) and that can take some time on busy or slow networks; a background job is set to check for AV database update every hour (will generate a follow up mail to the mail admin or the sysadmins group) and a final notice mail up on the activation.
-
-The AV filtering is made optional and it's default value is set to "no" (disabled) as it will need further configuration for your to activate it fully, to do so you must configure:
-
-- The PC must have access to a DNS server that can reach the internet.
-- Allow the PC to get internet access (in your firewall or a configured proxy, keep reading)
-
-If you are behind a proxy you must setup the proxy as per the configs in the `mailad.conf` file.
-
-### Optional SPAM protection
-
-By default we pass all mails by SpamAssasin a trusted spam detection utility, but you can disable it if you like, see the config in the `mailad.conf` file.
-
-SpamAssassin will process and keep tracks of the mails but to squeeze the bet performance of it you must allow it to get updates from the internet, for that you need:
-
-- The PC must have access to a DNS server that can reach the internet.
-- Allow the PC to get internet access (in your firewall or a configured proxy, keep reading)
-
-If you are behind a proxy you must setup the proxy as per the configs in the `mailad.conf` file.
-
-### Optional SPF filtering
-
-The Sender Policy Framework is a nice way to check for bad incoming mails, but it's only useful in a scenario where you server is internet facing, aka: no mail gateway or smart host.
-
-If your mail server is behind a mail gateway or in general not internet facing it's recommended to disable the SPF filtering as it can generate more troubles than solutions.
-
-For that reason it's shipped with that option disabled by default. If you activate it be sure to have a working DNS in the PC or it will not be able to process the queries.
-
-[Return to index](Features.md#mailad-features-explained)
-
 ## Manual alias to handle typos or enterprise positions
 
-Imagine you have a user whose email is velkis@domain.tld or jon@domain.tld; when that users handle verbally his emails there is a big chance that the sender use the most common names _(belkis is very common vs. velkis as non common name, john vs. jon)_ and their emails will never reach your users.
+Imagine you have a user whose email is velkis@domain.tld or jon@domain.tld; when that users handle verbally his emails there is a big chance that the sender use the most common names _(belkis is very common vs velkis which is not so much, john vs jon)_ and their emails will never reach your users.
 
-Now imagine a business card for the top positions in your enterprise, they usually set their personal emails, and that's ok, really?.
-
-What if that person leaves the enterprise? all business opportunities are lost (even more is the person leaves in a bad way)
+Now imagine a business card for the top positions in your enterprise, they usually set their personal emails, and that's ok, really? What if that person leaves the company? all business opportunities are lost (even more is the person leaves it in a bad way).
 
 Now, what have this two cases in common?
 
 Alias, I bet you can spot bouncing emails in the summaries or logs at daily basis. That "wrong" emails to "belkis" or "jhon", or to a former senior position from a big customer; what if you can change that for good?
 
-In the first case (typos or strange/weird/un-common names) you can simply create an alias that routes the wrong address to the good address.
+In the first case (typos or strange/weird/uncommon names) you can simply create an alias that routes the wrong address to the good address.
 
-In the second one (Top positions business cards with personal emails) you can create an alias (or even a group of them) that points to the person real email in the position and emails will always find their way to the recipient's mailbox.
+In the second one (top positions business cards with personal emails) you can create an alias (or even a group of them) that points to the person real email in the position and emails will always find their way to the recipient's mailbox.
 
 How to do that?
 
@@ -426,7 +390,7 @@ economico@domain.tld    lidia@domain.tld
 economica@domain.tld    lidia@domain.tld
 ```
 
-Where ernest if the CEO/Director & lidia are the CFO/Economy head, if one of them changes just change the real address and keep the alias, and you will never lose a business opportunity ever.
+Where ernest if the CEO/Director & lidia are the CFO/Economy senior executive, if one of them changes just change the real address and keep the alias, and you will never lose a business opportunity ever.
 
 You get it right? the business cards will be always right!
 
@@ -439,7 +403,7 @@ postmap /etc/postfix/aliases/alias_virtuales
 postfix reload
 ```
 
-Since June/2020 this hand crafted file is preserved on upgrades, you are welcomed.
+Since June 2020 this hand crafted file is preserved on upgrades, you are welcomed to change it.
 
 [Return to index](Features.md#mailad-features-explained)
 
@@ -449,22 +413,22 @@ Yes, there is a list to put non desirable addresses, but not only addresses, you
 
 You have two options to declare an address/domain not welcomed: DROP or REJECT
 
-- **DROP**: this is a shortcut to the trash bin, a redirection to /dev/null. It accepts the mail but trash it ride away.
+- **DROP**: this is a shortcut to the trash bin, a redirection to /dev/null. It accepts the mail but trashes it immediately.
 - **REJECT**: Explicitly reject the email, you can even specify an reject code and text.
 
 The file has some examples, you can check the [list of SMTP server return codes](https://en.wikipedia.org/wiki/List_of_SMTP_server_return_codes) to learn how to respond, look for the 5XX codes, 511 is recommended.
 
-**Warning:** You need to make a `postmap lista_negra && postfix reload` every time you change the content of the file, to generate the binary code postfix need and to apply the change.
+**Warning:** You need to make a `postmap lista_negra && postfix reload` every time you change the content of the file, to generate the binary code postfix needs and to apply the change.
 
 [Return to index](Features.md#mailad-features-explained)
 
-## Manual headers and body checks lists
+## Manual headers and body check lists
 
 ### Header checks
 
-The header checks are stated in a file: `/etc/postfix/rules/header_checks`.
+The header checks are stated in file: `/etc/postfix/rules/header_checks`.
 
-This file uses regular expressions to match the content, you can match phrases on the subject line of messages and so on, the file has an example up on you can build your rules.
+This file uses regular expressions to match the content, you can match phrases on the subject line of messages and so on, the file has an example to help you build your rules.
 
 One example for a rule is to match and reject mails from certain Mail User Agents (the software people's use to send emails) or for some version of them that are known to be deprecated and not valid.
 
@@ -473,13 +437,13 @@ In that file there are by now two rules to avoid spammers:
 - A reject for subject-less emails
 - A reject for sender/return address forgery
 
-If you are using a MailAD dated from July/2020 please save your personal rules in that file, erase it and force a provision, that will place the newer file with the mentioned rules, then add your custom rules.
+If you are using a MailAD dated from July 2020 please save your personal rules in that file, erase it and force a provision, that will place the newer file with the mentioned rules, then add your custom rules.
 
 [Return to index](Features.md#mailad-features-explained)
 
 ### Body checks
 
-The header checks are stated in a file: `/etc/postfix/rules/body_checks`.
+The header checks are stated in file: `/etc/postfix/rules/body_checks`.
 
 This file uses regular expressions to match the content, you can match phrases on the body of the message. Please be aware that this will only match the text part of the message, MIME encoded messages will not match.
 
@@ -519,12 +483,12 @@ Please note that for the backup to be functional you need to have all the softwa
 
 ### What if I need a backup to migrate to another server? Is that backup good for that?
 
-There is no black magic on that, to migrate to another server you only need to this:
+There is no black magic on that, to migrate to another server you only need to do this:
 
 0. Get sure you copied, mapped or mounted the mail storage (`/home/vmail` by default).
 0. Install MailAD (see [INSTALL.md](INSTALL.md) file)
 0. Copy the folder /etc/mailad with all it's contents to the new server (can be saved from a backup)
-0. Adjust the vars on `/etc/mailad/mailad.conf` (hostname or so, you can fetch it from any backup file)
+0. Adjust the variables on `/etc/mailad/mailad.conf` (hostname or so, you can fetch it from any backup file)
 0. Make a "force-provision" to install MailAD with the adjusted configs.
 
 [Return to index](Features.md#mailad-features-explained)
@@ -543,11 +507,11 @@ I assume you moved to the folder where you keep your local clone copy of the Mai
 
 The above last step will make a second automatic raw backup "just in case".
 
-**Note:** _Since August 2020 we have a procedure to upgrade your custom config file to include new features, in that case you will receive a notice about the need to check the file `/etc/mailad/mailad.conf` for new options, also check the `Changelog.md` file for news about the changes and new features._
+**Note:** _Since August 2020 we have a procedure that upgrades your custom config file to include new features, in that case you will receive a notice about the need to check the file `/etc/mailad/mailad.conf` for new options, also check the `Changelog.md` file for news about the changes and new features._
 
-Some times we introduce a new feature and that feature needs your attention or a specific configuration or tweak in your environment, if that's the case please complete the suggested steps or fixes and re-run the `make upgrade` command until it finish ok.
+From time to time we introduce a new feature and that feature needs your attention or a specific configuration or tweak in your environment, if that's the case please complete the suggested steps or fixes and re-run the `make upgrade` command until it finishes ok.
 
-If al goes well you will be the proud owner of a MailAD instance, or not?
+If al goes well you will be the proud administrator of a MailAD instance, or not?
 
 ### GGGRRR! The upgrade failed! how I revert the failed upgrade?
 
@@ -559,7 +523,7 @@ Once you have identified the file, it's just to run the following command:
 make restore
 ```
 
-And follow the steps to select the proper backup file, I will wrote a (shortened) version of a successfull restore for you to see it:
+And follow the steps to select the proper backup file. I will wrote a (shortened) version of a successfull restore for you to see it:
 
 ```sh
 root@mail:~/mailad# make restore
