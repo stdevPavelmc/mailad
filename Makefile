@@ -40,7 +40,7 @@ install: conf-check deps certs ## Install all the software from the repository
 	scripts/install_mail.sh
 	echo "done" > install
 
-install-purge: deps ## Uninstall postfix and dovecot already installed software (purge config also)
+install-purge: deps ## Uninstall software already installed for MailAD (and purge config also)
 	scripts/install_purge.sh
 	rm install || exit 0
 	rm conf-check || exit 0
@@ -87,7 +87,7 @@ force-certs: ## Force a re-creation of the SSL & dhparm certs
 test-deps: ## Install test dependencies
 	apt update && apt install -y swaks coreutils mawk bc curl
 
-test: ## Make all tests (must be on other PC than the server, outside the my_networks segment)
+test: ## Make all tests (to be run from a PC other than the server, outside the my_networks segment)
 	tests/test.sh $(ip)
 
 upgrade: force-provision ## Upgrade a setup, see README.md for details
