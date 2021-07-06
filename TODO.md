@@ -2,9 +2,9 @@
 
 This page is also available in the following languages: [ [Español](i18n/TODO.es.md) 🇪🇸 🇨🇺]
 
-This is a TO DO list with no particular order
+This is a To Do list with no particular order
 
-## New Features/Wish/TO DO items
+## New Features/Wish/To Do items
 
 - Spanish translation
 - Specific access control at each user level
