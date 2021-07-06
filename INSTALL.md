@@ -1,18 +1,18 @@
-# MailAD installation instructions
+# MailAD Installation Instructions
 
-Check this [simple console recording](https://asciinema.org/a/fD1LuVLfeb8RPCHOIgbR1J9d8) to see how looks a simple install.
+Check this [simple console recording](https://asciinema.org/a/fD1LuVLfeb8RPCHOIgbR1J9d8) to see how looks a regular install.
 
 ⚠️ ⚠️ ⚠️ ⚠️ ⚠️ ⚠️
 
-**WARNING:** Since the end of February 2020 we changed the integration with the AD to be more simpler, you **need** to check [this document](Simplify-AD-config.md) if you want to upgrade your setup.
+**WARNING:** Since the end of February 2021 we simplified the integration with AD, you **need** to check [this document](Simplify-AD-config.md) if you want to upgrade your setup.
 
-Users of new install have no problem, just follow the install procedure below and you will be safe.
+Users of new installs will not have issues, just follow the install procedure below and you will be safe.
 
-## Introduction & checks
+## Introduction & Checks
 
-To avoid permission problems we recommend you to held the files under the `/root` directory, so from this moment and forward you need to be root to runs the following commands, `sudo -i` is your friend if you are not root.
+To avoid permission problems we recommend you to held the files under the `/root` directory, so from this moment and forward you need to be root to run the following commands, `sudo -i` is your friend if you are not root.
 
-If you are behind a proxy remember you can use use apt over it to update, upgrade and install the needed apps. Just export the following variables and all traffic will be routed to the outside, here you have an example:
+If you are behind a proxy remember you can use apt over it to update, upgrade and install the needed apps. Just export the following variables and all traffic will be routed to the external network through your declared proxy, here you have an example:
 
 ``` sh
 export http_proxy="http://user:password@proxy.enterprise.cu:3128/"
@@ -28,9 +28,11 @@ echo "    proxy = http://user:password@proxy.enterprise.cu:3128/" >> ~/.gitconfi
 
 If your setup use a proxy without username and password authentication just omit the "user:password@" part in the lines above, like this: `http://proxy.enterprise.cu:3128/`
 
-## Initial setup
+Remember to substitute `user`, `password`, `proxy.enterprise.cu` (proxy server fully qualified domain name) and `3128` (port) with the correct values for your environment.
 
-Just update and upgrade your system, install two dependencies and clone this repository under `/root`, like this:
+## Initial Setup
+
+Just update and upgrade your system, install dependencies and clone this repository under `/root`, like this:
 
 **Warning! the recommended branch for productions environments is the master branch, don't use any other branch on production!**
 
@@ -45,69 +47,68 @@ git checkout master
 git pull
 ```
 
-## Prepare your server
+## Prepare Your Server
 
-To prepare your server to install you need to first create the default config, just run this command:
+To prepare your server for installation you need to first create the default config. For that just run this command:
 
 ``` sh
 make conf
 ```
 
-This step will create the folder /etc/mailad and place a default mailad.conf file on it, now you are ready yo start
+This step will create the folder /etc/mailad and place a default mailad.conf file on it. Now you are ready yo start configuring your system.
 
-## Initial config
+## Initial Config
 
 Read and fill all needed variables on the `/etc/mailad/mailad.conf` file, please read carefully and choose wisely!
 
 _At this point the fast & furious ones can just run `make all` and follow the clues, the rest of the mortals just follow the next steps_
 
-## Dependencies handling
+## Dependencies Handling
 
-Call the dependencies to install all the needed tools, like this
+Call the dependencies to install all the needed tools, like this:
 
 ``` sh
 make deps
 ```
 
-This will install a group of needed tools to run the provision scripts, if all goes well no error must be shown; if an error is shown then you must work it out as it will be 99% of the time a problem related to the repository link and update
+This will install a group of needed tools to run the provision scripts, if all go well no error must be shown; if an error is shown then you must work it out as it will be 99% of the time a problem related to the repository link and updates.
 
 ## Checks
 
-Once you have installed the dependencies it's time to check the local config for errors
+Once you have installed the dependencies it's time to check the local config for errors:
 
 ``` sh
 make conf-check
 ```
 
-This will check for some of the pre-defined scenarios and configs, if any problem is found you will be warned about
+This will check for some of the pre-defined scenarios and configs, if any problem is found you will be warned about it.
 
-### Most common pitfalls
+### Most Common Pitfalls
 
-- Hostname: your PC need to know your full qualified hostname see [this tutorial](https://gridscale.io/en/community/tutorials/hostname-fqdn-ubuntu/) to know how to solve that issue
+- Hostname: your server need to know your full qualified hostname see [this tutorial](https://gridscale.io/en/community/tutorials/hostname-fqdn-ubuntu/) to know how to solve that issue
 - ldapsearch errors: 100% of the time is due to a typo on the mailad.conf file, check it carefully
 
-We are ready to install now, Oh wait! We need to generate the SSL certificates first.
+We are ready to install now... Oh wait! We need to generate the SSL certificates first ;-)
 
-## Certificate creation
+## Certificate Creation
 
 All client communications must be encrypted, so you will need at least a self signed certificate for internal use. This certificate will be used by postfix & dovecot.
 
-If you proceed MailAD script will generate a self-signed certificate that will last for 10 years, or if you have a cert from Let's Encrypt (LE for short) (standalone or wildcard) you can use it also. In the case you have a LE cert, using it is simple:
+If you proceed MailAD script will generate a self-signed certificate that will last for 10 years, or if you have certificates from Let's Encrypt (LE for short) you can use them also, standalone and wildcard are both good options.
 
-Just pick the ones that are named "fullchain*" and "privkey*" and place them on the folder `/etc/mailad/le/` and name it like this: `fullchain.pem` and `privkey.pem` and the provision scripts will use it
-
+In case you have LE certificates, using them is simple. Just pick those named "fullchain*" and "privkey*" and place them on folder `/etc/mailad/le/`, name them `fullchain.pem` and `privkey.pem` respectively so the provision scripts could use them.
 
 ``` sh
 make certs
 ```
 
-Final certs will lay on this places (if LE then certs will be copied over & secured):
+Final certificates will lay on this place (if your are using LE certificates will be copied over & secured):
 
 - Certificate: `/etc/ssl/certs/mail.crt`
 - Private Key: `/etc/ssl/private/mail.key`
 - CA certificate: `/etc/ssl/certs/cacert.pem`
 
-If you obtain a LE certs for your server after using the self-signed or you need to update or replace them; then just place them (like we described above) on the `/etc/mailad/le/` folder on the config and do the following from the folder you have the cloned MailAD install
+If you obtain LE certificates for your server after the use of self-signed ones, you need to update or replace them. Then just place them (like we described above) on the `/etc/mailad/le/` folder on the config and do the following from the folder you have cloned the MailAD install:
 
 ``` sh
 rm certs &2> /dev/null
@@ -116,20 +117,19 @@ systemctl restart postfix dovecot
 systemctl status postfix dovecot
 ```
 
-The last two steps restart the services and shows it's state for you to check if all gone well, if you get in trouble just remove the files from the `/etc/mailad/le/` and repeat the above steps, that will re-create a self signed certificate and place it on service
+The last two steps restart email related services and shows their state, so you can check if all went well. If you got troubles just remove the files from the `/etc/mailad/le/` and repeat the above steps, that will re-create a self signed certificate and put it on service.
 
-## Software installs
+## Software Installs
 
 ``` sh
 make install
 ```
 
-This step installs all the needed softwares, be ware that we **ALWAYS** purge the soft and old configs in this step; in this way we always start with a fresh set of files for the provision stage. If you have a non clean environment the script will suggest steps to make it clean
+This step installs all needed software. Beware that we **ALWAYS** purge the soft and old configs in this step. In this way we always start with a fresh set of files for the provision stage. If you have a non clean environment the script will suggest steps to make it clean.
 
-## Services provision
+## Services Provision
 
-After the software install you must provision the configuration, that's accomplished with a single command:
-
+After the software install you must provision the configuration, that is accomplished with a single command:
 
 ``` sh
 make provision
@@ -143,14 +143,13 @@ When you reach a success message after the provision you are ready to test your 
 
 There must be some time in the future when you need to change some config parameter without reinstalling/upgrading the server (painless upgrades are covered on the [Features.md](Features.md#painless-upgrades) file)
 
-The make target `force-provision` is just for that, change a parameter in your config file, go to the maildir repo folder and run:
-
+The make target `force-provision` was created for that, change the parameter(s) you want in your config file, go to the MailAD repo folder (`/root/mailad` by default) and run:
 
 ``` sh
 make force-provision
 ```
 
-You will see as it makes a backup of all the config and the reinstalls the whole server with the new parameters _(this process will last about 8 minutes on up to date hardware)_, that's normal that's the way it's programmed; take a peek on the last part of the install process, you will see a part like this:
+You will see as it makes a backup of all the config and then reinstalls the whole server with the new parameters _(this process will last about 8 minutes on up to date hardware)_. That's okay as it's the way it's developed. Take a peek on the last part of the install process, you will see a something like this:
 
 ```
 [...]
@@ -167,6 +166,6 @@ Yes, the `force-provision` as well as the `upgrade` make targets preserve the us
 
 If you need to reset some of those files to the defaults just erase them from the filesystem and make a force-provision, as simple as that.
 
-## Now what
+## Now What?
 
-There is a [FAQ](FAQ.md) file to search for common problems; or you can reach me via telegram under my nickname: [@pavelmc](https://t.me/pavelmc)
+There is a [FAQ](FAQ.md) file to search for common problems; or you can reach me via Telegram under my nickname: [@pavelmc](https://t.me/pavelmc)
