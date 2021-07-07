@@ -75,7 +75,7 @@ Ports required:
 
 ### Incoming traffic
 
-- Port  25/TCP (SMTP) from the external network or from a perimeter mail gateway.
+- Port 25/TCP (SMTP) from the external network or from a perimeter mail gateway.
 - Port 465/TCP (SMTPS) from the users network for legacy clients, not recommended, preferably use Submission.
 - Port 587/TCP (SUBMISSION) from the users network, preferred way for users for sending emails.
 - Port 993/TCP (IMAPS) from the users network, preferred way for users for retrieving emails.
@@ -83,9 +83,9 @@ Ports required:
 
 ### Outgoing traffic
 
-- Port  53/UDP/TCP (DNS) to query upstream dns servers
+- Port 53/UDP/TCP (DNS) to query upstream dns servers
 - Ports 80/TCP (HTTP) and 443/TCP (HTTPS) to get updates of the AV & SPAMD (if enabled) and to update the OS.
-- Ports 25/TCP (SMTP) to send emails to the external network.
+- Port 25/TCP (SMTP) to send emails to the external network.
 
 Please note that in the incoming traffic no user traffic is allowed in port 25, DO NOT allow users to use port 25 for sending emails, this port is reserved to receive the incoming traffic from the external network.
 
