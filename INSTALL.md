@@ -117,7 +117,7 @@ systemctl restart postfix dovecot
 systemctl status postfix dovecot
 ```
 
-The last two steps restart email related services and shows their state, so you can check if all went well. If you got troubles just remove the files from the `/etc/mailad/le/` and repeat the above steps, that will re-create a self signed certificate and put it on service.
+The last two steps restart email related services and show their state, so you can check if all went well. If you got troubles just remove the files from the `/etc/mailad/le/` and repeat the above steps, that will re-create a self signed certificate and put it on service.
 
 ## Software Installs
 
