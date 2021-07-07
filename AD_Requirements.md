@@ -4,7 +4,7 @@ As we mentioned earlier, this tool trust you has a well configured active direct
 
 _**Notice:** since the end of February 2021 we simplified the user property handling in the active directory, if you has a server installed before that date please take a peek at the [Simplify_AD_config.md](Simplify_AD_config.md) file to know how to migrate to this new simplified way_
 
-**Note:** We encourage the use of Samba AD, the internet is full of good tutorials about how to use samba as an AD controller
+**Note:** We encourage the use of Samba AD. The internet is full of good tutorials about how to use Samba as an AD controller.
 
 ## LDAPS Or Securing Your LDAP Communications
 
