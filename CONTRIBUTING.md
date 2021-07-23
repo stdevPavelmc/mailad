@@ -36,7 +36,11 @@ The merge action by the repo owner (@stdevPavelmc) will automatically close the 
 
 This is free software and you can use it without charges, but if you want to express your gratitude in monetary form here is how:
 
-### Top My Cell Phone Up!
+### Open Collective
+
+Yes, we have a organization registered under the Open Collecive initiative for Open and Public funding and finances, you can be a backer for this proyect, just visit us at our [OpenCollective Page](https://opencollective.com/mailad)
+
+### Top my cell phone up!
 
 That will allow me to stay online to develop & improve MailAD, my cell number is: **`(+53) 53 847 819`**, You can donate the amount you want.
 
@@ -52,10 +56,35 @@ Tip: My service provider has promotions almost every other week that will duplic
     - [E-Topup Online](https://cubacel.etopuponline.com)
 - By using **Crypto currencies**, use [BitRefill](https://www.bitrefill.com/buy/cubacel-cuba/?hl=en) for that.
 
-### Direct Money Transfers (Only In Cuba)
+### Direct money donations
 
-- You can donate any amount in CUP (national currency) via Transfermovil:
+- You can donate using any of the available payment gateways, choose the most convenient for you.
 
-<p align="center"><img src="imgs/donation_transfermovil_cup.png" alt="Transfermovil"></img></p>
+<p>
+    <table>
+        <tr>
+            <td style="text-align=center">
+                With Transfermovil
+            </td>
+            <td style="text-align=center">
+                With EnZona
+            </td>
+            <td style="text-align=center">
+                With <a href="https://qvapay.com/payme/pavelmc">QvaPay</a>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <img src="imgs/donation_transfermovil_cup.png" alt="Transfermovil"></img>
+            </td>
+            <td>
+                <img src="imgs/donation_enzona_cup.jpg" alt="EnZona"></img>
+            </td>
+            <td>
+                <img src="imgs/donation_qvapay.png" alt="QvaPay"></img>
+            </td>
+        </tr>
+    </table>
+</p>
 
 **Thank you very much in advance!**

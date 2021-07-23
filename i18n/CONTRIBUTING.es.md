@@ -48,10 +48,35 @@ Mi número de celular es: **`(+53) 53 847 819`**, puedes donar el monto que quie
     - [E-Topup Online](https://cubacel.etopuponline.com)
 - Usando **Criptomonedas** usando [BilRefill](https://www.bitrefill.com/buy/cubacel-cuba/?hl=es)
 
-### Transferencia directa de dinero (SOLO EN CUBA)
+### Donaciones en dinero
 
-- Donando el monto que quieras a mi cuenta de CUP usando el Transfermovil:
+- Puedes donar usando cualquiera de las pasarelas de pago disponibles, escoge la más conveniente para ti.
 
-<p align="center"><img src="../imgs/donation_transfermovil_cup.png" alt="Transfermovil"></img></p>
+<p>
+    <table>
+        <tr>
+            <td style="text-align=center">
+                Con Transfermovil
+            </td>
+            <td style="text-align=center">
+                Con EnZona
+            </td>
+            <td style="text-align=center">
+                Con <a href="https://qvapay.com/payme/pavelmc">QvaPay</a>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <img src="../imgs/donation_transfermovil_cup.png" alt="Transfermovil"></img>
+            </td>
+            <td>
+                <img src="../imgs/donation_enzona_cup.jpg" alt="EnZona"></img>
+            </td>
+            <td>
+                <img src="../imgs/donation_qvapay.png" alt="QvaPay"></img>
+            </td>
+        </tr>
+    </table>
+</p>
 
-De antemano: **Muchas Gracias!**
+**Gracias por su contribución!**
