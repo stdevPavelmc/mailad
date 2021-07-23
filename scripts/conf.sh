@@ -11,12 +11,12 @@
 # Create the dir with no warning
 mkdir -p /etc/mailad/le
 
-# check if there is a conf there
+# Check if there is a MailAD config there
 if [ -f /etc/mailad/mailad.conf ] ; then
     echo "===> There is a mailad.conf file already in place, move or erase it"
     echo "===> and run 'make conf' one more time to set a default one"
 else
-    # just compy the default
+    # Just copy the default MailAD config
     echo "===> Installing default conf file en /etc/mailad/"
     cp mailad.conf /etc/mailad/
 fi

@@ -1,4 +1,4 @@
-# Simplify the AD configuration for the users
+# Simplification of the Active Directory Users Configuration
 
 Since the end of February 2020 we introduced a simplified version of AD user's properties configuration schema.
 
@@ -22,11 +22,11 @@ Why the quota is optional?
 
 Simple, the general per user's quota is set now in the `/etc/mailad/mailad.conf` file as a variable named `DEFAULT_MAILBOX_SIZE` and it's set by default at 200 MB, see the section named [General and individual quota system](Features.md#general-and-individual-quota-system) in the Features.md file for more details.
 
-## What is the process to migrate to this simplified schema if I have an old MailAD version already?
+## How To Migrate To This Simplified Schema If I Already Have An Old MailAD Version?
 
 To migrate you need to read the [related explanation](utils/README.md#upgrade-to-the-simplified-ad-configuration) in the util's README file, and follow the steps there.
 
-## Why you changed?
+## Why You Changed?
 
 - Simplicity: practice has revealed that the sysadmins or the tech people are prone to make typos or miss a field and then spend a few hours chasing their tail to find the fix.
 - Productivity: think in 300 users, how many time will take to set 4 fields vs fill 1 field on those 300 users?
