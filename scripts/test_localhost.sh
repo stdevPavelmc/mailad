@@ -14,8 +14,50 @@
 
 # load conf files
 source /etc/mailad/mailad.conf
+source common.conf
 
 echo "===> Testing the configurations on the local host"
+
+# HOSTAD may be multiple host, check the DNS and by then find the IP/host of the SOA
+# listed on the HOSTAD var
+H=`get_soa`
+if [ -z "${H}" ] ; then
+    # fail verbose, no soa FOUND
+    get_soa_verbose
+else
+    echo "===> DNS working and SOA listed on HOSTAD var, using '${H}' for tests"
+fi
+
+# No ping, some users have VLANs with no ping allowed, we switch to nc to test if
+# the port is open, but we need to know the correct por if LDAP or LDAPS
+# secure ldap by default
+PORT=636
+if [ "$SECURELDAP" == "" -o "$SECURELDAP" == "no" -o "$SECURELDAP" == "No" ] ; then
+    # no sec, plain ldap
+    PORT=389
+fi
+
+# command
+nc "${H}" "$PORT" -vz  2> /dev/null
+
+# testing
+R=$?
+if [ $R -eq 0 ] ; then
+    echo "===> We can reach the domain server listed in the configs!"
+else
+    # fail
+    echo "================================================================================="
+    echo "ERROR!"
+    echo "    We can't connect to the port $PORT of the AD server ($H) specified in"
+    echo "    the config, check your network settings, firewalls, etc"
+    echo ""
+    echo "    HOSTAD is: ${HOSTAD}"
+    echo "================================================================================="
+    echo " "
+
+    exit 1
+fi
+
 
 #vmail user
 GROUP=`cat /etc/group | grep $VMAILNAME | grep $VMAILGID`
@@ -57,79 +99,6 @@ else
 
     exit 1
 fi
-
-# No ping, some users have VLANs with no ping allowed, we switch to nc to test if
-# the port is open, but we need to know the correct por if LDAP or LDAPS
-PORT=""
-if [ "$SECURELDAP" == "" -o "$SECURELDAP" == "no" -o "$SECURELDAP" == "No" ] ; then
-    # no sec, plain ldap
-    PORT=389
-else
-    # secure ldap
-    PORT=636
-fi
-
-# command
-nc "$HOSTAD" "$PORT" -vz  2> /dev/null
-
-# testing
-R=$?
-if [ $R -eq 0 ] ; then
-    echo "===> We can reach the domain server listed in the configs!"
-else
-    # fail
-    echo "================================================================================="
-    echo "ERROR!"
-    echo "    We can't connect to the port $PORT of the AD server ($HOSTAD) specified in"
-    echo "    the config, check your network settings, firewalls, etc"
-    echo "================================================================================="
-    echo " "
-
-    exit 1
-fi
-
-# check if the DNS is working, by asking for the SOA of the domain
-SOAREC=`dig SOA $DOMAIN +short`
-if [ "$SOAREC" == "" ] ; then
-    # fail
-    echo "================================================================================="
-    echo "ERROR!"
-    echo "    The DOMAIN you declared in mailad.conf has no SOA record in the actual DNS"
-    echo "    That, or your DNS is not configurated correctly in this host"
-    echo "================================================================================="
-    echo " "
-
-    exit 1
-else
-    # returned values so DNS is configured OK, but need more testing
-    echo "===> SOA record acquired, testing that HOSTAD points to the SOA..."
-
-    HOST=`echo $SOAREC | grep $HOSTAD`
-    if [ "$HOST" == "" ] ; then
-        # maybe HOSTAD is an IP?
-        HOST=`echo $SOAREC | awk '{print $1}' | rev | cut -d "." -f 2- | rev`
-        IP=`dig A $HOST +short`
-        if [ "IP" == "$HOSTAD" ] ; then
-            # success
-            echo "===> The SOA record points to the HOSTAD value (HOSTAD is an IP), nice!"
-        else
-            # fail
-            echo "================================================================================="
-            echo "ERROR!"
-            echo "    The DNS answer with a value for the SOA of $DOMAIN, but the value does"
-            echo "    not match the one configured in HOSTAD, please fix that"
-            echo "    HOSTAD=$HOSTAD vs SOA_IP=$IP "
-            echo "================================================================================="
-            echo " "
-
-            exit 1
-        fi
-    else
-        # success
-        echo "===> The SOA record points to the HOSTAD value (HOSTAD is a hostname), nice!"
-    fi
-fi
-
 
 # testing that the password is different if we are in a non  testing domain
 if [ $DOMAIN != "mailad.cu" -a "$LDAPBINDPASSWD" == "Passw0rd---" ] ; then
