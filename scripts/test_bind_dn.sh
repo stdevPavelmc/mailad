@@ -9,24 +9,19 @@
 
 # load conf files
 source /etc/mailad/mailad.conf
+source common.conf
 
-echo "===> Trying to login into $HOSTAD as $LDAPBINDUSER"
+LDAPURI=`get_ldap_uri`
+H=`get_soa`
 
-# Generate the LDAPURI based on the settings of the mailad.conf file
-# locally and not using the one in common.conf as this is more rich
-if [ "$SECURELDAP" == "" -o "$SECURELDAP" == "no" -o "$SECURELDAP" == "No" ] ; then
-    # not secure
-    LDAPURI="ldap://${HOSTAD}:389/"
-
-    # notice
-    echo "===> WARNING: LDAP connection are in plain text!"
-else
-    # use a secure layer
-    LDAPURI="ldaps://${HOSTAD}:636/"
+# if secure LDAP you must get and setup the sslcert of the addc
+if [ "$SECURELDAP" == "yes" -o "$SECURELDAP" == "Yes" -o "$SECURELDAP" == "true" -o "$SECURELDAP" == "True" ] ; then
+    # SSL it's
+    echo "===> Settings mandate SSL ldap connection"
 
     # get the certificate of the server
     echo "===> Getting & Installing the server certificate for ldap connection"
-    echo | openssl s_client -connect ${HOSTAD}:636 2>&1 | sed --quiet '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' > /etc/ssl/certs/samba.crt
+    echo | openssl s_client -connect ${H}:636 2>&1 | sed --quiet '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' > /etc/ssl/certs/samba.crt
 
     # testing
     R=$?
@@ -54,10 +49,13 @@ else
     cat /tmp/1 > /etc/ldap/ldap.conf
 fi
 
+echo "===> Trying to login as $LDAPBINDUSER"
+echo "===> in any of the servers: '$HOSTAD'"
+
 # LDAP query
 RESULT=`ldapsearch -o ldif-wrap=no -H "$LDAPURI" -D "$LDAPBINDUSER" -w "$LDAPBINDPASSWD" -b "$LDAPSEARCHBASE" | grep "numResponses"`
 
-if [ "$RESULT" == "" ] ; then
+if [ -z "$RESULT" ] ; then
     # empy result: Fail
     exit 1
 else
