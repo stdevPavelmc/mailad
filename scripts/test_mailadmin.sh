@@ -66,7 +66,7 @@ if [ "$OFFICE" == "$VMAILSTORAGE" ] ; then
     echo "ERROR!:"
     echo "    Office property has the VMAILSTORAGE parameter, this is a legacy system, so"
     echo "    you need to upgrade, see the file Simplify_AD_config.md and do the changes"
-    echo "    before continuing with the install/upgrade."
+    echo "    before continue with the install/upgrade."
     echo "================================================================================="
     echo " "
     rm $TEMP
@@ -95,8 +95,7 @@ if [ "$WP" != "" ] ; then
 fi
 
 # succcess
-USER=`cat $TEMP | grep givenName`
-echo "===> User $USER is configured ok"
+echo "===> User $ADMINMAIL is configured ok"
 echo "===> You can use that user as an example to set up the others!"
 rm $TEMP || exit 0
 exit 0
