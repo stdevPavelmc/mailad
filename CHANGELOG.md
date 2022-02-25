@@ -18,6 +18,10 @@ This is a note for developers about the recommended tags to keep track of the ch
 Dates must be YEAR-MONTH-DAY
 -->
 
+## 2022-02-24
+
+- Fixed: Bug #147: Clamav alternate mirrors list was not working anymore
+
 ## 2021-06-05
 
 - Added: New donation methods: EnZona & QvaPay
