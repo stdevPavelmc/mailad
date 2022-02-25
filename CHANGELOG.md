@@ -20,7 +20,10 @@ Dates must be YEAR-MONTH-DAY
 
 ## 2022-02-24
 
-- Fixed: Bug #147: Clamav alternate mirrors list was not working anymore
+- Fixed: Bug #147: Clamav alternate mirrors list was not working anymore.
+- Added: Feature request #152: support for multiple ADDC servers, look on the mailad.conf file for details.
+- Changed: New way to handle the LDAP_URIS and DNS test.
+- Fixed: Minor bugs found during the fixing of the feature #152, related to DNS/SOA tests.
 
 ## 2021-06-05
 
