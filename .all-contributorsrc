@@ -83,6 +83,16 @@
         "doc",
         "financial"
       ]
+    },
+    {
+      "login": "Joe1962",
+      "name": "Joe1962",
+      "avatar_url": "https://avatars.githubusercontent.com/u/11667019?v=4",
+      "profile": "http://jjrweb.byethost8.com/",
+      "contributions": [
+        "ideas",
+        "test"
+      ]
     }
   ],
   "contributorsPerLine": 7,
