@@ -1,6 +1,6 @@
 # MailAD
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-8-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-9-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 Dies ist ein praktisches Tool, um einen Mailserver unter Linux bereitzustellen, der mit einem Active Directory-Server (Samba oder Windows, das spielt keine Rolle) verbunden ist, wobei einige Einschränkungen zu berücksichtigen sind, da dies eine typische Mail-Konfiguration ist, die unter bestimmten Gesetzen in Kuba verwendet wird und Sicherheitsanforderungen.
@@ -83,6 +83,7 @@ Vielen Dank an diese wunderbaren Menschen ([emoji key](https://allcontributors.o
   </tr>
   <tr>
     <td align="center"><a href="https://github.com/dienteperro"><img src="https://avatars.githubusercontent.com/u/5240140?v=4?s=100" width="100px;" alt=""/><br /><sub><b>dienteperro</b></sub></a><br /><a href="https://github.com/stdevPavelmc/mailad/commits?author=dienteperro" title="Documentation">📖</a> <a href="#financial-dienteperro" title="Financial">💵</a></td>
+    <td align="center"><a href="http://jjrweb.byethost8.com/"><img src="https://avatars.githubusercontent.com/u/11667019?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Joe1962</b></sub></a><br /><a href="#ideas-Joe1962" title="Ideas, Planning, & Feedback">🤔</a> <a href="https://github.com/stdevPavelmc/mailad/commits?author=Joe1962" title="Tests">⚠️</a></td>
   </tr>
 </table>
 
