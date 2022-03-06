@@ -38,7 +38,7 @@ if [ -f /etc/os-release ] ; then
             # install dependencies
             export DEBIAN_FRONTEND=noninteractive
             apt update -q
-            apt-get install ldap-utils dnsutils netcat openssl cron -qy
+            apt-get install ldap-utils dnsutils netcat openssl -qy
 
             # checking for success
             R=$?
