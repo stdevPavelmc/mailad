@@ -8,7 +8,7 @@ conf: ## Create a configuration file in /etc/
 	scripts/conf.sh
 
 clean: ## Clean the environment to have a fresh start (preserve SSL/DH certs in /etc/ssl)
-	-rm reps conf-check install provision all || exit 0
+	-rm deps conf-check install provision all || exit 0
 
 reset: clean install-purge ## Reset all configurations and remove/purge all softwares & certificates
 	-rm certs || exit 0
