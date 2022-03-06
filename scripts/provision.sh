@@ -338,9 +338,7 @@ if [ "$ENABLE_SPAMD" == "yes" -o "$ENABLE_SPAMD" == "Yes" ] ; then
     fi
 
     # enable the service
-    systemctl unmask spamassassin
-    systemctl enable spamassassin
-    systemctl restart spamassassin
+    enable_sa
 
     # replace the default cron job if proxy enabled
     if [ ! -z "$SA_PROXY" ] ; then
@@ -362,9 +360,7 @@ else
     fi
 
     # disable the service
-    systemctl stop spamassassin
-    systemctl disable spamassassin
-    systemctl mask spamassassin
+    disable_sa
 
     # remove the daily job if there
     test -x "/etc/cron.daily/spamassassin" && rm -f /etc/cron.daily/spamassassin
