@@ -53,10 +53,29 @@ echo "===> Trying to login as $LDAPBINDUSER"
 echo "===> in any of the servers: '$HOSTAD'"
 
 # LDAP query
-RESULT=`ldapsearch -o ldif-wrap=no -H "$LDAPURI" -D "$LDAPBINDUSER" -w "$LDAPBINDPASSWD" -b "$LDAPSEARCHBASE" | grep "numResponses"`
+R=`ldapsearch -o ldif-wrap=no -H "$LDAPURI" -D "$LDAPBINDUSER" -w "$LDAPBINDPASSWD" -b "$LDAPSEARCHBASE" 2>&1 `
+EMPTY=`echo $R | grep numResponses`
+ERROR=`echo $R | grep "encryption required"`
 
-if [ -z "$RESULT" ] ; then
-    # empy result: Fail
+if [ "$ERROR" ] ; then
+    # empty: Fail
+    echo "======================================================"
+    echo "ERROR: LDAP server refused the connection, maybe you"
+    echo "       need to swith to use 'SECURELDAP=yes' in the"
+    echo "       /etc/mailad/mailad.conf file?"
+    echo "======================================================"
+    exit 1
+fi
+
+if [ -z "$EMPTY" ] ; then
+    # empty result: Fail
+    echo "======================================================"
+    echo "ERROR: Undefined response from the LDAP query, humm..."
+    echo "       Strange, maybe wrong ldap credentials?"
+    echo ""
+    echo "       Response:"
+    echo "$R"
+    echo "======================================================"
     exit 1
 else
     # Success
