@@ -18,6 +18,26 @@ source common.conf
 
 echo "===> Testing the configurations on the local host"
 
+# test /sbin on some envs (Debian 10/11)
+SBIN=`echo $PATH | grep "/sbin"`
+if [ -z "$SBIN" ] ; then
+    # warn the user of the lack of /sbins in the PATH
+    echo "================================================================================="
+    echo "ERROR!"
+    echo "    On some modern distros you end with no /sbin or /usr/sbin paths on the \$PATH"
+    echo "    env vars, that as a result of a strict policy of su/sudo. To fix that you can"
+    echo "    do one of these tricks:"
+    echo ""
+    echo "    1. If you logged in as a normal user and then do su or sudo commands to gain"
+    echo "       root privileges, you need to set the PATH on /etc/environment, see 2:"
+    echo "    2. Set the path on /etc/environment, this sencence on that file will make it"
+    echo ""
+    echo "    PATH=\"/sbin:/usr/sbin:\$PATH\""
+    echo "================================================================================="
+    echo " "
+    exit 1
+fi
+
 # HOSTAD may be multiple host, check the DNS and by then find the IP/host of the SOA
 # listed on the HOSTAD var
 H=`get_soa`
@@ -77,6 +97,9 @@ if [ "$HOST" == "$FQDN" ] ; then
     echo "    Your hostname does not have a domain or it's configured wrong!"
     echo "    A 'hostname' command must return just the name of the host with no domain"
     echo "    A 'hostname -f' command must return the name with the domain"
+    echo " "
+    echo "    hostname: ${HOST}"
+    echo "    hostname -f: ${FQDN}"
     echo "================================================================================="
     echo " "
 

@@ -27,7 +27,7 @@ if [ -f /etc/os-release ] ; then
             # Remove the pkgs
             debian_remove_pkgs
             ;;
-        buster)
+        buster|bullseye)
             # Load the correct pkgs to be installed
             craft_pkg_list "debian"
 

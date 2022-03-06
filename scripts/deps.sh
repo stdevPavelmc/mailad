@@ -34,11 +34,11 @@ if [ -f /etc/os-release ] ; then
 
     ## Distros check
     case "$VERSION_CODENAME" in
-        bionic|focal|buster)
+        bionic|focal|buster|bullseye)
             # install dependencies
             export DEBIAN_FRONTEND=noninteractive
             apt update -q
-            apt-get install ldap-utils dnsutils -qy
+            apt-get install ldap-utils dnsutils netcat openssl -qy
 
             # checking for success
             R=$?

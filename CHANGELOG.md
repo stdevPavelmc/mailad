@@ -18,6 +18,14 @@ This is a note for developers about the recommended tags to keep track of the ch
 Dates must be YEAR-MONTH-DAY
 -->
 
+## 2022-03-06
+
+- Added: Debian 11 Bullseye support
+- Changed: Services enable/disable rutines on provision stage
+- Fixed: A bug (typo) on the 'make clean' command
+- Added: Checks for /sbin /usr/sbin missing on path on some debian systems
+- Changed: Improved the parsing of the LDAP bind testing
+
 ## 2022-02-24
 
 - Fixed: Bug #147: Clamav alternate mirrors list was not working anymore.
