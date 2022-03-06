@@ -37,7 +37,7 @@ if [ -f /etc/os-release ] ; then
             # Install
             install_debs
             ;;
-        buster)
+        buster|bullseye)
             # Load the correct pkgs to be installed
             craft_pkg_list "debian"
 
