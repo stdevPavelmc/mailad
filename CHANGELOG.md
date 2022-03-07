@@ -20,14 +20,15 @@ Dates must be YEAR-MONTH-DAY
 
 ## 2022-03-06
 
-- Added: Debian 11 Bullseye support
+- Added: Feature #159, Debian 11 Bullseye support
 - Changed: Services enable/disable rutines on provision stage
 - Fixed: A bug (typo) on the 'make clean' command
 - Added: Checks for /sbin /usr/sbin missing on path on some debian systems
 - Changed: Improved the parsing of the LDAP bind testing
 - Fixed: Bug #158, groups.sh script was not updated with the new LDAP_URI autodetection of past improvements, sorry for that.
-- Added: Feature #150 Now you can exclude the AV from the proxy when using a local/institutional mirror [Optional]
+- Added: Feature #150, Now you can exclude the AV from the proxy when using a local/institutional mirror [Optional]
 - Fixed: Bug: #151 test for DNS ClamAV version when using proxy fails, fixed, not testing that when a proxy is configured
+- Changed: Feature: #146, daily email about groups creation will be generated only when there is a change.
 
 ## 2022-02-24
 

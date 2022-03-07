@@ -37,29 +37,40 @@ function get_ldap_uri {
     echo "${SOUT}"
 }
 
+# get the files' fingerprint
+function getfp {
+    sha1sum /etc/postfix/aliases/auto_aliases | awk '{print $1}'
+}
+
+# Get the file's fingerprint to know if it changed
+INITIALFP=`getfp`
+REPORT=`mktemp`
+ERROR=""
+
 LDAPURI=`get_ldap_uri`
 
 # check if we need to get the everyone group
 if [ -z "$EVERYONE" ] ; then
     # empy result: Fail
-    echo "===> EVERYONE group disabled, skiping..."
+    echo "===> EVERYONE group disabled, skiping..." >> $REPORT
     echo "# Everyone list DISABLED in config" > /etc/postfix/aliases/auto_aliases
     echo " " >> /etc/postfix/aliases/auto_aliases
 else
-    echo "===> Trying to retrieve all the emails to form the EVERYONE list"
-    echo "===> login into some of the '$HOSTAD' servers"
-    echo "===> as $LDAPBINDUSER"
+    echo "===> Trying to retrieve all the emails to form the EVERYONE list" >> $REPORT
+    echo "===> login into some of the '$HOSTAD' servers" >> $REPORT
+    echo "===> as $LDAPBINDUSER" >> $REPORT
 
     # LDAP query
     RESULT=`ldapsearch -o ldif-wrap=no -H "$LDAPURI" -D "$LDAPBINDUSER" -w "$LDAPBINDPASSWD" -b "$LDAPSEARCHBASE" "(&(objectCategory=person)(objectClass=user)(sAMAccountName=*))" mail | grep "mail: " | grep "@$DOMAIN" | awk '{print $2}' | tr '\n' ','`
 
     if [ "$RESULT" == "" ] ; then
         # empy result: Fail
-        echo "===> Error, something failed..."
-        exit 1
+        echo "===> Error, something failed..." >> $REPORT
+        echo $RESULT >> $REPORT 
+        ERROR="ujum..."
     else
         # Success
-        echo "===> Success, $EVERYONE list created"
+        echo "===> Success, $EVERYONE list created/updated" >> $REPORT
         echo "# Everyone list" > /etc/postfix/aliases/auto_aliases
         echo "$EVERYONE     $RESULT" >> /etc/postfix/aliases/auto_aliases
         echo " " >> /etc/postfix/aliases/auto_aliases
@@ -93,6 +104,7 @@ for G in "${RES[@]}"; do
     if [ "$GEM" ] ; then
         RESULT=`ldapsearch -o ldif-wrap=no -H "$LDAPURI" -D "$LDAPBINDUSER" -w "$LDAPBINDPASSWD" -b "$LDAPSEARCHBASE" "(&(objectCategory=person)(objectClass=user)(sAMAccountName=*)(memberOf=$G))" mail | grep "mail: " | awk '{print$2}' | tr '\n' ','`
 
+        echo "===> Parsing members of the group: $G" >> $REPORT
         echo "# Group: $G" >> /etc/postfix/aliases/auto_aliases
         echo "$GEM   $RESULT" >> /etc/postfix/aliases/auto_aliases
         echo " " >> /etc/postfix/aliases/auto_aliases
@@ -101,16 +113,20 @@ done
 
 # updating postfix about the change
 cd /etc/postfix/aliases && postmap auto_aliases
-postfix reload
+postfix reload 2> /dev/null
 
-# check foir the sysadmin group alias if set
+FINALFP=`getfp`
+if [ "$INITIALFP" != "$FINALFP" ] ; then
+    # need to send the email
+    cat $REPORT
+    rm $REPORT
+fi
+
+# check for the sysadmin group alias if set
 if [ "$SYSADMINS" ] ; then
     # search for it on the aliases files
     R=`cat /etc/postfix/aliases/auto_aliases /etc/postfix/aliases/alias_virtuales | awk '{print $1}' | grep "$SYSADMINS"`
     if [ -z "$R" ] ; then
-        # notice
-        echo "===> Warning: SYSADMIN group not configured, check your mail for details!"
-
         # build the email
         F=`mktemp`
         echo "You have a SYSADMIN group configured to recieve notifications in /etc/mailad/mailad.conf" > $F

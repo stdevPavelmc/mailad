@@ -19,7 +19,7 @@ TMP=`tempfile`
 
 # check for soft
 if [ "$PFSL" == "" ] ; then
-    # no soft installed, warining
+    # no soft installed, warning
     echo "MailAD: Can't make the mail traffic summary because pflogsumm software is missing!"
     exit 1
 fi
