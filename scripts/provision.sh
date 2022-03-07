@@ -244,9 +244,15 @@ else
                 # if a proxy is set remove the 'http://' and 'https://' from the variables
 
                 if [ ! -z "$PROXY_HOST" -a ! -z "$PROXY_PORT" ] ; then
-                    # there is a proxy, remove the prefix
-                    Mm=`echo ${M} | sed s/'http:\/\/'//g | sed s/'https:\/\/'//g`
-                    echo "DatabaseMirror ${Mm}" >> $FILE
+                    # general proxy, but we must use it ?
+                    if [ "$AV_UPDATES_USE_PROXY" == "yes" -o "$AV_UPDATES_USE_PROXY" == "Yes" ] ; then
+                        # ok, by all means add proxy remove the prefix
+                        Mm=`echo ${M} | sed s/'http:\/\/'//g | sed s/'https:\/\/'//g`
+                        echo "DatabaseMirror ${Mm}" >> $FILE
+                    else
+                        # no proxy
+                        echo "DatabaseMirror ${M}" >> $FILE
+                    fi
                 else
                     # no proxy
                     echo "DatabaseMirror ${M}" >> $FILE
@@ -257,14 +263,17 @@ else
 
     ### configure proxy if needed
     if [ ! -z "$PROXY_HOST" -a ! -z "$PROXY_PORT" ] ; then
-        # add proxy
-        echo "HTTPProxyServer $PROXY_HOST" >> $FILE
-        echo "HTTPProxyPort $PROXY_PORT" >> $FILE
+        # general proxy, but we must use it ?
+        if [ "$AV_UPDATES_USE_PROXY" == "yes" -o "$AV_UPDATES_USE_PROXY" == "Yes" ] ; then
+            # ok, by all means add proxy
+            echo "HTTPProxyServer $PROXY_HOST" >> $FILE
+            echo "HTTPProxyPort $PROXY_PORT" >> $FILE
 
-        # check for auth
-        if [ ! -z "$PROXY_USER" -a ! -z "$PROXY_PASS" ] ; then
-            echo "HTTPProxyUsername $PROXY_USER" >> $FILE
-            echo "HTTPProxyPassword $PROXY_PASS" >> $FILE
+            # check for auth
+            if [ ! -z "$PROXY_USER" -a ! -z "$PROXY_PASS" ] ; then
+                echo "HTTPProxyUsername $PROXY_USER" >> $FILE
+                echo "HTTPProxyPassword $PROXY_PASS" >> $FILE
+            fi
         fi
     fi
 
