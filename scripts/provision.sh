@@ -243,7 +243,7 @@ else
             for M in `echo "${AV_ALT_MIRRORS}" | xargs` ;  do
                 # if a proxy is set remove the 'http://' and 'https://' from the variables
 
-                if [ ! -z "$PROXY_HOST" -a ! -z "$PROXY_PORT" ] ; then
+                if [ ! -z "$PROXY_HOST" -a ! -z "$PROXY_PORT" -a ("$AV_UPDATES_USE_PROXY" == "yes" -o "$AV_UPDATES_USE_PROXY" == "Yes") ] ; then
                     # there is a proxy, remove the prefix
                     Mm=`echo ${M} | sed s/'http:\/\/'//g | sed s/'https:\/\/'//g`
                     echo "DatabaseMirror ${Mm}" >> $FILE
@@ -256,7 +256,7 @@ else
     fi
 
     ### configure proxy if needed
-    if [ ! -z "$PROXY_HOST" -a ! -z "$PROXY_PORT" ] ; then
+    if [ ! -z "$PROXY_HOST" -a ! -z "$PROXY_PORT" -a ("$AV_UPDATES_USE_PROXY" == "yes" -o "$AV_UPDATES_USE_PROXY" == "Yes") ] ; then
         # add proxy
         echo "HTTPProxyServer $PROXY_HOST" >> $FILE
         echo "HTTPProxyPort $PROXY_PORT" >> $FILE
