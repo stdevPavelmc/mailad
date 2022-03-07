@@ -1,4 +1,7 @@
 # MailAD
+
+[![Chat on Telegram](https://img.shields.io/badge/Chat%20on-Telegram-brightgreen?style=flat-square)](https://t.me/MailAD_dev) [![Twitter Follow](https://img.shields.io/twitter/follow/co7wt?label=Follow&style=flat-square)](https://twitter.com/co7wt) [![GitHub Issues](https://img.shields.io/github/issues/stdevPavelmc/mailad?style=flat-square)](https://github.com/stdevPavelmc/mailad/issues) [![GitHub Issues Closed](https://img.shields.io/github/issues-closed/stdevPavelmc/mailad?style=flat-square)](https://github.com/stdevPavelmc/mailad/issues?q=is%3Aissue+is%3Aclosed) [![GitHub repo size](https://img.shields.io/github/repo-size/stdevPavelmc/mailad?style=flat-square)](https://github.com/stdevPavelmc/mailad/archive/master.zip) [![GitHub last commit](https://img.shields.io/github/last-commit/stdevPavelmc/mailad?style=flat-square)](https://github.com/stdevPavelmc/mailad/commits/master) [![GitHub commit rate](https://img.shields.io/github/commit-activity/m/stdevPavelmc/mailad?style=flat-square)](https://github.com/stdevPavelmc/mailad/commits/master) [![Financial contributors](https://opencollective.com/mailad/tiers/badge.svg)](https://opencollective.com/mailad)
+
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
 [![All Contributors](https://img.shields.io/badge/all_contributors-9-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
@@ -16,6 +19,7 @@ Dieses Tool wird getestet und unterstützt auf:
 - Ubuntu Bionic 18.04 (früher LTS).
 - Ubuntu Focal 20.04 (tatsächliche LTS und tatsächliche Entwicklungsumgebung).
 - Debian Buster 10 (siehe Hinweis unten, bitte).
+- Debian Bullseye 11 (siehe Hinweis unten, bitte).
 
 _**Hinweis:** Wenn Sie einen Debian Buster-Container unter LXC verwenden (z. B. Proxmox), müssen Sie die Dovecot-Installation optimieren, da dies sonst nicht funktioniert. Weitere Informationen finden Sie unter [dieses Update](https://serverfault.com/questions/976250/dovecot-lxc-Apparmor-Denied-Buster) für weitere Informationen_
 
