@@ -138,28 +138,35 @@ fi
 
 # testing if a working DNS is configured if AV is set to enabled
 if [ "$ENABLE_AV" == "yes" -o "$ENABLE_AV" == "Yes" ] ; then
-    # check if we can get the database fingerprint for clamav
-    DBF=`dig +short TXT current.cvd.clamav.net | grep -P "([0-9]+:){7}"`
-    if [ -z "$DBF" ] ;  then
-        # DNS not working
-        echo "================================================================================="
-        echo "ERROR!"
-        echo "    You enabled the AV in the config file but no working DNS server is configured"
-        echo "    in the PC, if we don't have a working DNS to check for AV updates or internet"
-        echo "    access, we can not provide a working ClamAV configuration."
-        echo " "
-        echo "    Please check your DNS with this command:"
-        echo "        dig +short TXT current.cvd.clamav.net"
-        echo " "
-        echo "    If that doest not return a long string you have a not working DNS, and must"
-        echo "    set the var 'ENABLE_AV=no' in the /etc/mailad/mailad.conf file until you fix"
-        echo "    that, or the installation will not work."
-        echo "================================================================================="
-        echo " "
-
-        exit 1
+    # But only if no proxy, if proxy, skip this check
+    if [ "$PROXY_HOST" -a "$PROXY_PORT" -a "$AV_UPDATES_USE_PROXY" == "yes" ] ; then
+        # AV must use proxy so skip this test
+        echo "===> Skip DNS test for ClamAV as we will use proxy for updates"
     else
-        echo "===> Working DNS for ClamAV found!"
+        # direct no proxy...
+        # check if we can get the database fingerprint for clamav
+        DBF=`dig +short TXT current.cvd.clamav.net | grep -P "([0-9]+:){7}"`
+        if [ -z "$DBF" ] ;  then
+            # DNS not working
+            echo "================================================================================="
+            echo "ERROR!"
+            echo "    You enabled the AV in the config file but no working DNS server is configured"
+            echo "    in the PC, if we don't have a working DNS to check for AV updates or internet"
+            echo "    access, we can not provide a working ClamAV configuration."
+            echo " "
+            echo "    Please check your DNS with this command:"
+            echo "        dig +short TXT current.cvd.clamav.net"
+            echo " "
+            echo "    If that does not return a long string you have a not working DNS, and must"
+            echo "    set the var 'ENABLE_AV=no' in the /etc/mailad/mailad.conf file until you fix"
+            echo "    that, or use a proxy server to get the updates."
+            echo "================================================================================="
+            echo " "
+
+            exit 1
+        else
+            echo "===> Working DNS for ClamAV found!"
+        fi
     fi
 fi
 

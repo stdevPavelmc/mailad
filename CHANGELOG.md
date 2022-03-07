@@ -27,6 +27,7 @@ Dates must be YEAR-MONTH-DAY
 - Changed: Improved the parsing of the LDAP bind testing
 - Fixed: Bug #158, groups.sh script was not updated with the new LDAP_URI autodetection of past improvements, sorry for that.
 - Added: Feature #150 Now you can exclude the AV from the proxy when using a local/institutional mirror [Optional]
+- Fixed: Bug: #151 test for DNS ClamAV version when using proxy fails, fixed, not testing that when a proxy is configured
 
 ## 2022-02-24
 
