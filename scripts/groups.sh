@@ -13,17 +13,31 @@
 # NOTE: This file does not link to the common.conf as this is run as standalone
 # in the system...
 
-# load the conf file
+# load conf files
 source /etc/mailad/mailad.conf
 
-# Generate the LDAPURI based on the settings of the mailad.conf file
-if [ "$SECURELDAP" == "" -o "$SECURELDAP" == "no" -o "$SECURELDAP" == "No" ] ; then
-    # not secure
-    LDAPURI="ldap://${HOSTAD}:389/"
-else
-    # use a secure layer
-    LDAPURI="ldaps://${HOSTAD}:636/"
-fi
+# Get the ldap uri based on the file options
+# same function on common.conf file
+function get_ldap_uri {
+    PROTO="ldaps"
+    PORT=636
+    # detect if NOT secure ldap and change the proto and port of the uri
+    if [ "$SECURELDAP" == "" -o "$SECURELDAP" == "no" -o "$SECURELDAP" == "No" ] ; then
+        # Use a not secure ldap
+        PROTO="ldap"
+        PORT=389
+    fi
+
+    SOUT=""
+    # Fun start here
+    for DC in `echo "${HOSTAD}"` ; do
+        SOUT="${SOUT} ${PROTO}://${DC}:${PORT}"
+    done
+
+    echo "${SOUT}"
+}
+
+LDAPURI=`get_ldap_uri`
 
 # check if we need to get the everyone group
 if [ -z "$EVERYONE" ] ; then
@@ -33,7 +47,8 @@ if [ -z "$EVERYONE" ] ; then
     echo " " >> /etc/postfix/aliases/auto_aliases
 else
     echo "===> Trying to retrieve all the emails to form the EVERYONE list"
-    echo "===> login into $HOSTAD as $LDAPBINDUSER"
+    echo "===> login into some of the '$HOSTAD' servers"
+    echo "===> as $LDAPBINDUSER"
 
     # LDAP query
     RESULT=`ldapsearch -o ldif-wrap=no -H "$LDAPURI" -D "$LDAPBINDUSER" -w "$LDAPBINDPASSWD" -b "$LDAPSEARCHBASE" "(&(objectCategory=person)(objectClass=user)(sAMAccountName=*))" mail | grep "mail: " | grep "@$DOMAIN" | awk '{print $2}' | tr '\n' ','`
