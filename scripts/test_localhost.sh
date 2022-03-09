@@ -140,11 +140,20 @@ fi
 # and direct with no proxy or local mirror
 if [ "$ENABLE_AV" == "yes" -o "$ENABLE_AV" == "Yes" ] ; then
 
+    PROXY=""
+    # check for proxy on use
+    if [ "$PROXY_HOST" -a "$PROXY_PORT" -a "$AV_UPDATES_USE_PROXY" == "yes" ] ; then
+        PROXY="yeha baby!"
+    fi
+
+    AMIRROR=""
+    # check for alternate mirror usage
+    if [ "$USE_AV_ALTERNATE_MIRROR" == "yes" -o "$USE_AV_ALTERNATE_MIRROR" == "Yes" ] ; then
+        AMIRROR="yeha baby!"
+    fi
+
     # if using proxy or an alternate mirror, avoid the test
-    if [ ("$PROXY_HOST" -a "$PROXY_PORT" -a "$AV_UPDATES_USE_PROXY" == "yes") -o ("$USE_AV_ALTERNATE_MIRROR" == "yes" -o "$USE_AV_ALTERNATE_MIRROR" == "Yes" ) ] ; then
-        # AV must use proxy or alternate mirrors, so skip this test
-        echo "===> Skip DNS test for ClamAV as we will use proxy for updates"
-    else
+    if [ -z "${PROXY}${AMIRROR}" ] ; then
         # direct no proxy or local mirror, check if we can get the database fingerprint for clamav
         DBF=`dig +short TXT current.cvd.clamav.net | grep -P "([0-9]+:){7}"`
         if [ -z "$DBF" ] ;  then
@@ -168,6 +177,9 @@ if [ "$ENABLE_AV" == "yes" -o "$ENABLE_AV" == "Yes" ] ; then
         else
             echo "===> Working DNS for ClamAV found!"
         fi
+    else
+        # AV must use proxy or alternate mirrors, so skip this test
+        echo "===> Skip DNS test for ClamAV as we will use proxy or alternate mirrors"
     fi
 fi
 
