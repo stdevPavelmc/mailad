@@ -137,14 +137,15 @@ if [ $DOMAIN != "mailad.cu" -a "$LDAPBINDPASSWD" == "Passw0rd---" ] ; then
 fi
 
 # testing if a working DNS is configured if AV is set to enabled
+# and direct with no proxy or local mirror
 if [ "$ENABLE_AV" == "yes" -o "$ENABLE_AV" == "Yes" ] ; then
-    # But only if no proxy, if proxy, skip this check
-    if [ "$PROXY_HOST" -a "$PROXY_PORT" -a "$AV_UPDATES_USE_PROXY" == "yes" ] ; then
-        # AV must use proxy so skip this test
+
+    # if using proxy or an alternate mirror, avoid the test
+    if [ ("$PROXY_HOST" -a "$PROXY_PORT" -a "$AV_UPDATES_USE_PROXY" == "yes") -o ("$USE_AV_ALTERNATE_MIRROR" == "yes" -o "$USE_AV_ALTERNATE_MIRROR" == "Yes" ) ] ; then
+        # AV must use proxy or alternate mirrors, so skip this test
         echo "===> Skip DNS test for ClamAV as we will use proxy for updates"
     else
-        # direct no proxy...
-        # check if we can get the database fingerprint for clamav
+        # direct no proxy or local mirror, check if we can get the database fingerprint for clamav
         DBF=`dig +short TXT current.cvd.clamav.net | grep -P "([0-9]+:){7}"`
         if [ -z "$DBF" ] ;  then
             # DNS not working
