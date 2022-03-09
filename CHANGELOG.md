@@ -18,6 +18,11 @@ This is a note for developers about the recommended tags to keep track of the ch
 Dates must be YEAR-MONTH-DAY
 -->
 
+## 2022-03-09
+
+- Fixed: Bug #151 that was not completely fixed, now it's
+- Fixed: A minor error related to a harmless (but scary) broken pipe error during provision that was identified during works on 151 
+
 ## 2022-03-06
 
 - Added: Feature #159, Debian 11 Bullseye support
