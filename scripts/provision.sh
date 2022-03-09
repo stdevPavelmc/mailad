@@ -412,7 +412,7 @@ else
 
     # remove the altermime package
     export DEBIAN_FRONTEND=noninteractive
-    apt-get purge $DEBIAN_DISCLAIMER_PKGS -y | exit 0
+    apt-get purge $DEBIAN_DISCLAIMER_PKGS -y || exit 0
 
     # disable the dfilt line in the master.cf file on postfix
     sed -i s/"content_filter=dfilt:"/"content_filter="/g /etc/postfix/master.cf
