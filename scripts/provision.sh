@@ -57,6 +57,11 @@ echo "===> Sync dovecot files..."
 rsync -r ./var/dovecot-${DOVERSION}/ /etc/dovecot/
 echo "===> Sync amavis files..."
 rsync -r ./var/amavis/ /etc/amavis/
+# fetchmail if enabled
+if [ "$USE_MULTIDROP" == "yes" -o "$USE_MULTIDROP" == "Yes" ] ; then
+    echo "===> Sync fetchmail files..."
+    rsync -r ./var/fetchmail/ /etc/
+fi
 
 # Check the SYSADMINS var and populate it if needed
 if [ -z "$SYSADMINS" ] ; then
@@ -86,6 +91,25 @@ for f in `echo "/etc/postfix /etc/dovecot /etc/amavis" | xargs` ; do
             sed -i s/"\_$v\_"/"$CONT"/g {} \;
     done
 done
+
+# fetchmail if enabled
+if [ "$USE_MULTIDROP" == "yes" -o "$USE_MULTIDROP" == "Yes" ] ; then
+    echo "===> Provisioning /etc/fetchmailrc..."
+    for v in `echo $VARS | xargs` ; do
+        # get the var content
+        CONTp=${!v}
+
+        # escape possible "/" in there
+        CONT=`echo ${CONTp//\//\\\\/}`
+
+        sed -i s/"\_$v\_"/"$CONT"/g /etc/fetchmailrc \;
+    done
+
+    # Other tweaks
+    if [ "$MD_FORCE_SSL" == "no" -o "$MD_FORCE_SSL" == "No" ] ; then
+        sed s/"^.*ssl.*$"/"    #"/g /etc/fetchmailrc
+    fi
+fi
 
 # Special case variables with complicated scaping and specific files
 #   $ESCLOCAL > /etc/postfix/filtro_loc
