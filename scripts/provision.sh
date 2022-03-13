@@ -470,6 +470,22 @@ else
     sed -i s/"^tlsproxy  unix  -       -       y       -       0       tlsproxy"/"#tlsproxy  unix  -       -       y       -       0       tlsproxy"/ ${FILE}
 fi
 
+### relay auth
+# auth file
+FILE="/etc/postfix/sasl_passwd"
+chown root:root $FILE
+chmod 0600 $FILE
+# enable it
+if [ "$RELAY_USE_AUTH"=="yes" -o "$RELAY_USE_AUTH"=="Yes" ] ; then
+    # enable it
+    echo "Enabling RELAY smtp authentication..."
+
+    # let's rock
+    # Enable it on postfix
+    sed s/"^#smtp_sasl"/"smtp_sasl"/g /etc/postfix/main.cf
+    postmap $FILE
+fi
+
 # start services
 services restart
 
