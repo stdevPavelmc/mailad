@@ -93,6 +93,16 @@
         "ideas",
         "test"
       ]
+    },
+    {
+      "login": "sandy-cmg",
+      "name": "Sandy Napoles Umpierre",
+      "avatar_url": "https://avatars.githubusercontent.com/u/101523070?v=4",
+      "profile": "https://github.com/sandy-cmg",
+      "contributions": [
+        "ideas",
+        "test"
+      ]
     }
   ],
   "contributorsPerLine": 7,
