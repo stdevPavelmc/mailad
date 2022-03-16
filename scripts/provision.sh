@@ -108,6 +108,11 @@ if [ "$USE_MULTIDROP" == "yes" -o "$USE_MULTIDROP" == "Yes" ] ; then
     # Other tweaks
     if [ "$MD_FORCE_SSL" == "no" -o "$MD_FORCE_SSL" == "No" ] ; then
         sed s/"^.*ssl.*$"/"    #"/g /etc/fetchmailrc
+    else
+        # we need to retrieve the SSLCERT file to trust it blindly
+        # dirty hack but as there are many self-signed cert here, we need to live with that
+        echo | openssl s_client -connect ${MDSERVER}:993 -showcerts 2>/dev/null | \
+        sed -ne '/BEGIN CERT/,/END CERT/p' > /etc/mailad/maildrop.pem
     fi
 fi
 
