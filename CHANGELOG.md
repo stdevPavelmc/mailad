@@ -18,6 +18,10 @@ This is a note for developers about the recommended tags to keep track of the ch
 Dates must be YEAR-MONTH-DAY
 -->
 
+## 2022-03-16
+
+- Fixed: Bug #168 Debian (et least on version 11) needs libldap and libldap-common as an explicit dependency
+
 ## 2022-03-09
 
 - Fixed: Bug #151 that was not completely fixed, now it's
