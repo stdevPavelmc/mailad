@@ -18,6 +18,16 @@ This is a note for developers about the recommended tags to keep track of the ch
 Dates must be YEAR-MONTH-DAY
 -->
 
+## 2022-03-23
+
+- Fixed: Bug #168 reopened, Debian 11 was picky with some ldap packages
+- Changed: New & cleaner way to get & install the LDAP certs thanks to @dienteperro (now it does for every DC server specified)
+- Changed: Related to the /sbin /usr/sbin missing on path on some debian systems, we fix it silently, no error or the user as this is a very specific and short issue (user's space problem)
+- Changed: LDAP problems on the tests give more informative errors.
+- Changed: Packages needed for testing before provision are now on a var on common.conf rather than hardcoded.
+- Changed: Improved the purge process, in Debian the provision or force-porovision failed when dovecot-core was there before hand (dependency problems on Debian)
+- Changed: Make conf now does what it says, if you try to make conf over an existing one, you will be warned, run it again to everwrite and make a backup of the old file
+
 ## 2022-03-16
 
 - Fixed: Bug #168 Debian (et least on version 11) needs libldap and libldap-common as an explicit dependency
