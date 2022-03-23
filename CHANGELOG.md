@@ -27,6 +27,7 @@ Dates must be YEAR-MONTH-DAY
 - Changed: Packages needed for testing before provision are now on a var on common.conf rather than hardcoded.
 - Changed: Improved the purge process, in Debian the provision or force-porovision failed when dovecot-core was there before hand (dependency problems on Debian)
 - Changed: Make conf now does what it says, if you try to make conf over an existing one, you will be warned, run it again to everwrite and make a backup of the old file
+- Changed: In /etc/mailad/mailad.conf file, var HOSTAD will enforce using FQDN names instead of IPs, that's becouse the LDAP's SSL checking mechanism fails if the DC server is pointed by it's IP and not the full name.
 
 ## 2022-03-16
 
