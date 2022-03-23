@@ -70,7 +70,11 @@ if [ -z "$EMPTY" ] ; then
     # empty result: Fail
     echo "======================================================"
     echo "ERROR: Undefined response from the LDAP query, humm..."
-    echo "       Strange, maybe wrong ldap credentials?"
+    echo "       Strange, typical errors are:"
+    echo "       - Wrong credentials"
+    echo "       - SOA server in HOSTAD variable in IP format,"
+    echo "         all DC server must be as FQDN not IPs, this"
+    echo "         due to SSL cert restrictions"
     echo ""
     echo "       Response:"
     echo "$R"
