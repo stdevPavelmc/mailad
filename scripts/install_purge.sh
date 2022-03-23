@@ -23,16 +23,10 @@ if [ -f /etc/os-release ] ; then
         bionic|focal)
             # Load the correct pkgs to be installed
             craft_pkg_list "ubuntu"
-
-            # Remove the pkgs
-            debian_remove_pkgs
             ;;
         buster|bullseye)
             # Load the correct pkgs to be installed
             craft_pkg_list "debian"
-
-            # Remove the pkgs
-            debian_remove_pkgs
             ;;
         *)
             echo "==========================================================================="
@@ -44,6 +38,16 @@ if [ -f /etc/os-release ] ; then
             echo "==========================================================================="
             ;;
     esac
+
+    # Remove the pkgs
+    debian_remove_pkgs
+
+    # remove packages from deps.sh
+    apt purge -yq ${COMMON_DEPS_PKGS}
+
+    # autoremove
+    apt autoremove -y
+
 else
     # Unknown
     echo "==========================================================================="
