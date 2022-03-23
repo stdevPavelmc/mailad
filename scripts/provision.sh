@@ -87,6 +87,9 @@ for f in `echo "/etc/postfix /etc/dovecot /etc/amavis" | xargs` ; do
     done
 done
 
+# force dovecot conf perms
+chmod 0644 /etc/dovecot/conf.d/*
+
 # Special case variables with complicated scaping and specific files
 #   $ESCLOCAL > /etc/postfix/filtro_loc
 #   $ESCNATIONAL > /etc/postfix/filtro_nac
