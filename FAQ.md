@@ -12,6 +12,7 @@ Here you can find the most Frequently Asked Questions, this file will grow with 
 - [I'm using Debian buster and can send emails but can't check emails via IMAPS/POP3S?](FAQ.md#im-using-debian-buster-and-can-send-emails-but-cant-check-emails-via-imapspop3s)
 - [Why MailAD refuses to install ClamAV and/or SpamAssassin claiming some DNS problem?](FAQ.md#why-mailad-refuses-to-install-clamav-andor-spamassassin-claiming-some-dns-problem)
 - [What ports I need to get open to make sure the servers works OK?](FAQ.md#what-ports-i-need-to-get-open-to-make-sure-the-servers-works-ok)
+- [Why it complains and fail when using IPs for the DC server?](FAQ.md#why-it-complains-and-fail-when-using-ips-for-the-dc-server)
 
 ## Usage Related
 
@@ -88,6 +89,24 @@ Ports required:
 - Port 25/TCP (SMTP) to send emails to the external network.
 
 Please note that in the incoming traffic no user traffic is allowed in port 25, DO NOT allow users to use port 25 for sending emails, this port is reserved to receive the incoming traffic from the external network.
+
+## Why it complains and fail when using IPs for the DC server?
+
+When you set the HOSTAD variable in the /etc/mailad/mailad.conf file, MailAD will use that AD server(s) for auth and settings, and you **must** set it up by the fully qualified domain name (FQDN) of the AD server(s); the reason is simple:
+
+The FQDN of the DC server is meaningfull for the LDAP talks, it worked by IP in the past, but recent OS ships more strict checkings and we will enforce that to comply with old and new software. More over, it's critical is you use LDAP via secure socket layer (SSL) as the server may refuse talk to the DC if the names on the server des not match the one in the known certificates.
+
+**Question:** Ok, I understand but I have a complicated setup here and has no nameserver to answer for the DC server properly, so what can I do to fix that?
+
+If you have a setup like the one in the question, you must redesign the networking to allow the MailAD to reach a working DNS server, but in extreme cases when you can't do that **(I repeat: extreme cases)** you can do the following:
+
+Add a line to the bottom of the file `/etc/hosts` file on the MailAD server with the following format:
+
+```sh
+1.2.3.4     dc.domain.cu dc
+```
+
+Where `1.2.3.4` is the IP of the server and `dc.domain.cu` is the name that's on the real name of the domain server you are using; and `dc` is just the host part of the FQDN.
 
 ## All works fine with some email clients, but other fails with errors related to SSL and cyphers?
 
