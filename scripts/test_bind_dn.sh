@@ -21,7 +21,11 @@ if [ "$SECURELDAP" == "yes" -o "$SECURELDAP" == "Yes" -o "$SECURELDAP" == "true"
 
     # get the certificate of the server
     echo "===> Getting & Installing the server certificate for ldap connection"
-    echo | openssl s_client -connect ${H}:636 2>&1 | sed --quiet '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' > /etc/ssl/certs/samba.crt
+    for DC in `echo "${HOSTAD}"` ; do
+        echo | openssl s_client -connect ${DC}:636 2>&1 | sed --quiet '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' > /usr/local/share/ca-certificates/${DC}.crt
+    done
+    # update the certificates deposit
+    /usr/sbin/update-ca-certificates
 
     # testing
     R=$?
@@ -42,18 +46,13 @@ if [ "$SECURELDAP" == "yes" -o "$SECURELDAP" == "Yes" -o "$SECURELDAP" == "true"
 
     # notice
     echo "===> LDAP connections are secured!"
-
-    # install the cert into the LDAP client setting
-    cat /etc/ldap/ldap.conf | grep -v TLS_CACERT > /tmp/1
-    echo "TLS_CACERT /etc/ssl/certs/samba.crt" >> /tmp/1
-    cat /tmp/1 > /etc/ldap/ldap.conf
 fi
 
 echo "===> Trying to login as $LDAPBINDUSER"
 echo "===> in any of the servers: '$HOSTAD'"
 
 # LDAP query
-R=`ldapsearch -o ldif-wrap=no -H "$LDAPURI" -D "$LDAPBINDUSER" -w "$LDAPBINDPASSWD" -b "$LDAPSEARCHBASE" 2>&1 `
+R=`ldapsearch -d 256 -o ldif-wrap=no -H "$LDAPURI" -D "$LDAPBINDUSER" -w "$LDAPBINDPASSWD" -b "$LDAPSEARCHBASE" 2>&1 `
 EMPTY=`echo $R | grep numResponses`
 ERROR=`echo $R | grep "encryption required"`
 
@@ -71,7 +70,11 @@ if [ -z "$EMPTY" ] ; then
     # empty result: Fail
     echo "======================================================"
     echo "ERROR: Undefined response from the LDAP query, humm..."
-    echo "       Strange, maybe wrong ldap credentials?"
+    echo "       Strange, typical errors are:"
+    echo "       - Wrong credentials"
+    echo "       - SOA server in HOSTAD variable in IP format,"
+    echo "         all DC server must be as FQDN not IPs, this"
+    echo "         due to SSL cert restrictions"
     echo ""
     echo "       Response:"
     echo "$R"

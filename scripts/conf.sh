@@ -13,6 +13,12 @@ mkdir -p /etc/mailad/le 2> /dev/null
 
 function make_it {
     echo "===> Installing default conf file en /etc/mailad/"
+    if [ -f /etc/mailad/mailad.conf ] ; then
+        echo "===> backing up the previous file"
+        cp /etc/mailad/mailad.conf /etc/mailad/mailad.conf.$(date +%Y%m%d_%H%M%S)
+    fi
+
+    # doit!
     cp mailad.conf /etc/mailad/
     rm /tmp/conf-already 2>/dev/null || exit 0
 }
@@ -28,6 +34,7 @@ if [ -f /etc/mailad/mailad.conf ] ; then
         echo ""
         echo "     If you just want to reset it with the default one"
         echo "     just run 'make conf' one more time to do it"
+        touch /tmp/conf-already
     fi
 else
     # Just copy the default MailAD config

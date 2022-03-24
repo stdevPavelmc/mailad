@@ -92,6 +92,9 @@ for f in `echo "/etc/postfix /etc/dovecot /etc/amavis" | xargs` ; do
     done
 done
 
+# force dovecot conf perms
+chmod 0644 /etc/dovecot/conf.d/*
+
 # fetchmail if enabled
 if [ "$USE_MULTIDROP" == "yes" -o "$USE_MULTIDROP" == "Yes" ] ; then
     echo "===> Provisioning /etc/fetchmailrc..."
