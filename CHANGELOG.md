@@ -18,6 +18,10 @@ This is a note for developers about the recommended tags to keep track of the ch
 Dates must be YEAR-MONTH-DAY
 -->
 
+## 2022-03-25
+
+- Fixed: Bug #172, gropus update script fails under Debian as no sbin on path (postmap reside on sbin), silent fix added.
+
 ## 2022-03-23
 
 - Fixed: Bug #168 reopened, Debian 11 was picky with some ldap packages
