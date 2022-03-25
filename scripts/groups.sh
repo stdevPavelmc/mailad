@@ -16,6 +16,14 @@
 # load conf files
 source /etc/mailad/mailad.conf
 
+# test /sbin on some envs (Debian 10/11)
+SBIN=`echo $PATH | grep "/sbin"`
+if [ -z "$SBIN" ] ; then
+    # export sbins silently
+    PATH="/sbin:/usr/sbin:$PATH"
+    export PATH
+fi
+
 # Get the ldap uri based on the file options
 # same function on common.conf file
 function get_ldap_uri {
