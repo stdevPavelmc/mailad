@@ -21,6 +21,7 @@ Dates must be YEAR-MONTH-DAY
 ## 2022-03-25
 
 - Fixed: Bug #172, gropus update script fails under Debian as no sbin on path (postmap reside on sbin), silent fix added.
+- Fixed: Bug #174, Debian PATH & sbin fix for good (impact previous mentioned Bug #172)
 
 ## 2022-03-23
 

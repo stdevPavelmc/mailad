@@ -13,6 +13,7 @@ Here you can find the most Frequently Asked Questions, this file will grow with 
 - [Why MailAD refuses to install ClamAV and/or SpamAssassin claiming some DNS problem?](FAQ.md#why-mailad-refuses-to-install-clamav-andor-spamassassin-claiming-some-dns-problem)
 - [What ports I need to get open to make sure the servers works OK?](FAQ.md#what-ports-i-need-to-get-open-to-make-sure-the-servers-works-ok)
 - [Why it complains and fail when using IPs for the DC server?](FAQ.md#why-it-complains-and-fail-when-using-ips-for-the-dc-server)
+- [Configuration stops and tell that sbin is missing?](FAQ.md#configuration-stops-and-tell-that-sbin-is-missing)
 
 ## Usage Related
 
@@ -107,6 +108,16 @@ Add a line to the bottom of the file `/etc/hosts` file on the MailAD server with
 ```
 
 Where `1.2.3.4` is the IP of the server and `dc.domain.cu` is the name that's on the real name of the domain server you are using; and `dc` is just the host part of the FQDN.
+
+## Configuration stops and tell that sbin is missing?
+
+You see, Debian (Debian 11 at least) decided that users has no /sbin nor /usr/sbin paths on the run path ($PATH var on the environment) and some of the admins uses legacy ways to get root privileges (`su root` is legacy, use `su -` instead), that leads to a root session but no /sbin nor /usr/sbin on the run path.
+
+That's te equivalent of having some tools not installed, so the config and provision will end with errors. The work around is to warn the user about this and place a fix on the whole machine:
+
+A conditional code segment on the /etc/environment file, that will load the missing paths on the env if they are not loaded, this script is a whole machine fix.
+
+You must follow the instructions and logout from the root session and gain root again, this time, it will have the correct paths in place and you can continue the provision process.
 
 ## All works fine with some email clients, but other fails with errors related to SSL and cyphers?
 

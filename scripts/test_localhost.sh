@@ -21,9 +21,33 @@ echo "===> Testing the configurations on the local host"
 # test /sbin on some envs (Debian 10/11)
 SBIN=`echo $PATH | grep "/sbin"`
 if [ -z "$SBIN" ] ; then
-    # export sbins silently
-    PATH="/sbin:/usr/sbin:$PATH"
-    export PATH
+    # apply the fix
+    printf "
+SBIN=\`echo \$PATH | grep '/sbin'\`
+if [ -z \${SBIN} ] ; then
+    PATH=/sbin:/usr/sbin:$PATH
+fi
+" >> /etc/environment
+
+    # fail
+    echo "================================================================================="
+    echo "Oops!"
+    echo "    /sbin or /usr/sbin are missing from the PATH variable on your env!"
+    echo ""
+    echo "    Without that paths in the PATH, the provision will fail, it's a known bug on"
+    echo "    Debian 11 but may affect others, this issue has been maked as 'wontfix' so"
+    echo "    we have to deal with it."
+    echo ""
+    echo "    A workaround was installed on your system, but you need to logout as root"
+    echo "    and gain root privileges again to set it up"
+    echo ""
+    echo "    Aka: logout and login as root again and continue the setup of MailAD"
+    echo ""
+    echo "    Take a peek on the FAQ.md file to see some explanation for this."
+    echo "================================================================================="
+    echo " "
+
+    exit 1
 fi
 
 # HOSTAD may be multiple host, check the DNS and by then find the IP/host of the SOA

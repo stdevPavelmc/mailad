@@ -11,14 +11,6 @@
 # import the common vars
 source common.conf
 
-# test /sbin on some envs (Debian 10/11)
-SBIN=`echo $PATH | grep "/sbin"`
-if [ -z "$SBIN" ] ; then
-    # export sbins silently
-    PATH="/sbin:/usr/sbin:$PATH"
-    export PATH
-fi
-
 # some local vars
 LIBFOLDER="/var/lib/mailad"
 LASTWORKINGBACKUPFILE="${LIBFOLDER}/latest_working_backup"
