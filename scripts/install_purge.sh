@@ -20,7 +20,7 @@ if [ -f /etc/os-release ] ; then
 
     ## Distro check
     case "$VERSION_CODENAME" in
-        bionic|focal)
+        bionic|focal|jammy)
             # Load the correct pkgs to be installed
             craft_pkg_list "ubuntu"
             ;;
