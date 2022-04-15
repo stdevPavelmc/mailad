@@ -48,3 +48,9 @@ The only detail you need to pay attention here is the user's Email property ("Co
 - User active and not locked.
 - Email property set and matching the domanin you are configuring.
 - Optionally a specific quota for this user in the "Web Page" property ("Página Web" in this case, see the Features file for more details)
+
+## User configuration
+
+The user configuration is done just like the admin user, a user placed inside the base OU tree $ an email property set.
+
+In the past (before february 2020) we have another schema for user's configuration, if you came from a setup dated prior to that date **you need** to read this: [Simplify AD config](Simplify_AD_config.md)
