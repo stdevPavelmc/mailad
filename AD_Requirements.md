@@ -2,15 +2,13 @@
 
 As we mentioned earlier, this tool assumes you have administrative access to a well configured Active Directory server.
 
-_**Notice:** since the end of February 2021 we simplified the user property handling in the active directory, if you has a server installed before that date please take a peek at the [Simplify_AD_config.md](Simplify_AD_config.md) file to know how to migrate to this new simplified way_
-
-**Note:** We encourage the use of Samba AD. The internet is full of good tutorials about how to use Samba as an AD controller.
+We encourage the use of Samba 4 AD. The internet is full of good tutorials about how to use Samba as an AD controller; but if you are just testing MailAD then take a peek on the [Utils README](utils/README.md) for a recipe to deploy a testing Samba 4 domain.
 
 ## LDAPS Or Securing Your LDAP Communications
 
 If you use Samba 4 you can start using secure LDAP (LDAPS) from start, you just need to specify `SECURELDAP=yes` in the `/etc/mailad/mailad.conf` file when configuring the provision.
 
-If you need or want to run it in plain text you need to make a change in the Samba configuration (from version 4.x it has it's defaults to LDAPS, aka: plain LDAP is disabled), to enable plain LDAP locate the [global] section on your's `/etc/samba/smb.conf` file and add this to the end of the section. Please note that you must avoid to use plain LDAP in any scenario: use LDAPS instead.
+If you need or want to run it in plain text you need to make a change in the Samba configuration (from version 4.x it defaults to LDAPS, aka: plain LDAP is disabled), to enable plain LDAP locate the [global] section on your's `/etc/samba/smb.conf` file and add this to the end of the section. Please note that you must avoid to use plain LDAP in any scenario: use LDAPS instead.
 
 ``` sh
 [global]
@@ -45,7 +43,7 @@ You need to declare at least ONE user for admin purposes at the setup stage, in 
 
 ![admin use details](imgs/admin_user_details.png)
 
-The only detail you need to pay attention here is the user's Email property ("Correo electrónico" in this case); for an user to be active in the mailserver you on ly need this:
+The only detail you need to pay attention here is the user's Email property ("Correo electrónico" in this case); for an user to be active in the mailserver you only need this:
 
 - User active and not locked.
 - Email property set and matching the domanin you are configuring.
