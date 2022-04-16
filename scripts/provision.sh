@@ -459,3 +459,11 @@ if [ "$OPT_STATS" == "yes" -o "$OPT_STATS" == "Yes" ] ; then
     # and we have stats, thanks
     ./scripts/feedback.sh
 fi
+
+# webmail option
+if [ "${WMINSTALL}" == "yes" -o "${WMINSTALL}" == "Yes" ] ; then
+    # run the webmail install but we need to know which one
+    if [ "${WMCHOICE}" == "rainloop" ] ; then
+        scripts/webmail_rainloop.sh
+    fi
+fi
