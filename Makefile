@@ -105,8 +105,8 @@ purge-backups: ## WARNING, DANGEROUS! this command will erase the backup folder
 	rm -rdf /var/lib/mailad || exit 0
 	rm -rdf /var/backups/mailad || exit 0
 
-webmail: provision ## Installs a webmail in this host, see the INSTALL.md file for details
-	scripts/webmail_rainloop.sh
+webmail: ## Installs a webmail, see the INSTALL.md file for details
+	./scripts/webmail.sh
 
 help:
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
