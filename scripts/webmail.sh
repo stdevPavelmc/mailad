@@ -53,6 +53,10 @@ source /etc/mailad/mailad.conf
 # install the webserver
 ./scripts/setup_nginx.sh
 
+# install some utils
+apt update
+apt install ${WMUTILS} -yq
+
 # install the selected webmail
 if [ "${WMINSTALL}" == "yes" -o "${WMINSTALL}" == "Yes" ] ; then
     # run the webmail install but we need to know which one
