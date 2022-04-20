@@ -2,14 +2,14 @@
 
 # This script is part of MailAD, see https://github.com/stdevPavelmc/mailad/
 # Copyright 2022 Pavel Milanes Costa <pavelmc@gmail.com>
-# LICENCE: GPL 3.0 and later  
+# LICENCE: GPL 3.0 and later
 #
 # This script is meant to be run in the SAMBA4 DC, not in the MailAD server
 #
 # Goals:
 #   - Install and configure samba4 on an ubuntu based system
 #   - Scaffold a domain from the parameter in the /etc/mailad/mailad.conf
-#   - Create the admin user and move it to the correct place 
+#   - Create the admin user and move it to the correct place
 #   - Create the test users stated on the test credentials inside /test/.mailadmin.ath
 #   - Create the groups related to mail access and move the users of the last step
 #
@@ -18,6 +18,15 @@
 #   provision to run on a production environment!
 # - This script will rip-off any previous samba deployment!
 #
+
+### Some var casting
+# Administrator PASSWD!
+APSWD='Passw0rd!'
+NETBIOS=`echo ${DOMAIN} | cut -d '.' -f 1 | tr [:lower:] [:upper:]`
+ADMINUSER=`echo ${ADMINMAIL} | cut -d '@' -f 1`
+LUCU=`echo ${LOCUSER} | cut -d '@' -f 1`
+NATU=`echo ${NACUSER} | cut -d '@' -f 1`
+DNSFWD=10.0.3.1 # left empty to disable DNS forwarder
 
 # testing for mailad.conf
 if [ ! -f /etc/mailad/mailad.conf ] ; then
@@ -53,7 +62,7 @@ source .mailadmin.auth
 apt update --quiet
 
 # install samba and winbind
-apt install samba winbind krb5-user python3-setproctitle -yq
+apt install samba winbind python3-setproctitle -yq
 
 # config samba related services
 for a in stop disable mask ; do
@@ -69,14 +78,6 @@ systemctl stop samba-ad-dc
 rm -rdf /var/lib/samba/*
 rm /etc/samba/smb.conf
 
-### Some var casting 
-# Administrator PASSWD!
-APSWD='Passw0rd!'
-NETBIOS=`echo ${DOMAIN} | cut -d '.' -f 1 | tr [:lower:] [:upper:]`
-ADMINUSER=`echo ${ADMINMAIL} | cut -d '@' -f 1`
-LUCU=`echo ${LOCUSER} | cut -d '@' -f 1`
-NATU=`echo ${NACUSER} | cut -d '@' -f 1`
-
 # provision the samba domain
 echo ">>> provision samba"
 samba-tool domain provision \
@@ -86,6 +87,14 @@ samba-tool domain provision \
     --server-role=dc \
     --dns-backend=SAMBA_INTERNAL \
     --adminpass=${APSWD}
+
+# fix the DNS to point to myself
+sed s/"^nameserver .*$"/"nameserver 127.0.0.1"/ -i  /etc/resolv.conf
+
+# set the forwarder
+if [ ! -z "${DNSFWD}" ] ; then
+    sed s/"^dns forwarder .*$"/"dns forwarder = ${DNSFWD}"/ -i  /etc/samba/smb.conf
+fi
 
 # start the new domain
 echo ">>> start samba"
