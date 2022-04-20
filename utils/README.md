@@ -64,12 +64,14 @@ It's simple but tedious, the task below explained for a simple user, cycle on th
 
 ## Samba 4 scaffolding script
 
-This script is called via the `make samba` option, it will create a test Samba 4 domain server for testing purposes.
+This script is meant to be run on a test environment to scaffold a samba4 domain controller to test the MailAD implementation; it's not ready for production use!
+
+You can run it via `make samba` option, it will create a test Samba 4 domain server for testing purposes based on your `/etc/mailad/mailad.conf` settings.
 
 Basic usage instructions follows:
 - On a host _(can be same host for test purposes)_ you must clone the repository and make a `make conf` to create the local configurations file.
-- Edit the `/etc/mailad/mailad.conf` file with the same settings of the mail server _(if on the same host it will read from that file)_
+- Edit the `/etc/mailad/mailad.conf` file with the same settings of the mail server _(if on the same host it will read from that file, or you can just copy the one from your mailserver)_
 - Check the [Test README](../test/README.md) file on how to create the .mailadmin.auth file in the root of the repository, pick the credentials and user names you like
 * Fire a `make samba`, this will call the `samba_scaffold.sh` script and will setup a test samba 4 domain, will create the users, OUs, groups, etc.
 
-**Notice**: This script - or the configuration it produces - is not intended to use in production, it's just a minimal functioning domain for testing.
+**(Again) WARNING**: This script - or the configuration it produces - is not intended to use in production, it's just a minimal functioning domain for testing MailAD.
