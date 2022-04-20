@@ -101,6 +101,9 @@ backup: ## Make a backup of the configs to be restored in the event of a failed 
 restore: ## Restore a previous raw backup
 	scripts/restore.sh
 
+samba: ## Scaffold a samba AD-DC for testing, just for testing purposes!
+	utils/samba_scaffold.sh
+
 purge-backups: ## WARNING, DANGEROUS! this command will erase the backup folder
 	rm -rdf /var/lib/mailad || exit 0
 	rm -rdf /var/backups/mailad || exit 0

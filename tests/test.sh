@@ -17,6 +17,8 @@ source /etc/mailad/mailad.conf
 # get the LDAP URI
 LDAPURI=`get_ldap_uri`
 
+
+
 # check for the local credentials for the test
 if [ -f .mailadmin.auth ] ; then
     # load the credentials and go on
@@ -32,7 +34,7 @@ fi
 
 # Capture the destination server or use the default
 if [ "$1" == "" ] ; then
-    SERVER="10.0.3.7"
+    SERVER="${HOSTNAME}"
 else
     SERVER="$1"
 fi
@@ -61,7 +63,7 @@ function check_email {
     P=$3
 
     # get the count of emails
-    ID=`curl --insecure --silent --url "imaps://${SERVER}/" \
+    ID=`${CURL} --insecure --silent --url "imaps://${SERVER}/" \
         --user "${2}:${3}" --request "EXAMINE Inbox" \
         | grep "EXISTS" | awk '{print $2}'`
 
@@ -76,7 +78,7 @@ function check_email {
     fi
 
     while [ $ID -ge $UNTIL ] ; do
-        R=`curl --insecure --silent \
+        R=`${CURL} --insecure --silent \
             --url "imaps://${SERVER}/Inbox;UID=${ID};SECTION=HEADER.FIELDS%20(SUBJECT)" \
             --user "${2}:${3}"`
         ID=`expr $ID - 1`
@@ -91,13 +93,23 @@ function check_email {
     done
 }
 
-# internal vars
+# needed tools
+BC=`which bc`
+if [ "$BC" == "" ] ; then
+    echo ">>> bc not found installing"
+    apt install bc -yq
+fi
+CURL=`which curl`
+if [ "$CURL" == "" ] ; then
+    echo ">>> Curl not found installing"
+    apt install curl -yq
+    CURL=`which curl`
+fi
 SOFT=`which swaks`
 if [ "$SOFT" == "" ] ; then
-    echo "======================================================"
-    echo "ERROR: main tool not found: swaks"
-    echo "======================================================"
-    exit 1
+    echo ">>> Swaks not found installing"
+    apt install swaks -yq
+    SOFT=`which swaks`
 fi
 
 # others
@@ -325,7 +337,7 @@ cat $LOGP >> $LOG
 MS=`echo "$MESSAGESIZE*1024*1024*1.2" | bc -q | cut -d '.' -f 1`
 TMP=`mktemp`
 dd if=/dev/zero of=$TMP bs=1 count="$MS" 2>/dev/null
-$SOFT -s $SERVER --protocol SMTP -t $ADMINMAIL --attach "$TMP" > $LOGP
+$SOFT -s $SERVER --protocol SMTP -t $ADMINMAIL --attach "@${TMP}" > $LOGP
 rm $TMP
 R=$?
 if [ $R -ne 0 ] ; then
