@@ -20,8 +20,9 @@ After a few steps you will have a mail server up and running in about 15 minutes
 
 This tool is tested and supported on:
 
-- Ubuntu Bionic 18.04 (former LTS).
-- Ubuntu Focal 20.04 (actual LTS and actual dev env).
+- Ubuntu Bionic 18.04 LTS (legacy).
+- Ubuntu Focal 20.04 LTS (actual dev env).
+- Ubuntu Jammy 22.04 LTS (experimental support, future dev env).
 - Debian Buster 10 (see note below please).
 - Debian Bullseye 11 (see note below please).
 
