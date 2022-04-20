@@ -12,12 +12,6 @@ This is a handy tool to provision a mail server on linux linked to an Active Dir
 
 We have a docker development on going on another repository, take a peek and test it or contribute: [MailAD-Docker](https://github.com/stdevPavelmc/mailad-docker/)
 
-⚠️ ⚠️ ⚠️ ⚠️ ⚠️ ⚠️
-
-**WARNING:** Since the end of February 2020 we changed the integration with AD to be more simpler, you **need** to check [this document](Simplify_AD_config.md) if you want to upgrade your setup.
-
-Users of new installs have no problem, just follow the [install procedure](INSTALL.md) and you are set.
-
 ## Rationale
 
 This repository is intended to be cloned on your fresh OS install under `/root` (you can use a LXC instance, VM, etc) and setup on a main conf file as per the file comments, then run the steps on a makefile and follow the steps to configure your server.
@@ -26,8 +20,9 @@ After a few steps you will have a mail server up and running in about 15 minutes
 
 This tool is tested and supported on:
 
-- Ubuntu Bionic 18.04 (former LTS).
-- Ubuntu Focal 20.04 (actual LTS and actual dev env).
+- Ubuntu Bionic 18.04 LTS (legacy).
+- Ubuntu Focal 20.04 LTS (actual dev env).
+- Ubuntu Jammy 22.04 LTS (experimental support, future dev env).
 - Debian Buster 10 (see note below please).
 - Debian Bullseye 11 (see note below please).
 
