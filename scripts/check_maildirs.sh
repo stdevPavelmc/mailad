@@ -16,14 +16,34 @@
 # load conf files
 source /etc/mailad/mailad.conf
 
-# Generate the LDAPURI based on the settings of the mailad.conf file
-if [ "$SECURELDAP" == "" -o "$SECURELDAP" == "no" -o "$SECURELDAP" == "No" ] ; then
-    # not secure
-    LDAPURI="ldap://${HOSTAD}:389/"
-else
-    # use a secure layer
-    LDAPURI="ldaps://${HOSTAD}:636/"
-fi
+# Direct copy from common.conf as this script runs standalone after install
+#
+# Get the ldap uri based on the file options
+# same function on scripts/groups.sh file
+function get_ldap_uri {
+    # Import local settings
+    source /etc/mailad/mailad.conf
+
+    PROTO="ldaps"
+    PORT=636
+    # detect if NOT secure ldap and change the proto and port of the uri
+    if [ "$SECURELDAP" == "" -o "$SECURELDAP" == "no" -o "$SECURELDAP" == "No" ] ; then
+        # Use a not secure ldap
+        PROTO="ldap"
+        PORT=389
+    fi
+
+    SOUT=""
+    # Fun start here
+    for DC in `echo "${HOSTAD}"` ; do
+        SOUT="${SOUT} ${PROTO}://${DC}:${PORT}"
+    done
+
+    echo "${SOUT}"
+}
+
+# get the LDAP URI
+LDAPURI=`get_ldap_uri`
 
 function isthere () {
     # Just one parameter:
