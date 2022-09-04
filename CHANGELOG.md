@@ -18,6 +18,11 @@ This is a note for developers about the recommended tags to keep track of the ch
 Dates must be YEAR-MONTH-DAY
 -->
 
+## 2022-09-04
+
+- Fixed: Bug #181, check for stalled mailboxes fails when using multiple DCs, was a not updated LDAP_URI var.
+- Changed: Documentation, comment about the 20 chars max on the email username on the README.md
+
 ## 2022-03-25
 
 - Fixed: Bug #172, gropus update script fails under Debian as no sbin on path (postmap reside on sbin), silent fix added.
