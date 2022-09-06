@@ -34,6 +34,24 @@ if [ "$1" == "-d" ] ; then
     echo "Script ran in DEBUG mode, no mail will be sent, just info."
 fi
 
+# proxy detection
+PROXY=''
+if [ "${PROXY_HOST}" -a "${PROXY_PORT}" ] ; then
+    # user/passwd?
+    if [ "${PROXY_USER}" -a "${PROXY_PASS}" ] ; then
+        # user and password
+        PROXY="http://${PROXY_USER}:${PROXY_PASS}@${PROXY_HOST}:${PROXY_PORT}/"
+    else
+        # no user
+        # user and password
+        PROXY="http://${PROXY_HOST}:${PROXY_PORT}/"
+    fi
+
+    # Set the env var
+    export http_proxy="${PROXY}"
+    export https_proxy="${PROXY}"
+fi
+
 # Get actual changelog version
 if [ -f "${CHANGELOG}" ] ; then
     # sample:
