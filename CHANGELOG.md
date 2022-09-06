@@ -22,7 +22,9 @@ DO NOT FORGET to update the VERSION file.
 
 ## [v1.0.0] - 2022-09-05
 
-- Added: Added semantic versioning, there is a file on the root of the repository with the version number, starting from 1.0.0
+- Changed: Set Ubuntu 22.04 LTS as default develop environment.
+- Added: Semantic versioning, there is a file on the root of the repository with the version number, starting from 1.0.0 and this file
+- Added: Weekly check for new versions and warn the sysadmin group/user about latest changes.
 - Added: After installation a weekly cron job will check for new versions and will notify the postmaster if new changes are found
 
 ## 2022-09-04

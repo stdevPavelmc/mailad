@@ -21,8 +21,8 @@ After a few steps you will have a mail server up and running in about 15 minutes
 This tool is tested and supported on:
 
 - Ubuntu Bionic 18.04 LTS (legacy).
-- Ubuntu Focal 20.04 LTS (actual dev env).
-- Ubuntu Jammy 22.04 LTS (experimental support, future dev env).
+- Ubuntu Focal 20.04 LTS (legacy).
+- Ubuntu Jammy 22.04 LTS (actual dev env).
 - Debian Buster 10 (see note below please).
 - Debian Bullseye 11 (see note below please).
 
@@ -46,6 +46,7 @@ This will provision a mail server for an enterprise serving corporate users. You
 0. Optional user privilege access via AD groups (local/national/international).
 0. Optional disclaimer/notice/warning on every outgoing mail.
 0. Optional aggressive SPAM fight measures.
+0. Weekly background check for new versions with a detailed email if you need to upgrade.
 
 ## TODO
 
