@@ -26,6 +26,7 @@ This is a long page, so here is an index:
 * [Raw Backup And Restore Options](Features.md#raw-backup-and-restore-options)
 * [Painless Upgrades](Features.md#painless-upgrades)
 * [Weekly update checks](Features.md#weekly-update-checks)
+* [Physical mailbox of the users split by location](Features.md#physical-mailbox-of-the-users-split-by-location)
 
 ## Low Resource Footprint
 
@@ -574,6 +575,19 @@ We have tested the process extensively and the chances of corruption or failure 
 Once in a week (as per the system cron execution schema) the system will connect to github and will check if there is a new version. If positive it will pull the changelog and compute the delta in the features and generate an email for the sysadmin or the sysadmin group.
 
 For this feature to work you need to have internet access in the server, or in the case you specified a proxy server on the config, it will use it.
+
+[Return to index](Features.md#mailad-features-explained)
+
+## Physical mailbox of the users split by location
+
+In some cases you will have a lot of users and it will be desirable to split them by the office, province, city, etc.
+
+We have a feature for that, just go to the mailad.conf file and look for the section named `### Local mail storage sub folder` and set it up to yes. Then go to the Active Directory and use the property `Office` to set the sub folder name.
+
+***Warning!***
+If you have a non split mailbox and switch to a split mailbox you have to move the mailboxes manually to the forders (yes, you have to create them by hand) and at the end don't forget to change the owner and group to the ones on the mailad.conf file.
+
+If you are seting up a fresh email, just `make provision` to apply the changes, if on a old system make a force provision and note the warning of the above parragraph.
 
 [Return to index](Features.md#mailad-features-explained)
 
