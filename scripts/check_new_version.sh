@@ -121,15 +121,10 @@ else
     echo "This is a weekly task, cu next week if the trouble remains" >> ${MAIL}
     echo "                                                             MailAD services" >> ${MAIL}
     echo "" >> ${MAIL}
-
-    # advice if not in debug mode
-    if [ ! "${DEBUG}" ] ; then
-        echo ""
-        echo "PS: you can test/debug this script by running it like this:"
-        echo ""
-        echo "$0 -d"
-        echo ""
-    fi
+    echo "PS: you can test/debug this script by running it like this:" >> ${MAIL}
+    echo "" >> ${MAIL}
+    echo "$0 -d" >> ${MAIL}
+    echo "" >> ${MAIL}
 fi
 
 # send the data in $MAIL if not in debug mode
