@@ -466,3 +466,12 @@ if [ "$OPT_STATS" == "yes" -o "$OPT_STATS" == "Yes" ] ; then
     # and we have stats, thanks
     ./scripts/feedback.sh
 fi
+
+# copy the CHANGELOG to the local storage as latest
+cp CHANGELOG.md /etc/mailad/changelog.latest
+
+# copy the version script to bin path and set the cron job
+cp ./scripts/check_new_version.sh /usr/local/bin/check_new_version.sh
+chmod +x /usr/local/bin/check_new_version.sh
+rm /etc/cron.weekly/mailad_check 2>/dev/null
+ln -s /usr/local/bin/check_new_version.sh /etc/cron.weekly/mailad_check
