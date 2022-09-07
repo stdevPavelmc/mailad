@@ -108,7 +108,7 @@ scope = subtree
 # http://wiki2.dovecot.org/UserDatabase/ExtraFields
 #user_attrs = homeDirectory=home,uidNumber=uid,gidNumber=gid
 user_attrs = \
-  =home=_VMAILSTORAGE_/%n, \
+  =home=_VMAILSTORAGE_/_MBSUBFOLDER_%n, \
   =uid=_VMAILUID_, \
   =gid=_VMAILGID_, \
   =quota_rule=*:bytes=%{ldap:wWWHomePage:_DEFAULT_MAILBOX_SIZE_}
