@@ -69,8 +69,15 @@ ESC_SYSADMINS=`echo $SYSADMINS | sed s/"@"/"\\\@"/`
 # get the LDAP URI
 LDAPURI=`get_ldap_uri`
 
+# check if the optional mail storage is enabled
+MBSUBFOLDER=''
+if [ "${USE_MS_SUBFOLDER}" == "yes" -o "${USE_MS_SUBFOLDER}" == "Yes" ] ; then
+    # set the var, must end in /, a escaped /
+    MBSUBFOLDER='%{ldap:physicalDeliveryOfficeName:}/'
+fi
+
 # add the LDAPURI & ESC_SYSADMINS to the vars
-VARS="${VARS} LDAPURI ESC_SYSADMINS"
+VARS="${VARS} LDAPURI ESC_SYSADMINS MBSUBFOLDER"
 
 # replace the vars in the folders
 for f in `echo "/etc/postfix /etc/dovecot /etc/amavis" | xargs` ; do
