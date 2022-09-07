@@ -47,6 +47,7 @@ This will provision a mail server for an enterprise serving corporate users. You
 0. Optional disclaimer/notice/warning on every outgoing mail.
 0. Optional aggressive SPAM fight measures.
 0. Weekly background check for new versions with a detailed email if you need to upgrade.
+0. Optional mailbox split by office/city/country
 
 ## TODO
 
