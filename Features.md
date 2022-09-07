@@ -25,6 +25,7 @@ This is a long page, so here is an index:
 * [Test Suite](Features.md#test-suite)
 * [Raw Backup And Restore Options](Features.md#raw-backup-and-restore-options)
 * [Painless Upgrades](Features.md#painless-upgrades)
+* [Weekly update checks](Features.md#weekly-update-checks)
 
 ## Low Resource Footprint
 
@@ -567,3 +568,13 @@ root@mail:~/mailad#
 We have tested the process extensively and the chances of corruption or failure are very low. As usual in FLOSS I give only my word as warranty, make and keep backups before the upgrade to restore it in case of trouble.
 
 [Return to index](Features.md#mailad-features-explained)
+
+## Weekly update checks
+
+Once in a week (as per the system cron execution schema) the system will connect to github and will check if there is a new version. If positive it will pull the changelog and compute the delta in the features and generate an email for the sysadmin or the sysadmin group.
+
+For this feature to work you need to have internet access in the server, or in the case you specified a proxy server on the config, it will use it.
+
+[Return to index](Features.md#mailad-features-explained)
+
+END OF FILE
