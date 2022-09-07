@@ -20,6 +20,10 @@ Dates must be YEAR-MONTH-DAY
 DO NOT FORGET to update the VERSION file.
 -->
 
+## [v1.1.0] - 2022-09-07
+
+- Added: You can split the users mail folders by home office or province, see Features.md for details
+
 ## [v1.0.0] - 2022-09-05
 
 - Changed: Set Ubuntu 22.04 LTS as default develop environment.
