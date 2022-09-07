@@ -129,6 +129,9 @@ fi
 
 # send the data in $MAIL if not in debug mode
 if [ ! "${DEBUG}" ] ; then
-    cat ${MAIL} | mail ${ADMINMAIL} -s "MailAD: checking for a new version..."
+    # check if we have something to say
+    if [ -s ${MAIL} ] ; then
+        cat ${MAIL} | mail ${ADMINMAIL} -s "MailAD: checking for a new version..."
+    fi
     rm ${MAIL}
 fi
