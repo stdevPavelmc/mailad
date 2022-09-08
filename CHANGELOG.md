@@ -20,7 +20,7 @@ Dates must be YEAR-MONTH-DAY
 DO NOT FORGET to update the VERSION file.
 -->
 
-## [v1.1.4] - 2022-09-08
+## [v1.1.5] - 2022-09-08
 
 - Fixed: Fix the user's split mailfolders for older OS versions (<= Ubuntu 20.04 & <= Debian 10)
 
