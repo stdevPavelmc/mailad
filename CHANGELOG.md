@@ -20,6 +20,10 @@ Dates must be YEAR-MONTH-DAY
 DO NOT FORGET to update the VERSION file.
 -->
 
+## [v1.1.2] - 2022-09-08
+
+- Added: Develop space fix, no need to upgrade: a failsafe measure was built on git push to keep version number unique on the 3 files that has it; aka: just mod it on CHANGELOG.md and it will be updated on the git flow with a warning.
+
 ## [v1.1.1] - 2022-09-08
 
 - Fixed: Fix the user's split mailfolders for older OS versions (<= Ubuntu 20.04 & <= Debian 10)
