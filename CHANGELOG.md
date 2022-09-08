@@ -22,7 +22,7 @@ DO NOT FORGET to update the VERSION file.
 
 ## [v1.1.5] - 2022-09-08
 
-- Fixed: Fix the user's split mailfolders for older OS versions (<= Ubuntu 20.04 & <= Debian 10)
+- Fixed: Fix the user's split mail folders for older OS versions (<= Ubuntu 20.04 & <= Debian 10)
 
 ## [v1.1.0] - 2022-09-07
 
