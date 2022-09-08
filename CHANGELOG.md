@@ -20,6 +20,10 @@ Dates must be YEAR-MONTH-DAY
 DO NOT FORGET to update the VERSION file.
 -->
 
+## [v1.1.1] - 2022-09-08
+
+- Fixed: Fix the user's split mailfolders for older OS versions (<= Ubuntu 20.04 & <= Debian 10)
+
 ## [v1.1.0] - 2022-09-07
 
 - Added: You can split the users mail folders by home office or province, see Features.md for details
