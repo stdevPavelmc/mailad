@@ -20,6 +20,10 @@ Dates must be YEAR-MONTH-DAY
 DO NOT FORGET to update the VERSION file.
 -->
 
+## [v1.1.3] - 2022-10-27
+
+- Fixed: A warning on the daily mail resume about tempfile deprecation in favor of mktemp
+
 ## [v1.1.2] - 2022-09-08
 
 - Added: Develop space fix, no need to upgrade: a failsafe measure was built on git push to keep version number unique on the 3 files that has it; aka: just mod it on CHANGELOG.md and it will be updated on the git flow with a warning.
