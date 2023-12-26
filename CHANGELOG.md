@@ -20,6 +20,10 @@ Dates must be YEAR-MONTH-DAY
 DO NOT FORGET to update the VERSION file.
 -->
 
+## [v1.1.4] - 2023-12-26
+
+- Fixed: SMTP smuggling vulnerability, https://www.postfix.org/smtp-smuggling.html
+
 ## [v1.1.3] - 2022-10-27
 
 - Fixed: A warning on the daily mail resume about tempfile deprecation in favor of mktemp

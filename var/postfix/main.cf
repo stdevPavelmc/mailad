@@ -108,6 +108,12 @@ smtpd_helo_restrictions =
 #smtpd_client_restrictions = sleep 1, reject_unauth_pipelining
 #smtpd_delay_reject = no
 
+## SMTP smuggling: https://www.postfix.org/smtp-smuggling.html
+smtpd_data_restrictions = reject_unauth_pipelining
+smtpd_discard_ehlo_keywords = chunking
+smtpd_forbid_bare_newline = yes
+smtpd_forbid_bare_newline_exclusions = $mynetworks
+
 # mapeos de los logins de los users contra su cuenta de correo
 # para que usuario1@ no pueda mandar email como usuario2@
 smtpd_sender_login_maps = ldap:/etc/postfix/ldap/email2user.cf
