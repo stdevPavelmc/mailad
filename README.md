@@ -8,7 +8,7 @@
 
 This page is also available in the following languages: [ [Español](i18n/README.es.md) 🇪🇸 🇨🇺] [ [Deutsch](i18n/README.de.md) 🇩🇪]
 
-This is a handy tool to provision a mail server on linux linked to an Active Directory (AD from now on) server (Samba or Windows) with some constraints in mind, as this is a typical mail config to be used in Cuba as regulated by law and security enforcement requirements. You can see a simple provision in [this asciinema movie](https://asciinema.org/a/fD1LuVLfeb8RPCHOIgbR1J9d8).
+This is a handy tool to provision a mail server on linux linked to an Active Directory (AD from now on) server (Samba or Windows) with some constraints in mind, as this is a typical mail config to be used in Cuba as regulated by law and security enforcement requirements, but can be used on any domain. You can see a simple provision in [this asciinema movie](https://asciinema.org/a/fD1LuVLfeb8RPCHOIgbR1J9d8).
 
 We have a docker development on going on another repository, take a peek and test it or contribute: [MailAD-Docker](https://github.com/stdevPavelmc/mailad-docker/)
 
@@ -20,9 +20,9 @@ After a few steps you will have a mail server up and running in about 15 minutes
 
 This tool is tested and supported on:
 
-- Ubuntu Bionic 18.04 LTS (legacy).
-- Ubuntu Focal 20.04 LTS (legacy).
-- Ubuntu Jammy 22.04 LTS (actual dev env).
+- Ubuntu Bionic 18.04 LTS (legacy NOT recommended)
+- Ubuntu Focal 20.04 LTS (legacy NOT recommended)
+- Ubuntu Jammy 22.04 LTS (Recommended).
 - Debian Buster 10 (see note below please).
 - Debian Bullseye 11 (see note below please).
 

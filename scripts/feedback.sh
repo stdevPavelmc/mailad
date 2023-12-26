@@ -17,7 +17,7 @@ source common.conf
 source /etc/mailad/mailad.conf
 
 # Infos to send
-TO="pavelmc@gmail.com,pavel@conas.cu,$ADMINMAIL"
+TO="pavelmc@gmail.com,$ADMINMAIL"
 DATE=`date +"%Y/%m/%d %X %Z"`
 VERSION=`cat CHANGELOG.md  | grep "##" | head -n 1 | cut -d ' ' -f 2`
 

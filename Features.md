@@ -50,6 +50,7 @@ If you are willing please share some statistics and hardware details with me to 
 - We will keep it updated against emerging threats: 
   - Fix for a recent spammer trick: forgery of the From/Return-Path to make the users think the mails are legitimate when they are not.
   - Ban (reject) of subject-less emails, a common spammer trick
+  - SMTP smuggling attack [https://www.postfix.org/smtp-smuggling.html]
 
 Backed up by the collective knowledge of the [SysAdminsdeCuba](https://t.me/sysadmincuba) SysAdmins community.
 

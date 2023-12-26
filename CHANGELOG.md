@@ -22,7 +22,8 @@ DO NOT FORGET to update the VERSION file.
 
 ## [v1.1.4] - 2023-12-26
 
-- Fixed: SMTP smuggling vulnerability, https://www.postfix.org/smtp-smuggling.html
+- Security: SMTP smuggling vulnerability, https://www.postfix.org/smtp-smuggling.html
+- Changed: Remove the old conas.cu notification email.
 
 ## [v1.1.3] - 2022-10-27
 
