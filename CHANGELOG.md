@@ -20,6 +20,10 @@ Dates must be YEAR-MONTH-DAY
 DO NOT FORGET to update the VERSION file.
 -->
 
+## [v1.1.5] - 2024-07-10
+
+- Added: Body checks to add by default variants of common blackmailing emails on the move now
+
 ## [v1.1.4] - 2023-12-26
 
 - Security: SMTP smuggling vulnerability, https://www.postfix.org/smtp-smuggling.html
