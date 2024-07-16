@@ -20,6 +20,10 @@ Dates must be YEAR-MONTH-DAY
 DO NOT FORGET to update the VERSION file.
 -->
 
+## [v1.1.6] - 2024-07-16
+
+- Changed: Clamav updater freshclam complains on debian and posible ubuntu of wrong perms & owner of the config file
+
 ## [v1.1.5] - 2024-07-10
 
 - Added: Body checks to add by default variants of common blackmailing emails on the move now

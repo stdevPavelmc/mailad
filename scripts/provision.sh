@@ -302,6 +302,10 @@ else
     echo "===> AV filtering provision is in place, but activation is delayed, we must wait for freshclam"
     echo "===> to update the AV database before enabling it or you will lose emails in the mean time"
     echo "===> you will be notified by mail when it's activated."
+
+    # set asked perms to the freshclam file as debian12 & ubuntu24 complains about it
+    chmod 0700 ${FILE}
+    chown freshclam.adm ${FILE}
 fi
 
 ### SPAMD setting
