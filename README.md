@@ -10,7 +10,13 @@ This page is also available in the following languages: [ [Español](i18n/README
 
 This is a handy tool to provision a mail server on linux linked to an Active Directory (AD from now on) server (Samba or Windows) with some constraints in mind, as this is a typical mail config to be used in Cuba as regulated by law and security enforcement requirements, but can be used on any domain. You can see a simple provision in [this asciinema movie](https://asciinema.org/a/fD1LuVLfeb8RPCHOIgbR1J9d8).
 
-We have a docker development on going on another repository, take a peek and test it or contribute: [MailAD-Docker](https://github.com/stdevPavelmc/mailad-docker/)
+## Notice
+
+We have also some derived projects you can find interesting:
+
+- [MailAD-Docker](https://github.com/stdevPavelmc/mailad-docker/) a docker compose version of this software.
+- [MailD](https://github.com/stdevPavelmc/maild/) a Multi domain docker solution with no AD linking, an all web solution.
+- [MailAD ansible role](https://github.com/stdevPavelmc/mailad-ansible-role) an Ansible role for the mail server.
 
 ## Rationale
 

@@ -20,6 +20,13 @@ Dates must be YEAR-MONTH-DAY
 DO NOT FORGET to update the VERSION file.
 -->
 
+## [v1.1.7] - 2024-08-17
+
+- Added: Support for Ubuntu Noble 24.04 LTS and Debian Bookworm 12.
+- Fixed: The Samba scaffold scripts for development and testing.
+- Changed: The documentation to explain the changes
+- Extra: Happy 31 birthday for Debian
+
 ## [v1.1.6] - 2024-07-16
 
 - Changed: Clamav updater freshclam complains on debian and posible ubuntu of wrong perms & owner of the config file

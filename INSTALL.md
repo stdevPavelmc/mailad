@@ -4,7 +4,7 @@ Check this [simple console recording](https://asciinema.org/a/fD1LuVLfeb8RPCHOIg
 
 ⚠️ ⚠️ ⚠️ ⚠️ ⚠️ ⚠️
 
-**WARNING:** Since the end of February 2021 we simplified the integration with AD, you **need** to check [this document](Simplify-AD-config.md) if you want to upgrade your setup.
+**WARNING:** Since the end of February 2021 we simplified the integration with AD, you **need** to check [this document](Simplify-AD-config.md) if you want to upgrade your old setup.
 
 Users of new installs will not have issues, just follow the install procedure below and you will be safe.
 
