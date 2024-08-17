@@ -1,10 +1,12 @@
-# MailAD v1.1.6
+# MailAD v1.1.7
 
 [![Chat on Telegram](https://img.shields.io/badge/Chat%20on-Telegram-brightgreen?style=flat-square)](https://t.me/MailAD_dev) [![Twitter Follow](https://img.shields.io/twitter/follow/co7wt?label=Follow&style=flat-square)](https://twitter.com/co7wt) [![GitHub Issues](https://img.shields.io/github/issues/stdevPavelmc/mailad?style=flat-square)](https://github.com/stdevPavelmc/mailad/issues) [![GitHub Issues Closed](https://img.shields.io/github/issues-closed/stdevPavelmc/mailad?style=flat-square)](https://github.com/stdevPavelmc/mailad/issues?q=is%3Aissue+is%3Aclosed) [![GitHub repo size](https://img.shields.io/github/repo-size/stdevPavelmc/mailad?style=flat-square)](https://github.com/stdevPavelmc/mailad/archive/master.zip) [![GitHub last commit](https://img.shields.io/github/last-commit/stdevPavelmc/mailad?style=flat-square)](https://github.com/stdevPavelmc/mailad/commits/master) [![GitHub commit rate](https://img.shields.io/github/commit-activity/m/stdevPavelmc/mailad?style=flat-square)](https://github.com/stdevPavelmc/mailad/commits/master) [![Financial contributors](https://opencollective.com/mailad/tiers/badge.svg)](https://opencollective.com/mailad)
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
 [![All Contributors](https://img.shields.io/badge/all_contributors-10-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
+
+![MailAD Logo](./logos/MailAD-logo-full.png)
 
 This page is also available in the following languages: [ [Español](i18n/README.es.md) 🇪🇸 🇨🇺] [ [Deutsch](i18n/README.de.md) 🇩🇪]
 
@@ -26,13 +28,15 @@ After a few steps you will have a mail server up and running in about 15 minutes
 
 This tool is tested and supported on:
 
-- Ubuntu Bionic 18.04 LTS (legacy NOT recommended)
-- Ubuntu Focal 20.04 LTS (legacy NOT recommended)
-- Ubuntu Jammy 22.04 LTS (Recommended).
-- Debian Buster 10 (see note below please).
-- Debian Bullseye 11 (see note below please).
+- Ubuntu Bionic 18.04 LTS (⚠️ legacy NOT recommended)
+- Ubuntu Focal 20.04 LTS (⚠️ legacy NOT recommended)
+- Ubuntu Jammy 22.04 LTS (⚠️ legacy NOT recommended)
+- Ubuntu Noble 24.04 LTS (✅ recommended, this is the development & testing platform)
+- Debian Buster 10 (⚠️ legacy NOT recommended)
+- Debian Bullseye 11 (⚠️ legacy NOT recommended)
+- Debian Bookworm 12 (✅ recommended)
 
-_**Note:** If you are using a Debian Container on LXC (Proxmox for example) you need to tweak the dovecot install or it will not work, see [this fix](https://serverfault.com/questions/976250/dovecot-lxc-apparmor-denied-buster) for more info_
+_**Note:** If you are using a a Debian buster or bullseye in a LXC Container (Proxmox for example) you need to tweak the dovecot install or it will not work, see [this fix](https://serverfault.com/questions/976250/dovecot-lxc-apparmor-denied-buster) for more info_
 
 It's recommended that the instance of MailAD sits within your DMZ segment with a firewall between it and your users and a mail gateway like [Proxmox Mail Gateway](https://www.proxmox.com/en/proxmox-mail-gateway) between it and the external network.
 
