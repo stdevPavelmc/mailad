@@ -1,3 +1,4 @@
+# defaults
 *.auth
 .vscode/
 deps
@@ -7,3 +8,6 @@ conf-check
 provision
 install
 *.log
+
+# local storage to work on develop
+.localdata
