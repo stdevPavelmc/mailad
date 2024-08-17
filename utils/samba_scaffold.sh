@@ -19,15 +19,6 @@
 # - This script will rip-off any previous samba deployment!
 #
 
-### Some var casting
-# Administrator PASSWD!
-APSWD='Passw0rd!'
-NETBIOS=`echo ${DOMAIN} | cut -d '.' -f 1 | tr [:lower:] [:upper:]`
-ADMINUSER=`echo ${ADMINMAIL} | cut -d '@' -f 1`
-LUCU=`echo ${LOCUSER} | cut -d '@' -f 1`
-NATU=`echo ${NACUSER} | cut -d '@' -f 1`
-DNSFWD=10.0.3.1 # left empty to disable DNS forwarder
-
 # testing for mailad.conf
 if [ ! -f /etc/mailad/mailad.conf ] ; then
     echo "======================================================"
@@ -58,6 +49,23 @@ fi
 source /etc/mailad/mailad.conf
 source .mailadmin.auth
 
+### Some var casting
+# Administrator PASSWD!
+APSWD=${PASS}
+NETBIOS=`echo ${DOMAIN} | cut -d '.' -f 1 | tr [:lower:] [:upper:]`
+ADMINUSER=`echo ${ADMINMAIL} | cut -d '@' -f 1`
+LUCU=`echo ${LOCUSER} | cut -d '@' -f 1`
+NATU=`echo ${NACUSER} | cut -d '@' -f 1`
+DNSFWD=10.0.3.1 # left empty to disable DNS forwarder
+
+echo "==== DEBUG: VARS SETTED ===="
+echo "NETBIOS: ${NETBIOS}"
+echo "ADMINUSER: ${ADMINUSER}"
+echo "LUCU: ${LUCU}"
+echo "NATU: ${NATU}"
+echo "DNSFWD: ${DNSFWD}"
+echo "==== END DEBUG ===="
+
 # update the package data
 apt update --quiet
 
@@ -73,7 +81,7 @@ done
 systemctl unmask winbind samba-ad-dc
 systemctl enable samba-ad-dc
 
-# do some claning steps
+# do some cleaning steps
 systemctl stop samba-ad-dc
 rm -rdf /var/lib/samba/*
 rm /etc/samba/smb.conf
