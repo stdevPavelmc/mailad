@@ -1,0 +1,32 @@
+#!/bin/bash
+
+# Update the Version number from the CHANGELOG.md file on:
+# - VERSION
+# - README.md
+
+# get the version number
+VERSION=`cat CHANGELOG.md | grep '##' | head -n 1 | awk '{print $2}' | tr -d '[]'`
+FLAG=''
+
+# get README version number and check if update is needed
+RV=`cat README.md | grep '^# MailAD v' | awk '{print $3}'`
+if [ "$VERSION" != "$RV" ] ; then
+    sed s/'^# MailAD.*'/"# MailAD ${VERSION}"/ -i README.md
+    FLAG='1'
+fi
+
+# get VERSION number and check if update is needed
+VV=`cat VERSION`
+if [ "$VERSION" != "$VV" ] ; then
+    echo ${VERSION} > VERSION
+    FLAG='1'
+fi
+
+if [ "$FLAG" ] ; then
+    echo "ERROR!: Missmatch on the version found!"
+    echo "I did fixit & commited the change, push it again please..."
+    git commit -m "AutoUpdate version number" VERSION README.md
+    exit 1
+fi
+
+exit 0

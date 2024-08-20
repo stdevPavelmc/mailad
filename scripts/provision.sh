@@ -69,8 +69,15 @@ ESC_SYSADMINS=`echo $SYSADMINS | sed s/"@"/"\\\@"/`
 # get the LDAP URI
 LDAPURI=`get_ldap_uri`
 
+# check if the optional mail storage is enabled
+MBSUBFOLDER=''
+if [ "${USE_MS_SUBFOLDER}" == "yes" -o "${USE_MS_SUBFOLDER}" == "Yes" ] ; then
+    # set the var, must end in /, a escaped /
+    MBSUBFOLDER='%{ldap:physicalDeliveryOfficeName:}/'
+fi
+
 # add the LDAPURI & ESC_SYSADMINS to the vars
-VARS="${VARS} LDAPURI ESC_SYSADMINS"
+VARS="${VARS} LDAPURI ESC_SYSADMINS MBSUBFOLDER"
 
 # replace the vars in the folders
 for f in `echo "/etc/postfix /etc/dovecot /etc/amavis" | xargs` ; do
@@ -86,6 +93,9 @@ for f in `echo "/etc/postfix /etc/dovecot /etc/amavis" | xargs` ; do
             sed -i s/"\_$v\_"/"$CONT"/g {} \;
     done
 done
+
+# force dovecot conf perms
+chmod 0644 /etc/dovecot/conf.d/*
 
 # Special case variables with complicated scaping and specific files
 #   $ESCLOCAL > /etc/postfix/filtro_loc
@@ -244,9 +254,15 @@ else
                 # if a proxy is set remove the 'http://' and 'https://' from the variables
 
                 if [ ! -z "$PROXY_HOST" -a ! -z "$PROXY_PORT" ] ; then
-                    # there is a proxy, remove the prefix
-                    Mm=`echo ${M} | sed s/'http:\/\/'//g | sed s/'https:\/\/'//g`
-                    echo "DatabaseMirror ${Mm}" >> $FILE
+                    # general proxy, but we must use it ?
+                    if [ "$AV_UPDATES_USE_PROXY" == "yes" -o "$AV_UPDATES_USE_PROXY" == "Yes" ] ; then
+                        # ok, by all means add proxy remove the prefix
+                        Mm=`echo ${M} | sed s/'http:\/\/'//g | sed s/'https:\/\/'//g`
+                        echo "DatabaseMirror ${Mm}" >> $FILE
+                    else
+                        # no proxy
+                        echo "DatabaseMirror ${M}" >> $FILE
+                    fi
                 else
                     # no proxy
                     echo "DatabaseMirror ${M}" >> $FILE
@@ -257,14 +273,17 @@ else
 
     ### configure proxy if needed
     if [ ! -z "$PROXY_HOST" -a ! -z "$PROXY_PORT" ] ; then
-        # add proxy
-        echo "HTTPProxyServer $PROXY_HOST" >> $FILE
-        echo "HTTPProxyPort $PROXY_PORT" >> $FILE
+        # general proxy, but we must use it ?
+        if [ "$AV_UPDATES_USE_PROXY" == "yes" -o "$AV_UPDATES_USE_PROXY" == "Yes" ] ; then
+            # ok, by all means add proxy
+            echo "HTTPProxyServer $PROXY_HOST" >> $FILE
+            echo "HTTPProxyPort $PROXY_PORT" >> $FILE
 
-        # check for auth
-        if [ ! -z "$PROXY_USER" -a ! -z "$PROXY_PASS" ] ; then
-            echo "HTTPProxyUsername $PROXY_USER" >> $FILE
-            echo "HTTPProxyPassword $PROXY_PASS" >> $FILE
+            # check for auth
+            if [ ! -z "$PROXY_USER" -a ! -z "$PROXY_PASS" ] ; then
+                echo "HTTPProxyUsername $PROXY_USER" >> $FILE
+                echo "HTTPProxyPassword $PROXY_PASS" >> $FILE
+            fi
         fi
     fi
 
@@ -283,6 +302,10 @@ else
     echo "===> AV filtering provision is in place, but activation is delayed, we must wait for freshclam"
     echo "===> to update the AV database before enabling it or you will lose emails in the mean time"
     echo "===> you will be notified by mail when it's activated."
+
+    # set asked perms to the freshclam file as debian12 & ubuntu24 complains about it
+    chmod 0700 ${FILE}
+    chown freshclam.adm ${FILE}
 fi
 
 ### SPAMD setting
@@ -338,9 +361,7 @@ if [ "$ENABLE_SPAMD" == "yes" -o "$ENABLE_SPAMD" == "Yes" ] ; then
     fi
 
     # enable the service
-    systemctl unmask spamassassin
-    systemctl enable spamassassin
-    systemctl restart spamassassin
+    enable_sa
 
     # replace the default cron job if proxy enabled
     if [ ! -z "$SA_PROXY" ] ; then
@@ -362,9 +383,7 @@ else
     fi
 
     # disable the service
-    systemctl stop spamassassin
-    systemctl disable spamassassin
-    systemctl mask spamassassin
+    disable_sa
 
     # remove the daily job if there
     test -x "/etc/cron.daily/spamassassin" && rm -f /etc/cron.daily/spamassassin
@@ -407,7 +426,7 @@ else
 
     # remove the altermime package
     export DEBIAN_FRONTEND=noninteractive
-    apt-get purge $DEBIAN_DISCLAIMER_PKGS -y | exit 0
+    apt-get purge $DEBIAN_DISCLAIMER_PKGS -y || exit 0
 
     # disable the dfilt line in the master.cf file on postfix
     sed -i s/"content_filter=dfilt:"/"content_filter="/g /etc/postfix/master.cf
@@ -451,3 +470,12 @@ if [ "$OPT_STATS" == "yes" -o "$OPT_STATS" == "Yes" ] ; then
     # and we have stats, thanks
     ./scripts/feedback.sh
 fi
+
+# copy the CHANGELOG to the local storage as latest
+cp CHANGELOG.md /etc/mailad/changelog.latest
+
+# copy the version script to bin path and set the cron job
+cp ./scripts/check_new_version.sh /usr/local/bin/check_new_version.sh
+chmod +x /usr/local/bin/check_new_version.sh
+rm /etc/cron.weekly/mailad_check 2>/dev/null
+ln -s /usr/local/bin/check_new_version.sh /etc/cron.weekly/mailad_check

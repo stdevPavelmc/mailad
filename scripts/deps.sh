@@ -12,6 +12,9 @@
 #
 # And not doing that after failure, that way it will not install on a unknown distro
 
+# import he common file with the list of default pkgs
+source ./common.conf || source common.conf
+
 # default error when I hit a distro I can't identify
 function os_not_supported {
     # not known
@@ -34,11 +37,11 @@ if [ -f /etc/os-release ] ; then
 
     ## Distros check
     case "$VERSION_CODENAME" in
-        bionic|focal|buster)
+        bionic|focal|jammy|noble|buster|bullseye|bookworm)
             # install dependencies
             export DEBIAN_FRONTEND=noninteractive
             apt update -q
-            apt-get install ldap-utils dnsutils -qy
+            apt-get install -qy ${COMMON_DEPS_PKGS}
 
             # checking for success
             R=$?

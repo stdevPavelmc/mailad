@@ -5,50 +5,54 @@
 # LICENCE: GPL 3.0 and later  
 #
 # Goals:
-#   - Uninstall mail install pkgs and purge configs
+#   - Uninstall pkgs installed by MailAD and purge configs
 
-# load the conf file
+# Load the conf file
 source /etc/mailad/mailad.conf
 source common.conf
 
 PKGS=""
 
-# list of pkgs to install came from common.conf, pick the list to uninstall
+# List of pkgs to install came from common.conf, pick the list to uninstall
 if [ -f /etc/os-release ] ; then
-    # import the file
+    # Import the file
     source /etc/os-release
 
-    ## Distros check
+    ## Distro check
     case "$VERSION_CODENAME" in
-        bionic|focal)
-            # load the correct pkgs to be installed
+        bionic|focal|jammy|noble)
+            # Load the correct pkgs to be installed
             craft_pkg_list "ubuntu"
-
-            # remove the pkgs
-            debian_remove_pkgs
             ;;
-        buster)
-            # load the correct pkgs to be installed
+        buster|bullseye|bookworm)
+            # Load the correct pkgs to be installed
             craft_pkg_list "debian"
-
-            # remove the pkgs
-            debian_remove_pkgs
             ;;
         *)
             echo "==========================================================================="
-            echo "ERROR: This linux box has a not known distro, if you feel this is wrong"
-            echo "       please visit ttps://github.com/stdevPavelmc/mailad/ and raise an"
+            echo "ERROR: This Linux box has an unknown distro, if you feel this is wrong"
+            echo "       please visit https://github.com/stdevPavelmc/mailad/ and raise an"
             echo "       issue about this."
             echo "==========================================================================="
-            echo "       The un-install process will stop now"
+            echo "       The uninstall process will stop now"
             echo "==========================================================================="
             ;;
     esac
+
+    # Remove the pkgs
+    debian_remove_pkgs
+
+    # remove packages from deps.sh
+    apt purge -yq ${COMMON_DEPS_PKGS}
+
+    # autoremove
+    apt autoremove -y
+
 else
-    # not known
+    # Unknown
     echo "==========================================================================="
-    echo "ERROR: This linux box has a not known distro, if you feel this is wrong"
-    echo "       please visit ttps://github.com/stdevPavelmc/mailad/ and raise an"
+    echo "ERROR: This Linux box has an unknown distro, if you feel this is wrong"
+    echo "       please visit https://github.com/stdevPavelmc/mailad/ and raise an"
     echo "       issue about this."
     echo "==========================================================================="
     echo "       The uninstall process will stop now"

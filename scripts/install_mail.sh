@@ -5,43 +5,43 @@
 # LICENCE: GPL 3.0 and later  
 #
 # Goals:
-#   - Check if there is pkgs already installed and warn & fail
+#   - Check, warn & fail if there are some pkgs already installed,
 #   - otherwise install the pkgs
 #
 # Notice: You need to provide a line like this after a success
 #    echo "done" > install
 #
-# And not doing that after failure, that way it will not install on a unknown distro
+# And do nothing in case of failure, this prevents installation on an unknown distro
 
-# load the conf file
+# Load the conf file
 source /etc/mailad/mailad.conf
 source common.conf
 
-# this is the list to handle, will load it from the specific OS below
+# This is the list to handle, will be loaded from the specific OS below
 PKGS=""
 
-# loading the os-release file
+# Loading the os-release file
 if [ -f /etc/os-release ] ; then
     # import the file
     source /etc/os-release
 
     ## Distros check
     case "$VERSION_CODENAME" in
-        bionic|focal)
-            # load the correct pkgs to be installed
+        bionic|focal|jammy|noble)
+            # Load the correct pkgs to be installed
             craft_pkg_list "ubuntu"
 
-            # check
+            # Check
             already_installed_debs
 
             # Install
             install_debs
             ;;
-        buster)
-            # load the correct pkgs to be installed
+        buster|bullseye|bookworm)
+            # Load the correct pkgs to be installed
             craft_pkg_list "debian"
 
-            # check
+            # Check
             already_installed_debs
 
             # Install
@@ -49,8 +49,8 @@ if [ -f /etc/os-release ] ; then
             ;;
         *)
             echo "==========================================================================="
-            echo "ERROR: This linux box has a not known distro, if you feel this is wrong"
-            echo "       please visit ttps://github.com/stdevPavelmc/mailad/ and raise an"
+            echo "ERROR: This linux box has an unknown distro, if you feel this is wrong"
+            echo "       please visit https://github.com/stdevPavelmc/mailad/ and raise an"
             echo "       issue about this."
             echo "==========================================================================="
             echo "       The install process will stop now"
@@ -58,9 +58,9 @@ if [ -f /etc/os-release ] ; then
             ;;
     esac
 
-    # fix permissions for clamav into amavis if AV is enabled
+    # Fix permissions for clamav into amavis if AV is enabled
     if [ "$ENABLE_AV" == "yes" -o "$ENABLE_AV" == "Yes" ] ; then
-        # Ad the clamav user to the amavis group, or it will not be able to reach emails to scan
+        # Add the clamav user to the amavis group, or it will not be able to reach emails to scan
         echo "===> Setting correct Perms for clamav and amavis to work together"
         adduser clamav amavis
     fi

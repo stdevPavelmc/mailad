@@ -1,73 +1,84 @@
-# MailAD
+# MailAD v1.1.7
 
-[![Chat on Telegram](https://img.shields.io/badge/Chat%20on-Telegram-brightgreen?style=flat-square)](https://t.me/MailAD_dev) [![Twitter Follow](https://img.shields.io/twitter/follow/co7wt?label=Follow&style=flat-square)](https://twitter.com/co7wt) [![GitHub Issues](https://img.shields.io/github/issues/stdevPavelmc/mailad?style=flat-square)](https://github.com/stdevPavelmc/mailad/issues) [![GitHub Issues Closed](https://img.shields.io/github/issues-closed/stdevPavelmc/mailad?style=flat-square)](https://github.com/stdevPavelmc/mailad/issues?q=is%3Aissue+is%3Aclosed) [![GitHub repo size](https://img.shields.io/github/repo-size/stdevPavelmc/mailad?style=flat-square)](https://github.com/stdevPavelmc/mailad/archive/master.zip) [![GitHub last commit](https://img.shields.io/github/last-commit/stdevPavelmc/mailad?style=flat-square)](https://github.com/stdevPavelmc/mailad/commits/master) [![GitHub commit rate](https://img.shields.io/github/commit-activity/m/stdevPavelmc/mailad?style=flat-square)](https://github.com/stdevPavelmc/mailad/commits/master) <img alt="open collective badge" src="https://opencollective.com/mailad/tiers/backers/badge.svg?label=backer&color=brightgreen" /> [![Financial contributors](https://opencollective.com/mailad/tiers/badge.svg)](https://opencollective.com/mailad)
+[![Chat on Telegram](https://img.shields.io/badge/Chat%20on-Telegram-brightgreen?style=flat-square)](https://t.me/MailAD_dev) [![Twitter Follow](https://img.shields.io/twitter/follow/co7wt?label=Follow&style=flat-square)](https://twitter.com/co7wt) [![GitHub Issues](https://img.shields.io/github/issues/stdevPavelmc/mailad?style=flat-square)](https://github.com/stdevPavelmc/mailad/issues) [![GitHub Issues Closed](https://img.shields.io/github/issues-closed/stdevPavelmc/mailad?style=flat-square)](https://github.com/stdevPavelmc/mailad/issues?q=is%3Aissue+is%3Aclosed) [![GitHub repo size](https://img.shields.io/github/repo-size/stdevPavelmc/mailad?style=flat-square)](https://github.com/stdevPavelmc/mailad/archive/master.zip) [![GitHub last commit](https://img.shields.io/github/last-commit/stdevPavelmc/mailad?style=flat-square)](https://github.com/stdevPavelmc/mailad/commits/master) [![GitHub commit rate](https://img.shields.io/github/commit-activity/m/stdevPavelmc/mailad?style=flat-square)](https://github.com/stdevPavelmc/mailad/commits/master) [![Financial contributors](https://opencollective.com/mailad/tiers/badge.svg)](https://opencollective.com/mailad)
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-8-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-10-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
+
+![MailAD Logo](./logos/MailAD-logo-full.png)
 
 This page is also available in the following languages: [ [Español](i18n/README.es.md) 🇪🇸 🇨🇺] [ [Deutsch](i18n/README.de.md) 🇩🇪]
 
 This is a handy tool to provision a mail server on linux linked to an Active Directory server (Samba or Windows, it does not care) with some constraints in mind, as this is a typical mail config to be used in Cuba under certain laws and security requirements(1). You can see a simple provision in [this asciinema movie](https://asciinema.org/a/fD1LuVLfeb8RPCHOIgbR1J9d8).
 
-⚠️ ⚠️ ⚠️ ⚠️ ⚠️ ⚠️
+## Notice
 
-**WARNING:** Since the end of February 2020 we changed the integration with the AD to be more simpler, you **need** to check [this document](Simplify_AD_config.md) if you want to upgrade your setup.
+We have also some derived projects you can find interesting:
 
-Users of new install have no problem, just follow the [install procedure](INSTALL.md) and you are set.
+- [MailAD-Docker](https://github.com/stdevPavelmc/mailad-docker/) a docker compose version of this software.
+- [MailD](https://github.com/stdevPavelmc/maild/) a Multi domain docker solution with no AD linking, an all web solution.
+- [MailAD ansible role](https://github.com/stdevPavelmc/mailad-ansible-role) an Ansible role for the mail server.
 
 ## Rationale
 
-This repository is intended to be cloned on your fresh OS install under `/root` (you can use a LXC instance, VM, CT, etc) and setup on a main conf file as per the file comments, then run the steps on a makefile and follow the steps to configure your server.
+This repository is intended to be cloned on your fresh OS install under `/root` (you can use a LXC instance, VM, etc) and setup on a main conf file as per the file comments, then run the steps on a makefile and follow the steps to configure your server.
 
 After a few steps you will have a mail server up and running in about 15 minutes tops. _(this time is based on a 2Mbps internet connection to a repository, if you have a local repository it will be less)_
 
 This tool is tested and supported on:
 
-- Ubuntu Bionic 18.04 (former LTS).
-- Ubuntu Focal 20.04 (actual LTS and actual dev env).
-- Debian Buster 10 (see note below please).
+- Ubuntu Bionic 18.04 LTS (⚠️ legacy NOT recommended)
+- Ubuntu Focal 20.04 LTS (⚠️ legacy NOT recommended)
+- Ubuntu Jammy 22.04 LTS (⚠️ legacy NOT recommended)
+- Ubuntu Noble 24.04 LTS (✅ recommended, this is the development & testing platform)
+- Debian Buster 10 (⚠️ legacy NOT recommended)
+- Debian Bullseye 11 (⚠️ legacy NOT recommended)
+- Debian Bookworm 12 (✅ recommended)
 
-_**Note:** If you are using a Debian Buster Container on LXC (Proxmox for example) you need to tweak the dovecot install or it will not work, see [this fix](https://serverfault.com/questions/976250/dovecot-lxc-apparmor-denied-buster) for more info_
+_**Note:** If you are using a a Debian buster or bullseye in a LXC Container (Proxmox for example) you need to tweak the dovecot install or it will not work, see [this fix](https://serverfault.com/questions/976250/dovecot-lxc-apparmor-denied-buster) for more info_
 
-It's recommended that the instance of MailAD sits inside your DMZ net with a firewall between it and your users and a mail gateway like [Proxmox Mail Gateway](https://www.proxmox.com/en/proxmox-mail-gateway) between it and the outside world.
+It's recommended that the instance of MailAD sits within your DMZ segment with a firewall between it and your users and a mail gateway like [Proxmox Mail Gateway](https://www.proxmox.com/en/proxmox-mail-gateway) between it and the external network.
 
 ## Features
 
-This will provision a mail server in a enterprise as a real server facing the users, you can see the major features in the [Features.md](Features.md) file, among others you will find:
+This will provision a mail server for an enterprise serving corporate users. You can see the major features in the [Features.md](Features.md) file, among others you will find:
 
 0. Low resource footprint.
 0. Advanced (and optional) mail filtering features that includes attachments, SPF, AntiVirus & Spam.
 0. Encrypted LDAP communication as an option.
-0. In place protection to major and known SSL & mail services attacks.
+0. In place protection to major and known SSL & mail service attacks.
 0. Automatic alias using AD groups.
 0. Manual alias, manual ban, manual headers & body checks.
-0. On demand Backup and restore of raw configurations.
+0. On demand backup and restore of raw configurations.
 0. Really painless upgrades.
-0. Daily mail traffic summary in you inbox.
+0. Daily mail traffic summary to your inbox.
 0. Optional user privilege access via AD groups (local/national/international).
-0. Optional disclaimer/notice/adverting on every outgoing mail.
+0. Optional disclaimer/notice/warning on every outgoing mail.
 0. Optional aggressive SPAM fight measures.
+0. Weekly background check for new versions with a detailed email if you need to upgrade.
+0. Optional mailbox split by office/city/country
 
 ## TODO
 
-There is a [TODO list](TODO.md), a kind of "roadmap" for new features, but as I (only one dev so far) have a life, a family and a daily job, you know...
+There is a [TODO list](TODO.md), which serves as a kind of "roadmap" for new features, but as I (the only dev so far) have a life, a family and a daily job, you know...
 
 All dev is made on weekend or late at night (seriously take a peek on the commit dates!) if you need a feature or fix ASAP, please take into account making a donation or found me and I will be happy to help you ASAP, my contact info is on the bottom of this page.
 
 ## Constraints and requirements
 
-Remember the comment at top of the page about _"...with some constraints in mind..."_ yeah, here they are:
+Do you remember the comment at top of the page about _"...with some constraints in mind..."?_ Yeah, here they are:
 
-0. Your user base and config came from an Active Directory (AD from now on) as mentioned, we prefer Samba AD but it works on Windows too; see [the AD requirements for this tool](AD_Requirements.md)
+0. Your user base and config came from AD as mentioned, we prefer Samba AD but it works on Windows too; see [the AD requirements for this tool](AD_Requirements.md)
+0. The username part of the email must not pass the 20 chars mark, so `thisisalongemailaddress@domain.com` will be cut to `thisisalongemailaddr@domain.com` this is not our rule, but a handycap of the LDAP directory as specified by Windows Schema.
 0. The mail storage will be a folder in `/home/vmail`, all mail will belong to a user named `vmail` with uid:5000 & gid:5000. Tip: that folder can be a NFS mount or any other type of network storage (configurable)
 0. You use a Windows PC to control and manage the domain (must be a domain member and have the RSAT installed and activated), we recommend a Windows 10 LTSC/Professional
 0. The communication with the server is done in this way: (See [this question](FAQ.md#what-ports-i-need-to-get-open-to-make-sure-the-servers-works-ok) on the FAQ file to know more)
     - Port 25 (SMTP) is used to receive incoming traffic from the outside world or from a mail gateway.
-    - Port 587 (SUBMISSION) is used to receive emails from the users to deliver locally or relay to other servers.
-    - Port 465 (SMTPS) is used like the 587 but is only enabled as a legacy option, it's use is discourage in favor of the port 587.
-    - Port 993 (IMAPS) the preffered metod to retrieve the email form the server.
-    - Port 995 (POP3S) used like the 993, but discouraged as IMAPS is better (unless you are in a very slow link)
+    - Port 587 (SUBMISSION) is used to receive emails from the users to be delivered locally or relayed to other servers.
+    - Port 465 (SMTPS) is used like port 587 but is only enabled as a legacy option, its use is discouraged in favor of port 587.
+    - Port 993 (IMAPS) the preffered method to retrieve the email form the server.
+    - Port 995 (POP3S) used like the 993, but discouraged in favor of IMAPS (unless you are in a very slow link)
 
 ## How to install or try it?
 
@@ -97,7 +108,9 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <td align="center"><a href="http://iskra.ml"><img src="https://avatars3.githubusercontent.com/u/6555851?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Eddy Ernesto del Valle Pino</b></sub></a><br /><a href="https://github.com/stdevPavelmc/mailad/commits?author=edelvalle" title="Documentation">📖</a></td>
   </tr>
   <tr>
-    <td align="center"><a href="https://github.com/dienteperro"><img src="https://avatars.githubusercontent.com/u/5240140?v=4?s=100" width="100px;" alt=""/><br /><sub><b>dienteperro</b></sub></a><br /><a href="https://github.com/stdevPavelmc/mailad/commits?author=dienteperro" title="Documentation">📖</a></td>
+    <td align="center"><a href="https://github.com/dienteperro"><img src="https://avatars.githubusercontent.com/u/5240140?v=4?s=100" width="100px;" alt=""/><br /><sub><b>dienteperro</b></sub></a><br /><a href="https://github.com/stdevPavelmc/mailad/commits?author=dienteperro" title="Documentation">📖</a> <a href="#financial-dienteperro" title="Financial">💵</a> <a href="#ideas-dienteperro" title="Ideas, Planning, & Feedback">🤔</a></td>
+    <td align="center"><a href="http://jjrweb.byethost8.com/"><img src="https://avatars.githubusercontent.com/u/11667019?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Joe1962</b></sub></a><br /><a href="#ideas-Joe1962" title="Ideas, Planning, & Feedback">🤔</a> <a href="https://github.com/stdevPavelmc/mailad/commits?author=Joe1962" title="Tests">⚠️</a></td>
+    <td align="center"><a href="https://github.com/sandy-cmg"><img src="https://avatars.githubusercontent.com/u/101523070?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Sandy Napoles Umpierre</b></sub></a><br /><a href="#ideas-sandy-cmg" title="Ideas, Planning, & Feedback">🤔</a> <a href="https://github.com/stdevPavelmc/mailad/commits?author=sandy-cmg" title="Tests">⚠️</a></td>
   </tr>
 </table>
 

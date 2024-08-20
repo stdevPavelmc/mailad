@@ -6,6 +6,9 @@
 # that way you will be able to identify which rule baned a mail to
 # analyze it 
 
-# Expresion				Action  No  Reason
-/^.* [P|p]uta .*/		REJECT (#1) No se permiten Mala palabras
-
+# Expresion				                    Action  No  Reason
+/^.* [P|p]uta .*/                           REJECT (#1) No se permiten Mala palabras
+/^.*I am a hаckеr who has аccess to your.*/ REJECT (#2) Seriuosly? Blackmailing in 202x?
+/^.*Transfer .* to my bitcoin wallet.*/     REJECT (#2) Seriuosly? Blackmailing in 202x?
+/^.*my perverted friend.*/                  REJECT (#2) Seriuosly? Blackmailing in 202x?
+/^.*videos of you jerking off.*/            REJECT (#2) Seriuosly? Blackmailing in 202x?

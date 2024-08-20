@@ -16,7 +16,102 @@ This is a note for developers about the recommended tags to keep track of the ch
 - Security: in case of vulnerabilities.
 
 Dates must be YEAR-MONTH-DAY
+
+DO NOT FORGET to update the VERSION file.
 -->
+
+## [v1.1.7] - 2024-08-17
+
+- Added: Support for Ubuntu Noble 24.04 LTS and Debian Bookworm 12.
+- Fixed: The Samba scaffold scripts for development and testing.
+- Changed: The documentation to explain the changes
+- Extra: Happy 31 birthday for Debian
+
+## [v1.1.6] - 2024-07-16
+
+- Changed: Clamav updater freshclam complains on debian and posible ubuntu of wrong perms & owner of the config file
+
+## [v1.1.5] - 2024-07-10
+
+- Added: Body checks to add by default variants of common blackmailing emails on the move now
+
+## [v1.1.4] - 2023-12-26
+
+- Security: SMTP smuggling vulnerability, https://www.postfix.org/smtp-smuggling.html
+- Changed: Remove the old conas.cu notification email.
+
+## [v1.1.3] - 2022-10-27
+
+- Fixed: A warning on the daily mail resume about tempfile deprecation in favor of mktemp
+
+## [v1.1.2] - 2022-09-08
+
+- Added: Develop space fix, no need to upgrade: a failsafe measure was built on git push to keep version number unique on the 3 files that has it; aka: just mod it on CHANGELOG.md and it will be updated on the git flow with a warning.
+
+## [v1.1.1] - 2022-09-08
+
+- Fixed: Fix the user's split mailfolders for older OS versions (<= Ubuntu 20.04 & <= Debian 10)
+
+## [v1.1.0] - 2022-09-07
+
+- Added: You can split the users mail folders by home office or province, see Features.md for details
+
+## [v1.0.0] - 2022-09-05
+
+- Changed: Set Ubuntu 22.04 LTS as default develop environment.
+- Added: Semantic versioning, there is a file on the root of the repository with the version number, starting from 1.0.0 and this file
+- Added: Weekly check for new versions and warn the sysadmin group/user about latest changes.
+- Added: After installation a weekly cron job will check for new versions and will notify the postmaster if new changes are found
+
+## 2022-09-04
+
+- Fixed: Bug #181, check for stalled mailboxes fails when using multiple DCs, was a not updated LDAP_URI var.
+- Changed: Documentation, comment about the 20 chars max on the email username on the README.md
+
+## 2022-03-25
+
+- Fixed: Bug #172, gropus update script fails under Debian as no sbin on path (postmap reside on sbin), silent fix added.
+- Fixed: Bug #174, Debian PATH & sbin fix for good (impact previous mentioned Bug #172)
+
+## 2022-03-23
+
+- Fixed: Bug #168 reopened, Debian 11 was picky with some ldap packages
+- Changed: New & cleaner way to get & install the LDAP certs thanks to @dienteperro (now it does for every DC server specified)
+- Changed: Related to the /sbin /usr/sbin missing on path on some debian systems, we fix it silently, no error or the user as this is a very specific and short issue (user's space problem)
+- Changed: LDAP problems on the tests give more informative errors.
+- Changed: Packages needed for testing before provision are now on a var on common.conf rather than hardcoded.
+- Changed: Improved the purge process, in Debian the provision or force-porovision failed when dovecot-core was there before hand (dependency problems on Debian)
+- Changed: Make conf now does what it says, if you try to make conf over an existing one, you will be warned, run it again to everwrite and make a backup of the old file
+- Changed: In /etc/mailad/mailad.conf file, var HOSTAD will enforce using FQDN names instead of IPs, that's becouse the LDAP's SSL checking mechanism fails if the DC server is pointed by it's IP and not the full name.
+- Added: FAQ entry for the above issue.
+
+## 2022-03-16
+
+- Fixed: Bug #168 Debian (et least on version 11) needs libldap and libldap-common as an explicit dependency
+
+## 2022-03-09
+
+- Fixed: Bug #151 that was not completely fixed, now it's
+- Fixed: A minor error related to a harmless (but scary) broken pipe error during provision that was identified during works on 151 
+
+## 2022-03-06
+
+- Added: Feature #159, Debian 11 Bullseye support
+- Changed: Services enable/disable routines on provision stage
+- Fixed: A bug (typo) on the 'make clean' command
+- Added: Checks for /sbin /usr/sbin missing on path on some debian systems
+- Changed: Improved the parsing of the LDAP bind testing
+- Fixed: Bug #158, groups.sh script was not updated with the new LDAP_URI autodetection of past improvements, sorry for that.
+- Added: Feature #150, Now you can exclude the AV from the proxy when using a local/institutional mirror [Optional]
+- Fixed: Bug: #151 test for DNS ClamAV version when using proxy fails, fixed, not testing that when a proxy is configured
+- Changed: Feature: #146, daily email about groups creation will be generated only when there is a change.
+
+## 2022-02-24
+
+- Fixed: Bug #147: Clamav alternate mirrors list was not working anymore.
+- Added: Feature request #152: support for multiple ADDC servers, look on the mailad.conf file for details.
+- Changed: New way to handle the LDAP_URIS and DNS test.
+- Fixed: Minor bugs found during the fixing of the feature #152, related to DNS/SOA tests.
 
 ## 2021-06-05
 

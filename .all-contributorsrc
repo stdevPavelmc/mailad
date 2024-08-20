@@ -80,7 +80,29 @@
       "avatar_url": "https://avatars.githubusercontent.com/u/5240140?v=4",
       "profile": "https://github.com/dienteperro",
       "contributions": [
-        "doc"
+        "doc",
+        "financial",
+        "ideas"
+      ]
+    },
+    {
+      "login": "Joe1962",
+      "name": "Joe1962",
+      "avatar_url": "https://avatars.githubusercontent.com/u/11667019?v=4",
+      "profile": "http://jjrweb.byethost8.com/",
+      "contributions": [
+        "ideas",
+        "test"
+      ]
+    },
+    {
+      "login": "sandy-cmg",
+      "name": "Sandy Napoles Umpierre",
+      "avatar_url": "https://avatars.githubusercontent.com/u/101523070?v=4",
+      "profile": "https://github.com/sandy-cmg",
+      "contributions": [
+        "ideas",
+        "test"
       ]
     }
   ],

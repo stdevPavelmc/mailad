@@ -14,8 +14,82 @@
 
 # load conf files
 source /etc/mailad/mailad.conf
+source common.conf
 
 echo "===> Testing the configurations on the local host"
+
+# test /sbin on some envs (Debian 10/11)
+SBIN=`echo $PATH | grep "/sbin"`
+if [ -z "$SBIN" ] ; then
+    # apply the fix
+    printf "
+SBIN=\`echo \$PATH | grep '/sbin'\`
+if [ -z \${SBIN} ] ; then
+    PATH=/sbin:/usr/sbin:$PATH
+fi
+" >> /etc/environment
+
+    # fail
+    echo "================================================================================="
+    echo "Oops!"
+    echo "    /sbin or /usr/sbin are missing from the PATH variable on your env!"
+    echo ""
+    echo "    Without that paths in the PATH, the provision will fail, it's a known bug on"
+    echo "    Debian 11 but may affect others, this issue has been maked as 'wontfix' so"
+    echo "    we have to deal with it."
+    echo ""
+    echo "    A workaround was installed on your system, but you need to logout as root"
+    echo "    and gain root privileges again to set it up"
+    echo ""
+    echo "    Aka: logout and login as root again and continue the setup of MailAD"
+    echo ""
+    echo "    Take a peek on the FAQ.md file to see some explanation for this."
+    echo "================================================================================="
+    echo " "
+
+    exit 1
+fi
+
+# HOSTAD may be multiple host, check the DNS and by then find the IP/host of the SOA
+# listed on the HOSTAD var
+H=`get_soa`
+if [ -z "${H}" ] ; then
+    # fail verbose, no soa FOUND
+    get_soa_verbose
+else
+    echo "===> DNS working and SOA listed on HOSTAD var, using '${H}' for tests"
+fi
+
+# No ping, some users have VLANs with no ping allowed, we switch to nc to test if
+# the port is open, but we need to know the correct por if LDAP or LDAPS
+# secure ldap by default
+PORT=636
+if [ "$SECURELDAP" == "" -o "$SECURELDAP" == "no" -o "$SECURELDAP" == "No" ] ; then
+    # no sec, plain ldap
+    PORT=389
+fi
+
+# command
+nc "${H}" "$PORT" -vz  2> /dev/null
+
+# testing
+R=$?
+if [ $R -eq 0 ] ; then
+    echo "===> We can reach the domain server listed in the configs!"
+else
+    # fail
+    echo "================================================================================="
+    echo "ERROR!"
+    echo "    We can't connect to the port $PORT of the AD server ($H) specified in"
+    echo "    the config, check your network settings, firewalls, etc"
+    echo ""
+    echo "    HOSTAD is: ${HOSTAD}"
+    echo "================================================================================="
+    echo " "
+
+    exit 1
+fi
+
 
 #vmail user
 GROUP=`cat /etc/group | grep $VMAILNAME | grep $VMAILGID`
@@ -35,6 +109,9 @@ if [ "$HOST" == "$FQDN" ] ; then
     echo "    Your hostname does not have a domain or it's configured wrong!"
     echo "    A 'hostname' command must return just the name of the host with no domain"
     echo "    A 'hostname -f' command must return the name with the domain"
+    echo " "
+    echo "    hostname: ${HOST}"
+    echo "    hostname -f: ${FQDN}"
     echo "================================================================================="
     echo " "
 
@@ -58,79 +135,6 @@ else
     exit 1
 fi
 
-# No ping, some users have VLANs with no ping allowed, we switch to nc to test if
-# the port is open, but we need to know the correct por if LDAP or LDAPS
-PORT=""
-if [ "$SECURELDAP" == "" -o "$SECURELDAP" == "no" -o "$SECURELDAP" == "No" ] ; then
-    # no sec, plain ldap
-    PORT=389
-else
-    # secure ldap
-    PORT=636
-fi
-
-# command
-nc "$HOSTAD" "$PORT" -vz  2> /dev/null
-
-# testing
-R=$?
-if [ $R -eq 0 ] ; then
-    echo "===> We can reach the domain server listed in the configs!"
-else
-    # fail
-    echo "================================================================================="
-    echo "ERROR!"
-    echo "    We can't connect to the port $PORT of the AD server ($HOSTAD) specified in"
-    echo "    the config, check your network settings, firewalls, etc"
-    echo "================================================================================="
-    echo " "
-
-    exit 1
-fi
-
-# check if the DNS is working, by asking for the SOA of the domain
-SOAREC=`dig SOA $DOMAIN +short`
-if [ "$SOAREC" == "" ] ; then
-    # fail
-    echo "================================================================================="
-    echo "ERROR!"
-    echo "    The DOMAIN you declared in mailad.conf has no SOA record in the actual DNS"
-    echo "    That, or your DNS is not configurated correctly in this host"
-    echo "================================================================================="
-    echo " "
-
-    exit 1
-else
-    # returned values so DNS is configured OK, but need more testing
-    echo "===> SOA record acquired, testing that HOSTAD points to the SOA..."
-
-    HOST=`echo $SOAREC | grep $HOSTAD`
-    if [ "$HOST" == "" ] ; then
-        # maybe HOSTAD is an IP?
-        HOST=`echo $SOAREC | awk '{print $1}' | rev | cut -d "." -f 2- | rev`
-        IP=`dig A $HOST +short`
-        if [ "IP" == "$HOSTAD" ] ; then
-            # success
-            echo "===> The SOA record points to the HOSTAD value (HOSTAD is an IP), nice!"
-        else
-            # fail
-            echo "================================================================================="
-            echo "ERROR!"
-            echo "    The DNS answer with a value for the SOA of $DOMAIN, but the value does"
-            echo "    not match the one configured in HOSTAD, please fix that"
-            echo "    HOSTAD=$HOSTAD vs SOA_IP=$IP "
-            echo "================================================================================="
-            echo " "
-
-            exit 1
-        fi
-    else
-        # success
-        echo "===> The SOA record points to the HOSTAD value (HOSTAD is a hostname), nice!"
-    fi
-fi
-
-
 # testing that the password is different if we are in a non  testing domain
 if [ $DOMAIN != "mailad.cu" -a "$LDAPBINDPASSWD" == "Passw0rd---" ] ; then
     echo "================================================================================="
@@ -145,29 +149,49 @@ if [ $DOMAIN != "mailad.cu" -a "$LDAPBINDPASSWD" == "Passw0rd---" ] ; then
 fi
 
 # testing if a working DNS is configured if AV is set to enabled
+# and direct with no proxy or local mirror
 if [ "$ENABLE_AV" == "yes" -o "$ENABLE_AV" == "Yes" ] ; then
-    # check if we can get the database fingerprint for clamav
-    DBF=`dig +short TXT current.cvd.clamav.net | grep -P "([0-9]+:){7}"`
-    if [ -z "$DBF" ] ;  then
-        # DNS not working
-        echo "================================================================================="
-        echo "ERROR!"
-        echo "    You enabled the AV in the config file but no working DNS server is configured"
-        echo "    in the PC, if we don't have a working DNS to check for AV updates or internet"
-        echo "    access, we can not provide a working ClamAV configuration."
-        echo " "
-        echo "    Please check your DNS with this command:"
-        echo "        dig +short TXT current.cvd.clamav.net"
-        echo " "
-        echo "    If that doest not return a long string you have a not working DNS, and must"
-        echo "    set the var 'ENABLE_AV=no' in the /etc/mailad/mailad.conf file until you fix"
-        echo "    that, or the installation will not work."
-        echo "================================================================================="
-        echo " "
 
-        exit 1
+    PROXY=""
+    # check for proxy on use
+    if [ "$PROXY_HOST" -a "$PROXY_PORT" -a "$AV_UPDATES_USE_PROXY" == "yes" ] ; then
+        PROXY="yeha baby!"
+    fi
+
+    AMIRROR=""
+    # check for alternate mirror usage
+    if [ "$USE_AV_ALTERNATE_MIRROR" == "yes" -o "$USE_AV_ALTERNATE_MIRROR" == "Yes" ] ; then
+        AMIRROR="yeha baby!"
+    fi
+
+    # if using proxy or an alternate mirror, avoid the test
+    if [ -z "${PROXY}${AMIRROR}" ] ; then
+        # direct no proxy or local mirror, check if we can get the database fingerprint for clamav
+        DBF=`dig +short TXT current.cvd.clamav.net | grep -P "([0-9]+:){7}"`
+        if [ -z "$DBF" ] ;  then
+            # DNS not working
+            echo "================================================================================="
+            echo "ERROR!"
+            echo "    You enabled the AV in the config file but no working DNS server is configured"
+            echo "    in the PC, if we don't have a working DNS to check for AV updates or internet"
+            echo "    access, we can not provide a working ClamAV configuration."
+            echo " "
+            echo "    Please check your DNS with this command:"
+            echo "        dig +short TXT current.cvd.clamav.net"
+            echo " "
+            echo "    If that does not return a long string you have a not working DNS, and must"
+            echo "    set the var 'ENABLE_AV=no' in the /etc/mailad/mailad.conf file until you fix"
+            echo "    that, or use a proxy server to get the updates."
+            echo "================================================================================="
+            echo " "
+
+            exit 1
+        else
+            echo "===> Working DNS for ClamAV found!"
+        fi
     else
-        echo "===> Working DNS for ClamAV found!"
+        # AV must use proxy or alternate mirrors, so skip this test
+        echo "===> Skip DNS test for ClamAV as we will use proxy or alternate mirrors"
     fi
 fi
 

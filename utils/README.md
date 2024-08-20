@@ -3,6 +3,7 @@
 This folder has some own & user contributed utilities to help in the setup, upgrade and general maintenance of MailAD see the index to jump to the desired one:
 
 * [Upgrade to the simplified AD configuration](README.md#upgrade-to-the-simplified-ad-configuration)
+* [Samba 4 scaffolding script](README.md#samba-4-scaffolding-script)
 
 ## Upgrade to the simplified AD configuration
 
@@ -60,3 +61,17 @@ It's simple but tedious, the task below explained for a simple user, cycle on th
 - Set the "Home Page" property to the value that was in the "Telephone number".
 - Save the changes.
 - Repeat for the next user.
+
+## Samba 4 scaffolding script
+
+This script is meant to be run on a test/develop environment to scaffold a samba4 domain controller to test the MailAD implementation; **it's not meant for production use!**
+
+You can run it via `make samba` option, it will create a test Samba 4 domain server for testing purposes based on your `/etc/mailad/mailad.conf` settings.
+
+Basic usage instructions follows:
+- On a host _(can be same host for test purposes)_ you must clone the repository and make a `make conf` to create the local configurations file.
+- Edit the `/etc/mailad/mailad.conf` file with the same settings of the mail server _(if on the same host it will read from that file, or you can just copy the one from your mailserver)_
+- Check the [Test README](../test/README.md) file on how to create the .mailadmin.auth file in the root of the repository, pick the credentials and user names you like
+* Fire a `make samba`, this will call the `samba_scaffold.sh` script and will setup a test samba 4 domain, will create the users, OUs, groups, etc.
+
+**(Again) WARNING**: This script - or the configuration it produces - is not intended to use in production, it's just a minimal functioning domain for testing MailAD.
