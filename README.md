@@ -6,7 +6,7 @@
 [![All Contributors](https://img.shields.io/badge/all_contributors-10-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
-![MailAD Logo](./logos/MailAD-logo-full.png)
+![MailAD Logo](./logos/MailAD-logo-full_white_background..png)
 
 This page is also available in the following languages: [ [Español](i18n/README.es.md) 🇪🇸 🇨🇺] [ [Deutsch](i18n/README.de.md) 🇩🇪]
 
