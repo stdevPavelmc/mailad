@@ -75,15 +75,12 @@ smtpd_tls_CAfile = /etc/ssl/certs/cacert.pem
 smtpd_use_tls = yes
 smtpd_sasl_tls_security_options = $smtpd_sasl_security_options
 smtpd_tls_auth_only = yes
-smtp_tls_loglevel = 1
 smtpd_tls_loglevel = 1
 # Proteccion contra atake LogJam, FREAK & POODLE
 smtpd_tls_eecdh_grade = strong
 smtpd_tls_ciphers = high
 smtpd_tls_mandatory_protocols = !SSLv2,!SSLv3,!TLSv1,!TLSv1.1
 smtpd_tls_protocols = !SSLv2,!SSLv3,!TLSv1,!TLSv1.1
-smtp_tls_mandatory_protocols = !SSLv2,!SSLv3,!TLSv1,!TLSv1.1
-smtp_tls_protocols = !SSLv2,!SSLv3,!TLSv1,!TLSv1.1
 smtpd_tls_exclude_ciphers = aNULL, eNULL, EXPORT, DES, RC4, MD5, PSK, aECDH, EDH-DSS-DES-CBC3-SHA, EDH-RSA-DES-CBC3-SHA, KRB5-DES, CBC3-SHA
 smtpd_tls_dh1024_param_file = /etc/ssl/dh/RSA2048.pem
 
@@ -269,6 +266,9 @@ smtpd_reject_unlisted_recipient = yes
 # ver comentarios en el fichero /etc/postfix/sasl_passwd
 #smtp_sasl_auth_enable = yes
 #smtp_sasl_password_maps = hash:/etc/postfix/sasl_passwd
+smtp_tls_loglevel = 1
+smtp_tls_mandatory_protocols = !SSLv2,!SSLv3,!TLSv1,!TLSv1.1
+smtp_tls_protocols = !SSLv2,!SSLv3,!TLSv1,!TLSv1.1
 
 # Compatibilidad con versiones modernas 
 compatibility_level = 2
