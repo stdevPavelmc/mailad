@@ -20,6 +20,10 @@ Dates must be YEAR-MONTH-DAY
 DO NOT FORGET to update the VERSION file.
 -->
 
+## [v1.1.8] - 2024-11-27
+
+- Fixed: Bug 191, dovecot cache auth troubles leads to unexpected behaviour.
+
 ## [v1.1.7] - 2024-08-17
 
 - Added: Support for Ubuntu Noble 24.04 LTS and Debian Bookworm 12.
