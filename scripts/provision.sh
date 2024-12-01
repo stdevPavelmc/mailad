@@ -12,7 +12,7 @@
 #       - post process the files if needed (postfix postmap)
 #       - start the services
 #       - run a series of tests
-#           - services init wwith no fail
+#           - services init with no fail
 #           - send an email and verify it's placed on the users folder
 
 # source the common config
@@ -23,6 +23,9 @@ source "/etc/mailad/mailad.conf"
 
 # postfix files to make postmap, with full path
 PMFILES="/etc/postfix/rules/lista_negra /etc/postfix/rules/everyone_list_check /etc/postfix/aliases/alias_virtuales"
+
+# use apt in non interactive way
+export DEBIAN_FRONTEND=noninteractive
 
 # capture the local path
 P=`pwd`
@@ -394,7 +397,6 @@ if [ "$ENABLE_DISCLAIMER" == "yes" -o "$ENABLE_DISCLAIMER" == "Yes" ] ; then
     # enable disclaimer
     echo "===> Disclaimer enabled on config, installing altermime..."
 
-    export DEBIAN_FRONTEND=noninteractive
     apt-get install $DEBIAN_DISCLAIMER_PKGS -y
 
     # notice
@@ -425,7 +427,6 @@ else
     echo "===> Disclaimer disabled on config, disabling"
 
     # remove the altermime package
-    export DEBIAN_FRONTEND=noninteractive
     apt-get purge $DEBIAN_DISCLAIMER_PKGS -y || exit 0
 
     # disable the dfilt line in the master.cf file on postfix
