@@ -98,4 +98,5 @@ fi
 
 # restart nginx
 echo "===> Restarting Nginx..."
-systemctl restart nginx php8.3-fpm
+PHP_FPM_VER=$(dpkg -l | grep php-fpm | awk '{print $3}' | cut -d ":" -f2 | cut -d "+" -f1)
+systemctl restart nginx php${PHP_FPM_VER}-fpm

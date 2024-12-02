@@ -461,6 +461,9 @@ else
     sed -i s/"^tlsproxy  unix  -       -       y       -       0       tlsproxy"/"#tlsproxy  unix  -       -       y       -       0       tlsproxy"/ ${FILE}
 fi
 
+# Webmails
+./scripts/webmails.sh
+
 # start services
 services restart
 

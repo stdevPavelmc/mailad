@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := help
 
-.PHONY : conf clean reset fix-vmail install-purge all force-provision force-certs test_deps test_setup test upgrade backup restore purge-backups help
+.PHONY : conf clean reset fix-vmail install-purge all force-provision force-certs webmail test_deps test_setup test upgrade backup restore purge-backups help
 
 PWD = $(shell pwd)
 
@@ -83,6 +83,10 @@ force-provision: ## Force a re-provisioning of the system
 force-certs: ## Force a re-creation of the SSL & dhparm certs
 	rm certs
 	$(MAKE) certs
+
+webmail: ## Install/remove webmail from the confiuration
+	scripts/webmail.sh
+	echo "done" > webmail
 
 test-deps: ## Install test dependencies
 	apt update && apt install -y swaks coreutils mawk bc curl
