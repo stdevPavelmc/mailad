@@ -37,9 +37,8 @@ if [ "$WEBMAIL_ENABLED" == "yes" -o "$ENABLE_WEBMAILS" == "Yes" ] ; then
     # install the webmails
     if [ -z "$WEBMAIL_APP" -o "$WEBMAIL_APP" == "roundcube" ] ; then
         ./scripts/roundcube.sh
-    elif [ "$WEBMAIL_APP" == "snappymail" ] ; then
-        echo "[] roundcube"
-        ./scripts/rainloop.sh
+    elif [ "$WEBMAIL_APP" == "snappy" ] ; then
+        ./scripts/snappy.sh
     else
         echo "===> WARNING!!!"
         echo "Unknown webmail app: $WEBMAIL_APP"
@@ -51,9 +50,8 @@ else
     echo "     purging any related config..."
 
     # make sure the webmails are disabled
-    apt-get purge ${ROUNDCUBE_PKGS} -y
-    rm -rdf ${SNAPPY_DIRS} 2>/dev/null
-    apt-get remove ${WEBSERVER_PKGS} -y
+    apt-get purge ${ROUNDCUBE_PKGS} ${SNAPPY_PKGS} ${WEBSERVER_PKGS} -y
+    rm -rdf ${SNAPPY_DIR} 2>/dev/null
 
     # clean
     apt-get autoremove -y

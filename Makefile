@@ -85,8 +85,7 @@ force-certs: ## Force a re-creation of the SSL & dhparm certs
 	$(MAKE) certs
 
 webmail: ## Install/remove webmail from the confiuration
-	scripts/webmail.sh
-	echo "done" > webmail
+	scripts/webmails.sh
 
 test-deps: ## Install test dependencies
 	apt update && apt install -y swaks coreutils mawk bc curl

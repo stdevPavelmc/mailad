@@ -18,6 +18,11 @@ source "/etc/mailad/mailad.conf"
 export DEBIAN_FRONTEND=noninteractive
 
 # notice
+echo "===> Remove SnappyMail if it was previosly installed"
+apt-get remove -y "$SNAPPY_PKGS" 2> /dev/null
+rm -rdf "$SNAPPY_DIR" || true
+
+# notice
 echo "===> Installing Roundcube webmail"
 
 # install rainloop pkgs
@@ -39,6 +44,12 @@ fi
 # copy the config file
 cp ./var/roundcube/config.inc.php ${ROUNDCUBE_CONFIG_FOLDER}/
 
+# Create sqlite store for mailad
+SQLITE_STORAGE=/var/lib/mailad
+mkdir -p $SQLITE_STORAGE
+chown -R root:www-data $SQLITE_STORAGE
+chmod 0770 $SQLITE_STORAGE
+
 # ldap vars
 LDAP_PORT=389
 LDAP_PREFIX=""
@@ -53,8 +64,9 @@ for h in $(echo $HOSTAD | xargs); do
     LDAP_HOSTS="${LDAP_PREFIX}${h}:$LDAP_PORT ${LDAP_HOSTS}"
 done
 
-# add the LDAPURI & ESC_SYSADMINS to the vars
-VARS="${VARS} ROUNDCUBE_DESKEY LDAP_HOSTS"
+# add the some local vars to the list
+WWW_ROOT="/var/lib/roundcube/public_html"
+VARS="${VARS} ROUNDCUBE_DESKEY LDAP_HOSTS WWW_ROOT"
 
 # replace the vars in the folders
 for f in `echo "$ROUNDCUBE_CONFIG_FOLDER" | xargs` ; do
@@ -73,7 +85,23 @@ done
 
 # install the default site config
 NGINX_CONFIG=/etc/nginx/sites-available/default
-cp ./var/roundcube/nginx.conf ${NGINX_CONFIG}
+NGINX_TEMPLATE=./var/nginx/default
+if [ "$WEBSERVER_HTTP_ENABLED" == "yes" ]; then
+    NGINX_TEMPLATE=./var/nginx/default_http
+
+    # User notice:
+    echo ""
+    echo "####################  WARNING  WARNING  WARNING ######################"
+    echo "#                                                                    #"
+    echo "# You selected an HTTP only web server, this is dangerous unless you #"
+    echo "#    use a reverse proxy with a TLS/SSL wrapper [HTTPS wrapper]      #"
+    echo "#                                                                    #"
+    echo "#                      You has been warned!                          #"
+    echo "#                                                                    #"
+    echo "#####################  WARNING  WARNING  WARNING #####################"
+    echo ""
+fi
+cp ${NGINX_TEMPLATE} ${NGINX_CONFIG}
 
 # replace vars
 echo "===> Provisioning Nginx..."
@@ -93,6 +121,8 @@ nginx -t
 
 if [ "$?" != "0" ] ; then
     echo "===> Nginx config test failed, exiting"
+    echo "     Copy the log on this console and go to https://t.me/MailAD_dev"
+    echo "     and ask for help."
     exit 1  
 fi
 
