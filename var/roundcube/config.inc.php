@@ -105,13 +105,9 @@ $config['ldap_public']["global_ldap_book"]['conn_options'] = array(
 );
 
 // local DB [sqlite3]
-$dbuser='roundcube';
-$dbpass='';
-$basepath='/var/lib/dbconfig-common/sqlite3/roundcube';
-$dbname='roundcube';
-$dbserver='';
-$dbport='';
 $dbtype='sqlite3';
+$basepath='/var/lib/mailad';
+$dbname='roundcube.sqlite3';
 $config['db_dsnw'] = "sqlite:///$basepath/$dbname?mode=0640";
 
 ?>
