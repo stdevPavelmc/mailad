@@ -1,0 +1,14 @@
+{
+    "plugin": {
+        "ldap_uri": "_LDAP_HOSTS_",
+        "use_start_tls": false,
+        "bind_dn": "_LDAPBINDUSER_",
+        "bind_password": "_LDAPBINDPASSWD_",
+        "base_dn": "_LDAPSEARCHBASE_",
+        "object_classes": "person,group",
+        "uid_attributes": "uid",
+        "name_attributes": "cn,sn,name,displayName",
+        "mail_attributes": "mail,email",
+        "allowed_emails": "*"
+    }
+}
