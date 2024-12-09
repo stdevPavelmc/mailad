@@ -2,6 +2,7 @@
 
 This is a long page, so here is an index:
 
+* [Webmails](Features.md#webmails)
 * [Low Resource Footprint](Features.md#low-resource-footprint)
 * [Security Protection Against Well Known SSL And Mail Attacks](Features.md#security-protection-against-well-known-SSL-and-mail-attacks)
 * [Active Directory Integration And Management](Features.md#active-directory-integration-and-management)
@@ -27,6 +28,37 @@ This is a long page, so here is an index:
 * [Painless Upgrades](Features.md#painless-upgrades)
 * [Weekly update checks](Features.md#weekly-update-checks)
 * [Physical mailbox of the users split by location](Features.md#physical-mailbox-of-the-users-split-by-location)
+
+## Webmails
+
+Since late December 2024 MailAD supports the use of a Webmail on the same host that the mail server, this are some features and things you need to know about it.
+
+This feature is an opt in one, it's disabled by default to maintain compatibility with older releases; upgrade to the latest MailAD using the [Upgrade Instructions](INSTALL.md#upgrading)
+
+- It uses by default the mailserver hostname, so if your mailserver is mail.empresa.cu, then the webmail will be https://mail.empresa.cu
+- It uses Nginx web server with php-fpm, it uses the default php-fpm version in your OS.
+- It will use HTTPS by default with the MailAD generated ssl cert, or the Let's Encrypt ones if present, see install for details.
+- If you need HTTP because you use a reverse proxy with HTTPS to expose it to the outside world... there is a setting to force HTTP, check the section on /etc/mailad/mailad.conf
+- We offer two popular and free to use webmail solutions
+- Both webmails will use email auto-completion from the LDAP server.
+
+### RoundCube
+
+This is installed from the repo of your OS, so its not cutting edge but it's stable and proved. This is the default option because it's on the Os repos and it will be easy to install.
+
+For more details check the [Official Website](https://roundcube.net/)
+
+### SnappyMail
+
+This is an option and will be downloaded from the internet, so you need to setup the proxy options in the `/etc/mailad/mailad.conf` file if you use one on your network. It's a fresh, light and resposive modern webmail, that evolved from RainLoop when it became unmaintained.
+
+Snappy mail has a special admin page (https://yourmail.domain.cu/?admin) where you can install extra plugins, etc; during the install the script will notice you of the default password, if you don't see it then it's also stored on the file `/etc/mailad/snappy_admin_pass` the user is always `admin`.
+
+Notice: after a reconfigure, upgrade or re-provision any pluging you installed may be erased; sorry for that.
+
+For more details check the [Official Website](https://snappymail.eu/)
+
+[Return to index](Features.md#mailad-features-explained)
 
 ## Low Resource Footprint
 

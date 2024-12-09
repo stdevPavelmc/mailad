@@ -14,11 +14,16 @@ This is a note for developers about the recommended tags to keep track of the ch
 - Removed: for now removed features.
 - Fixed: for any bug fixes.
 - Security: in case of vulnerabilities.
+- Extra: comments or notices from the Developer.
 
 Dates must be YEAR-MONTH-DAY
-
-DO NOT FORGET to update the VERSION file.
 -->
+
+## [v1.2.0-rc] - 2024-12-08
+
+- Added: Webmails!!! Disabled by default, you need to upgrade first, you can pick RoundCube [default] or SnappyMail.
+- Added: Documentation for the webmails, see Features.md.
+- Extra: This feature is an effort to celebrate the 5th year of age, Happy Bithday!
 
 ## [v1.1.8] - 2024-11-27
 
