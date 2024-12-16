@@ -56,8 +56,8 @@ BPWD=$(pwd)
 # create log folder
 LOGS="/var/log/snappymail"
 mkdir -p $LOGS
-sudo chown -R www-data:www-data $LOGS
-sudo chmod -R 755 $LOGS
+chown -R www-data:www-data $LOGS
+chmod -R 755 $LOGS
 
 # Install Snappy Webmail
 mkdir -p $SNAPPY_DIR

@@ -81,7 +81,7 @@ $config['ldap_public']["global_ldap_book"] = array(
     ),
     'sort'          => 'cn',
     'scope'         => 'sub',
-    'filter'        => '(&(mail=*)(|(objectClass=group)(userAccountControl=512)(userAccountControl=66048)(userAccountControl=8398120)))',
+    'filter'        => '(&(mail=*)(|(objectClass=group)(userAccountControl=512)(userAccountControl=66048)(userAccountControl=8398120)(userAccountControl=66080)(userAccountControl=544)))',
     'fuzzy_search'  => true,
     'vlv'           => false,
     'sizelimit'     => '0',
