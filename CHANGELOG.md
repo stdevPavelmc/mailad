@@ -14,9 +14,68 @@ This is a note for developers about the recommended tags to keep track of the ch
 - Removed: for now removed features.
 - Fixed: for any bug fixes.
 - Security: in case of vulnerabilities.
+- Extra: comments or notices from the Developer.
 
 Dates must be YEAR-MONTH-DAY
 -->
+
+## [v1.2.0-rc] - 2024-12-08
+
+- Added: Webmails!!! Disabled by default, you need to upgrade first, you can pick RoundCube [default] or SnappyMail.
+- Added: Documentation for the webmails, see Features.md.
+- Extra: This feature is an effort to celebrate the 5th year of age, Happy Bithday!
+
+## [v1.1.8] - 2024-11-27
+
+- Fixed: Bug 191, dovecot cache auth troubles leads to unexpected behaviour.
+
+## [v1.1.7] - 2024-08-17
+
+- Added: Support for Ubuntu Noble 24.04 LTS and Debian Bookworm 12.
+- Fixed: The Samba scaffold scripts for development and testing.
+- Changed: The documentation to explain the changes
+- Extra: Happy 31 birthday for Debian
+
+## [v1.1.6] - 2024-07-16
+
+- Changed: Clamav updater freshclam complains on debian and posible ubuntu of wrong perms & owner of the config file
+
+## [v1.1.5] - 2024-07-10
+
+- Added: Body checks to add by default variants of common blackmailing emails on the move now
+
+## [v1.1.4] - 2023-12-26
+
+- Security: SMTP smuggling vulnerability, https://www.postfix.org/smtp-smuggling.html
+- Changed: Remove the old conas.cu notification email.
+
+## [v1.1.3] - 2022-10-27
+
+- Fixed: A warning on the daily mail resume about tempfile deprecation in favor of mktemp
+
+## [v1.1.2] - 2022-09-08
+
+- Added: Develop space fix, no need to upgrade: a failsafe measure was built on git push to keep version number unique on the 3 files that has it; aka: just mod it on CHANGELOG.md and it will be updated on the git flow with a warning.
+
+## [v1.1.1] - 2022-09-08
+
+- Fixed: Fix the user's split mailfolders for older OS versions (<= Ubuntu 20.04 & <= Debian 10)
+
+## [v1.1.0] - 2022-09-07
+
+- Added: You can split the users mail folders by home office or province, see Features.md for details
+
+## [v1.0.0] - 2022-09-05
+
+- Changed: Set Ubuntu 22.04 LTS as default develop environment.
+- Added: Semantic versioning, there is a file on the root of the repository with the version number, starting from 1.0.0 and this file
+- Added: Weekly check for new versions and warn the sysadmin group/user about latest changes.
+- Added: After installation a weekly cron job will check for new versions and will notify the postmaster if new changes are found
+
+## 2022-09-04
+
+- Fixed: Bug #181, check for stalled mailboxes fails when using multiple DCs, was a not updated LDAP_URI var.
+- Changed: Documentation, comment about the 20 chars max on the email username on the README.md
 
 ## 2022-03-25
 

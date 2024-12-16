@@ -2,6 +2,7 @@
 
 This is a long page, so here is an index:
 
+* [Webmails](Features.md#webmails)
 * [Low Resource Footprint](Features.md#low-resource-footprint)
 * [Security Protection Against Well Known SSL And Mail Attacks](Features.md#security-protection-against-well-known-SSL-and-mail-attacks)
 * [Active Directory Integration And Management](Features.md#active-directory-integration-and-management)
@@ -25,6 +26,39 @@ This is a long page, so here is an index:
 * [Test Suite](Features.md#test-suite)
 * [Raw Backup And Restore Options](Features.md#raw-backup-and-restore-options)
 * [Painless Upgrades](Features.md#painless-upgrades)
+* [Weekly update checks](Features.md#weekly-update-checks)
+* [Physical mailbox of the users split by location](Features.md#physical-mailbox-of-the-users-split-by-location)
+
+## Webmails
+
+Since late December 2024 MailAD supports the use of a Webmail on the same host that the mail server, this are some features and things you need to know about it.
+
+This feature is an opt in one, it's disabled by default to maintain compatibility with older releases; upgrade to the latest MailAD using the [Upgrade Instructions](INSTALL.md#upgrading)
+
+- It uses by default the mailserver hostname, so if your mailserver is mail.empresa.cu, then the webmail will be https://mail.empresa.cu
+- It uses Nginx web server with php-fpm, it uses the default php-fpm version in your OS.
+- It will use HTTPS by default with the MailAD generated ssl cert, or the Let's Encrypt ones if present, see install for details.
+- If you need HTTP because you use a reverse proxy with HTTPS to expose it to the outside world... there is a setting to force HTTP, check the section on /etc/mailad/mailad.conf
+- We offer two popular and free to use webmail solutions
+- Both webmails will use email auto-completion from the LDAP server.
+
+### RoundCube
+
+This is installed from the repo of your OS, so its not cutting edge but it's stable and proved. This is the default option because it's on the Os repos and it will be easy to install.
+
+For more details check the [Official Website](https://roundcube.net/)
+
+### SnappyMail
+
+This is an option and will be downloaded from the internet, so you need to setup the proxy options in the `/etc/mailad/mailad.conf` file if you use one on your network. It's a fresh, light and resposive modern webmail, that evolved from RainLoop when it became unmaintained.
+
+Snappy mail has a special admin page (https://yourmail.domain.cu/?admin) where you can install extra plugins, etc; during the install the script will notice you of the default password, if you don't see it then it's also stored on the file `/etc/mailad/snappy_admin_pass` the user is always `admin`.
+
+Notice: after a reconfigure, upgrade or re-provision any pluging you installed may be erased; sorry for that.
+
+For more details check the [Official Website](https://snappymail.eu/)
+
+[Return to index](Features.md#mailad-features-explained)
 
 ## Low Resource Footprint
 
@@ -48,6 +82,7 @@ If you are willing please share some statistics and hardware details with me to 
 - We will keep it updated against emerging threats: 
   - Fix for a recent spammer trick: forgery of the From/Return-Path to make the users think the mails are legitimate when they are not.
   - Ban (reject) of subject-less emails, a common spammer trick
+  - SMTP smuggling attack [https://www.postfix.org/smtp-smuggling.html]
 
 Backed up by the collective knowledge of the [SysAdminsdeCuba](https://t.me/sysadmincuba) SysAdmins community.
 
@@ -567,3 +602,26 @@ root@mail:~/mailad#
 We have tested the process extensively and the chances of corruption or failure are very low. As usual in FLOSS I give only my word as warranty, make and keep backups before the upgrade to restore it in case of trouble.
 
 [Return to index](Features.md#mailad-features-explained)
+
+## Weekly update checks
+
+Once in a week (as per the system cron execution schema) the system will connect to github and will check if there is a new version. If positive it will pull the changelog and compute the delta in the features and generate an email for the sysadmin or the sysadmin group.
+
+For this feature to work you need to have internet access in the server, or in the case you specified a proxy server on the config, it will use it.
+
+[Return to index](Features.md#mailad-features-explained)
+
+## Physical mailbox of the users split by location
+
+In some cases you will have a lot of users and it will be desirable to split them by the office, province, city, etc.
+
+We have a feature for that, just go to the mailad.conf file and look for the section named `### Local mail storage sub folder` and set it up to yes. Then go to the Active Directory and use the property `Office` to set the sub folder name.
+
+***Warning!***
+If you have a non split mailbox and switch to a split mailbox you have to move the mailboxes manually to the forders (yes, you have to create them by hand) and at the end don't forget to change the owner and group to the ones on the mailad.conf file.
+
+If you are seting up a fresh email, just `make provision` to apply the changes, if on a old system make a force provision and note the warning of the above parragraph.
+
+[Return to index](Features.md#mailad-features-explained)
+
+END OF FILE

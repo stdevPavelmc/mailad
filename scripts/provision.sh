@@ -12,7 +12,7 @@
 #       - post process the files if needed (postfix postmap)
 #       - start the services
 #       - run a series of tests
-#           - services init wwith no fail
+#           - services init with no fail
 #           - send an email and verify it's placed on the users folder
 
 # source the common config
@@ -23,6 +23,9 @@ source "/etc/mailad/mailad.conf"
 
 # postfix files to make postmap, with full path
 PMFILES="/etc/postfix/rules/lista_negra /etc/postfix/rules/everyone_list_check /etc/postfix/aliases/alias_virtuales"
+
+# use apt in non interactive way
+export DEBIAN_FRONTEND=noninteractive
 
 # capture the local path
 P=`pwd`
@@ -69,8 +72,15 @@ ESC_SYSADMINS=`echo $SYSADMINS | sed s/"@"/"\\\@"/`
 # get the LDAP URI
 LDAPURI=`get_ldap_uri`
 
+# check if the optional mail storage is enabled
+MBSUBFOLDER=''
+if [ "${USE_MS_SUBFOLDER}" == "yes" -o "${USE_MS_SUBFOLDER}" == "Yes" ] ; then
+    # set the var, must end in /, a escaped /
+    MBSUBFOLDER='%{ldap:physicalDeliveryOfficeName:}/'
+fi
+
 # add the LDAPURI & ESC_SYSADMINS to the vars
-VARS="${VARS} LDAPURI ESC_SYSADMINS"
+VARS="${VARS} LDAPURI ESC_SYSADMINS MBSUBFOLDER"
 
 # replace the vars in the folders
 for f in `echo "/etc/postfix /etc/dovecot /etc/amavis" | xargs` ; do
@@ -295,6 +305,10 @@ else
     echo "===> AV filtering provision is in place, but activation is delayed, we must wait for freshclam"
     echo "===> to update the AV database before enabling it or you will lose emails in the mean time"
     echo "===> you will be notified by mail when it's activated."
+
+    # set asked perms to the freshclam file as debian12 & ubuntu24 complains about it
+    chmod 0700 ${FILE}
+    chown freshclam.adm ${FILE}
 fi
 
 ### SPAMD setting
@@ -383,7 +397,6 @@ if [ "$ENABLE_DISCLAIMER" == "yes" -o "$ENABLE_DISCLAIMER" == "Yes" ] ; then
     # enable disclaimer
     echo "===> Disclaimer enabled on config, installing altermime..."
 
-    export DEBIAN_FRONTEND=noninteractive
     apt-get install $DEBIAN_DISCLAIMER_PKGS -y
 
     # notice
@@ -414,7 +427,6 @@ else
     echo "===> Disclaimer disabled on config, disabling"
 
     # remove the altermime package
-    export DEBIAN_FRONTEND=noninteractive
     apt-get purge $DEBIAN_DISCLAIMER_PKGS -y || exit 0
 
     # disable the dfilt line in the master.cf file on postfix
@@ -449,6 +461,9 @@ else
     sed -i s/"^tlsproxy  unix  -       -       y       -       0       tlsproxy"/"#tlsproxy  unix  -       -       y       -       0       tlsproxy"/ ${FILE}
 fi
 
+# Webmails
+./scripts/webmails.sh
+
 # start services
 services restart
 
@@ -459,3 +474,12 @@ if [ "$OPT_STATS" == "yes" -o "$OPT_STATS" == "Yes" ] ; then
     # and we have stats, thanks
     ./scripts/feedback.sh
 fi
+
+# copy the CHANGELOG to the local storage as latest
+cp CHANGELOG.md /etc/mailad/changelog.latest
+
+# copy the version script to bin path and set the cron job
+cp ./scripts/check_new_version.sh /usr/local/bin/check_new_version.sh
+chmod +x /usr/local/bin/check_new_version.sh
+rm /etc/cron.weekly/mailad_check 2>/dev/null
+ln -s /usr/local/bin/check_new_version.sh /etc/cron.weekly/mailad_check

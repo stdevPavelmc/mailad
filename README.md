@@ -1,4 +1,4 @@
-# MailAD
+# MailAD v1.2.0-rc
 
 [![Chat on Telegram](https://img.shields.io/badge/Chat%20on-Telegram-brightgreen?style=flat-square)](https://t.me/MailAD_dev) [![Twitter Follow](https://img.shields.io/twitter/follow/co7wt?label=Follow&style=flat-square)](https://twitter.com/co7wt) [![GitHub Issues](https://img.shields.io/github/issues/stdevPavelmc/mailad?style=flat-square)](https://github.com/stdevPavelmc/mailad/issues) [![GitHub Issues Closed](https://img.shields.io/github/issues-closed/stdevPavelmc/mailad?style=flat-square)](https://github.com/stdevPavelmc/mailad/issues?q=is%3Aissue+is%3Aclosed) [![GitHub repo size](https://img.shields.io/github/repo-size/stdevPavelmc/mailad?style=flat-square)](https://github.com/stdevPavelmc/mailad/archive/master.zip) [![GitHub last commit](https://img.shields.io/github/last-commit/stdevPavelmc/mailad?style=flat-square)](https://github.com/stdevPavelmc/mailad/commits/master) [![GitHub commit rate](https://img.shields.io/github/commit-activity/m/stdevPavelmc/mailad?style=flat-square)](https://github.com/stdevPavelmc/mailad/commits/master) [![Financial contributors](https://opencollective.com/mailad/tiers/badge.svg)](https://opencollective.com/mailad)
 
@@ -6,11 +6,19 @@
 [![All Contributors](https://img.shields.io/badge/all_contributors-10-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
+![MailAD Logo](./logos/MailAD-logo-full_white_background..png)
+
 This page is also available in the following languages: [ [Español](i18n/README.es.md) 🇪🇸 🇨🇺] [ [Deutsch](i18n/README.de.md) 🇩🇪]
 
-This is a handy tool to provision a mail server on linux linked to an Active Directory (AD from now on) server (Samba or Windows) with some constraints in mind, as this is a typical mail config to be used in Cuba as regulated by law and security enforcement requirements. You can see a simple provision in [this asciinema movie](https://asciinema.org/a/fD1LuVLfeb8RPCHOIgbR1J9d8).
+This is a handy tool to provision a mail server on linux linked to an Active Directory (AD from now on) server (Samba or Windows) with some constraints in mind, as this is a typical mail config to be used in Cuba as regulated by law and security enforcement requirements, but can be used on any domain. You can see a simple provision in [this asciinema movie](https://asciinema.org/a/fD1LuVLfeb8RPCHOIgbR1J9d8).
 
-We have a docker development on going on another repository, take a peek and test it or contribute: [MailAD-Docker](https://github.com/stdevPavelmc/mailad-docker/)
+## Notice
+
+We have also some derived projects you can find interesting:
+
+- [MailAD-Docker](https://github.com/stdevPavelmc/mailad-docker/) a docker compose version of this software.
+- [MailD](https://github.com/stdevPavelmc/maild/) a Multi domain docker solution with no AD linking, an all web solution.
+- [MailAD ansible role](https://github.com/stdevPavelmc/mailad-ansible-role) an Ansible role for the mail server.
 
 ## Rationale
 
@@ -20,13 +28,15 @@ After a few steps you will have a mail server up and running in about 15 minutes
 
 This tool is tested and supported on:
 
-- Ubuntu Bionic 18.04 LTS (legacy).
-- Ubuntu Focal 20.04 LTS (actual dev env).
-- Ubuntu Jammy 22.04 LTS (experimental support, future dev env).
-- Debian Buster 10 (see note below please).
-- Debian Bullseye 11 (see note below please).
+- Ubuntu Bionic 18.04 LTS (⚠️ legacy NOT recommended)
+- Ubuntu Focal 20.04 LTS (⚠️ legacy NOT recommended)
+- Ubuntu Jammy 22.04 LTS (⚠️ legacy NOT recommended)
+- Ubuntu Noble 24.04 LTS (✅ recommended, this is the development & testing platform)
+- Debian Buster 10 (⚠️ legacy NOT recommended)
+- Debian Bullseye 11 (⚠️ legacy NOT recommended)
+- Debian Bookworm 12 (✅ recommended)
 
-_**Note:** If you are using a Debian Container on LXC (Proxmox for example) you need to tweak the dovecot install or it will not work, see [this fix](https://serverfault.com/questions/976250/dovecot-lxc-apparmor-denied-buster) for more info_
+_**Note:** If you are using a a Debian buster or bullseye in a LXC Container (Proxmox for example) you need to tweak the dovecot install or it will not work, see [this fix](https://serverfault.com/questions/976250/dovecot-lxc-apparmor-denied-buster) for more info_
 
 It's recommended that the instance of MailAD sits within your DMZ segment with a firewall between it and your users and a mail gateway like [Proxmox Mail Gateway](https://www.proxmox.com/en/proxmox-mail-gateway) between it and the external network.
 
@@ -46,6 +56,8 @@ This will provision a mail server for an enterprise serving corporate users. You
 0. Optional user privilege access via AD groups (local/national/international).
 0. Optional disclaimer/notice/warning on every outgoing mail.
 0. Optional aggressive SPAM fight measures.
+0. Weekly background check for new versions with a detailed email if you need to upgrade.
+0. Optional mailbox split by office/city/country
 
 ## TODO
 
@@ -58,6 +70,7 @@ All dev is made on weekend or late at night (seriously take a peek on the commit
 Do you remember the comment at top of the page about _"...with some constraints in mind..."?_ Yeah, here they are:
 
 0. Your user base and config came from AD as mentioned, we prefer Samba AD but it works on Windows too; see [the AD requirements for this tool](AD_Requirements.md)
+0. The username part of the email must not pass the 20 chars mark, so `thisisalongemailaddress@domain.com` will be cut to `thisisalongemailaddr@domain.com` this is not our rule, but a handycap of the LDAP directory as specified by Windows Schema.
 0. The mail storage will be a folder in `/home/vmail`, all mail will belong to a user named `vmail` with uid:5000 & gid:5000. Tip: that folder can be a NFS mount or any other type of network storage (configurable)
 0. You use a Windows PC to control and manage the domain (must be a domain member and have the RSAT installed and activated), we recommend a Windows 10 LTSC/Professional
 0. The communication with the server is done in this way: (See [this question](FAQ.md#what-ports-i-need-to-get-open-to-make-sure-the-servers-works-ok) on the FAQ file to know more)
