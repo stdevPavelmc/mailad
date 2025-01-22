@@ -26,17 +26,20 @@ This repository is intended to be cloned on your fresh OS install under `/root` 
 
 After a few steps you will have a mail server up and running in about 15 minutes tops. _(this time is based on a 2Mbps internet connection to a repository, if you have a local repository it will be less)_
 
-This tool is tested and supported on:
+The recommended OS selection is as follows:
 
-- Ubuntu Bionic 18.04 LTS (⚠️ legacy NOT recommended)
-- Ubuntu Focal 20.04 LTS (⚠️ legacy NOT recommended)
-- Ubuntu Jammy 22.04 LTS (⚠️ legacy NOT recommended)
-- Ubuntu Noble 24.04 LTS (✅ recommended, this is the development & testing platform)
-- Debian Buster 10 (⚠️ legacy NOT recommended)
-- Debian Bullseye 11 (⚠️ legacy NOT recommended)
-- Debian Bookworm 12 (✅ recommended)
+- Ubuntu Noble 24.04 LTS _(this is the development & main testing platform)_
+- Ubuntu Jammy 22.04 LTS
+- Debian Bookworm 12
+- Debian Bullseye 11
 
-_**Note:** If you are using a a Debian buster or bullseye in a LXC Container (Proxmox for example) you need to tweak the dovecot install or it will not work, see [this fix](https://serverfault.com/questions/976250/dovecot-lxc-apparmor-denied-buster) for more info_
+Also on this ones, but not support is expected at this point.
+
+- Ubuntu Bionic 18.04 LTS
+- Ubuntu Focal 20.04 LTS
+- Debian Buster 10
+
+_**Note:** If you are using Debian 10 Buster or 11 Bullseye in a LXC Container (Proxmox for example) you need to tweak the dovecot install or it will not work, see [this fix](https://serverfault.com/questions/976250/dovecot-lxc-apparmor-denied-buster) for more info_
 
 It's recommended that the instance of MailAD sits within your DMZ segment with a firewall between it and your users and a mail gateway like [Proxmox Mail Gateway](https://www.proxmox.com/en/proxmox-mail-gateway) between it and the external network.
 
