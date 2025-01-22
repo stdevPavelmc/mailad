@@ -8,6 +8,7 @@ Aquí puedes encontrar las preguntas más frecuentes, este archivo crecerá con 
 - [Utilizo Debian Buster y puedo enviar emails pero no puedo revisar los emails a través de IMAPS/POP3S](FAQ.es.md#utilizo-debian-buster-y-puedo-enviar-emails-pero-no-puedo-revisar-los-emails-a-trav%C3%A9s-de-imapspop3s)
 - [¿Por qué MailAD se niega a instalar ClamAV y/o SpamAssassin alegando algún problema de DNS?](FAQ.es.md#por-qu%C3%A9-mailad-se-niega-a-instalar-clamav-yo-spamassassin-alegando-alg%C3%BAn-problema-de-dns)
 - [¿Qué puertos debo abrir para asegurarme de que los servidores funcionen bien?](FAQ.es.md#qu%C3%A9-puertos-debo-abrir-para-asegurarme-de-que-los-servidores-funcionen-bien)
+- [He instalado según las instrucciones, todo funciona correctamente pero los usuarios no pueden autenticarse, utilizo Windows server 2019](FAQ.es.md#he-instalado-según-las-instrucciones-todo-funciona-correctamente-pero-algunos-usuario-no-pueden-autenticarse-utilizo-windows-server-2019)
 
 ## Utilización
 
@@ -105,3 +106,98 @@ Soluciones:
 ## El servidor se niega a aceptar o a retransmitir correos electrónicos de los usuarios en el puerto 25
 
 Ese puerto está reservado para recibir correos electrónicos del mundo exterior, los usuarios no pueden usarlo para enviar correos electrónicos, por favor revise [esta otra pregunta](FAQ.es.md#qu%C3%A9-puertos-debo-abrir-para-asegurarme-de-que-los-servidores-funcionen-bien) para saber más.
+
+## He instalado según las instrucciones, todo funciona correctamente, pero algunos usuario no pueden autenticarse, utilizo Windows server 2019
+
+Puede deberse a que los códigos de control de cuenta de usuario (UAC) no son los comunes, esto puede deber a muchas razones, pero las razones no las veremos aquí, veremos mas bien como solucionar el problema:
+
+Normalmente el control de cuenta de usuario veremos que la propiedad **userAccountControl** tiene los valores:
+
+| Código | Descripción |
+|---------:|:---------------|
+| 512 | Usuario normal|
+| 66048| Habilitado, contraseña nunca expira|
+
+En muchos casos, cuando nuestro servidor para autenticarnos es un Windows Server 2019 aparecerán estas propiedades en **userAccountControl**
+
+| Código | Descripción |
+|---------:|:---------------|
+| 544 | Habilitado, cambio de contraseña en el próximo inicio de sección|
+| 66080| Habilitado, contraseña nunca expira, contraseña no requerida|
+
+Para solucionar el problema de autenticación de los usuarios que tienen estas propiedades es necesario agregar en las variables estas propiedades al parámetro **userAccountControl**, es decir cambiar los filtros ¿donde debemos cambiar?
+
+en la raíz de nuestro mailad, buscamos estos archivos y los dejamos como motrámos
+
+```bash
+cd var/dovecot-2.2/
+nano dovecot_ldap.conf.ext
+ .
+ .
+ .
+# Comentamos lo siguiente y la dejamos entonces así
+# user_filter = (&(sAMAccountName=%n)(|(userAccountControl=512)(userAccountControl=66048)(userAccountControl=8398120)))
+user_filter = (&(sAMAccountName=%n)(|(userAccountControl=512)(userAccountControl=66048)(userAccountControl=8398120)(userAccountControl=544)(userAccountControl=66080)))
+.
+.
+.
+# Comentamos lo siguiente y la dejamos entonces así
+# pass_filter = (&(mail=%u)(|(userAccountControl=512)(userAccountControl=66048)(userAccountControl=8398120)))
+pass_filter = (&(mail=%u)(|(userAccountControl=512)(userAccountControl=66048)(userAccountControl=8398120)(userAccountControl=544)(userAccountControl=66080)))
+
+# Ctrl+X y guardamos los cambios
+
+cd var/dovecot-2.3/
+nano dovecot_ldap.conf.ext
+.
+ .
+ .
+# Comentamos lo siguiente y la dejamos entonces así
+# user_filter = (&(sAMAccountName=%n)(|(userAccountControl=512)(userAccountControl=66048)(userAccountControl=8398120)))
+user_filter = (&(sAMAccountName=%n)(|(userAccountControl=512)(userAccountControl=66048)(userAccountControl=8398120)(userAccountControl=544)(userAccountControl=66080)))
+.
+.
+.
+# Comentamos lo siguiente y la dejamos entonces así
+# pass_filter = (&(mail=%u)(|(userAccountControl=512)(userAccountControl=66048)(userAccountControl=8398120)))
+pass_filter = (&(mail=%u)(|(userAccountControl=512)(userAccountControl=66048)(userAccountControl=8398120)(userAccountControl=544)(userAccountControl=66080)))
+
+# Ctrl+X y guardamos los cambios
+
+cd var/postfix/ldap/
+nano email2user.cf
+.
+.
+.
+# Comentamos lo siguiente y la dejamos entonces así
+# query_filter = (&(mail=%u@%d)(|(userAccountControl=512)(userAccountControl=66048)(userAccountControl=8398120)))
+query_filter = (&(mail=%u@%d)(|(userAccountControl=512)(userAccountControl=66048)(userAccountControl=8398120)(userAccountControl=544)(userAccountControl=66080)))
+
+# Ctrl+X y guardamos los cambios
+
+nano mailbox_map.cf
+.
+.
+.
+# Comentamos lo siguiente y la dejamos entonces así
+# query_filter = (&(mail=%u@%d)(|(userAccountControl=512)(userAccountControl=66048)(userAccountControl=8398120)))
+query_filter = (&(mail=%u@%d)(|(userAccountControl=512)(userAccountControl=66048)(userAccountControl=8398120)(userAccountControl=544)(userAccountControl=66080)))
+
+# Ctrl+X y guardamos los cambios
+
+cd var/roundcube/
+nano config.inc.php
+.
+.
+.
+# Lo dejamos como sigue a continuación
+'filter'        => '(&(mail=*)(|(objectClass=group)(userAccountControl=512)(userAccountControl=66048)(userAccountControl=8398120)(userAccountControl=66080)(userAccountControl=544)))',
+
+# Ctrl+X y guardamos los cambios
+```
+
+Así mismo si tu entidad posee otros atributos (UAC) debes modificar todos los filtros dentro de *var* para adaptarlas a tus necesidades.
+
+### Actualizar a una nueva versión si hemos modificado (adactado) los filtros a nuestra entidad
+
+Luego de hacer el **upgrade** a la nueva versión, debemos nuevamente ir a todos estos filtros y cambiarlos a nuestra necesidades y luego hacer un **provition** para que ponga nuestras propiedades de filtros (UAC)
