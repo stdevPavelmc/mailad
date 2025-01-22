@@ -100,10 +100,10 @@ $config['per_user_logging'] = false;
 $config['smtp_log'] = true;
 
 // Log successful/failed logins to <log_dir>/userlogins.log or to syslog
-$config['log_logins'] = false;
+$config['log_logins'] = true;
 
 // Log session debug information/authentication errors to <log_dir>/session.log or to syslog
-$config['session_debug'] = false;
+$config['session_debug'] = true;
 
 // Log SQL queries to <log_dir>/sql.log or to syslog
 $config['sql_debug'] = false;
@@ -112,7 +112,7 @@ $config['sql_debug'] = false;
 $config['imap_debug'] = false;
 
 // Log LDAP conversation to <log_dir>/ldap.log or to syslog
-$config['ldap_debug'] = false;
+$config['ldap_debug'] = true;
 
 // Log SMTP conversation to <log_dir>/smtp.log or to syslog
 $config['smtp_debug'] = false;

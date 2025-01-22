@@ -467,6 +467,23 @@ fi
 # start services
 services restart
 
+# install counter
+INSTALLS=1
+if [ ! -f "$INSTFILE" ]; then
+    # initialize
+    echo "INSTALLS=$INSTALLS" > $INSTFILE
+    echo "FIRST_INSTALL=$(date)" >> $INSTFILE
+    echo "LAST_INSTALL=$(date)" >> $INSTFILE
+else
+    # count +1
+    INSTCOUNT=$(grep '^INSTALLS=' "$INTFILE" | cut -d'=' -f2)
+    INCCOUNT=$((INSTCOUNT + 1))
+    LAST=$(date)
+    # update
+    sed -i "s/^INSTALLS=.*$/INSTALLS=$INCCOUNT/" "$INTFILE"
+    sed -i "s/^LAST_INSTALL=.*$/LAST_INSTALL=$LAST/" "$INTFILE"
+fi
+
 # optional stats
 if [ "$OPT_STATS" == "yes" -o "$OPT_STATS" == "Yes" ] ; then
     # install swaks to handle the forged email as the mailadmin

@@ -13,8 +13,9 @@
 #       - MailAD "version" provisioned
 
 # load configs
-source common.conf
 source /etc/mailad/mailad.conf
+source common.conf
+source /etc/os-release
 
 # Infos to send
 TO="pavelmc@gmail.com,$ADMINMAIL"
@@ -31,9 +32,12 @@ echo "Date: $DATE" >> $BODY
 echo "Domain: $DOMAIN" >> $BODY
 echo "Mailserver: $HOSTNAME" >> $BODY
 echo "Mail_Admin: $ADMINMAIL" >> $BODY
-echo "MailAD_version: $VERSION" >> $BODY
+echo "OS: $PRETTY_NAME=" >> $BODY
+echo "MailAD version: $VERSION" >> $BODY
+echo "First install: $FIRST_INSTALL"  >> $BODY
+echo "Install count: $INSTALLS"  >> $BODY
 echo " " >> $BODY
 echo "EOT, thanks!" >> $BODY
 
 # sent mail
-swaks -s 127.0.0.1 --protocol SMTP -t "$TO" -f "$ADMINMAIL" --body "$BODY" --h-Subject "MailAD stats service." -ha
+send_email "MailAD stats service." "$ADMINMAIL" "$BODY"

@@ -84,7 +84,7 @@ force-certs: ## Force a re-creation of the SSL & dhparm certs
 	rm certs
 	$(MAKE) certs
 
-webmail: ## Install/remove webmail from the confiuration
+webmail: ## Install/remove webmail from the configuration
 	scripts/webmails.sh
 
 test-deps: ## Install test dependencies
