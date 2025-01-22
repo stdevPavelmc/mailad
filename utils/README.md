@@ -64,7 +64,7 @@ It's simple but tedious, the task below explained for a simple user, cycle on th
 
 ## Samba 4 scaffolding script
 
-This script is meant to be run on a test environment to scaffold a samba4 domain controller to test the MailAD implementation; it's not ready for production use!
+This script is meant to be run on a test/develop environment to scaffold a samba4 domain controller to test the MailAD implementation; **it's not meant for production use!**
 
 You can run it via `make samba` option, it will create a test Samba 4 domain server for testing purposes based on your `/etc/mailad/mailad.conf` settings.
 

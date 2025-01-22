@@ -20,9 +20,41 @@ Dates must be YEAR-MONTH-DAY
 DO NOT FORGET to update the VERSION file.
 -->
 
-## [v1.1.5] - 2022-09-08
+## [v1.1.8] - 2024-11-27
 
-- Fixed: Fix the user's split mail folders for older OS versions (<= Ubuntu 20.04 & <= Debian 10)
+- Fixed: Bug 191, dovecot cache auth troubles leads to unexpected behaviour.
+
+## [v1.1.7] - 2024-08-17
+
+- Added: Support for Ubuntu Noble 24.04 LTS and Debian Bookworm 12.
+- Fixed: The Samba scaffold scripts for development and testing.
+- Changed: The documentation to explain the changes
+- Extra: Happy 31 birthday for Debian
+
+## [v1.1.6] - 2024-07-16
+
+- Changed: Clamav updater freshclam complains on debian and posible ubuntu of wrong perms & owner of the config file
+
+## [v1.1.5] - 2024-07-10
+
+- Added: Body checks to add by default variants of common blackmailing emails on the move now
+
+## [v1.1.4] - 2023-12-26
+
+- Security: SMTP smuggling vulnerability, https://www.postfix.org/smtp-smuggling.html
+- Changed: Remove the old conas.cu notification email.
+
+## [v1.1.3] - 2022-10-27
+
+- Fixed: A warning on the daily mail resume about tempfile deprecation in favor of mktemp
+
+## [v1.1.2] - 2022-09-08
+
+- Added: Develop space fix, no need to upgrade: a failsafe measure was built on git push to keep version number unique on the 3 files that has it; aka: just mod it on CHANGELOG.md and it will be updated on the git flow with a warning.
+
+## [v1.1.1] - 2022-09-08
+
+- Fixed: Fix the user's split mailfolders for older OS versions (<= Ubuntu 20.04 & <= Debian 10)
 
 ## [v1.1.0] - 2022-09-07
 

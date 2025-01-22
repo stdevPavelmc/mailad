@@ -15,12 +15,13 @@ source /etc/mailad/mailad.conf
 PFSL=`which pflogsumm`
 OPTS="-d yesterday -e -i --iso-date-time --problems-first"
 FILE="/var/log/mail.log /var/log/mail.log.1"
-TMP=`tempfile`
+TMP=`mktemp`
 
 # check for soft
 if [ "$PFSL" == "" ] ; then
     # no soft installed, warning
-    echo "MailAD: Can't make the mail traffic summary because pflogsumm software is missing!"
+    echo "MailAD: Can't make the mail traffic summary because pflogsumm software is missing!" \
+        | mail -s "MailAD: Yesterday's mail traffic Summary" ${SYSADMINS}
     exit 1
 fi
 

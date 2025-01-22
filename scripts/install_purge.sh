@@ -20,11 +20,11 @@ if [ -f /etc/os-release ] ; then
 
     ## Distro check
     case "$VERSION_CODENAME" in
-        bionic|focal|jammy)
+        bionic|focal|jammy|noble)
             # Load the correct pkgs to be installed
             craft_pkg_list "ubuntu"
             ;;
-        buster|bullseye)
+        buster|bullseye|bookworm)
             # Load the correct pkgs to be installed
             craft_pkg_list "debian"
             ;;

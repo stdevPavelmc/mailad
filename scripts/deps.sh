@@ -37,7 +37,7 @@ if [ -f /etc/os-release ] ; then
 
     ## Distros check
     case "$VERSION_CODENAME" in
-        bionic|focal|jammy|buster|bullseye)
+        bionic|focal|jammy|noble|buster|bullseye|bookworm)
             # install dependencies
             export DEBIAN_FRONTEND=noninteractive
             apt update -q

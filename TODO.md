@@ -7,9 +7,7 @@ This is a To Do list with no particular order
 ## New Features/Wish/To Do items
 
 - Spanish translation
-- Specific access control at each user level
-- Odoo integration for management
-- UI? (web?)
+- Specific access control at each user level (national but one international destinations)
 - Any other (Use the Issues tab for that)
 
 ## Already Done Items

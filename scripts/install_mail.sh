@@ -27,7 +27,7 @@ if [ -f /etc/os-release ] ; then
 
     ## Distros check
     case "$VERSION_CODENAME" in
-        bionic|focal|jammy)
+        bionic|focal|jammy|noble)
             # Load the correct pkgs to be installed
             craft_pkg_list "ubuntu"
 
@@ -37,7 +37,7 @@ if [ -f /etc/os-release ] ; then
             # Install
             install_debs
             ;;
-        buster|bullseye)
+        buster|bullseye|bookworm)
             # Load the correct pkgs to be installed
             craft_pkg_list "debian"
 
