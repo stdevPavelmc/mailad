@@ -57,6 +57,11 @@ echo "===> Sync dovecot files..."
 rsync -r ./var/dovecot-${DOVERSION}/ /etc/dovecot/
 echo "===> Sync amavis files..."
 rsync -r ./var/amavis/ /etc/amavis/
+# fetchmail if enabled
+if [ "$USE_MULTIDROP" == "yes" -o "$USE_MULTIDROP" == "Yes" ] ; then
+    echo "===> Sync fetchmail files..."
+    rsync -r ./var/fetchmail/ /etc/
+fi
 
 # Check the SYSADMINS var and populate it if needed
 if [ -z "$SYSADMINS" ] ; then
@@ -96,6 +101,30 @@ done
 
 # force dovecot conf perms
 chmod 0644 /etc/dovecot/conf.d/*
+
+# fetchmail if enabled
+if [ "$USE_MULTIDROP" == "yes" -o "$USE_MULTIDROP" == "Yes" ] ; then
+    echo "===> Provisioning /etc/fetchmailrc..."
+    for v in `echo $VARS | xargs` ; do
+        # get the var content
+        CONTp=${!v}
+
+        # escape possible "/" in there
+        CONT=`echo ${CONTp//\//\\\\/}`
+
+        sed -i s/"\_$v\_"/"$CONT"/g /etc/fetchmailrc \;
+    done
+
+    # Other tweaks
+    if [ "$MD_FORCE_SSL" == "no" -o "$MD_FORCE_SSL" == "No" ] ; then
+        sed s/"^.*ssl.*$"/"    #"/g /etc/fetchmailrc
+    else
+        # we need to retrieve the SSLCERT file to trust it blindly
+        # dirty hack but as there are many self-signed cert here, we need to live with that
+        echo | openssl s_client -connect ${MDSERVER}:993 -showcerts 2>/dev/null | \
+        sed -ne '/BEGIN CERT/,/END CERT/p' > /etc/mailad/maildrop.pem
+    fi
+fi
 
 # Special case variables with complicated scaping and specific files
 #   $ESCLOCAL > /etc/postfix/filtro_loc
@@ -458,6 +487,22 @@ else
     sed -i s/"^smtpd     pass  -       -       y       -       -       smtpd"/"#smtpd     pass  -       -       y       -       -       smtpd"/ ${FILE}
     sed -i s/"^dnsblog   unix  -       -       y       -       0       dnsblog"/"#dnsblog   unix  -       -       y       -       0       dnsblog"/ ${FILE}
     sed -i s/"^tlsproxy  unix  -       -       y       -       0       tlsproxy"/"#tlsproxy  unix  -       -       y       -       0       tlsproxy"/ ${FILE}
+fi
+
+### relay auth
+# auth file
+FILE="/etc/postfix/sasl_passwd"
+chown root:root $FILE
+chmod 0600 $FILE
+# enable it
+if [ "$RELAY_USE_AUTH"=="yes" -o "$RELAY_USE_AUTH"=="Yes" ] ; then
+    # enable it
+    echo "Enabling RELAY smtp authentication..."
+
+    # let's rock
+    # Enable it on postfix
+    sed s/"^#smtp_sasl"/"smtp_sasl"/g /etc/postfix/main.cf
+    postmap $FILE
 fi
 
 # start services
