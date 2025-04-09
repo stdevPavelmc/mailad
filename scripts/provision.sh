@@ -323,7 +323,7 @@ if [ "$ENABLE_SPAMD" == "yes" -o "$ENABLE_SPAMD" == "Yes" ] ; then
 
     # configure SMA filtering on amavis if not already active
     FILE="/etc/amavis/conf.d/15-content_filter_mode"
-    ACTIVE=`cat $FILE | grep "^#@bypass_spam_checks_maps.*"`
+    ACTIVE=$(grep "^#@bypass_spam_checks_maps.*" $FILE)
     if [ ! -z "$ACTIVE" ] ; then
         # not active, activating
         sed -i s/"#@bypass_spam_checks_maps"/"@bypass_spam_checks_maps"/g $FILE
@@ -376,7 +376,7 @@ else
 
     # disable spamassasin on amavis
     FILE="/etc/amavis/conf.d/15-content_filter_mode"
-    ACTIVE=`cat $FILE | grep "^@bypass_spam_checks_maps.*"`
+    ACTIVE=$(grep "^@bypass_spam_checks_maps.*" $FILE)
     if [ ! -z "$ACTIVE" ] ; then
         # not active, activating
         sed -i s/"@bypass_spam_checks_maps"/"#@bypass_spam_checks_maps"/g $FILE
@@ -471,24 +471,34 @@ services restart
 INSTALLS=1
 if [ ! -f "$INSTFILE" ]; then
     # initialize
+    echo "===> Initialize install counters"
+
+    # first install is the creation date of the /etc/mailad/ folder
+    FIRST_INSTALL=$(stat -c '%w' /etc/mail | sed -E 's/\.\d+//; s/ /T/; s/ ([+-])/\1/' | xargs -I {} date -u -d "{}" "+%Y/%m/%d %I:%M:%S %p UTC")
+
+    # initialize
     echo "INSTALLS=$INSTALLS" > $INSTFILE
-    echo "FIRST_INSTALL=$(date)" >> $INSTFILE
+    echo "FIRST_INSTALL=$FIRST_INSTALL" >> $INSTFILE
     echo "LAST_INSTALL=$(date)" >> $INSTFILE
 else
+    # New data on installs
+    echo "===> Update install counters"
+
     # count +1
-    INSTCOUNT=$(grep '^INSTALLS=' "$INTFILE" | cut -d'=' -f2)
+    INSTCOUNT=$(grep '^INSTALLS=' "$INSTFILE" | cut -d'=' -f2)
     INCCOUNT=$((INSTCOUNT + 1))
     LAST=$(date)
     # update
-    sed -i "s/^INSTALLS=.*$/INSTALLS=$INCCOUNT/" "$INTFILE"
-    sed -i "s/^LAST_INSTALL=.*$/LAST_INSTALL=$LAST/" "$INTFILE"
+    sed -i "s/^INSTALLS=.*$/INSTALLS=$INCCOUNT/" "$INSTFILE"
+    sed -i "s/^LAST_INSTALL=.*$/LAST_INSTALL=$LAST/" "$INSTFILE"
 fi
 
 # optional stats
-if [ "$OPT_STATS" == "yes" -o "$OPT_STATS" == "Yes" ] ; then
+if [ "$OPT_STATS" != "No" -o "$OPT_STATS" != "no" ] ; then
     # install swaks to handle the forged email as the mailadmin
     apt install swaks
     # and we have stats, thanks
+    echo "===> Sending feedback to the creator & $ADMINMAIL"
     ./scripts/feedback.sh
 fi
 
