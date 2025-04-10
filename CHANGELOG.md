@@ -23,6 +23,7 @@ Dates must be YEAR-MONTH-DAY
 
 - Added: Webmails!!! Disabled by default, you need to upgrade first, you can pick RoundCube [default] or SnappyMail, see Features.md for details
 - Added: Documentation for the webmails
+- Changed: Feedback email turned into opt out option
 
 ## [v1.1.8] - 2024-11-27
 
