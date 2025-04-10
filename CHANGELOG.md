@@ -19,11 +19,10 @@ This is a note for developers about the recommended tags to keep track of the ch
 Dates must be YEAR-MONTH-DAY
 -->
 
-## [v1.2.0-rc] - 2024-12-08
+## [v1.2.0] - 2025-04-10
 
-- Added: Webmails!!! Disabled by default, you need to upgrade first, you can pick RoundCube [default] or SnappyMail.
-- Added: Documentation for the webmails, see Features.md.
-- Extra: This feature is an effort to celebrate the 5th year of age, Happy Bithday!
+- Added: Webmails!!! Disabled by default, you need to upgrade first, you can pick RoundCube [default] or SnappyMail, see Features.md for details
+- Added: Documentation for the webmails
 
 ## [v1.1.8] - 2024-11-27
 
