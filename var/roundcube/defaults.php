@@ -109,13 +109,13 @@ $config['session_debug'] = true;
 $config['sql_debug'] = false;
 
 // Log IMAP conversation to <log_dir>/imap.log or to syslog
-$config['imap_debug'] = false;
+$config['imap_debug'] = true;
 
 // Log LDAP conversation to <log_dir>/ldap.log or to syslog
 $config['ldap_debug'] = true;
 
 // Log SMTP conversation to <log_dir>/smtp.log or to syslog
-$config['smtp_debug'] = false;
+$config['smtp_debug'] = true;
 
 // Log Memcache conversation to <log_dir>/memcache.log or to syslog
 $config['memcache_debug'] = false;
@@ -181,7 +181,7 @@ $config['imap_delimiter'] = null;
 // If you know your imap's folder vendor, you can specify it here.
 // Otherwise it will be determined automatically. Use lower-case
 // identifiers, e.g. 'dovecot', 'cyrus', 'gimap', 'hmail', 'uw-imap'.
-$config['imap_vendor'] = null;
+$config['imap_vendor'] = 'dovecot';
 
 // If IMAP server doesn't support NAMESPACE extension, but you're
 // using shared folders or personal root folder is non-empty, you'll need to
@@ -229,7 +229,7 @@ $config['imap_disabled_caps'] = [];
 
 // Log IMAP session identifiers after each IMAP login.
 // This is used to relate IMAP session with Roundcube user sessions
-$config['imap_log_session'] = false;
+$config['imap_log_session'] = true;
 
 // Type of IMAP indexes cache. Supported values: 'db', 'apc' and 'memcache' or 'memcached'.
 $config['imap_cache'] = null;
@@ -547,7 +547,7 @@ $config['temp_dir_ttl'] = '48h';
 // With this option enabled, all non-secure connections will be redirected.
 // It can be also a port number, hostname or hostname:port if they are
 // different than default HTTP_HOST:443
-$config['force_https'] = false;
+$config['force_https'] = _HTTPS_ONLY_;
 
 // tell PHP that it should work as under secure connection
 // even if it doesn't recognize it as secure ($_SERVER['HTTPS'] is not set)
@@ -557,7 +557,7 @@ $config['use_https'] = false;
 
 // Allow browser-autocompletion on login form.
 // 0 - disabled, 1 - username and host only, 2 - username, host, password
-$config['login_autocomplete'] = 0;
+$config['login_autocomplete'] = 1;
 
 // Forces conversion of logins to lower case.
 // 0 - disabled, 1 - only domain part, 2 - domain and local part.
@@ -590,7 +590,7 @@ $config['display_product_info'] = 1;
 $config['session_lifetime'] = 10;
 
 // Session domain: .example.org
-$config['session_domain'] = '';
+$config['session_domain'] = '_DOMAIN_';
 
 // Session name. Default: 'roundcube_sessid'
 $config['session_name'] = null;

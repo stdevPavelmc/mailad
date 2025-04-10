@@ -10,7 +10,7 @@ $config['username_domain'] = '_DOMAIN_';
 $config['product_name'] = 'MailAD Webmail [RoundCube]';
 
 // only accept https traffic
-$config['use_https'] = true;
+$config['use_https'] = _HTTPS_ONLY_;
 
 // Allow browser-autocompletion on login form.
 // 0 - disabled, 1 - username and host only, 2 - username, host, password
