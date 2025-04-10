@@ -19,15 +19,15 @@ export DEBIAN_FRONTEND=noninteractive
 
 # notice
 echo "===> Remove RoundCube if it was previosly installed"
-apt-get remove -y "roundcube*"
+apt-get remove -y $ROUNDCUBE_PKGS
 
 # notice
 echo "===> Installing SnappyMail webmail"
 
 SNAPPY_VERSION="2.36.4"
 SNAPPY_FILE="snappymail-${SNAPPY_VERSION}.tar.gz"
-#SNAPPY_URL="https://github.com/the-djmaze/snappymail/releases/download/v${SNAPPY_VERSION}/${SNAPPY_FILE}"
-SNAPPY_URL="http://172.17.0.1:8081/$SNAPPY_FILE"
+SNAPPY_URL="https://github.com/the-djmaze/snappymail/releases/download/v${SNAPPY_VERSION}/${SNAPPY_FILE}"
+#SNAPPY_URL="http://172.17.0.1:8081/$SNAPPY_FILE"
 
 function fixperms {
     # just one parameter, the directory to apply the perms
@@ -63,12 +63,10 @@ sudo chmod -R 755 $LOGS
 echo "===> Pre-setup done, downloading SnappyMail package..."
 
 # Install Snappy Webmail
-mkdir -p ${SNAPPY_DIR}
-cd ${SNAPPY_DIR}
 FILE=$(mktemp)
-wget -q --no-clobber "$SNAPPY_URL"
+wget -q --no-clobber "$SNAPPY_URL" -O "/tmp/$SNAPPY_FILE"
 # check if download fails
-if [ $? -ne 0 ]; then
+if [ $? -ne 0 -a $? -ne 1 ]; then
     echo "===> Error!" > $FILE
     echo "  Download of the snappymail package failed" >> $FILE
     echo "  URL is: $SNAPPY_URL" >> $FILE
@@ -90,9 +88,12 @@ if [ $? -ne 0 ]; then
 
     exit 1
 fi
+mkdir -p ${SNAPPY_DIR}
+cd ${SNAPPY_DIR}
+cp /tmp/$SNAPPY_FILE ./
 tar xzf ${SNAPPY_FILE}
 fixperms /var/www
-rm snappymail-${SNAPPY_VERSION}.tar.gz
+rm $SNAPPY_FILE
 
 # back to base pwd
 cd $BPWD
@@ -169,6 +170,7 @@ if [ "$WEBSERVER_HTTP_ENABLED" == "yes" ]; then OPTS="--no-hsts" ; fi
 while [ ! -f "$PASS" ] ; do
     # get it...
     wget -q ${OPTS} "$WEBPROTO://$HOSTNAME/?admin" -O /dev/null
+    sleep 2
     wget -q ${OPTS} "$WEBPROTO://$HOSTNAME/?/AdminAppData/0/5220854561746323/" -O /dev/null
     sleep 2
     echo "."

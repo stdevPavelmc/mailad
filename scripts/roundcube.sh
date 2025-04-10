@@ -25,8 +25,10 @@ rm -rdf "$SNAPPY_DIR" || true
 # install the default site config
 NGINX_CONFIG=/etc/nginx/sites-available/default
 NGINX_TEMPLATE=./var/nginx/default
+HTTPS_ONLY=true
 if [ "$WEBSERVER_HTTP_ENABLED" == "yes" ]; then
     NGINX_TEMPLATE=./var/nginx/default_http
+    HTTPS_ONLY=false
 
     # User notice:
     echo ""
@@ -44,7 +46,7 @@ cp ${NGINX_TEMPLATE} ${NGINX_CONFIG}
 
 # vars
 WWW_ROOT="/var/lib/roundcube/public_html"
-VARS="${VARS} WWW_ROOT"
+VARS="${VARS} WWW_ROOT HTTPS_ONLY"
 
 # replace vars
 echo "===> Provisioning Nginx..."
@@ -132,3 +134,6 @@ for f in `echo "$ROUNDCUBE_CONFIG_FOLDER" | xargs` ; do
             sed -i s/"\_$v\_"/"$CONT"/g {} \;
     done
 done
+
+
+echo "===> Done!"
