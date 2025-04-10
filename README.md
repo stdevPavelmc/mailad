@@ -8,7 +8,7 @@
 
 ![MailAD Logo](./logos/MailAD-logo-full_white_background..png)
 
-This page is also available in the following languages: [ [Español](i18n/README.es.md) 🇪🇸 🇨🇺] [ [Deutsch](i18n/README.de.md) 🇩🇪]
+This page is also available in the following languages: [ [Español](i18n/README.es.md) 🇪🇸 🇨🇺] [ [Deutsch](i18n/README.de.md) 🇩🇪] warning: they may be outdated...
 
 This is a handy tool to provision a mail server on linux linked to an Active Directory (AD from now on) server (Samba or Windows) with some constraints in mind, as this is a typical mail config to be used in Cuba as regulated by law and security enforcement requirements, but can be used on any domain. You can see a simple provision in [this asciinema movie](https://asciinema.org/a/fD1LuVLfeb8RPCHOIgbR1J9d8).
 
@@ -28,13 +28,17 @@ After a few steps you will have a mail server up and running in about 15 minutes
 
 This tool is tested and supported on:
 
-- Ubuntu Bionic 18.04 LTS (⚠️ legacy NOT recommended)
-- Ubuntu Focal 20.04 LTS (⚠️ legacy NOT recommended)
-- Ubuntu Jammy 22.04 LTS (⚠️ legacy NOT recommended)
-- Ubuntu Noble 24.04 LTS (✅ recommended, this is the development & testing platform)
-- Debian Buster 10 (⚠️ legacy NOT recommended)
-- Debian Bullseye 11 (⚠️ legacy NOT recommended)
-- Debian Bookworm 12 (✅ recommended)
+| OS | Active Support | Legacy |
+|:--- |:---:|:---:|
+| Ubuntu Noble 24.04 LTS | ✅ |  |
+| Debian Bookworm 12 | ✅ |  |
+| Ubuntu Jammy 22.04 LTS |  | ⚠️ |
+| Debian Bullseye 11 |  | ⚠️ |
+| Ubuntu Focal 20.04 LTS |  | ⚠️ |
+| Debian Buster 10 |  | ⚠️ |
+| Ubuntu Bionic 18.04 LTS |  | ⚠️ |
+
+Legacy means it works but is not supported anymore, it's recommended to use the latest version.
 
 _**Note:** If you are using a a Debian buster or bullseye in a LXC Container (Proxmox for example) you need to tweak the dovecot install or it will not work, see [this fix](https://serverfault.com/questions/976250/dovecot-lxc-apparmor-denied-buster) for more info_
 
@@ -58,6 +62,7 @@ This will provision a mail server for an enterprise serving corporate users. You
 0. Optional aggressive SPAM fight measures.
 0. Weekly background check for new versions with a detailed email if you need to upgrade.
 0. Optional mailbox split by office/city/country
+0. Optional Webmail, you have Roundcube or SnappyMail to choose from.
 
 ## TODO
 
