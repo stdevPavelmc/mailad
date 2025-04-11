@@ -12,7 +12,6 @@ server {
     server_name _HOSTNAME_;
 
     # Security headers
-	add_header Strict-Transport-Security "max-age=15768000; includeSubDomains; preload;" always;
 	add_header X-Content-Type-Options "nosniff" always;
 	add_header X-XSS-Protection "1; mode=block" always;
 	add_header X-Robots-Tag "none" always;

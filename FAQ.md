@@ -14,6 +14,7 @@ Here you can find the most Frequently Asked Questions, this file will grow with 
 - [What ports I need to get open to make sure the servers works OK?](FAQ.md#what-ports-i-need-to-get-open-to-make-sure-the-servers-works-ok)
 - [Why it complains and fail when using IPs for the DC server?](FAQ.md#why-it-complains-and-fail-when-using-ips-for-the-dc-server)
 - [Configuration stops and tell that sbin is missing?](FAQ.md#configuration-stops-and-tell-that-sbin-is-missing)
+- [I have installed according to the instructions, everything works correctly but users cannot authenticate, I use Windows server 2019](FAQ.md#i-have-installed-according-to-the-instructions-everything-works-correctly-but-some-users-cannot-authenticate-i-use-windows-server-2019)
 
 ## Usage Related
 
@@ -137,3 +138,98 @@ Solutions:
 ## The server refuses to accept or relay emails from the users on port 25?
 
 That port is reserved to receive emails from the external network, users should not use it to send emails, please check [this other question](FAQ.md#what-ports-i-need-to-get-open-to-make-sure-the-servers-works-ok) to know more.
+
+## I have installed according to the instructions, everything works correctly, but some users cannot authenticate, I use Windows Server 2019
+
+It may be because the user account control (UAC) codes are not the common ones, this can be due to many reasons, but we will not see the reasons here, we will rather see how to solve the problem:
+
+Normally in the user account control we will see that the **userAccountControl** property has the values:
+
+| Code | Description |
+|---------:|:---------------|
+| 512 | Normal user|
+| 66048| Enabled, password never expires|
+
+In many cases, when our server to authenticate is a Windows Server 2019, these properties will appear in **userAccountControl**
+
+| Code | Description |
+|---------:|:---------------|
+| 544 | Enabled, change password at next login|
+| 66080| Enabled, password never expires, password not required|
+
+To solve the authentication problem for users who have these properties, it is necessary to add these properties to the **userAccountControl** parameter in the variables, that is, change the filters. Where should we change them?
+
+In the root of our mailad, we look for these files and leave them as shown
+
+```bash
+cd var/dovecot-2.2/
+nano dovecot_ldap.conf.ext
+.
+.
+.
+# We comment the following and leave it like this
+# user_filter = (&(sAMAccountName=%n)(|(userAccountControl=512)(userAccountControl=66048)(userAccountControl=8398120)))
+user_filter = (&(sAMAccountName=%n)(|(userAccountControl=512)(userAccountControl=66048)(userAccountControl=8398120)(userAccountControl=544)(userAccountControl=66080)))
+.
+.
+.
+# We comment the following and leave it like this
+# pass_filter = (&(mail=%u)(|(userAccountControl=512)(userAccountControl=66048)(userAccountControl=8398120)))
+pass_filter = (&(mail=%u)(|(userAccountControl=512)(userAccountControl=66048)(userAccountControl=8398120)(userAccountControl=544)(userAccountControl=66080)))
+
+# Ctrl+X and save the changes
+
+cd var/dovecot-2.3/
+nano dovecot_ldap.conf.ext
+.
+.
+.
+# We comment the following and leave it like this
+# user_filter = (&(sAMAccountName=%n)(|(userAccountControl=512)(userAccountControl=66048)(userAccountControl=8398120)))
+user_filter = (&(sAMAccountName=%n)(|(userAccountControl=512)(userAccountControl=66048)(userAccountControl=8398120)(userAccountControl=544)(userAccountControl=66080)))
+.
+.
+.
+# We comment the following and leave it like this
+# pass_filter = (&(mail=%u)(|(userAccountControl=512)(userAccountControl=66048)(userAccountControl=8398120)))
+pass_filter = (&(mail=%u)(|(userAccountControl=512)(userAccountControl=66048)(userAccountControl=8398120)(userAccountControl=544)(userAccountControl=66080)))
+
+# Ctrl+X and save the changes
+
+cd var/postfix/ldap/
+nano email2user.cf
+.
+.
+.
+# We comment the following and leave it like this
+# query_filter = (&(mail=%u@%d)(|(userAccountControl=512)(userAccountControl=66048)(userAccountControl=8398120)))
+query_filter = (&(mail=%u@%d)(|(userAccountControl=512)(userAccountControl=66048)(userAccountControl=8398120)(userAccountControl=544)(userAccountControl=66080)))
+
+# Ctrl+X and save the changes
+
+nano mailbox_map.cf
+.
+.
+.
+# We comment the following and leave it like this
+# query_filter = (&(mail=%u@%d)(|(userAccountControl=512)(userAccountControl=66048)(userAccountControl=8398120)))
+query_filter = (&(mail=%u@%d)(|(userAccountControl=512)(userAccountControl=66048)(userAccountControl=8398120)(userAccountControl=544)(userAccountControl=66080)))
+
+# Ctrl+X and save the changes
+
+cd var/roundcube/
+nano config.inc.php
+.
+.
+.
+# We leave it as follows below
+'filter' => '(&(mail=*)(|(objectClass=group)(userAccountControl=512)(userAccountControl=66048)(userAccountControl=8398120)(userAccountControl=66080)(userAccountControl=544)))',
+
+# Ctrl+X and save the changes
+```
+
+Likewise, if your entity has other attributes (UAC) you must modify all the filters within *var* to adapt them to your needs.
+
+### Upgrade to a new version if we have modified (adapted) the filters to our entity
+
+After doing the **upgrade** to the new version, we must again go to all these filters and change them to our needs and then make a **provition** to put our filter properties (UAC)

@@ -104,6 +104,17 @@
         "ideas",
         "test"
       ]
+    },
+    {
+      "login": "cz9dev",
+      "name": "Carlos Zaldívar",
+      "avatar_url": "https://avatars.githubusercontent.com/u/97544746?v=4",
+      "profile": "https://cz9dev.github.io/",
+      "contributions": [
+        "code",
+        "translation",
+        "test"
+      ]
     }
   ],
   "contributorsPerLine": 7,
@@ -111,5 +122,7 @@
   "projectOwner": "stdevPavelmc",
   "repoType": "github",
   "repoHost": "https://github.com",
-  "skipCi": true
+  "skipCi": true,
+  "commitType": "docs",
+  "commitConvention": "angular"
 }
