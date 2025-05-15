@@ -1,0 +1,240 @@
+name: MailAD VM Integration Tests
+
+on:
+  push:
+    branches: [ master, development ]
+  pull_request:
+    branches: [ master, development ]
+  workflow_dispatch:
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    outputs:
+      auth_file: ${{ steps.create_auth.outputs.auth_file }}
+      
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Create auth file
+        id: create_auth
+        run: |
+          # Create a temporary auth file with credentials
+          cat > .mailadmin.auth << EOF
+          PASS='P@ssw0rd123!'
+          
+          # national user and credentials
+          NACUSER="starf@mailad.cu"
+          NACUSERPASSWD='N@tional123'
+          
+          # local user and credentials
+          LOCUSER="pepa@mailad.cu"
+          LOCUSERPASSWORD='L0cal123!'
+          
+          # Linux bind user password
+          LDAPBINDPASSWD='B1ndP@ss123!'
+          EOF
+          
+          # Base64 encode the file for passing between jobs
+          AUTH_FILE=$(base64 -w 0 .mailadmin.auth)
+          echo "auth_file=$AUTH_FILE" >> $GITHUB_OUTPUT
+      
+      - name: Upload repository
+        uses: actions/upload-artifact@v3
+        with:
+          name: mailad-repo
+          path: .
+
+  samba-ad:
+    needs: setup
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Download repository
+        uses: actions/download-artifact@v3
+        with:
+          name: mailad-repo
+          path: /tmp/mailad
+      
+      - name: Move repository to /root
+        run: |
+          sudo mkdir -p /root/mailad
+          sudo cp -r /tmp/mailad/* /root/mailad/
+          sudo chown -R root:root /root/mailad
+      
+      - name: Setup auth file
+        run: |
+          echo "${{ needs.setup.outputs.auth_file }}" | base64 -d | sudo tee /root/mailad/.mailadmin.auth > /dev/null
+          sudo chmod 600 /root/mailad/.mailadmin.auth
+      
+      - name: Run make conf
+        run: |
+          cd /root/mailad
+          sudo make conf
+          
+          # Disable SOA test for testing environment
+          sudo sed -i 's/^SOA_TEST=.*/SOA_TEST="no"/' /etc/mailad/mailad.conf
+      
+      - name: Configure hosts
+        run: |
+          echo "127.0.0.1 samba-ad" | sudo tee -a /etc/hosts
+          
+          # Get public IP for GitHub Actions runner
+          PUBLIC_IP=$(curl -s https://api.ipify.org)
+          echo "$PUBLIC_IP samba-ad" | sudo tee -a /etc/hosts
+          
+          # Save IP for other jobs
+          echo "$PUBLIC_IP" > samba_ip.txt
+      
+      - name: Setup Samba AD
+        run: |
+          cd /root/mailad
+          sudo chmod +x utils/samba_scaffold.sh
+          sudo utils/samba_scaffold.sh
+      
+      - name: Upload Samba AD IP
+        uses: actions/upload-artifact@v3
+        with:
+          name: samba-ad-ip
+          path: samba_ip.txt
+
+  mailad-server:
+    needs: [setup, samba-ad]
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Download repository
+        uses: actions/download-artifact@v3
+        with:
+          name: mailad-repo
+          path: /tmp/mailad
+      
+      - name: Download Samba AD IP
+        uses: actions/download-artifact@v3
+        with:
+          name: samba-ad-ip
+          path: /tmp
+      
+      - name: Move repository to /root
+        run: |
+          sudo mkdir -p /root/mailad
+          sudo cp -r /tmp/mailad/* /root/mailad/
+          sudo chown -R root:root /root/mailad
+      
+      - name: Setup auth file
+        run: |
+          echo "${{ needs.setup.outputs.auth_file }}" | base64 -d | sudo tee /root/mailad/.mailadmin.auth > /dev/null
+          sudo chmod 600 /root/mailad/.mailadmin.auth
+      
+      - name: Run make conf
+        run: |
+          cd /root/mailad
+          sudo make conf
+          
+          # Disable SOA test for testing environment
+          sudo sed -i 's/^SOA_TEST=.*/SOA_TEST="no"/' /etc/mailad/mailad.conf
+          
+          # Update LDAPSERVER to point to Samba AD
+          SAMBA_AD_IP=$(cat /tmp/samba_ip.txt)
+          sudo sed -i "s/^LDAPSERVER=.*/LDAPSERVER=\"$SAMBA_AD_IP\"/" /etc/mailad/mailad.conf
+      
+      - name: Configure hosts
+        run: |
+          SAMBA_AD_IP=$(cat /tmp/samba_ip.txt)
+          echo "$SAMBA_AD_IP samba-ad" | sudo tee -a /etc/hosts
+          
+          # Get public IP for GitHub Actions runner
+          PUBLIC_IP=$(curl -s https://api.ipify.org)
+          echo "$PUBLIC_IP mailad-server" | sudo tee -a /etc/hosts
+          echo "$PUBLIC_IP" > mailad_ip.txt
+      
+      - name: Install MailAD
+        run: |
+          cd /root/mailad
+          sudo make all
+      
+      - name: Upload MailAD Server IP
+        uses: actions/upload-artifact@v3
+        with:
+          name: mailad-server-ip
+          path: mailad_ip.txt
+
+  test-client:
+    needs: [setup, samba-ad, mailad-server]
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Download repository
+        uses: actions/download-artifact@v3
+        with:
+          name: mailad-repo
+          path: /tmp/mailad
+      
+      - name: Download Samba AD IP
+        uses: actions/download-artifact@v3
+        with:
+          name: samba-ad-ip
+          path: /tmp/samba-ad-ip
+      
+      - name: Download MailAD Server IP
+        uses: actions/download-artifact@v3
+        with:
+          name: mailad-server-ip
+          path: /tmp/mailad-server-ip
+      
+      - name: Move repository to /root
+        run: |
+          sudo mkdir -p /root/mailad
+          sudo cp -r /tmp/mailad/* /root/mailad/
+          sudo chown -R root:root /root/mailad
+      
+      - name: Setup auth file
+        run: |
+          echo "${{ needs.setup.outputs.auth_file }}" | base64 -d | sudo tee /root/mailad/.mailadmin.auth > /dev/null
+          sudo chmod 600 /root/mailad/.mailadmin.auth
+      
+      - name: Run make conf
+        run: |
+          cd /root/mailad
+          sudo make conf
+          
+          # Disable SOA test for testing environment
+          sudo sed -i 's/^SOA_TEST=.*/SOA_TEST="no"/' /etc/mailad/mailad.conf
+          
+          # Copy mailad.conf to .mailad.auth as required by tests
+          sudo cp /etc/mailad/mailad.conf /root/mailad/.mailad.auth
+      
+      - name: Configure hosts
+        run: |
+          SAMBA_AD_IP=$(cat /tmp/samba-ad-ip/samba_ip.txt)
+          MAILAD_SERVER_IP=$(cat /tmp/mailad-server-ip/mailad_ip.txt)
+          
+          echo "$SAMBA_AD_IP samba-ad" | sudo tee -a /etc/hosts
+          echo "$MAILAD_SERVER_IP mailad-server" | sudo tee -a /etc/hosts
+          echo "127.0.0.1 test-client" | sudo tee -a /etc/hosts
+      
+      - name: Install test dependencies
+        run: |
+          cd /root/mailad
+          sudo make test-deps
+      
+      - name: Create common.conf
+        run: |
+          SAMBA_AD_IP=$(cat /tmp/samba-ad-ip/samba_ip.txt)
+          echo "function get_ldap_uri() { echo \"ldap://$SAMBA_AD_IP\"; }" | sudo tee /root/mailad/tests/common.conf > /dev/null
+      
+      - name: Run tests
+        run: |
+          cd /root/mailad
+          sudo chmod +x tests/test.sh
+          MAILAD_SERVER_IP=$(cat /tmp/mailad-server-ip/mailad_ip.txt)
+          sudo tests/test.sh $MAILAD_SERVER_IP
+      
+      - name: Upload test logs
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-logs
+          path: /root/mailad/test.log
+
