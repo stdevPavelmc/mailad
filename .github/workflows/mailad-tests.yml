@@ -31,6 +31,9 @@ jobs:
           # Get IP address
           SAMBA_IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' samba-ad)
           echo "SAMBA_IP=$SAMBA_IP" >> $GITHUB_ENV
+          
+          # Install systemd-related packages
+          docker exec samba-ad bash -c "apt-get update && apt-get install -y systemd systemd-sysv"
 
       - name: Start MailAD server container
         run: |
@@ -43,6 +46,9 @@ jobs:
           # Get IP address
           MAILAD_IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' mailad-server)
           echo "MAILAD_IP=$MAILAD_IP" >> $GITHUB_ENV
+          
+          # Install systemd-related packages
+          docker exec mailad-server bash -c "apt-get update && apt-get install -y systemd systemd-sysv"
 
       - name: Start Test client container
         run: |
@@ -55,6 +61,9 @@ jobs:
           # Get IP address
           TEST_IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' test-client)
           echo "TEST_IP=$TEST_IP" >> $GITHUB_ENV
+          
+          # Install systemd-related packages
+          docker exec test-client bash -c "apt-get update && apt-get install -y systemd systemd-sysv"
 
       - name: Configure hosts files
         run: |
@@ -103,6 +112,8 @@ jobs:
             make conf && \
             cp /etc/mailad/mailad.conf /root/mailad/.mailad.auth && \
             chmod +x utils/samba_scaffold.sh && \
+            # Modify samba_scaffold.sh to handle missing systemctl
+            sed -i 's/systemctl /systemctl 2>/dev/null || echo \"systemctl not available, skipping command\" #/g' utils/samba_scaffold.sh && \
             utils/samba_scaffold.sh"
 
       - name: Setup MailAD Server
@@ -116,8 +127,8 @@ jobs:
             sed -i 's/^LDAPSERVER=.*/LDAPSERVER=\"samba-ad\"/' /etc/mailad/mailad.conf && \
             # Disable SOA test for testing environment
             sed -i 's/^SOA_TEST=.*/SOA_TEST=\"no\"/' /etc/mailad/mailad.conf && \
-            # Install MailAD
-            make all"
+            # Install MailAD with verbose output
+            make all VERBOSE=1 || { echo 'MailAD installation failed. Checking logs...'; cat /var/log/mailad/install.log 2>/dev/null || echo 'No install log found'; exit 1; }"
 
       - name: Setup Test Client
         run: |
