@@ -6,25 +6,25 @@
 [![All Contributors](https://img.shields.io/badge/all_contributors-11-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
-![MailAD Logo](./logos/MailAD-logo-full_white_background..png)
+![MailAD Logo](./logos/MailAD-logo-full_white_background.png)
 
-This page is also available in the following languages: [ [Español](i18n/README.es.md) 🇪🇸 🇨🇺] [ [Deutsch](i18n/README.de.md) 🇩🇪] warning: they may be outdated...
+This page is also available in the following languages: [ [Español](i18n/README.es.md) 🇪🇸 🇨🇺] [ [Deutsch](i18n/README.de.md) 🇩🇪] *Warning: translations may be outdated.*
 
-This is a handy tool to provision a mail server on linux linked to an Active Directory (AD from now on) server (Samba or Windows) with some constraints in mind, as this is a typical mail config to be used in Cuba as regulated by law and security enforcement requirements, but can be used on any domain. You can see a simple provision in [this asciinema movie](https://asciinema.org/a/fD1LuVLfeb8RPCHOIgbR1J9d8).
+This is a handy tool to provision a mail server on Linux linked to an Active Directory (AD from now on) server (Samba or Windows) with some constraints in mind. This is a typical mail configuration to be used in Cuba as regulated by law and security enforcement requirements, but can be used on any domain. You can see a simple provision in [this asciinema movie](https://asciinema.org/a/fD1LuVLfeb8RPCHOIgbR1J9d8).
 
 ## Notice
 
-We have also some derived projects you can find interesting:
+We have also some derived projects you might find interesting:
 
-- [MailAD-Docker](https://github.com/stdevPavelmc/mailad-docker/) a docker compose version of this software.
-- [MailD](https://github.com/stdevPavelmc/maild/) a Multi domain docker solution with no AD linking, an all web solution.
-- [MailAD ansible role](https://github.com/stdevPavelmc/mailad-ansible-role) an Ansible role for the mail server.
+- [MailAD-Docker](https://github.com/stdevPavelmc/mailad-docker/) - A Docker Compose version of this software.
+- [MailD](https://github.com/stdevPavelmc/maild/) - A multi-domain Docker solution with no AD linking, an all-web solution.
+- [MailAD ansible role](https://github.com/stdevPavelmc/mailad-ansible-role) - An Ansible role for the mail server.
 
 ## Rationale
 
-This repository is intended to be cloned on your fresh OS install under `/root` (you can use a LXC instance, VM, etc) and setup on a main conf file as per the file comments, then run the steps on a makefile and follow the steps to configure your server.
+This repository is intended to be cloned on your fresh OS install under `/root` (you can use a LXC instance, VM, etc.) and setup via a main configuration file as per the file comments. Then run the steps in a makefile and follow the instructions to configure your server.
 
-After a few steps you will have a mail server up and running in about 15 minutes tops. _(this time is based on a 2Mbps internet connection to a repository, if you have a local repository it will be less)_
+After a few steps, you will have a mail server up and running in about 15 minutes tops. *(This time is based on a 2Mbps internet connection to a repository. If you have a local repository, it will be less.)*
 
 This tool is tested and supported on:
 
@@ -38,62 +38,62 @@ This tool is tested and supported on:
 | Debian Buster 10 |  | ⚠️ |
 | Ubuntu Bionic 18.04 LTS |  | ⚠️ |
 
-Legacy means it works but is not supported anymore, it's recommended to use the latest version.
+Legacy means it works but is not supported anymore. It's recommended to use the latest version.
 
-_**Note:** If you are using a a Debian buster or bullseye in a LXC Container (Proxmox for example) you need to tweak the dovecot install or it will not work, see [this fix](https://serverfault.com/questions/976250/dovecot-lxc-apparmor-denied-buster) for more info_
+***Note:** If you are using Debian Buster or Bullseye in a LXC Container (Proxmox for example), you need to tweak the Dovecot installation or it will not work. See [this fix](https://serverfault.com/questions/976250/dovecot-lxc-apparmor-denied-buster) for more information.*
 
-It's recommended that the instance of MailAD sits within your DMZ segment with a firewall between it and your users and a mail gateway like [Proxmox Mail Gateway](https://www.proxmox.com/en/proxmox-mail-gateway) between it and the external network.
+It's recommended that the instance of MailAD sits within your DMZ segment with a firewall between it and your users, and a mail gateway like [Proxmox Mail Gateway](https://www.proxmox.com/en/proxmox-mail-gateway) between it and the external network.
 
 ## Features
 
-This will provision a mail server for an enterprise serving corporate users. You can see the major features in the [Features.md](Features.md) file, among others you will find:
+This will provision a mail server for an enterprise serving corporate users. You can see the major features in the [Features.md](Features.md) file. Among others, you will find:
 
-0. Low resource footprint.
-0. Advanced (and optional) mail filtering features that includes attachments, SPF, AntiVirus & Spam.
-0. Encrypted LDAP communication as an option.
-0. In place protection to major and known SSL & mail service attacks.
-0. Automatic alias using AD groups.
-0. Manual alias, manual ban, manual headers & body checks.
-0. On demand backup and restore of raw configurations.
-0. Really painless upgrades.
-0. Daily mail traffic summary to your inbox.
-0. Optional user privilege access via AD groups (local/national/international).
-0. Optional disclaimer/notice/warning on every outgoing mail.
-0. Optional aggressive SPAM fight measures.
-0. Weekly background check for new versions with a detailed email if you need to upgrade.
-0. Optional mailbox split by office/city/country
-0. Optional Webmail, you have Roundcube or SnappyMail to choose from.
+1. Low resource footprint.
+2. Advanced (and optional) mail filtering features that include attachments, SPF, AntiVirus & Spam.
+3. Encrypted LDAP communication as an option.
+4. In-place protection against major and known SSL & mail service attacks.
+5. Automatic alias using AD groups.
+6. Manual alias, manual ban, manual headers & body checks.
+7. On-demand backup and restore of raw configurations.
+8. Really painless upgrades.
+9. Daily mail traffic summary to your inbox.
+10. Optional user privilege access via AD groups (local/national/international).
+11. Optional disclaimer/notice/warning on every outgoing mail.
+12. Optional aggressive SPAM fight measures.
+13. Weekly background check for new versions with a detailed email if you need to upgrade.
+14. Optional mailbox split by office/city/country.
+15. Optional Webmail, you have Roundcube or SnappyMail to choose from.
 
 ## TODO
 
-There is a [TODO list](TODO.md), which serves as a kind of "roadmap" for new features, but as I (the only dev so far) have a life, a family and a daily job, you know...
+There is a [TODO list](TODO.md), which serves as a kind of "roadmap" for new features. But as I (the only dev so far) have a life, a family, and a daily job, you know...
 
-All dev is made on weekend or late at night (seriously take a peek on the commit dates!) if you need a feature or fix ASAP, please take into account making a donation or found me and I will be happy to help you ASAP, my contact info is on the bottom of this page.
+All development is made on weekends or late at night (seriously, take a peek at the commit dates!). If you need a feature or fix ASAP, please consider making a donation or contacting me, and I will be happy to help you ASAP. My contact info is at the bottom of this page.
 
 ## Constraints and requirements
 
-Do you remember the comment at top of the page about _"...with some constraints in mind..."?_ Yeah, here they are:
+Do you remember the comment at the top of the page about *"...with some constraints in mind..."*? Yeah, here they are:
 
-0. Your user base and config came from AD as mentioned, we prefer Samba AD but it works on Windows too; see [the AD requirements for this tool](AD_Requirements.md)
-0. The username part of the email must not pass the 20 chars mark, so `thisisalongemailaddress@domain.com` will be cut to `thisisalongemailaddr@domain.com` this is not our rule, but a handycap of the LDAP directory as specified by Windows Schema.
-0. The mail storage will be a folder in `/home/vmail`, all mail will belong to a user named `vmail` with uid:5000 & gid:5000. Tip: that folder can be a NFS mount or any other type of network storage (configurable)
-0. You use a Windows PC to control and manage the domain (must be a domain member and have the RSAT installed and activated), we recommend a Windows 10 LTSC/Professional
-0. The communication with the server is done in this way: (See [this question](FAQ.md#what-ports-i-need-to-get-open-to-make-sure-the-servers-works-ok) on the FAQ file to know more)
+1. Your user base and configuration come from AD as mentioned. We prefer Samba AD, but it works on Windows too; see [the AD requirements for this tool](AD_Requirements.md).
+2. The username part of the email must not exceed 20 characters, so `thisisalongemailaddress@domain.com` will be truncated to `thisisalongemailaddr@domain.com`. This is not our rule, but a limitation of the LDAP directory as specified by Windows Schema.
+3. The mail storage will be a folder in `/home/vmail`. All mail will belong to a user named `vmail` with uid:5000 & gid:5000. Tip: that folder can be a NFS mount or any other type of network storage (configurable).
+4. You use a Windows PC to control and manage the domain (must be a domain member and have the RSAT installed and activated). We recommend Windows 10 LTSC/Professional.
+5. The communication with the server is done in this way: (See [this question](FAQ.md#what-ports-i-need-to-get-open-to-make-sure-the-servers-works-ok) on the FAQ file to know more)
     - Port 25 (SMTP) is used to receive incoming traffic from the outside world or from a mail gateway.
     - Port 587 (SUBMISSION) is used to receive emails from the users to be delivered locally or relayed to other servers.
-    - Port 465 (SMTPS) is used like port 587 but is only enabled as a legacy option, its use is discouraged in favor of port 587.
-    - Port 993 (IMAPS) the preffered method to retrieve the email form the server.
-    - Port 995 (POP3S) used like the 993, but discouraged in favor of IMAPS (unless you are in a very slow link)
+    - Port 465 (SMTPS) is used like port 587 but is only enabled as a legacy option; its use is discouraged in favor of port 587.
+    - Port 993 (IMAPS) the preferred method to retrieve email from the server.
+    - Port 995 (POP3S) used like 993, but discouraged in favor of IMAPS (unless you are on a very slow link).
 
 ## How to install or try it?
 
-We have a [INSTALL.md](INSTALL.md) file just for that, and also a [FAQ](FAQ.md) file with common problems.
+We have an [INSTALL.md](INSTALL.md) file just for that, and also a [FAQ](FAQ.md) file with common problems.
 
 ## This is free software!
 
-Have a comment, question, contributions or fix?
+Have a comment, question, contribution, or fix?
 
-Use the Issues tab in the repository URL or drop me a message via [Twitter](https://twitter.com/co7wt) or [Telegram](https://t.me/pavelmc)
+Use the Issues tab in the repository URL or drop me a message via [Twitter](https://twitter.com/co7wt) or [Telegram](https://t.me/pavelmc).
 
 ## Contributors ✨
 
@@ -127,6 +127,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
-Please read the [CONTRIBUTING.md](CONTRIBUTING.md) file if you want to contribute to MailAD to know the details of how to do it. All kinds of contributions are welcomed, ideas, fixes, bugs, improvements and even a phone top-up to keep me online.
+Please read the [CONTRIBUTING.md](CONTRIBUTING.md) file if you want to contribute to MailAD to know the details of how to do it. All kinds of contributions are welcomed: ideas, fixes, bug reports, improvements, and even a phone top-up to keep me online.
 
 This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
+
