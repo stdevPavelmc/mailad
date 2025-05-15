@@ -1,0 +1,173 @@
+name: MailAD Integration Tests
+
+on:
+  push:
+    branches: [ master, development ]
+  pull_request:
+    branches: [ master, development ]
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        
+      - name: Setup Docker network
+        run: |
+          # Create a Docker network for the containers
+          docker network create mailad-network
+
+      - name: Start Samba AD container
+        run: |
+          docker run -d --name samba-ad --hostname samba-ad \
+            --network mailad-network \
+            -v ${{ github.workspace }}:/root/mailad \
+            -e DEBIAN_FRONTEND=noninteractive \
+            ubuntu:22.04 sleep infinity
+          
+          # Get IP address
+          SAMBA_IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' samba-ad)
+          echo "SAMBA_IP=$SAMBA_IP" >> $GITHUB_ENV
+
+      - name: Start MailAD server container
+        run: |
+          docker run -d --name mailad-server --hostname mailad-server \
+            --network mailad-network \
+            -v ${{ github.workspace }}:/root/mailad \
+            -e DEBIAN_FRONTEND=noninteractive \
+            ubuntu:22.04 sleep infinity
+          
+          # Get IP address
+          MAILAD_IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' mailad-server)
+          echo "MAILAD_IP=$MAILAD_IP" >> $GITHUB_ENV
+
+      - name: Start Test client container
+        run: |
+          docker run -d --name test-client --hostname test-client \
+            --network mailad-network \
+            -v ${{ github.workspace }}:/root/mailad \
+            -e DEBIAN_FRONTEND=noninteractive \
+            ubuntu:22.04 sleep infinity
+          
+          # Get IP address
+          TEST_IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' test-client)
+          echo "TEST_IP=$TEST_IP" >> $GITHUB_ENV
+
+      - name: Configure hosts files
+        run: |
+          # Update /etc/hosts in each container
+          docker exec samba-ad bash -c "echo '${{ env.SAMBA_IP }} samba-ad' >> /etc/hosts"
+          docker exec samba-ad bash -c "echo '${{ env.MAILAD_IP }} mailad-server' >> /etc/hosts"
+          docker exec samba-ad bash -c "echo '${{ env.TEST_IP }} test-client' >> /etc/hosts"
+          
+          docker exec mailad-server bash -c "echo '${{ env.SAMBA_IP }} samba-ad' >> /etc/hosts"
+          docker exec mailad-server bash -c "echo '${{ env.MAILAD_IP }} mailad-server' >> /etc/hosts"
+          docker exec mailad-server bash -c "echo '${{ env.TEST_IP }} test-client' >> /etc/hosts"
+          
+          docker exec test-client bash -c "echo '${{ env.SAMBA_IP }} samba-ad' >> /etc/hosts"
+          docker exec test-client bash -c "echo '${{ env.MAILAD_IP }} mailad-server' >> /etc/hosts"
+          docker exec test-client bash -c "echo '${{ env.TEST_IP }} test-client' >> /etc/hosts"
+
+      - name: Generate credentials
+        run: |
+          # Create a temporary auth file with credentials
+          cat > .mailadmin.auth << EOF
+          PASS='P@ssw0rd123!'
+          
+          # national user and credentials
+          NACUSER="starf@mailad.cu"
+          NACUSERPASSWD='N@tional123'
+          
+          # local user and credentials
+          LOCUSER="pepa@mailad.cu"
+          LOCUSERPASSWORD='L0cal123!'
+          
+          # Linux bind user password
+          LDAPBINDPASSWD='B1ndP@ss123!'
+          EOF
+          
+          # Copy the auth file to all containers
+          docker cp .mailadmin.auth samba-ad:/root/mailad/
+          docker cp .mailadmin.auth mailad-server:/root/mailad/
+          docker cp .mailadmin.auth test-client:/root/mailad/
+
+      - name: Setup Samba AD
+        run: |
+          # Install dependencies and prepare Samba AD
+          docker exec samba-ad bash -c "cd /root/mailad && \
+            apt-get update && \
+            apt-get install -y make && \
+            make conf && \
+            cp /etc/mailad/mailad.conf /root/mailad/.mailad.auth && \
+            chmod +x utils/samba_scaffold.sh && \
+            utils/samba_scaffold.sh"
+
+      - name: Setup MailAD Server
+        run: |
+          # Install and configure MailAD
+          docker exec mailad-server bash -c "cd /root/mailad && \
+            apt-get update && \
+            apt-get install -y make && \
+            make conf && \
+            # Update the mailad.conf to point to the Samba AD server
+            sed -i 's/^LDAPSERVER=.*/LDAPSERVER=\"samba-ad\"/' /etc/mailad/mailad.conf && \
+            # Disable SOA test for testing environment
+            sed -i 's/^SOA_TEST=.*/SOA_TEST=\"no\"/' /etc/mailad/mailad.conf && \
+            # Install MailAD
+            make all"
+
+      - name: Setup Test Client
+        run: |
+          # Install test dependencies
+          docker exec test-client bash -c "cd /root/mailad && \
+            apt-get update && \
+            apt-get install -y make && \
+            make conf && \
+            cp /etc/mailad/mailad.conf /root/mailad/.mailad.auth && \
+            # Update the mailad.conf to point to the Samba AD server
+            sed -i 's/^LDAPSERVER=.*/LDAPSERVER=\"samba-ad\"/' /etc/mailad/mailad.conf && \
+            # Disable SOA test for testing environment
+            sed -i 's/^SOA_TEST=.*/SOA_TEST=\"no\"/' /etc/mailad/mailad.conf && \
+            # Install test dependencies
+            make test-deps"
+
+      - name: Run Tests
+        run: |
+          # Run the tests against the MailAD server
+          docker exec test-client bash -c "cd /root/mailad && \
+            # Create common.conf file needed by test.sh
+            echo 'function get_ldap_uri() { echo \"ldap://samba-ad\"; }' > tests/common.conf && \
+            chmod +x tests/test.sh && \
+            tests/test.sh ${{ env.MAILAD_IP }} || exit 1"
+
+      - name: Collect logs on failure
+        if: failure()
+        run: |
+          # Collect logs from all containers for debugging
+          mkdir -p logs
+          docker exec mailad-server bash -c "journalctl -xn 500" > logs/mailad-server-journal.log || true
+          docker exec samba-ad bash -c "journalctl -xn 500" > logs/samba-ad-journal.log || true
+          docker exec test-client bash -c "cat /root/mailad/test.log" > logs/test-execution.log || true
+          
+          # Archive logs
+          tar -czf mailad-test-logs.tar.gz logs/
+
+      - name: Upload logs
+        if: failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: mailad-test-logs
+          path: mailad-test-logs.tar.gz
+
+      - name: Cleanup
+        if: always()
+        run: |
+          # Clean up the containers and network
+          docker stop samba-ad mailad-server test-client || true
+          docker rm samba-ad mailad-server test-client || true
+          docker network rm mailad-network || true
+          rm -f .mailadmin.auth
+
