@@ -157,7 +157,7 @@ jobs:
 
       - name: Upload logs
         if: failure()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: mailad-test-logs
           path: mailad-test-logs.tar.gz
@@ -170,4 +170,3 @@ jobs:
           docker rm samba-ad mailad-server test-client || true
           docker network rm mailad-network || true
           rm -f .mailadmin.auth
-

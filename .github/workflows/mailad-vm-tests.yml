@@ -41,7 +41,7 @@ jobs:
           echo "auth_file=$AUTH_FILE" >> $GITHUB_OUTPUT
       
       - name: Upload repository
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: mailad-repo
           path: .
@@ -52,7 +52,7 @@ jobs:
     
     steps:
       - name: Download repository
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: mailad-repo
           path: /tmp/mailad
@@ -94,7 +94,7 @@ jobs:
           sudo utils/samba_scaffold.sh
       
       - name: Upload Samba AD IP
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: samba-ad-ip
           path: samba_ip.txt
@@ -105,13 +105,13 @@ jobs:
     
     steps:
       - name: Download repository
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: mailad-repo
           path: /tmp/mailad
       
       - name: Download Samba AD IP
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: samba-ad-ip
           path: /tmp
@@ -155,7 +155,7 @@ jobs:
           sudo make all
       
       - name: Upload MailAD Server IP
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: mailad-server-ip
           path: mailad_ip.txt
@@ -166,19 +166,19 @@ jobs:
     
     steps:
       - name: Download repository
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: mailad-repo
           path: /tmp/mailad
       
       - name: Download Samba AD IP
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: samba-ad-ip
           path: /tmp/samba-ad-ip
       
       - name: Download MailAD Server IP
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: mailad-server-ip
           path: /tmp/mailad-server-ip
@@ -233,8 +233,7 @@ jobs:
       
       - name: Upload test logs
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: test-logs
           path: /root/mailad/test.log
-
