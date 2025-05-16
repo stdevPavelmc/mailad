@@ -56,7 +56,9 @@ NETBIOS=`echo ${DOMAIN} | cut -d '.' -f 1 | tr [:lower:] [:upper:]`
 ADMINUSER=`echo ${ADMINMAIL} | cut -d '@' -f 1`
 LUCU=`echo ${LOCUSER} | cut -d '@' -f 1`
 NATU=`echo ${NACUSER} | cut -d '@' -f 1`
-DNSFWD=10.0.3.1 # left empty to disable DNS forwarder
+if ( -z "$DNSFWD" ) ; then
+    DNSFWD=10.0.3.1
+fi
 
 echo "==== DEBUG: VARS SETTED ===="
 echo "NETBIOS: ${NETBIOS}"
