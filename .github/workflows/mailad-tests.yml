@@ -55,22 +55,17 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: mailad-repo
-          path: /tmp/mailad
+          path: ${{ github.workspace }}/mailad
       
-      - name: Move repository to /root
-        run: |
-          sudo mkdir -p /root/mailad
-          sudo cp -r /tmp/mailad/* /root/mailad/
-          sudo chmod +r+x /root/mailad
-
       - name: Setup auth file
         run: |
-          echo "${{ needs.setup.outputs.auth_file }}" | base64 -d | sudo tee /root/mailad/.mailadmin.auth > /dev/null
-          sudo chmod 600 /root/mailad/.mailadmin.auth
+          echo "${{ needs.setup.outputs.auth_file }}" | base64 -d > ${{ github.workspace }}/mailad/.mailadmin.auth
+          chmod 600 ${{ github.workspace }}/mailad/.mailadmin.auth
       
       - name: Run make conf
         run: |
-          cd /root/mailad
+          cd ${{ github.workspace }}/mailad
+          sudo mkdir -p /etc/mailad
           sudo make conf
       
       - name: Configure hosts
@@ -81,12 +76,8 @@ jobs:
           LOCAL_IP=$(ip route show default | awk '{print $3}')
           echo "$LOCAL_IP dc.mailad.cu  dc" | sudo tee -a /etc/hosts
           
-          # Get public IP for GitHub Actions runner
-          #PUBLIC_IP=$(curl -s https://api.ipify.org)
-          #echo "$PUBLIC_IP dc" | sudo tee -a /etc/hosts
-          
           # Save IP for other jobs
-          echo "$LOCAL_IP" > samba_ip.txt
+          echo "$LOCAL_IP" > ${{ github.workspace }}/samba_ip.txt
       
       - name: Setup Samba AD
         run: |
@@ -94,15 +85,15 @@ jobs:
           export DNSFWD=1.1.1.1
 
           # install & configure Samba AD
-          cd /root/mailad
-          sudo chmod +x utils/samba_scaffold.sh
-          sudo utils/samba_scaffold.sh
+          cd ${{ github.workspace }}/mailad
+          chmod +x utils/samba_scaffold.sh
+          sudo -E utils/samba_scaffold.sh
       
       - name: Upload Samba AD IP
         uses: actions/upload-artifact@v4
         with:
           name: samba-ad-ip
-          path: samba_ip.txt
+          path: ${{ github.workspace }}/samba_ip.txt
 
   mail:
     needs: [setup, dc]
@@ -113,55 +104,50 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: mailad-repo
-          path: /tmp/mailad
+          path: ${{ github.workspace }}/mailad
       
       - name: Download Samba AD IP
         uses: actions/download-artifact@v4
         with:
           name: samba-ad-ip
-          path: /tmp
-      
-      - name: Move repository to /root
-        run: |
-          sudo mkdir -p /root/mailad
-          sudo cp -r /tmp/mailad/* /root/mailad/
-          sudo chmod +r+x /root/mailad
+          path: ${{ github.workspace }}/samba-ad-ip
       
       - name: Setup auth file
         run: |
-          echo "${{ needs.setup.outputs.auth_file }}" | base64 -d | sudo tee /root/mailad/.mailadmin.auth > /dev/null
-          sudo chmod 600 /root/mailad/.mailadmin.auth
+          echo "${{ needs.setup.outputs.auth_file }}" | base64 -d > ${{ github.workspace }}/mailad/.mailadmin.auth
+          chmod 600 ${{ github.workspace }}/mailad/.mailadmin.auth
       
       - name: Run make conf and change some vars
         run: |
-          cd /root/mailad
+          cd ${{ github.workspace }}/mailad
+          sudo mkdir -p /etc/mailad
           sudo make conf
             
           # Update linux password for the ldap bind from the .mailad.auth file
-          source /root/mailad/.mailadmin.auth
+          source ${{ github.workspace }}/mailad/.mailadmin.auth
           sudo sed -i "s/LDAPBINDPASSWD=.*/LDAPBINDPASSWD=${LDAPBINDPASSWD}/" /etc/mailad/mailad.conf
       
       - name: Configure hosts
         run: |
-          SAMBA_AD_IP=$(cat /tmp/samba_ip.txt)
+          SAMBA_AD_IP=$(cat ${{ github.workspace }}/samba-ad-ip/samba_ip.txt)
           echo "$SAMBA_AD_IP dc.mailad.cu dc" | sudo tee -a /etc/hosts
 
           # Get local IP associated with the default gateway
           LOCAL_IP=$(ip route show default | awk '{print $3}')
-          echo "LOCAL_IP mail.mailad.cu mail" | sudo tee -a /etc/hosts
+          echo "$LOCAL_IP mail.mailad.cu mail" | sudo tee -a /etc/hosts
           echo "127.0.1.1 mail.mailad.cu mail" | sudo tee -a /etc/hosts
-          echo "$LOCAL_IP" > mailad_ip.txt
+          echo "$LOCAL_IP" > ${{ github.workspace }}/mailad_ip.txt
       
       - name: Install MailAD
         run: |
-          cd /root/mailad
+          cd ${{ github.workspace }}/mailad
           sudo make all
       
       - name: Upload MailAD Server IP
         uses: actions/upload-artifact@v4
         with:
           name: mailad-server-ip
-          path: mailad_ip.txt
+          path: ${{ github.workspace }}/mailad_ip.txt
 
   test-client:
     needs: [setup, dc, mail]
@@ -172,62 +158,57 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: mailad-repo
-          path: /tmp/mailad
+          path: ${{ github.workspace }}/mailad
       
       - name: Download Samba AD IP
         uses: actions/download-artifact@v4
         with:
           name: samba-ad-ip
-          path: /tmp/samba-ad-ip
+          path: ${{ github.workspace }}/samba-ad-ip
       
       - name: Download MailAD Server IP
         uses: actions/download-artifact@v4
         with:
           name: mailad-server-ip
-          path: /tmp/mailad-server-ip
-      
-      - name: Move repository to /root
-        run: |
-          sudo mkdir -p /root/mailad
-          sudo cp -r /tmp/mailad/* /root/mailad/
-          sudo chmod +r+x /root/mailad
+          path: ${{ github.workspace }}/mailad-server-ip
       
       - name: Setup auth file
         run: |
-          echo "${{ needs.setup.outputs.auth_file }}" | base64 -d | sudo tee /root/mailad/.mailadmin.auth > /dev/null
-          sudo chmod 600 /root/mailad/.mailadmin.auth
+          echo "${{ needs.setup.outputs.auth_file }}" | base64 -d > ${{ github.workspace }}/mailad/.mailadmin.auth
+          chmod 600 ${{ github.workspace }}/mailad/.mailadmin.auth
       
       - name: Run make conf
         run: |
-          cd /root/mailad
+          cd ${{ github.workspace }}/mailad
+          sudo mkdir -p /etc/mailad
           sudo make conf
           
           # Copy mailad.conf to .mailad.auth as required by tests
-          sudo cp /etc/mailad/mailad.conf /root/mailad/.mailad.auth
+          sudo cp /etc/mailad/mailad.conf ${{ github.workspace }}/mailad/.mailad.auth
       
       - name: Configure hosts
         run: |
-          SAMBA_AD_IP=$(cat /tmp/samba-ad-ip/samba_ip.txt)
-          MAILAD_SERVER_IP=$(cat /tmp/mailad-server-ip/mailad_ip.txt)
+          SAMBA_AD_IP=$(cat ${{ github.workspace }}/samba-ad-ip/samba_ip.txt)
+          MAILAD_SERVER_IP=$(cat ${{ github.workspace }}/mailad-server-ip/mailad_ip.txt)
           
           echo "$SAMBA_AD_IP  dc.mailad.cu dc" | sudo tee -a /etc/hosts
           echo "$MAILAD_SERVER_IP mail.mailad.cu  mail" | sudo tee -a /etc/hosts
       
       - name: Install test dependencies
         run: |
-          cd /root/mailad
+          cd ${{ github.workspace }}/mailad
           sudo make test-deps
 
       - name: Run tests
         run: |
-          cd /root/mailad
-          sudo chmod +x tests/test.sh
-          MAILAD_SERVER_IP=$(cat /tmp/mailad-server-ip/mailad_ip.txt)
-          sudo tests/test.sh $MAILAD_SERVER_IP
+          cd ${{ github.workspace }}/mailad
+          chmod +x tests/test.sh
+          MAILAD_SERVER_IP=$(cat ${{ github.workspace }}/mailad-server-ip/mailad_ip.txt)
+          sudo -E tests/test.sh $MAILAD_SERVER_IP
 
       - name: Upload test logs
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: test-logs
-          path: /root/mailad/test.log
+          path: ${{ github.workspace }}/mailad/test.log

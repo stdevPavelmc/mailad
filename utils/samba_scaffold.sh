@@ -56,7 +56,8 @@ NETBIOS=`echo ${DOMAIN} | cut -d '.' -f 1 | tr [:lower:] [:upper:]`
 ADMINUSER=`echo ${ADMINMAIL} | cut -d '@' -f 1`
 LUCU=`echo ${LOCUSER} | cut -d '@' -f 1`
 NATU=`echo ${NACUSER} | cut -d '@' -f 1`
-if ( -z "$DNSFWD" ) ; then
+# Set default DNS forwarder if not already set
+if [ -z "$DNSFWD" ] ; then
     DNSFWD=10.0.3.1
 fi
 
