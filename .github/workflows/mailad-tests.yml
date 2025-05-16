@@ -61,8 +61,8 @@ jobs:
         run: |
           sudo mkdir -p /root/mailad
           sudo cp -r /tmp/mailad/* /root/mailad/
-          sudo chown -R root:root /root/mailad
-      
+          sudo chmod +r+x /root/mailad
+
       - name: Setup auth file
         run: |
           echo "${{ needs.setup.outputs.auth_file }}" | base64 -d | sudo tee /root/mailad/.mailadmin.auth > /dev/null
@@ -125,7 +125,7 @@ jobs:
         run: |
           sudo mkdir -p /root/mailad
           sudo cp -r /tmp/mailad/* /root/mailad/
-          sudo chown -R root:root /root/mailad
+          sudo chmod +r+x /root/mailad
       
       - name: Setup auth file
         run: |
@@ -190,7 +190,7 @@ jobs:
         run: |
           sudo mkdir -p /root/mailad
           sudo cp -r /tmp/mailad/* /root/mailad/
-          sudo chown -R root:root /root/mailad
+          sudo chmod +r+x /root/mailad
       
       - name: Setup auth file
         run: |
