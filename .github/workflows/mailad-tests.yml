@@ -2,9 +2,9 @@ name: MailAD VM Integration Tests
 
 on:
   push:
-    branches: [ master, development ]
+    branches: [ master, develop ]
   pull_request:
-    branches: [ master, development ]
+    branches: [ master, develop ]
   workflow_dispatch:
 
 jobs:
@@ -46,10 +46,10 @@ jobs:
           name: mailad-repo
           path: .
 
-  dc:
+  lxc-run:
     needs: setup
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Download repository
         uses: actions/download-artifact@v4
@@ -61,175 +61,126 @@ jobs:
         run: |
           echo "${{ needs.setup.outputs.auth_file }}" | base64 -d > ${{ github.workspace }}/mailad/.mailadmin.auth
           chmod 600 ${{ github.workspace }}/mailad/.mailadmin.auth
-      
-      - name: Set script permissions
-        run: |
-          cd ${{ github.workspace }}/mailad
-          chmod +x scripts/*.sh
-          chmod +x utils/*.sh
-          chmod +x tests/*.sh
-      
-      - name: Run make conf
-        run: |
-          cd ${{ github.workspace }}/mailad
-          sudo mkdir -p /etc/mailad
-          sudo make conf
-      
-      - name: Configure hosts
-        run: |
-          echo "127.0.1.1 dc.mailad.cu  dc" | sudo tee -a /etc/hosts
 
-          # Get local IP associated with the default gateway
-          LOCAL_IP=$(ip route show default | awk '{print $3}')
-          echo "$LOCAL_IP dc.mailad.cu  dc" | sudo tee -a /etc/hosts
-          
-          # Save IP for other jobs
-          echo "$LOCAL_IP" > ${{ github.workspace }}/samba_ip.txt
-      
-      - name: Setup Samba AD
+      - name: Change the default password on the linux link user
         run: |
-          # export the default external DNS resolver
-          export DNSFWD=1.1.1.1
-
-          # install & configure Samba AD
-          cd ${{ github.workspace }}/mailad
-          chmod +x utils/samba_scaffold.sh
-          sudo -E utils/samba_scaffold.sh
-      
-      - name: Upload Samba AD IP
-        uses: actions/upload-artifact@v4
-        with:
-          name: samba-ad-ip
-          path: ${{ github.workspace }}/samba_ip.txt
-
-  mail:
-    needs: [setup, dc]
-    runs-on: ubuntu-latest
-    
-    steps:
-      - name: Download repository
-        uses: actions/download-artifact@v4
-        with:
-          name: mailad-repo
-          path: ${{ github.workspace }}/mailad
-      
-      - name: Download Samba AD IP
-        uses: actions/download-artifact@v4
-        with:
-          name: samba-ad-ip
-          path: ${{ github.workspace }}/samba-ad-ip
-      
-      - name: Setup auth file
-        run: |
-          echo "${{ needs.setup.outputs.auth_file }}" | base64 -d > ${{ github.workspace }}/mailad/.mailadmin.auth
-          chmod 600 ${{ github.workspace }}/mailad/.mailadmin.auth
-      
-      - name: Set script permissions
-        run: |
-          cd ${{ github.workspace }}/mailad
-          chmod +x scripts/*.sh
-          chmod +x utils/*.sh
-          chmod +x tests/*.sh
-      
-      - name: Run make conf and change some vars
-        run: |
-          cd ${{ github.workspace }}/mailad
-          sudo mkdir -p /etc/mailad
-          sudo make conf
-            
-          # Update linux password for the ldap bind from the .mailad.auth file
           source ${{ github.workspace }}/mailad/.mailadmin.auth
-          sudo sed -i "s/LDAPBINDPASSWD=.*/LDAPBINDPASSWD=${LDAPBINDPASSWD}/" /etc/mailad/mailad.conf
-      
-      - name: Configure hosts
-        run: |
-          SAMBA_AD_IP=$(cat ${{ github.workspace }}/samba-ad-ip/samba_ip.txt)
-          echo "$SAMBA_AD_IP dc.mailad.cu dc" | sudo tee -a /etc/hosts
+          sudo sed -i "s/LDAPBINDPASSWD=.*/LDAPBINDPASSWD=${LDAPBINDPASSWD}/" ${{ github.workspace }}/mailad/mailad.conf
 
-          # Get local IP associated with the default gateway
-          LOCAL_IP=$(ip route show default | awk '{print $3}')
-          echo "$LOCAL_IP mail.mailad.cu mail" | sudo tee -a /etc/hosts
-          echo "127.0.1.1 mail.mailad.cu mail" | sudo tee -a /etc/hosts
-          echo "$LOCAL_IP" > ${{ github.workspace }}/mailad_ip.txt
-      
-      - name: Install MailAD
+      - name: Install and configure LXC
         run: |
-          cd ${{ github.workspace }}/mailad
-          sudo make all
-      
-      - name: Upload MailAD Server IP
-        uses: actions/upload-artifact@v4
-        with:
-          name: mailad-server-ip
-          path: ${{ github.workspace }}/mailad_ip.txt
+          sudo chmod +x ${{ github.workspace }}/mailad/utils/setup_lxc.sh
+          sudo ${{ github.workspace }}/mailad/utils/setup_lxc.sh
 
-  test-client:
-    needs: [setup, dc, mail]
-    runs-on: ubuntu-latest
-    
-    steps:
-      - name: Download repository
-        uses: actions/download-artifact@v4
-        with:
-          name: mailad-repo
-          path: ${{ github.workspace }}/mailad
-      
-      - name: Download Samba AD IP
-        uses: actions/download-artifact@v4
-        with:
-          name: samba-ad-ip
-          path: ${{ github.workspace }}/samba-ad-ip
-      
-      - name: Download MailAD Server IP
-        uses: actions/download-artifact@v4
-        with:
-          name: mailad-server-ip
-          path: ${{ github.workspace }}/mailad-server-ip
-      
-      - name: Setup auth file
+      - name: Install Samba, configure it and start
         run: |
-          echo "${{ needs.setup.outputs.auth_file }}" | base64 -d > ${{ github.workspace }}/mailad/.mailadmin.auth
-          chmod 600 ${{ github.workspace }}/mailad/.mailadmin.auth
-      
-      - name: Set script permissions
-        run: |
-          cd ${{ github.workspace }}/mailad
-          chmod +x scripts/*.sh
-          chmod +x utils/*.sh
-          chmod +x tests/*.sh
-      
-      - name: Run make conf
-        run: |
-          cd ${{ github.workspace }}/mailad
-          sudo mkdir -p /etc/mailad
-          sudo make conf
+          # Create the container
+          sudo lxc-create -t download -n dc -- \
+            --dist ubuntu \
+            --release noble \
+            --arch amd64
+
+          # Mount directory
+          sudo lxc config device add dc mailad disk \
+            source=${{ github.workspace }}/mailad \
+            path=/tmp/mailad
           
-          # Copy mailad.conf to .mailad.auth as required by tests
-          sudo cp /etc/mailad/mailad.conf ${{ github.workspace }}/mailad/.mailadmin.auth
-      
-      - name: Configure hosts
-        run: |
-          SAMBA_AD_IP=$(cat ${{ github.workspace }}/samba-ad-ip/samba_ip.txt)
-          MAILAD_SERVER_IP=$(cat ${{ github.workspace }}/mailad-server-ip/mailad_ip.txt)
-          
-          echo "$SAMBA_AD_IP  dc.mailad.cu dc" | sudo tee -a /etc/hosts
-          echo "$MAILAD_SERVER_IP mail.mailad.cu  mail" | sudo tee -a /etc/hosts
-      
-      - name: Install test dependencies
-        run: |
-          cd ${{ github.workspace }}/mailad
-          sudo make test-deps
+          # Start the container
+          sudo lxc-start -d -n dc
 
-      - name: Run tests
+          # Install make
+          sudo lxc-attach -n dc -- \
+            apt-get update && \
+            apt-get install -y make
+          
+          # Run the make conf to setup the Mailad Samba AD
+          sudo lxc-attach -n dc -- \
+            cd /tmp/mailad && \
+            make conf
+
+          # Run the config script
+          sudo lxc-attach -n dc -- \
+            cd /tmp/mailad && \
+            chmod +x ./utils/samba_scaffold.sh && \
+            ./utils/samba_scaffold.sh
+
+      - name: Install MailAD, configure it and start
         run: |
-          cd ${{ github.workspace }}/mailad
-          chmod +x tests/test.sh
-          MAILAD_SERVER_IP=$(cat ${{ github.workspace }}/mailad-server-ip/mailad_ip.txt)
-          sudo -E tests/test.sh $MAILAD_SERVER_IP
+          # Create the container
+          sudo lxc-create -t download -n mail -- \
+            --dist ubuntu \
+            --release noble \
+            --arch amd64
+
+          # Mount directory
+          sudo lxc config device add mail mailad disk \
+            source=${{ github.workspace }}/mailad \
+            path=/tmp/mailad
+          
+          # Start the container
+          sudo lxc-start -d -n mail
+
+          # Install make
+          sudo lxc-attach -n mail -- \
+            apt-get update && \
+            apt-get install -y make
+
+          # Install config
+          sudo lxc-attach -n mail -- \
+            cd /tmp/mailad && \
+            make conf
+          
+          # Run the make conf to setup the Mailad Samba AD
+          sudo lxc-attach -n dc -- \
+            cd /tmp/mailad && \
+            make all
+
+      - name: Setup the test container
+        run: |
+          # Create the container
+          sudo lxc-create -t download -n test -- \
+            --dist ubuntu \
+            --release noble \
+            --arch amd64
+
+          # Mount directory
+          sudo lxc config device add test mailad disk \
+            source=${{ github.workspace }}/mailad \
+            path=/tmp/mailad
+          
+          # Start the container
+          sudo lxc-start -d -n test
+
+          # Install make
+          sudo lxc-attach -n test -- \
+            apt-get update && \
+            apt-get install -y make
+
+          # Install config
+          sudo lxc-attach -n mail -- \
+            cd /tmp/mailad && \
+            make conf
+
+          # Run the test script
+          sudo lxc-attach -n dc -- \
+            cd /tmp/mailad && \
+            make test mail.mailad.cu
 
       - name: Upload test logs
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: test-logs
-          path: ${{ github.workspace }}/mailad/test.log
+          path: ${{ github.workspace }}/mailad/tests/test.log
+
+      - name: Stop containers
+        run: |
+          sudo lxc-stop -n dc
+          sudo lxc-stop -n mail
+          sudo lxc-stop -n test
+
+      - name: Remove containers
+        run: |
+          sudo lxc-destroy -n dc
+          sudo lxc-destroy -n mail
+          sudo lxc-destroy -n test
