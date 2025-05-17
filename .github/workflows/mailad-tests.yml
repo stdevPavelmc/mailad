@@ -72,12 +72,12 @@ jobs:
           sudo chmod +x ${{ github.workspace }}/mailad/utils/setup_lxc.sh
           sudo ${{ github.workspace }}/mailad/utils/setup_lxc.sh
 
-      - name: Setup firewall rules
-        run: |
-          sudo ufw allow in on lxcbr0
-          sudo ufw allow out on lxcbr0
-          sudo ufw route allow in on lxcbr0
-          sudo ufw route allow out on lxcbr0
+      # - name: Setup firewall rules
+      #   run: |
+      #     sudo ufw allow in on lxcbr0
+      #     sudo ufw allow out on lxcbr0
+      #     sudo ufw route allow in on lxcbr0
+      #     sudo ufw route allow out on lxcbr0
 
       - name: Install Samba, configure it and start
         run: |
