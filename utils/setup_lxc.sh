@@ -58,4 +58,4 @@ EOF
 
 # restart services
 systemctl enable lxc lxc-net
-systemctl restart lxc lxc-net
+systemctl restart lxc lxc-net || systemctl status lxc-net.service
