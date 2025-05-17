@@ -78,13 +78,6 @@ jobs:
           sudo ufw route allow in on lxcbr0
           sudo ufw route allow out on lxcbr0
 
-      - name: Debug the working directory
-        run: |
-          echo "==> Debug the working directory"
-          echo ${{ github.workspace }}/
-          ls -l ${{ github.workspace }}/
-          ls -l ${{ github.workspace }}/mailad/
-
       - name: Install Samba, configure it and start
         run: |
           # Create the container
@@ -96,15 +89,12 @@ jobs:
 
           # Mount directory
           echo "==> Mounting directory"
-          echo "lxc.mount.entry = ${{ github.workspace }}/mailad home/mailad none bind,relative,create=dir 0 0" | sudo tee -a /var/lib/lxc/dc/config
-          
-          # Dump the config file
-          echo "==> Dumping the config file"
-          sudo cat /var/lib/lxc/dc/config
+          echo "lxc.mount.entry = ${{ github.workspace }}/mailad home/mailad none bind,create=dir 0 0" | sudo tee -a /var/lib/lxc/dc/config
 
           # Start the container
           echo "==> Starting the container"
           sudo lxc-start -d -n dc
+          sleep 3
 
           # Debug the fs Mount
           sudo lxc-attach -n dc -- \
@@ -147,7 +137,7 @@ jobs:
             --arch amd64
 
           # Mount directory
-          echo "lxc.mount.entry = ${{ github.workspace }}/mailad home/mailad none bind,relative,create=dir 0 0" | sudo tee -a /var/lib/lxc/mail/config
+          echo "lxc.mount.entry = ${{ github.workspace }}/mailad home/mailad none bind,create=dir 0 0" | sudo tee -a /var/lib/lxc/mail/config
 
           # Start the container
           sudo lxc-start -d -n mail
