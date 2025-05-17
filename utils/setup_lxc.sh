@@ -42,14 +42,14 @@ EOF
 cat > /etc/lxc/dnsmasq.conf << EOF
 #no resolv.conf, use the following:
 no-resolv
-local=mailad.cu
 # dns server for external address
 server=1.1.1.1
 # local dns reservations
+local=/mailad.cu/
 address=/dc.mailad.cu/10.0.3.10
 address=/mail.mailad.cu/10.0.3.11
 address=/test.mailad.cu/10.0.3.12
-# reservations
+# DHCP reservations
 domain=mailad.cu
 dhcp-host=dc,10.0.3.10
 dhcp-host=mail,10.0.3.11
