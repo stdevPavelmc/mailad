@@ -11,6 +11,9 @@
 #   - configure the lxc network
 #   - add the hosts to the lxc network
 
+# Remove docker that can cause routing problems
+apt-get purge -y *docker*
+
 # install packages
 apt-get update
 apt-get install -y lxc lxc-templates bridge-utils
