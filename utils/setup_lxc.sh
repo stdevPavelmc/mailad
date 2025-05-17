@@ -13,7 +13,7 @@
 
 # install packages
 apt-get update
-apt-get install -y lxc lxc-templates bridge-utils dnsmasq-base dnsmasq-utils
+apt-get install -y lxc lxc-templates bridge-utils
 
 # configure lxc
 cat > /etc/lxc/default.conf << EOF
@@ -41,14 +41,14 @@ EOF
 # add the hosts to the lxc network
 cat > /etc/lxc/dnsmasq.conf << EOF
 #no resolv.conf, use the following:
-no-resolv
+# no-resolv
 # dns server for external address
-server=1.1.1.1
+# server=1.1.1.1
 # local dns reservations
-local=/mailad.cu/
-address=/dc.mailad.cu/10.0.3.10
-address=/mail.mailad.cu/10.0.3.11
-address=/test.mailad.cu/10.0.3.12
+# local=/mailad.cu/
+# address=/dc.mailad.cu/10.0.3.10
+# address=/mail.mailad.cu/10.0.3.11
+# address=/test.mailad.cu/10.0.3.12
 # DHCP reservations
 domain=mailad.cu
 dhcp-host=dc,10.0.3.10
@@ -58,4 +58,4 @@ EOF
 
 # restart services
 systemctl enable lxc lxc-net
-systemctl restart lxc lxc-net || systemctl status lxc-net.service
+systemctl restart lxc lxc-net
