@@ -81,20 +81,32 @@ jobs:
       - name: Install Samba, configure it and start
         run: |
           # Create the container
+          echo "==> Creation of the container"
           sudo lxc-create -t download -n dc -- \
             --dist ubuntu \
             --release noble \
             --arch amd64
 
           # Mount directory
+          echo "==> Mounting directory"
           echo "lxc.mount.entry = ${{ github.workspace }}/mailad tmp/mailad none bind,create=dir 0 0" | sudo tee -a /var/lib/lxc/dc/config
           
           # Start the container
+          echo "==> Starting the container"
           sudo lxc-start -d -n dc
 
+          # Debug the fs Mount
+          sudo lxc-attach -n dc -- \
+            echo "==> ls -l /tmp"
+            ls -l /tmp
+            echo "==> ls -l /tmp/mailad"
+            ls -l /tmp/mailad
+
           # Setup resolv.conf inside the container
+          echo "==> Setting up resolv.conf"
           echo "nameserver 10.0.3.1" > ${{ github.workspace }}/mailad/resolv.conf
           echo "nameserver 1.1.1.1" >> ${{ github.workspace }}/mailad/resolv.conf
+          echo "==> Copying resolv.conf"
           sudo lxc-attach -n dc -- \
             cd /tmp/mailad && \
             cp -f resolv.conf /etc/resolv.conf
