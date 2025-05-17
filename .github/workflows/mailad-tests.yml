@@ -87,9 +87,9 @@ jobs:
             --release noble \
             --arch amd64
 
-          # Mount directory
-          echo "==> Mounting directory"
-          echo "lxc.mount.entry = ${{ github.workspace }}/mailad mailad none bind,create=dir 0 0" | sudo tee -a /var/lib/lxc/dc/config
+          # Copying the repository to the container
+          echo "==> Copying the repository to the container"
+          sudo rsync -av ${{ github.workspace }}/mailad /var/lib/lxc/dc/rootfs/
 
           # Start the container
           echo "==> Starting the container"
@@ -102,15 +102,6 @@ jobs:
             ls -l /home/
             echo "==> ls -l /mailad/"
             ls -l /mailad/
-
-          # Setup resolv.conf inside the container
-          echo "==> Setting up resolv.conf"
-          echo "nameserver 10.0.3.1" > ${{ github.workspace }}/mailad/resolv.conf
-          echo "nameserver 1.1.1.1" >> ${{ github.workspace }}/mailad/resolv.conf
-          echo "==> Copying resolv.conf"
-          sudo lxc-attach -n dc -- \
-            cd /mailad && \
-            cp -f resolv.conf /etc/resolv.conf
 
           # Install make
           sudo lxc-attach -n dc -- \
