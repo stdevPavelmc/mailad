@@ -12,8 +12,8 @@
 #   - add the hosts to the lxc network
 
 # install packages
-apt update
-apt install -y lxc lxc-templates bridge-utils dnsmasq
+apt-get update
+apt-get install -y lxc lxc-templates bridge-utils dnsmasq-base dnsmasq-utils
 
 # configure lxc
 cat > /etc/lxc/default.conf << EOF
@@ -49,5 +49,5 @@ dhcp-host=test,10.0.3.12
 EOF
 
 # restart services
-systemctl enable lxc lxc-net dnsmasq
-systemctl start lxc lxc-net dnsmasq
+systemctl enable lxc lxc-net
+systemctl start lxc lxc-net
