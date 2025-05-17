@@ -94,8 +94,8 @@ jobs:
 
           # Setup resolv.conf inside the container
           sudo lxc-attach -n dc -- \
-            echo "nameserver 10.0.3.1" > /etc/resolv.conf
-            echo "nameserver 1.1.1.1" >> /etc/resolv.conf
+            echo "nameserver 10.0.3.1" > /etc/resolv.conf && \
+            echo "nameserver 1.1.1.1" >> /etc/resolv.conf && \
             echo "search mailad.cu" >> /etc/resolv.conf
 
           # Install make
