@@ -72,19 +72,11 @@ jobs:
           sudo chmod +x ${{ github.workspace }}/mailad/utils/setup_lxc.sh
           sudo ${{ github.workspace }}/mailad/utils/setup_lxc.sh
 
-      # - name: Setup firewall rules
-      #   run: |
-      #     sudo ufw allow in on lxcbr0
-      #     sudo ufw route allow in on lxcbr0
-      #     sudo ufw route allow out on lxcbr0
-
-      - name: Check LXC configuration
+      - name: Setup firewall rules
         run: |
-          sudo lxc-checkconfig
-          echo "net config dump"
-          ip a
-          ps aux | grep dnsmasq
-
+          sudo ufw allow in on lxcbr0
+          sudo ufw route allow in on lxcbr0
+          sudo ufw route allow out on lxcbr0
 
       - name: Install Samba, configure it and start
         run: |
@@ -99,6 +91,12 @@ jobs:
           
           # Start the container
           sudo lxc-start -d -n dc
+
+          # Setup resolv.conf inside the container
+          sudo lxc-attach -n dc -- \
+            echo "nameserver 10.0.3.1" > /etc/resolv.conf
+            echo "nameserver 1.1.1.1" >> /etc/resolv.conf
+            echo "search mailad.cu" >> /etc/resolv.conf
 
           # Install make
           sudo lxc-attach -n dc -- \
