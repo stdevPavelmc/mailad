@@ -78,6 +78,13 @@ jobs:
           sudo ufw route allow in on lxcbr0
           sudo ufw route allow out on lxcbr0
 
+      - name: Debug the working directory
+        run: |
+          echo "==> Debug the working directory"
+          echo ${{ github.workspace }}/
+          ls -l ${{ github.workspace }}/
+          ls -l ${{ github.workspace }}/mailad/
+
       - name: Install Samba, configure it and start
         run: |
           # Create the container
