@@ -93,10 +93,11 @@ jobs:
           sudo lxc-start -d -n dc
 
           # Setup resolv.conf inside the container
+          echo "nameserver 10.0.3.1" > ${{ github.workspace }}/mailad/resolv.conf
+          echo "nameserver 1.1.1.1" >> ${{ github.workspace }}/mailad/resolv.conf
           sudo lxc-attach -n dc -- \
-            echo "nameserver 10.0.3.1" > /etc/resolv.conf && \
-            echo "nameserver 1.1.1.1" >> /etc/resolv.conf && \
-            echo "search mailad.cu" >> /etc/resolv.conf
+            cd /tmp/mailad && \
+            cp -f resolv.conf /etc/resolv.conf
 
           # Install make
           sudo lxc-attach -n dc -- \
