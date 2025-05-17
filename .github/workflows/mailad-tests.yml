@@ -98,9 +98,6 @@ jobs:
 
           # Debug the fs Mount
           sudo lxc-attach -n dc -- \
-            echo "==> ls -l /home/"
-            ls -l /home/
-            echo "==> ls -l /mailad/"
             ls -l /mailad/
 
           # Install make
