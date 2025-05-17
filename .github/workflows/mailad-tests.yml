@@ -96,7 +96,7 @@ jobs:
 
           # Mount directory
           echo "==> Mounting directory"
-          echo "lxc.mount.entry = ${{ github.workspace }}/mailad home/mailad none bind,create=dir 0 0" | sudo tee -a /var/lib/lxc/dc/config
+          echo "lxc.mount.entry = ${{ github.workspace }}/mailad home/mailad none bind,relative,create=dir 0 0" | sudo tee -a /var/lib/lxc/dc/config
           
           # Dump the config file
           echo "==> Dumping the config file"
@@ -147,7 +147,7 @@ jobs:
             --arch amd64
 
           # Mount directory
-          echo "lxc.mount.entry = ${{ github.workspace }}/mailad home/mailad none bind,create=dir 0 0" | sudo tee -a /var/lib/lxc/mail/config
+          echo "lxc.mount.entry = ${{ github.workspace }}/mailad home/mailad none bind,relative,create=dir 0 0" | sudo tee -a /var/lib/lxc/mail/config
 
           # Start the container
           sudo lxc-start -d -n mail
