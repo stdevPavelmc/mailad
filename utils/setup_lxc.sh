@@ -40,9 +40,17 @@ EOF
 
 # add the hosts to the lxc network
 cat > /etc/lxc/dnsmasq.conf << EOF
-# defaults
-domain=mailad.cu
+#no resolv.conf, use the following:
+no-resolv
+local=mailad.cu
+# dns server for external address
+server=1.1.1.1
+# local dns reservations
+address=/dc.mailad.cu/10.0.3.10
+address=/mail.mailad.cu/10.0.3.11
+address=/test.mailad.cu/10.0.3.12
 # reservations
+domain=mailad.cu
 dhcp-host=dc,10.0.3.10
 dhcp-host=mail,10.0.3.11
 dhcp-host=test,10.0.3.12
