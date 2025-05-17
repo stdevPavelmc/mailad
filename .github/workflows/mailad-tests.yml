@@ -89,7 +89,7 @@ jobs:
 
           # Mount directory
           echo "==> Mounting directory"
-          echo "lxc.mount.entry = ${{ github.workspace }}/mailad home/mailad none bind,create=dir 0 0" | sudo tee -a /var/lib/lxc/dc/config
+          echo "lxc.mount.entry = ${{ github.workspace }}/mailad mailad none bind,create=dir 0 0" | sudo tee -a /var/lib/lxc/dc/config
 
           # Start the container
           echo "==> Starting the container"
@@ -100,8 +100,8 @@ jobs:
           sudo lxc-attach -n dc -- \
             echo "==> ls -l /home/"
             ls -l /home/
-            echo "==> ls -l /home/mailad/"
-            ls -l /home/mailad/
+            echo "==> ls -l /mailad/"
+            ls -l /mailad/
 
           # Setup resolv.conf inside the container
           echo "==> Setting up resolv.conf"
@@ -109,7 +109,7 @@ jobs:
           echo "nameserver 1.1.1.1" >> ${{ github.workspace }}/mailad/resolv.conf
           echo "==> Copying resolv.conf"
           sudo lxc-attach -n dc -- \
-            cd /home/mailad && \
+            cd /mailad && \
             cp -f resolv.conf /etc/resolv.conf
 
           # Install make
@@ -119,12 +119,12 @@ jobs:
           
           # Run the make conf to setup the Mailad Samba AD
           sudo lxc-attach -n dc -- \
-            cd /home/mailad && \
+            cd /mailad && \
             make conf
 
           # Run the config script
           sudo lxc-attach -n dc -- \
-            cd /home/mailad && \
+            cd /mailad && \
             chmod +x ./utils/samba_scaffold.sh && \
             ./utils/samba_scaffold.sh
 
@@ -137,7 +137,7 @@ jobs:
             --arch amd64
 
           # Mount directory
-          echo "lxc.mount.entry = ${{ github.workspace }}/mailad home/mailad none bind,create=dir 0 0" | sudo tee -a /var/lib/lxc/mail/config
+          echo "lxc.mount.entry = ${{ github.workspace }}/mailad mailad none bind,create=dir 0 0" | sudo tee -a /var/lib/lxc/mail/config
 
           # Start the container
           sudo lxc-start -d -n mail
@@ -149,12 +149,12 @@ jobs:
 
           # Install config
           sudo lxc-attach -n mail -- \
-            cd /home/mailad && \
+            cd /mailad && \
             make conf
           
           # Run the make conf to setup the Mailad Samba AD
           sudo lxc-attach -n dc -- \
-            cd /home/mailad && \
+            cd /mailad && \
             make all
 
       - name: Setup the test container
@@ -166,7 +166,7 @@ jobs:
             --arch amd64
 
           # Mount directory
-          echo "lxc.mount.entry = ${{ github.workspace }}/mailad home/mailad none bind,create=dir 0 0" | sudo tee -a /var/lib/lxc/test/config
+          echo "lxc.mount.entry = ${{ github.workspace }}/mailad mailad none bind,create=dir 0 0" | sudo tee -a /var/lib/lxc/test/config
 
           # Start the container
           sudo lxc-start -d -n test
@@ -178,12 +178,12 @@ jobs:
 
           # Install config
           sudo lxc-attach -n mail -- \
-            cd /home/mailad && \
+            cd /mailad && \
             make conf
 
           # Run the test script
           sudo lxc-attach -n dc -- \
-            cd /home/mailad && \
+            cd /mailad && \
             make test mail.mailad.cu
 
       - name: Upload test logs
