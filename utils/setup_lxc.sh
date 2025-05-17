@@ -50,4 +50,4 @@ EOF
 
 # restart services
 systemctl enable lxc lxc-net
-systemctl start lxc lxc-net
+systemctl restart lxc lxc-net

@@ -72,6 +72,16 @@ jobs:
           sudo chmod +x ${{ github.workspace }}/mailad/utils/setup_lxc.sh
           sudo ${{ github.workspace }}/mailad/utils/setup_lxc.sh
 
+      - name: Setup firewall rules
+        run: |
+          sudo ufw allow in on lxcbr0
+          sudo ufw route allow in on lxcbr0
+          sudo ufw route allow out on lxcbr0
+
+      - name: Check LXC configuration
+        run: |
+          sudo lxc-checkconfig
+
       - name: Install Samba, configure it and start
         run: |
           # Create the container
@@ -81,9 +91,7 @@ jobs:
             --arch amd64
 
           # Mount directory
-          sudo lxc config device add dc mailad disk \
-            source=${{ github.workspace }}/mailad \
-            path=/tmp/mailad
+          echo "lxc.mount.entry = ${{ github.workspace }}/mailad tmp/mailad none bind,create=dir 0 0" | sudo tee -a /var/lib/lxc/dc/config
           
           # Start the container
           sudo lxc-start -d -n dc
@@ -113,10 +121,8 @@ jobs:
             --arch amd64
 
           # Mount directory
-          sudo lxc config device add mail mailad disk \
-            source=${{ github.workspace }}/mailad \
-            path=/tmp/mailad
-          
+          echo "lxc.mount.entry = ${{ github.workspace }}/mailad tmp/mailad none bind,create=dir 0 0" | sudo tee -a /var/lib/lxc/mail/config
+
           # Start the container
           sudo lxc-start -d -n mail
 
@@ -144,10 +150,8 @@ jobs:
             --arch amd64
 
           # Mount directory
-          sudo lxc config device add test mailad disk \
-            source=${{ github.workspace }}/mailad \
-            path=/tmp/mailad
-          
+          echo "lxc.mount.entry = ${{ github.workspace }}/mailad tmp/mailad none bind,create=dir 0 0" | sudo tee -a /var/lib/lxc/test/config
+
           # Start the container
           sudo lxc-start -d -n test
 
