@@ -88,7 +88,10 @@ jobs:
             --release noble \
             --arch amd64
 
-          # Copying the repository to the container
+          # use azure repos
+          sed -i.bak 's/\(archive\|security\).ubuntu.com/azure.archive.ubuntu.com/g' /var/lib/lxc/dc/rootfs/etc/apt/sources.list
+
+          # Copying the app repository to the container
           echo "==> Copying the repository to the container"
           sudo rsync -a ${{ github.workspace }}/mailad /var/lib/lxc/dc/rootfs/
 
