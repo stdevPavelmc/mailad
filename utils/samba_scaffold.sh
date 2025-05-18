@@ -99,11 +99,14 @@ samba-tool domain provision \
     --dns-backend=SAMBA_INTERNAL \
     --adminpass=${APSWD}
 
-# fix the DNS to point to myself
-sed s/"^nameserver .*$"/"nameserver 127.0.0.1"/ -i  /etc/resolv.conf
+# fix the DNS to point to myself and alternatives
+echo "search mailad.cu" > /etc/resolv.conf
+echo "nameserver 127.0.0.1" >> /etc/resolv.conf
+echo "nameserver 1.1.1.1" >> /etc/resolv.conf
+echo "nameserver 8.8.8.8" >> /etc/resolv.conf
 
 # set the forwarder
-if [ ! -z "${DNSFWD}" ] ; then
+if [ "${DNSFWD}" ] ; then
     sed s/"^dns forwarder .*$"/"dns forwarder = ${DNSFWD}"/ -i  /etc/samba/smb.conf
 fi
 
