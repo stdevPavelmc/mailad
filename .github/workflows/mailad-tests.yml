@@ -95,9 +95,22 @@ jobs:
           # Start the container
           echo "==> Starting the container"
           sudo lxc-start -n dc
-          sleep 10
-          sudo lxc-stop -n dc
-          sudo lxc-start -n dc
+
+          # Diagnose steps
+          echo "==> nslookup"
+          nslookup archive.ubuntu.com
+          echo "==> curl http"
+          sudo lxc-attach -n dc -- curl -v -4 --connect-timeout 10 http://91.189.91.38
+          echo "==> curl https"
+          sudo lxc-attach -n dc -- curl -v -4 --connect-timeout 10 https://91.189.91.38
+          echo "==> ip route"
+          sudo lxc-attach -n dc -- ip route show
+          echo "==> link show"
+          sudo lxc-attach -n dc -- ip link show eth0
+          echo "==> [host] iptables list"
+          iptables -t nat -L -v -n
+          echo "==> [host] iptables forward"
+          iptables -L FORWARD -v -n
 
           # Install make
           sudo lxc-attach -n dc -- \
