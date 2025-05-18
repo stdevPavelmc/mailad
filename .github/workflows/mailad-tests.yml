@@ -109,10 +109,9 @@ jobs:
           sudo lxc-attach -n dc -- ip a
           echo "==> ip route"
           sudo lxc-attach -n dc -- ip route show
-          echo "==> [host] iptables list"
-          sudo iptables -t nat -L -v -n
-          echo "==> [host] iptables forward"
-          sudo iptables -L FORWARD -v -n
+          echo "==> ping inside the lxc to 1^4"
+          sudo lxc-attach -n dc -- ping -c 10 1.1.1.1
+          
 
           # Install make
           sudo lxc-attach -n dc -- \
