@@ -99,14 +99,18 @@ jobs:
           # Diagnose steps
           echo "==> nslookup"
           nslookup archive.ubuntu.com
+          echo "==> ip a"
+          sudo lxc-attach -n dc -- ip a
           echo "==> ip route"
           sudo lxc-attach -n dc -- ip route show
-          echo "==> link show"
-          sudo lxc-attach -n dc -- ip link show eth0
+          echo "==> ip route setup"
+          sudo lxc-attach -n dc -- ip route add default via 10.0.3.1 dev eth0
+          echo "==> ip route"
+          sudo lxc-attach -n dc -- ip route show
           echo "==> [host] iptables list"
-          iptables -t nat -L -v -n
+          sudo iptables -t nat -L -v -n
           echo "==> [host] iptables forward"
-          iptables -L FORWARD -v -n
+          sudo iptables -L FORWARD -v -n
 
           # Install make
           sudo lxc-attach -n dc -- \
