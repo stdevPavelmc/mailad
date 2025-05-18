@@ -1,0 +1,193 @@
+name: MailAD VM Integration Tests
+
+on:
+  push:
+    branches: [ master, develop ]
+  pull_request:
+    branches: [ master, develop ]
+  workflow_dispatch:
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    outputs:
+      auth_file: ${{ steps.create_auth.outputs.auth_file }}
+      
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Create auth file
+        id: create_auth
+        run: |
+          # Create a temporary auth file with credentials
+          cat > .mailadmin.auth << EOF
+          PASS='P@ssw0rd123!'
+          
+          # national user and credentials
+          NACUSER="starf@mailad.cu"
+          NACUSERPASSWD='N@tional123'
+          
+          # local user and credentials
+          LOCUSER="pepa@mailad.cu"
+          LOCUSERPASSWORD='L0cal123!'
+          
+          # Linux bind user password
+          LDAPBINDPASSWD='B1ndP@ss123!'
+          EOF
+          
+          # Base64 encode the file for passing between jobs
+          AUTH_FILE=$(base64 -w 0 .mailadmin.auth)
+          echo "auth_file=$AUTH_FILE" >> $GITHUB_OUTPUT
+      
+      - name: Upload repository
+        uses: actions/upload-artifact@v4
+        with:
+          name: mailad-repo
+          path: .
+
+  lxc-run:
+    needs: setup
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download repository
+        uses: actions/download-artifact@v4
+        with:
+          name: mailad-repo
+          path: ${{ github.workspace }}/mailad
+      
+      - name: Setup auth file
+        run: |
+          echo "${{ needs.setup.outputs.auth_file }}" | base64 -d > ${{ github.workspace }}/mailad/.mailadmin.auth
+          chmod 600 ${{ github.workspace }}/mailad/.mailadmin.auth
+
+      - name: Change the default password on the linux link user
+        run: |
+          source ${{ github.workspace }}/mailad/.mailadmin.auth
+          sudo sed -i "s/LDAPBINDPASSWD=.*/LDAPBINDPASSWD=${LDAPBINDPASSWD}/" ${{ github.workspace }}/mailad/mailad.conf
+
+      - name: Install and configure LXC
+        run: |
+          sudo chmod +x ${{ github.workspace }}/mailad/utils/setup_lxc.sh
+          sudo ${{ github.workspace }}/mailad/utils/setup_lxc.sh
+
+      # - name: Setup firewall rules
+      #   run: |
+      #     sudo ufw allow in on lxcbr0
+      #     sudo ufw allow out on lxcbr0
+      #     sudo ufw route allow in on lxcbr0
+      #     sudo ufw route allow out on lxcbr0
+
+      - name: Install Samba, configure it and start
+        run: |
+          # Create the container
+          echo "==> Creation of the container"
+          sudo lxc-create -t download -n dc -- \
+            --dist ubuntu \
+            --release noble \
+            --arch amd64
+
+          # Copying the repository to the container
+          echo "==> Copying the repository to the container"
+          sudo rsync -a ${{ github.workspace }}/mailad /var/lib/lxc/dc/rootfs/
+
+          # Start the container
+          echo "==> Starting the container"
+          sudo lxc-start -n dc
+          sleep 10
+          sudo lxc-stop -n dc
+          sudo lxc-start -n dc
+
+          # Install make
+          sudo lxc-attach -n dc -- \
+            apt-get update && \
+            apt-get install -y make
+
+          # Run the make conf to setup the Mailad Samba AD
+          sudo lxc-attach -n dc -- \
+            cd /mailad && \
+            make conf
+
+          # Run the config script
+          sudo lxc-attach -n dc -- \
+            cd /mailad && \
+            chmod +x ./utils/samba_scaffold.sh && \
+            ./utils/samba_scaffold.sh
+
+      - name: Install MailAD, configure it and start
+        run: |
+          # Create the container
+          sudo lxc-create -t download -n mail -- \
+            --dist ubuntu \
+            --release noble \
+            --arch amd64
+
+          # Mount directory
+          echo "lxc.mount.entry = ${{ github.workspace }}/mailad mailad none bind,create=dir 0 0" | sudo tee -a /var/lib/lxc/mail/config
+
+          # Start the container
+          sudo lxc-start -d -n mail
+
+          # Install make
+          sudo lxc-attach -n mail -- \
+            apt-get update && \
+            apt-get install -y make
+
+          # Install config
+          sudo lxc-attach -n mail -- \
+            cd /mailad && \
+            make conf
+          
+          # Run the make conf to setup the Mailad Samba AD
+          sudo lxc-attach -n dc -- \
+            cd /mailad && \
+            make all
+
+      - name: Setup the test container
+        run: |
+          # Create the container
+          sudo lxc-create -t download -n test -- \
+            --dist ubuntu \
+            --release noble \
+            --arch amd64
+
+          # Mount directory
+          echo "lxc.mount.entry = ${{ github.workspace }}/mailad mailad none bind,create=dir 0 0" | sudo tee -a /var/lib/lxc/test/config
+
+          # Start the container
+          sudo lxc-start -d -n test
+
+          # Install make
+          sudo lxc-attach -n test -- \
+            apt-get update && \
+            apt-get install -y make
+
+          # Install config
+          sudo lxc-attach -n mail -- \
+            cd /mailad && \
+            make conf
+
+          # Run the test script
+          sudo lxc-attach -n dc -- \
+            cd /mailad && \
+            make test mail.mailad.cu
+
+      - name: Upload test logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-logs
+          path: ${{ github.workspace }}/mailad/tests/test.log
+
+      - name: Stop containers
+        run: |
+          sudo lxc-stop -n dc
+          sudo lxc-stop -n mail
+          sudo lxc-stop -n test
+
+      - name: Remove containers
+        run: |
+          sudo lxc-destroy -n dc
+          sudo lxc-destroy -n mail
+          sudo lxc-destroy -n test
