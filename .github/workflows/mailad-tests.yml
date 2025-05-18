@@ -95,16 +95,14 @@ jobs:
           # Start the container
           echo "==> Starting the container"
           sudo lxc-start -n dc
+          echo "==> Waiting for the container to start..."
+          sleep 15
 
           # Diagnose steps
           echo "==> nslookup"
           nslookup archive.ubuntu.com
           echo "==> ip a"
           sudo lxc-attach -n dc -- ip a
-          echo "==> ip route"
-          sudo lxc-attach -n dc -- ip route show
-          echo "==> ip route setup"
-          sudo lxc-attach -n dc -- ip route add default via 10.0.3.1 dev eth0
           echo "==> ip route"
           sudo lxc-attach -n dc -- ip route show
           echo "==> [host] iptables list"
