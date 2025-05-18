@@ -8,20 +8,26 @@ on:
   workflow_dispatch:
 
 jobs:
-  setup:
+  Test:
     runs-on: ubuntu-latest
     outputs:
       auth_file: ${{ steps.create_auth.outputs.auth_file }}
       
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Debug github.workspace
+        run: |
+          echo "Working on: ${{ github.workspace }}"
+          ls -l ${{ github.workspace }}
+          ls -l ${{ github.workspace }}/mailad/
+          
       - name: Install mandatory dependency, make
         run: |
           sudo apt-get update
           sudo apt-get install -y make
 
-      - name: Checkout code
-        uses: actions/checkout@v4
-      
       - name: Setup Local hostname to mail.mailad.cu
         run: |
           echo mail.mailad.cu | sudo tee /etc/hostname
@@ -32,7 +38,7 @@ jobs:
         id: create_auth
         run: |
           # Create a temporary auth file with credentials
-          cat > .mailadmin.auth << EOF
+          cat > ${{ github.workspace }}/mailad/.mailadmin.auth << EOF
           PASS='P@ssw0rd123!'
           
           # national user and credentials
