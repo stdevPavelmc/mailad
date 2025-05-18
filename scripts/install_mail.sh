@@ -55,6 +55,9 @@ if [ -f /etc/os-release ] ; then
             echo "==========================================================================="
             echo "       The install process will stop now"
             echo "==========================================================================="
+
+            # creating some logs to process about the failure
+            dervices
             ;;
     esac
 
