@@ -58,13 +58,13 @@ jobs:
 
       - name: make the conf files and install deps
         run: |
-          cd ${{ github.workspace }}/mailad/
+          cd ${{ github.workspace }}/
           sudo make conf
           sudo make deps
 
       - name: Install Samba, configure it and start
         run: |
-          cd ${{ github.workspace }}/mailad/
+          cd ${{ github.workspace }}/
           chmod +x ./utils/samba_scaffold.sh
           sudo ./utils/samba_scaffold.sh
 
