@@ -1,0 +1,5 @@
+{
+    "plugin": {
+        "check_proxy": true
+    }
+}

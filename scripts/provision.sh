@@ -12,7 +12,7 @@
 #       - post process the files if needed (postfix postmap)
 #       - start the services
 #       - run a series of tests
-#           - services init wwith no fail
+#           - services init with no fail
 #           - send an email and verify it's placed on the users folder
 
 # source the common config
@@ -23,6 +23,9 @@ source "/etc/mailad/mailad.conf"
 
 # postfix files to make postmap, with full path
 PMFILES="/etc/postfix/rules/lista_negra /etc/postfix/rules/everyone_list_check /etc/postfix/aliases/alias_virtuales"
+
+# use apt in non interactive way
+export DEBIAN_FRONTEND=noninteractive
 
 # capture the local path
 P=`pwd`
@@ -320,7 +323,7 @@ if [ "$ENABLE_SPAMD" == "yes" -o "$ENABLE_SPAMD" == "Yes" ] ; then
 
     # configure SMA filtering on amavis if not already active
     FILE="/etc/amavis/conf.d/15-content_filter_mode"
-    ACTIVE=`cat $FILE | grep "^#@bypass_spam_checks_maps.*"`
+    ACTIVE=$(grep "^#@bypass_spam_checks_maps.*" $FILE)
     if [ ! -z "$ACTIVE" ] ; then
         # not active, activating
         sed -i s/"#@bypass_spam_checks_maps"/"@bypass_spam_checks_maps"/g $FILE
@@ -373,7 +376,7 @@ else
 
     # disable spamassasin on amavis
     FILE="/etc/amavis/conf.d/15-content_filter_mode"
-    ACTIVE=`cat $FILE | grep "^@bypass_spam_checks_maps.*"`
+    ACTIVE=$(grep "^@bypass_spam_checks_maps.*" $FILE)
     if [ ! -z "$ACTIVE" ] ; then
         # not active, activating
         sed -i s/"@bypass_spam_checks_maps"/"#@bypass_spam_checks_maps"/g $FILE
@@ -394,7 +397,6 @@ if [ "$ENABLE_DISCLAIMER" == "yes" -o "$ENABLE_DISCLAIMER" == "Yes" ] ; then
     # enable disclaimer
     echo "===> Disclaimer enabled on config, installing altermime..."
 
-    export DEBIAN_FRONTEND=noninteractive
     apt-get install $DEBIAN_DISCLAIMER_PKGS -y
 
     # notice
@@ -425,7 +427,6 @@ else
     echo "===> Disclaimer disabled on config, disabling"
 
     # remove the altermime package
-    export DEBIAN_FRONTEND=noninteractive
     apt-get purge $DEBIAN_DISCLAIMER_PKGS -y || exit 0
 
     # disable the dfilt line in the master.cf file on postfix
@@ -460,14 +461,44 @@ else
     sed -i s/"^tlsproxy  unix  -       -       y       -       0       tlsproxy"/"#tlsproxy  unix  -       -       y       -       0       tlsproxy"/ ${FILE}
 fi
 
+# Webmails
+./scripts/webmails.sh
+
 # start services
 services restart
 
+# install counter
+INSTALLS=1
+if [ ! -f "$INSTFILE" ]; then
+    # initialize
+    echo "===> Initialize install counters"
+
+    # first install is the creation date of the /etc/mailad/ folder
+    FIRST_INSTALL=$(stat -c '%w' /etc/mail | sed -E 's/\.\d+//; s/ /T/; s/ ([+-])/\1/' | xargs -I {} date -u -d "{}" "+%Y/%m/%d %I:%M:%S %p UTC")
+
+    # initialize
+    echo "INSTALLS=$INSTALLS" > $INSTFILE
+    echo "FIRST_INSTALL=$FIRST_INSTALL" >> $INSTFILE
+    echo "LAST_INSTALL=$(date)" >> $INSTFILE
+else
+    # New data on installs
+    echo "===> Update install counters"
+
+    # count +1
+    INSTCOUNT=$(grep '^INSTALLS=' "$INSTFILE" | cut -d'=' -f2)
+    INCCOUNT=$((INSTCOUNT + 1))
+    LAST=$(date)
+    # update
+    sed -i "s/^INSTALLS=.*$/INSTALLS=$INCCOUNT/" "$INSTFILE"
+    sed -i "s/^LAST_INSTALL=.*$/LAST_INSTALL=$LAST/" "$INSTFILE"
+fi
+
 # optional stats
-if [ "$OPT_STATS" == "yes" -o "$OPT_STATS" == "Yes" ] ; then
+if [ "$OPT_STATS" != "No" -o "$OPT_STATS" != "no" ] ; then
     # install swaks to handle the forged email as the mailadmin
     apt install swaks
     # and we have stats, thanks
+    echo "===> Sending feedback to the creator & $ADMINMAIL"
     ./scripts/feedback.sh
 fi
 
