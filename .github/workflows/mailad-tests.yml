@@ -78,10 +78,13 @@ jobs:
           sudo make all
 
       - name: Setup the `test` docker container for the tests
+        id: docker_run
         run: |
           sudo docker run -d --name test -v ${{ github.workspace }}/:/home/mailad/ ubuntu:noble tail -f /dev/null
 
       - name: Run the test from the docker container
+        id: test
+        continue-on-error: true
         run: |
           # Capture the docker0 interface IP on the host
           DOCKERBRIP=$(sudo ip addr show docker0 | grep -oP '(?<=inet\s)\d+(\.\d+){3}')
@@ -95,6 +98,7 @@ jobs:
           path: ${{ github.workspace }}/tests/test.log
 
       - name: Stop containers
+        if: steps.docker_run.outcome == 'success'
         run: |
           sudo docker stop test
           sudo docker rm test
