@@ -17,12 +17,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Debug github.workspace
-        run: |
-          echo "Working on: ${{ github.workspace }}"
-          ls -l ${{ github.workspace }}
-          ls -l ${{ github.workspace }}/mailad/
-          
       - name: Install mandatory dependency, make
         run: |
           sudo apt-get update
@@ -38,7 +32,7 @@ jobs:
         id: create_auth
         run: |
           # Create a temporary auth file with credentials
-          cat > ${{ github.workspace }}/mailad/.mailadmin.auth << EOF
+          cat > ${{ github.workspace }}/.mailadmin.auth << EOF
           PASS='P@ssw0rd123!'
           
           # national user and credentials
@@ -55,7 +49,7 @@ jobs:
 
       - name: Change the default dc host in the config
         run: |
-          sudo sed -i "s/HOSTAD=.*/HOSTAD=mail.mailad.cu/" ${{ github.workspace }}/mailad/mailad.conf
+          sudo sed -i "s/HOSTAD=.*/HOSTAD=mail.mailad.cu/" ${{ github.workspace }}/mailad.conf
  
       - name: Change the default password on the linux link user on the config
         run: |
@@ -76,12 +70,12 @@ jobs:
 
       - name: Install MailAD, configure it and start
         run: |
-          cd ${{ github.workspace }}/mailad/
+          cd ${{ github.workspace }}/
           sudo make all
 
       - name: Setup the `test` docker container for the tests
         run: |
-          sudo docker run -d --name test -v ${{ github.workspace }}/mailad/:/home/mailad/ ubuntu:noble tail -f /dev/null
+          sudo docker run -d --name test -v ${{ github.workspace }}/:/home/mailad/ ubuntu:noble tail -f /dev/null
 
       - name: Run the test from the docker container
         run: |
@@ -94,7 +88,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: test-logs
-          path: ${{ github.workspace }}/mailad/tests/test.log
+          path: ${{ github.workspace }}/tests/test.log
 
       - name: Stop containers
         run: |
