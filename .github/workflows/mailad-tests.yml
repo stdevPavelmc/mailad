@@ -25,7 +25,6 @@ jobs:
       - name: Setup Local hostname to mail.mailad.cu
         run: |
           echo mail | sudo tee /etc/hostname
-          sudo hostnamectl set-hostname mail.mailad.cu
           echo "127.0.1.1 mail.mailad.cu mail" | sudo tee -a /etc/hosts
 
       - name: Create auth file
