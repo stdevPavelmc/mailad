@@ -99,10 +99,10 @@ jobs:
           # Diagnose steps
           echo "==> nslookup"
           nslookup archive.ubuntu.com
-          echo "==> curl http"
-          sudo lxc-attach -n dc -- curl -v -4 --connect-timeout 10 http://91.189.91.38
-          echo "==> curl https"
-          sudo lxc-attach -n dc -- curl -v -4 --connect-timeout 10 https://91.189.91.38
+          echo "==> wget http"
+          sudo lxc-attach -n dc -- wget http://91.189.91.38
+          echo "==> wget https"
+          sudo lxc-attach -n dc -- wget https://91.189.91.38
           echo "==> ip route"
           sudo lxc-attach -n dc -- ip route show
           echo "==> link show"
