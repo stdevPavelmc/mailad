@@ -69,15 +69,9 @@ jobs:
 
       - name: Install and configure LXC
         run: |
-          sudo chmod +x ${{ github.workspace }}/mailad/utils/setup_lxc.sh
+          sudo chmod +x ${{ github.workspace }}/mailad/utils/*.sh
           sudo ${{ github.workspace }}/mailad/utils/setup_lxc.sh
-
-      # - name: Setup firewall rules
-      #   run: |
-      #     sudo ufw allow in on lxcbr0
-      #     sudo ufw allow out on lxcbr0
-      #     sudo ufw route allow in on lxcbr0
-      #     sudo ufw route allow out on lxcbr0
+          sudo ${{ github.workspace }}/mailad/utils/ip_fwd.sh
 
       - name: Install Samba, configure it and start
         run: |
@@ -88,10 +82,6 @@ jobs:
             --release noble \
             --arch amd64
 
-          # use azure repos
-          echo "==> Replace repos by Azure ones"
-          sudo sed -i.bak 's/\(archive\|security\).ubuntu.com/azure.archive.ubuntu.com/g' /var/lib/lxc/dc/rootfs/etc/apt/sources.list
-
           # Copying the app repository to the container
           echo "==> Copy the repository to the container"
           sudo rsync -a ${{ github.workspace }}/mailad /var/lib/lxc/dc/rootfs/
@@ -99,7 +89,7 @@ jobs:
           # Start the container
           echo "==> Starting the container"
           sudo lxc-start -n dc
-          echo "==> Waiting for the container to start..."
+          echo "==> Waiting 15s for the container to start..."
           sleep 15
 
           # Diagnose steps
@@ -111,7 +101,6 @@ jobs:
           sudo lxc-attach -n dc -- ip route show
           echo "==> ping inside the lxc to 1^4"
           sudo lxc-attach -n dc -- ping -c 10 1.1.1.1
-          
 
           # Install make
           sudo lxc-attach -n dc -- \
