@@ -25,7 +25,9 @@ jobs:
       - name: Setup Local hostname to mail.mailad.cu
         run: |
           echo mail | sudo tee /etc/hostname
-          echo "127.0.1.1 mail.mailad.cu mail" | sudo tee -a /etc/hosts
+          sudo hostname mail
+          sudo sed -i "s/^127.0.1.1.*//g" /etc/hosts
+          echo "127.0.1.1   mail.mailad.cu    mail" | sudo tee -a /etc/hosts
 
       - name: Create auth file
         id: create_auth
@@ -84,6 +86,7 @@ jobs:
 
       - name: Run the test from the docker container
         id: test
+        if: steps.docker_run.outcome == 'success'
         continue-on-error: true
         run: |
           # Capture the docker0 interface IP on the host
