@@ -94,10 +94,10 @@ jobs:
 
           # Start the container
           echo "==> Starting the container"
-          sudo lxc-start -d -n dc
+          sudo lxc-start -n dc
           sleep 10
-          sudo lxc-stop -d -n dc && sudo lxc-start -d -n dc
-
+          sudo lxc-stop -n dc
+          sudo lxc-start -n dc
 
           # Install make
           sudo lxc-attach -n dc -- \
