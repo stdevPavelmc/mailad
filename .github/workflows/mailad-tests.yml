@@ -98,7 +98,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: test-logs
-          path: ${{ github.workspace }}/tests/test.log
+          path: ${{ github.workspace }}/tests/*.log
 
       - name: Stop containers
         if: steps.docker_run.outcome == 'success'

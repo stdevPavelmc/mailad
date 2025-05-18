@@ -49,7 +49,10 @@ if [ -f /etc/os-release ] ; then
                 # success finish
                 echo "done" > deps
             else
-                # install failed
+                # install failed; collect some logs and save it for inspection
+                debug_services
+
+                # warn the user
                 echo "==========================================================================="
                 echo "ERROR: The update and install of the dependencies failed, this is mostly"
                 echo "       a problem related to a bad configured repository or a not reacheable"
