@@ -53,8 +53,8 @@ jobs:
  
       - name: Change the default password on the linux link user on the config
         run: |
-          source ${{ github.workspace }}/mailad/.mailadmin.auth
-          sudo sed -i "s/LDAPBINDPASSWD=.*/LDAPBINDPASSWD=${LDAPBINDPASSWD}/" ${{ github.workspace }}/mailad/mailad.conf
+          source ${{ github.workspace }}/.mailadmin.auth
+          sudo sed -i "s/LDAPBINDPASSWD=.*/LDAPBINDPASSWD=${LDAPBINDPASSWD}/" ${{ github.workspace }}/mailad.conf
 
       - name: make the conf files and install deps
         run: |
