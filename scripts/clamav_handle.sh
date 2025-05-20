@@ -10,7 +10,7 @@
 #       - If you pass a 'restore' argument then restore the backup data
 
 # vars:
-DBDIR=$(cat /etc/clamav/freshclam.conf | grep DatabaseDirectory | awk '{print $2}')
+DBDIR=$(grep DatabaseDirectory /etc/clamav/freshclam.conf | awk '{print $2}')
 BKPFILE='/tmp/clamavbkp.tar'
 
 # backup
