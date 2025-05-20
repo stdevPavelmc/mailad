@@ -35,7 +35,7 @@ function get_ldap_uri {
 
     SOUT=""
     # Fun start here
-    for DC in `echo "${HOSTAD}"` ; do
+    for DC in $(echo "${HOSTAD}") ; do
         SOUT="${SOUT} ${PROTO}://${DC}:${PORT}"
     done
 
@@ -43,7 +43,7 @@ function get_ldap_uri {
 }
 
 # get the LDAP URI
-LDAPURI=`get_ldap_uri`
+LDAPURI=$(get_ldap_uri)
 
 function isthere () {
     # Just one parameter:
@@ -65,21 +65,21 @@ function getdetails() {
     folder="${VMAILSTORAGE}/${1}"
 
     # get the data
-    size=`du -sh ${folder}`
-    age=`echo $((($(date +%s) - $(date +%s -r ${folder})) / 86400))`
+    size=$(du -sh ${folder})
+    age=$(echo $((($(date +%s) - $(date +%s -r ${folder})) / 86400)))
 
     # return
     echo "${size}|${age}"
 }
 
 # vars
-stalledlist=`mktemp`
-warnlist=`mktemp`
-erasedlist=`mktemp`
+stalledlist=$(mktemp)
+warnlist=$(mktemp)
+erasedlist=$(mktemp)
 mail=0
 
 # check every mailbox
-for md in `ls ${VMAILSTORAGE} | xargs` ; do
+for md in $(ls ${VMAILSTORAGE} | xargs) ; do
     maildir="$VMAILSTORAGE/$md"
 
     # only dirs
@@ -87,13 +87,13 @@ for md in `ls ${VMAILSTORAGE} | xargs` ; do
         continue
     fi
 
-    R=`isthere ${md}`
+    R=$(isthere ${md})
     if [ -z "$R" ] ; then
         mail=1
-        data=`getdetails ${md}`
-        days=`echo $data | cut -d '|' -f2`
+        data=$(getdetails ${md})
+        days=$(echo $data | cut -d '|' -f2)
         months=$((${days} / 30))
-        size=`echo $data | cut -d '|' -f1 | awk '{print $1}'`
+        size=$(echo $data | cut -d '|' -f1 | awk '{print $1}')
 
         # check to see to what list it's sended
         if [ ${days} -gt 273 ] ; then
@@ -128,7 +128,7 @@ done
 
 # must create the email?
 if [ $mail -ne 0 ] ; then
-    mail=`mktemp`
+    mail=$(mktemp)
     echo "Greetings, " >> $mail
     echo " " >> $mail
     echo "We detected some maildir folder(s) left behind, that's normal when you" >> $mail

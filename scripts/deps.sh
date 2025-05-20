@@ -40,7 +40,7 @@ if [ -f /etc/os-release ] ; then
         bionic|focal|jammy|noble|buster|bullseye|bookworm)
             # install dependencies
             export DEBIAN_FRONTEND=noninteractive
-            apt update -q
+            apt-get update -q
             apt-get install -qy ${COMMON_DEPS_PKGS}
 
             # checking for success

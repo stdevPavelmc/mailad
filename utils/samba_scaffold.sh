@@ -52,10 +52,11 @@ source .mailadmin.auth
 ### Some var casting
 # Administrator PASSWD!
 APSWD=${PASS}
-NETBIOS=`echo ${DOMAIN} | cut -d '.' -f 1 | tr [:lower:] [:upper:]`
-ADMINUSER=`echo ${ADMINMAIL} | cut -d '@' -f 1`
-LUCU=`echo ${LOCUSER} | cut -d '@' -f 1`
-NATU=`echo ${NACUSER} | cut -d '@' -f 1`
+NETBIOS=$(echo ${DOMAIN} | cut -d '.' -f 1 | tr [:lower:] [:upper:])
+ADMINUSER=$(echo ${ADMINMAIL} | cut -d '@' -f 1)
+LUCU=$(echo ${LOCUSER} | cut -d '@' -f 1)
+NATU=$(echo ${NACUSER} | cut -d '@' -f 1)
+
 # Set default DNS forwarder if not already set
 if [ -z "$DNSFWD" ] ; then
     DNSFWD=1.1.1.1
@@ -70,10 +71,10 @@ echo "DNSFWD: ${DNSFWD}"
 echo "==== END DEBUG ===="
 
 # update the package data
-apt update --quiet
+apt-get update --quiet
 
 # install samba and winbind
-apt install samba winbind python3-setproctitle -yq
+apt-get install samba winbind python3-setproctitle -yq
 
 # config samba related services
 for a in stop disable mask ; do
