@@ -49,16 +49,6 @@ if [ -f /etc/os-release ] ; then
                 # success finish
                 echo "done" > deps
             else
-                # creating some logs to process about the failure
-                echo "===> Saving the following service's logs $SRVS"
-                for s in $(echo ${SRVS} | xargs) ; do
-                    echo "===> Dumping logs of $s to $(pwd)/tests/$s.log"
-                    journalctl -xeu $s 2>&1 | tee -a ./tests/$s.log || true
-                done
-
-                # also syslog
-                tail -n 500 /var/log/syslog > ./tests/syslog.log
-
                 # install failed
                 echo "==========================================================================="
                 echo "ERROR: The update and install of the dependencies failed, this is mostly"
@@ -66,7 +56,6 @@ if [ -f /etc/os-release ] ; then
                 echo "       one, please fix that and try again."
                 echo "==========================================================================="
                 echo "       The deps install process will stop now"
-                echo "       The logs are in ./tests/ for you to review"
                 echo "==========================================================================="
 
                 # exit
