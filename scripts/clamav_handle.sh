@@ -10,7 +10,7 @@
 #       - If you pass a 'restore' argument then restore the backup data
 
 # vars:
-DBDIR=`cat /etc/clamav/freshclam.conf | grep DatabaseDirectory | awk '{print $2}'`
+DBDIR=$(cat /etc/clamav/freshclam.conf | grep DatabaseDirectory | awk '{print $2}')
 BKPFILE='/tmp/clamavbkp.tar'
 
 # backup
@@ -22,7 +22,7 @@ if [ "$1" == "backup" ] ;  then
 
     # check if there is an update, we measure the folder size, if it's more than 1Mb then there is an update
     cd ${DBDIR}
-    R=`du ./ -sh`
+    R=$(du ./ -sh)
     if [[ "$R" == *"M"* ]] ; then
         # there is at leas a few Mb of data
         tar -cvf ${BKPFILE} ./*

@@ -13,7 +13,7 @@
 # And not doing that after failure, that way it will not install on a unknown distro
 
 # import he common file with the list of default pkgs
-source ./common.conf || source common.conf
+source common.conf || source ../common.conf
 
 # default error when I hit a distro I can't identify
 function os_not_supported {
@@ -40,7 +40,7 @@ if [ -f /etc/os-release ] ; then
         bionic|focal|jammy|noble|buster|bullseye|bookworm)
             # install dependencies
             export DEBIAN_FRONTEND=noninteractive
-            apt update -q
+            apt-get update -q
             apt-get install -qy ${COMMON_DEPS_PKGS}
 
             # checking for success
@@ -58,7 +58,7 @@ if [ -f /etc/os-release ] ; then
                 echo "       The deps install process will stop now"
                 echo "==========================================================================="
 
-                # exit 1
+                # exit
                 exit 1
             fi
             ;;
