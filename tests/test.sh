@@ -135,6 +135,11 @@ if [ "$SOFT" == "" ] ; then
     apt-get install swaks -yq
     SOFT=`which swaks`
 fi
+NC=`which netcat`
+if [ "$NC" == "" ] ; then
+    echo ">>> Netcat not found installing"
+    apt-get install netcat-openbsd -yq
+fi
 
 # others
 LOG=./test.log

@@ -12,7 +12,7 @@
 apt-get update
 
 # install make
-apt-get install -y make swaks coreutils mawk bc curl
+apt-get install -y make swaks coreutils mawk bc curl netcat-openbsd
 
 # move to working dir
 cd /home/mailad/
