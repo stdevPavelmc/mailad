@@ -88,7 +88,7 @@ webmail: ## Install/remove webmail from the configuration
 	scripts/webmails.sh
 
 test-deps: ## Install test dependencies
-	apt update && apt install -y swaks coreutils mawk bc curl
+	apt update && apt install -y make swaks coreutils mawk bc curl
 
 test: test_deps ## Make all tests (to be run from a PC other than the server, outside the my_networks segment)
 	tests/test.sh $(ip)
