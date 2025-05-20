@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := help
 
-.PHONY : conf clean reset fix-vmail install-purge all force-provision force-certs webmail test_deps test_setup test upgrade backup restore purge-backups help
+.PHONY : conf clean reset fix-vmail install-purge all force-provision force-certs webmail test_deps upgrade backup restore purge-backups help
 
 PWD = $(shell pwd)
 
@@ -88,9 +88,9 @@ webmail: ## Install/remove webmail from the configuration
 	scripts/webmails.sh
 
 test-deps: ## Install test dependencies
-	apt update && apt install -y swaks coreutils mawk bc curl
+	apt update && apt install -y make swaks coreutils mawk bc curl
 
-test: ## Make all tests (to be run from a PC other than the server, outside the my_networks segment)
+test: test_deps ## Make all tests (to be run from a PC other than the server, outside the my_networks segment)
 	tests/test.sh $(ip)
 
 upgrade: force-provision ## Upgrade a setup, see README.md for details

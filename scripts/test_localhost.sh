@@ -91,7 +91,7 @@ GROUP=$(grep $VMAILNAME /etc/group | grep $VMAILGID)
 USER=$(grep $VMAILNAME /etc/passwd | grep $VMAILUID)
 if [ "$GROUP" == "" -o "$USER" == "" ] ; then
     # fix it!
-    ./vmail_create.sh || scripts/vmail_create.sh
+    ./vmail_create.sh || ./scripts/vmail_create.sh
 fi
 
 # hostname vs fqdn
@@ -112,7 +112,7 @@ if [ "$HOST" == "$FQDN" ] ; then
 
     exit 1
 else
-    echo "===> You have a correct fqdn in the hostname"
+    echo "===> You have a correct fqdn [$FQDN] in the hostname [$HOST]"
 fi
 
 # localhost is localhost?
@@ -122,7 +122,8 @@ else
     # fail
     echo "================================================================================="
     echo "ERROR!"
-    echo "    Your HOSTNAME var in mailad.conf does not match the FQDN of this host!"
+    echo "    Your HOSTNAME var in mailad.conf [$HOSTNAME] does not match"
+    echo "    the FQDN [$FQDN] of this host!"
     echo "    Please fix that"
     echo "================================================================================="
     echo " "
