@@ -12,7 +12,7 @@
 apt-get update
 
 # install make
-apt-get install -y make
+apt-get install -y make swaks coreutils mawk bc curl
 
 # move to working dir
 cd /home/mailad/

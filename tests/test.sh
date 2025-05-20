@@ -14,10 +14,6 @@ source common.conf
 # load the conf and locate the common
 source /etc/mailad/mailad.conf
 
-# Install some dependencies if not there:
-apt-get update
-apt-get install -y swaks coreutils mawk bc curl
-
 # get the LDAP URI
 LDAPURI=`get_ldap_uri`
 
@@ -36,8 +32,10 @@ fi
 
 # Capture the destination server or use the default
 if [ "$1" == "" ] ; then
+    echo "===> Server not specified, using ${HOSTNAME} as per config file"
     SERVER="${HOSTNAME}"
 else
+    echo "===> Using passed IP/hostname for the server: $1"
     SERVER="$1"
 fi
 
@@ -99,18 +97,18 @@ function check_email {
 BC=`which bc`
 if [ "$BC" == "" ] ; then
     echo ">>> bc not found installing"
-    apt install bc -yq
+    apt-get install bc -yq
 fi
 CURL=`which curl`
 if [ "$CURL" == "" ] ; then
     echo ">>> Curl not found installing"
-    apt install curl -yq
+    apt-get install curl -yq
     CURL=`which curl`
 fi
 SOFT=`which swaks`
 if [ "$SOFT" == "" ] ; then
     echo ">>> Swaks not found installing"
-    apt install swaks -yq
+    apt-get install swaks -yq
     SOFT=`which swaks`
 fi
 
