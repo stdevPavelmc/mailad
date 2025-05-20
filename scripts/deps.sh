@@ -30,6 +30,13 @@ function os_not_supported {
     exit 1
 }
 
+# Do update, and upgrade only if not in mailad.cu domain
+apt-get update
+if [ $DOMAIN != "mailad.cu" ] ; then
+    export DEBIAN_FRONTEND=noninteractive
+    apt-get upgrade -qy
+fi
+
 # loading the os-release file
 if [ -f /etc/os-release ] ; then
     # import the file
@@ -40,7 +47,6 @@ if [ -f /etc/os-release ] ; then
         bionic|focal|jammy|noble|buster|bullseye|bookworm)
             # install dependencies
             export DEBIAN_FRONTEND=noninteractive
-            apt-get update -q
             apt-get install -qy ${COMMON_DEPS_PKGS}
 
             # checking for success

@@ -71,7 +71,7 @@ echo "DNSFWD: ${DNSFWD}"
 echo "==== END DEBUG ===="
 
 # update the package data
-apt-get update --quiet
+apt-get update
 
 # install samba and winbind
 apt-get install samba winbind python3-setproctitle -yq
