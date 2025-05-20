@@ -13,7 +13,7 @@
 # And not doing that after failure, that way it will not install on a unknown distro
 
 # import he common file with the list of default pkgs
-source ./common.conf || source common.conf
+source common.conf || source ../common.conf
 
 # default error when I hit a distro I can't identify
 function os_not_supported {
@@ -59,7 +59,13 @@ if [ -f /etc/os-release ] ; then
                 echo "==========================================================================="
 
                 # creating some logs to process about the failure
-                dervices
+                for s in $(echo ${SRVS} | xargs) ; do
+                    echo "===> Dumping logs of $s to $(pwd)/tests/$s.log"
+                    journalctl -xeu $s 2>&1 | tee -a ./tests/$s.log
+                done
+
+                # also syslog
+                tail -n 500 /var/log/syslog > ./tests/syslog.log
 
                 # exit 1
                 exit 1
