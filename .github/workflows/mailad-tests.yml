@@ -89,7 +89,7 @@ jobs:
         if: steps.docker_run.outcome == 'success'
         run: |
           # Capture the docker0 interface IP on the host
-          DOCKERBRIP=$(ip addr show docker0 | awk '/inet / {print $2}' | cut -d/ -f1 172.17.0.1)
+          DOCKERBRIP=$(ip addr show docker0 | awk '/inet / {print $2}' | cut -d/ -f1)
           echo "==> Calling the test script inside the docker, with $DOCKERBRIP as server"
           sudo docker exec -t test /bin/bash -xc "/home/mailad/tests/test-from-docker.sh '$DOCKERBRIP'"
 
