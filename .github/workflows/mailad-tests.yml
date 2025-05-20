@@ -90,7 +90,7 @@ jobs:
         run: |
           # Capture the docker0 interface IP on the host
           DOCKERBRIP=$(sudo ip addr show docker0 | grep -oP '(?<=inet\s)\d+(\.\d+){3}')
-          sudo docker exec -t test /bin/bash -c "cd /home/mailad/ && make test $DOCKERBRIP"
+          sudo docker exec -t test /bin/bash -c "/home/mailad/tests/test-from-docker.sh $DOCKERBRIP"
 
       - name: Upload test logs
         if: always()

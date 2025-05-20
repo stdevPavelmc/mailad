@@ -6,7 +6,7 @@
 #
 # Goal:
 #   - Test a few properties of the email server
-#     see the README.md on this directory for deatils
+#     see the README.md on this directory for details
 
 # source the common config
 source common.conf
@@ -14,10 +14,12 @@ source common.conf
 # load the conf and locate the common
 source /etc/mailad/mailad.conf
 
+# Install some dependencies if not there:
+apt-get update
+apt-get install -y swaks coreutils mawk bc curl
+
 # get the LDAP URI
 LDAPURI=`get_ldap_uri`
-
-
 
 # check for the local credentials for the test
 if [ -f .mailadmin.auth ] ; then
