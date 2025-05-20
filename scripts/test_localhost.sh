@@ -87,8 +87,8 @@ fi
 
 
 #vmail user
-GROUP=$(cat /etc/group | grep $VMAILNAME | grep $VMAILGID)
-USER=$(cat /etc/passwd | grep $VMAILNAME | grep $VMAILUID)
+GROUP=$(grep $VMAILNAME /etc/group | grep $VMAILGID)
+USER=$(grep $VMAILNAME /etc/passwd | grep $VMAILUID)
 if [ "$GROUP" == "" -o "$USER" == "" ] ; then
     # fix it!
     ./vmail_create.sh || scripts/vmail_create.sh
