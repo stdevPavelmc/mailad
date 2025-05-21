@@ -21,4 +21,4 @@ cd /home/mailad/
 make conf
 
 # Ran tests
-./tests/test.sh
+./tests/test.sh | tee ./tests/test_results.log

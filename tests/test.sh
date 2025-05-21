@@ -15,7 +15,7 @@ source common.conf
 source /etc/mailad/mailad.conf
 
 # get the LDAP URI
-LDAPURI=`get_ldap_uri`
+LDAPURI=$(get_ldap_uri)
 
 # check for the local credentials for the test
 if [ -f .mailadmin.auth ] ; then
@@ -64,7 +64,7 @@ fi
 
 # function to generate a hash to identify an email
 function fingerprint {
-    R=`date | sha256sum | awk '{print $1}'`
+    R=$(date | sha256sum | awk '{print $1}')
     echo "$R"
 }
 
@@ -76,19 +76,19 @@ function check_email {
     # 3 - Pass
 
     # delay of 10 seconds to allow delivery
-    sleep 5
+    sleep 10
 
     # catch vars (cut the fingerprint up to 45 digits, good enough)
     # because some times the subject line got a ' at position 48
     # weird...
-    F=`echo $1 | cut -c1-45`
+    F=$(echo $1 | cut -c1-45)
     U=$2
     P=$3
 
     # get the count of emails
-    ID=`${CURL} --insecure --silent --url "imaps://${SERVER}/" \
+    ID=$(${CURL} --insecure --silent --url "imaps://${SERVER}/" \
         --user "${2}:${3}" --request "EXAMINE Inbox" \
-        | grep "EXISTS" | awk '{print $2}'`
+        | grep "EXISTS" | awk '{print $2}')
 
 
     # cycle from last to back in the last 10 emails to find the fingerprint
@@ -97,17 +97,17 @@ function check_email {
         UNTIL=10
     else
         # more than 10 emails, get the last 10
-        UNTIL=`expr $ID - 10`
+        UNTIL=$(expr $ID - 10)
     fi
 
     while [ $ID -ge $UNTIL ] ; do
-        R=`${CURL} --insecure --silent \
+        R=$(${CURL} --insecure --silent \
             --url "imaps://${SERVER}/Inbox;UID=${ID};SECTION=HEADER.FIELDS%20(SUBJECT)" \
-            --user "${2}:${3}"`
-        ID=`expr $ID - 1`
+            --user "${2}:${3}")
+        ID=$(expr $ID - 1)
 
         # test
-        R=`echo $R | awk '{print $2}' | cut -c1-45`
+        R=$(echo $R | awk '{print $2}' | cut -c1-45)
         if [ "$R" == "$F" ] ; then
             # bingo
             echo "OK"
@@ -117,31 +117,31 @@ function check_email {
 }
 
 # needed tools
-BC=`which bc`
+BC=$(which bc)
 if [ "$BC" == "" ] ; then
     echo ">>> bc not found installing"
     apt-get install bc -yq
 fi
-CURL=`which curl`
+CURL=$(which curl)
 if [ "$CURL" == "" ] ; then
     echo ">>> Curl not found installing"
     apt-get install curl -yq
-    CURL=`which curl`
+    CURL=$(which curl)
 fi
-SOFT=`which swaks`
+SOFT=$(which swaks)
 if [ "$SOFT" == "" ] ; then
     echo ">>> Swaks not found installing"
     apt-get install swaks -yq
-    SOFT=`which swaks`
+    SOFT=$(which swaks)
 fi
-NC=`which netcat`
+NC=$(which netcat)
 if [ "$NC" == "" ] ; then
     echo ">>> Netcat not found installing"
     apt-get install netcat-openbsd -yq
 fi
 
 # others
-LOG=./tests/test.log
+LOG=./tests/test_transactions_results.log
 LOGP=./tests/latest.log
 cat /dev/null > $LOG
 
@@ -159,7 +159,7 @@ echo "Using server: $SERVER"
 echo " "
 
 ### Send an email to the mail admin: port 25
-F=`fingerprint`
+F=$(fingerprint)
 $SOFT -s $SERVER --protocol SMTP -t $ADMINMAIL --header "Subject: $F" > $LOGP
 R=$?
 if [ $R -ne 0 ] ; then
@@ -178,11 +178,8 @@ if [ $R -ne 0 ] ; then
     cat $LOGP
     exit 1
 else
-    # delay of 15 seconds to allow to process the mail
-    sleep 15
-
     # ok checking for a mail with that fingerprint
-    R=`check_email "$F" "$ADMINMAIL" "$PASS"`
+    R=$(check_email "$F" "$ADMINMAIL" "$PASS")
     if [ "$R" == "OK" ] ; then
         # all ok, received
         echo "===> Ok: You can receive emails for your domain"
@@ -195,7 +192,7 @@ fi
 cat $LOGP > $LOG
 
 ### Send an email to the mail admin with auth as sender
-F=`fingerprint`
+F=$(fingerprint)
 $SOFT -s "$SERVER" -p 587 -tls -a PLAIN -au "$ADMINMAIL" -ap "$PASS" \
     -t "$ADMINMAIL" -f "$ADMINMAIL" --header "Subject: $F" > $LOGP
 R=$?
@@ -216,11 +213,8 @@ if [ $R -ne 0 ] ; then
     cat $LOGP
     exit 1
 else
-    # delay of 15 seconds to allow to process the mail
-    sleep 15
-
     # ok checking for a mail with that fingerprint
-    R=`check_email "$F" "$ADMINMAIL" "$PASS"`
+    R=$(check_email "$F" "$ADMINMAIL" "$PASS")
     if [ "$R" == "OK" ] ; then
         # all ok, received
         echo "===> Ok: Authenticated users can send local emails"
@@ -261,7 +255,7 @@ fi
 cat $LOGP >> $LOG
 
 ### Send an email to a non-existent user, port 25
-USER=`mktemp | cut -d '/' -f 3`
+USER=$(mktemp | cut -d '/' -f 3)
 $SOFT -s $SERVER --protocol SMTP -t "$USER@$DOMAIN" > $LOGP
 R=$?
 if [ $R -ne 24 ] ; then
@@ -286,8 +280,8 @@ fi
 cat $LOGP >> $LOG
 
 ### Send an email to an external user as an outsider domain, port 25 (open relay)
-USER=`mktemp | cut -d '/' -f 3`
-USER1=`mktemp | cut -d '/' -f 3`
+USER=$(mktemp | cut -d '/' -f 3)
+USER1=$(mktemp | cut -d '/' -f 3)
 $SOFT -s $SERVER --protocol SMTP -t "$USER@example" -f "$USER1@example" > $LOGP
 R=$?
 if [ $R -ne 24 ] ; then
@@ -368,8 +362,8 @@ cat $LOGP >> $LOG
 
 ### Send an email to the mail admin with an attachment bigger than the
 # allowed: port 25
-MS=`echo "$MESSAGESIZE*1024*1024*1.2" | bc -q | cut -d '.' -f 1`
-TMP=`mktemp`
+MS=$(echo "$MESSAGESIZE*1024*1024*1.2" | bc -q | cut -d '.' -f 1)
+TMP=$(mktemp)
 dd if=/dev/zero of=$TMP bs=1 count="$MS" 2>/dev/null
 $SOFT -s $SERVER --protocol SMTP -t $ADMINMAIL --attach "@${TMP}" > $LOGP
 rm $TMP
@@ -450,7 +444,7 @@ fi
 cat $LOGP >> $LOG
 
 ### Send an email to a national recipient as a national user user with auth
-F=`fingerprint`
+F=$(fingerprint)
 $SOFT -s "$SERVER" -p 587 -tls -a PLAIN -au "$NACUSER" -ap "$NACUSERPASSWD" \
     -t "reject@nonexistent.cu" -f "$NACUSER" --header "Subject: $F" > $LOGP
 R=$?
@@ -529,7 +523,7 @@ fi
 cat $LOGP >> $LOG
 
 ### Send an email to a local recipient as a local user user with auth
-F=`fingerprint`
+F=$(fingerprint)
 $SOFT -s "$SERVER" -p 587 -tls -a PLAIN -au "$LOCUSER" -ap "$LOCUSERPASSWORD" \
     -t "$NACUSER" -f "$LOCUSER" --header "Subject: $F" > $LOGP
 R=$?
@@ -549,11 +543,8 @@ if [ $R -ne 0 ] ; then
     cat $LOGP
     exit 1
 else
-    # delay of 15 seconds to allow to process the mail
-    sleep 15
-
     # ok checking for a mail with that fingerprint
-    R=`check_email "$F" "$NACUSER" "$NACUSERPASSWD"`
+    R=$(check_email "$F" "$NACUSER" "$NACUSERPASSWD")
     if [ "$R" == "OK" ] ; then
         # all ok, received
         echo "===> Ok: Local restricted users can send emails to local recipients"
@@ -568,7 +559,7 @@ cat $LOGP >> $LOG
 # EVERYONE testing
 if [ "$EVERYONE" != "" ] ; then
     ### Send an email to the everyone as a local user
-    F=`fingerprint`
+    F=$(fingerprint)
     $SOFT -s "$SERVER" -p 587 -tls -a PLAIN -au "$LOCUSER" -ap "$LOCUSERPASSWORD" \
         -t "$EVERYONE" -f "$LOCUSER" --header "Subject: $F" > $LOGP
     R=$?
@@ -589,11 +580,8 @@ if [ "$EVERYONE" != "" ] ; then
         cat $LOGP
         exit 1
     else
-        # delay of 15 seconds to allow to process the mail
-        sleep 15
-
         # ok checking for a mail with that fingerprint
-        R=`check_email "$F" "$NACUSER" "$NACUSERPASSWD"`
+        R=$(check_email "$F" "$NACUSER" "$NACUSERPASSWD")
         if [ "$R" == "OK" ] ; then
             # all ok, received
             echo "===> Ok: Local users can send emails to the everyone declared alias"
@@ -647,11 +635,8 @@ if [ "$EVERYONE" != "" ] ; then
             cat $LOGP
             exit 1
         else
-            # delay of 15 seconds to allow to process the mail
-            sleep 15
-
             # ok checking for a mail with that fingerprint
-            R=`check_email "$F" "$NACUSER" "$NACUSERPASSWD"`
+            R=$(check_email "$F" "$NACUSER" "$NACUSERPASSWD")
             if [ "$R" == "OK" ] ; then
                 # all ok, received
                 echo "===> Ok: EVERYONE alias can receive emails from outside"
