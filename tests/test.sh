@@ -30,15 +30,6 @@ else
     exit 1
 fi
 
-function test_smtp() {
-    # pass the IP of the server to check
-    if ping -c 1 -W 2 $1 &> /dev/null; then
-        if nc -z $1 25 &> /dev/null; then
-            echo $1
-        fi
-    fi
-}
-
 # Capture the destination server or use the default
 if [ "$1" == "" ] ; then
     # server not specified, is this mailad.cu domain on dev env or not?
@@ -46,18 +37,14 @@ if [ "$1" == "" ] ; then
         echo "===> Server not specified, using ${HOSTNAME} as per config file"
         SERVER="${HOSTNAME}"
     else
-        # is the MAILIP env var set? use that
-        if [ "$MAILIP" != "" ] ; then
-            SERVER="$MAILIP"
-            echo "===> Using passed IP/hostname via ENV, server: $SERVER"
-        else
-            echo "===> Test dev server for mailad.cu, detecting the server"
-            # try to detect the IP
-            for ip in 172.17.0.1 10.0.3.11 $HOSTNAME; do
-                S=$(test_smtp $ip)
-                if [ "$S" ] ; then
-                    SERVER="$S"
-                    echo "===> Using detected IP $S for the server: $SERVER"
+        # is the RUNNER_IPS env var set? use that
+        if [ "$RUNNER_IPS" ] ; then
+            echo "===> Passed github runners IPs: $RUNNER_IPS, try that"
+            # try all the runners IPs
+            for ip in $(echo $RUNNER_IPS | xargs) ; do
+                if nc -z "$ip" 110 &> /dev/null; then
+                    SERVER="$ip"
+                    echo "===> Using detected IP $S for the server"
                     break
                 fi
             done
