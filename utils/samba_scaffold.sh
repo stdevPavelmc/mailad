@@ -52,11 +52,15 @@ source .mailadmin.auth
 ### Some var casting
 # Administrator PASSWD!
 APSWD=${PASS}
-NETBIOS=`echo ${DOMAIN} | cut -d '.' -f 1 | tr [:lower:] [:upper:]`
-ADMINUSER=`echo ${ADMINMAIL} | cut -d '@' -f 1`
-LUCU=`echo ${LOCUSER} | cut -d '@' -f 1`
-NATU=`echo ${NACUSER} | cut -d '@' -f 1`
-DNSFWD=10.0.3.1 # left empty to disable DNS forwarder
+NETBIOS=$(echo ${DOMAIN} | cut -d '.' -f 1 | tr [:lower:] [:upper:])
+ADMINUSER=$(echo ${ADMINMAIL} | cut -d '@' -f 1)
+LUCU=$(echo ${LOCUSER} | cut -d '@' -f 1)
+NATU=$(echo ${NACUSER} | cut -d '@' -f 1)
+
+# Set default DNS forwarder if not already set
+if [ -z "$DNSFWD" ] ; then
+    DNSFWD=1.1.1.1
+fi
 
 echo "==== DEBUG: VARS SETTED ===="
 echo "NETBIOS: ${NETBIOS}"
@@ -67,10 +71,10 @@ echo "DNSFWD: ${DNSFWD}"
 echo "==== END DEBUG ===="
 
 # update the package data
-apt update --quiet
+apt-get update
 
 # install samba and winbind
-apt install samba winbind python3-setproctitle -yq
+apt-get install samba winbind python3-setproctitle -yq
 
 # config samba related services
 for a in stop disable mask ; do
@@ -96,11 +100,14 @@ samba-tool domain provision \
     --dns-backend=SAMBA_INTERNAL \
     --adminpass=${APSWD}
 
-# fix the DNS to point to myself
-sed s/"^nameserver .*$"/"nameserver 127.0.0.1"/ -i  /etc/resolv.conf
+# fix the DNS to point to myself and alternatives
+echo "search mailad.cu" > /etc/resolv.conf
+echo "nameserver 127.0.0.1" >> /etc/resolv.conf
+echo "nameserver 1.1.1.1" >> /etc/resolv.conf
+echo "nameserver 8.8.8.8" >> /etc/resolv.conf
 
 # set the forwarder
-if [ ! -z "${DNSFWD}" ] ; then
+if [ "${DNSFWD}" ] ; then
     sed s/"^dns forwarder .*$"/"dns forwarder = ${DNSFWD}"/ -i  /etc/samba/smb.conf
 fi
 

@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := help
 
-.PHONY : conf clean reset fix-vmail install-purge all force-provision force-certs webmail test_deps test_setup test upgrade backup restore purge-backups help
+.PHONY : conf clean reset fix-vmail install-purge all force-provision force-certs webmail test upgrade backup restore purge-backups help
 
 PWD = $(shell pwd)
 
@@ -36,7 +36,6 @@ certs: conf-check ## Generate a self-signed certificate for the server SSL/TLS o
 	echo "done" > certs
 
 install: conf-check deps certs ## Install all the software from the repository
-	apt update -q && apt upgrade -qy
 	scripts/install_mail.sh
 	echo "done" > install
 
@@ -86,9 +85,6 @@ force-certs: ## Force a re-creation of the SSL & dhparm certs
 
 webmail: ## Install/remove webmail from the configuration
 	scripts/webmails.sh
-
-test-deps: ## Install test dependencies
-	apt update && apt install -y swaks coreutils mawk bc curl
 
 test: ## Make all tests (to be run from a PC other than the server, outside the my_networks segment)
 	tests/test.sh $(ip)

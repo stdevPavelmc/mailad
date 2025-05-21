@@ -50,7 +50,7 @@ if [ -f /etc/os-release ] ; then
     rm -rdf ${SNAPPY_DIR} || true
 
     # autoremove
-    apt autoremove -yq
+    apt-get autoremove -yq
 else
     # Unknown
     echo "==========================================================================="

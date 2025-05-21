@@ -64,7 +64,7 @@ if [ ! "$DOMAIN" -o ! "$DOU" ] ; then
 fi
 
 # check if samba is running
-SAMBA=`ps aux | grep samba | grep -v grep`
+SAMBA=$(ps aux | grep samba | grep -v grep)
 if [ -z "$SAMBA" ] ; then
     # not running
     echo " "
@@ -72,19 +72,19 @@ if [ -z "$SAMBA" ] ; then
     echo "NOTICE!!!"
     echo ""
     echo " This script is intended to be run on the SAMBA 4 Domain controller and"
-    echo " no running samba process was found in the local PC".
+    echo " no running samba process was found in the local PC"
     echo ""
     echo " This script must be used only ONCE and with extreme caution! Please see"
     echo " https://github.com/stdevPavelmc/mailad/blob/master/Simplify_AD_config.md"
     echo " for the explanation." 
     echo " "
-    echo "======================================================================="
+    echo "========================================================================"
 
     exit 1
 fi
 
 # check samba service name
-SAMBASVR=`systemctl --no-pager list-units --type=service | grep samba | awk '{print $1}'`
+SAMBASVR=$(systemctl --no-pager list-units --type=service | grep samba | awk '{print $1}')
 if [ -z "$SAMBASVR" ] ; then
     # not running
     echo " "
@@ -92,12 +92,12 @@ if [ -z "$SAMBASVR" ] ; then
     echo "NOTICE!!!"
     echo ""
     echo " This script is intended to be run on the SAMBA 4 Domain controller and"
-    echo " no systemd samba unit was found in the local PC".
+    echo " no systemd samba unit was found in the local PC"
     echo ""
     echo " please rename the systemd service to contains the word 'samba' in the"
     echo " name or contact the author for instructions/fix/help"
     echo " " 
-    echo "======================================================================="
+    echo "========================================================================"
     
     exit 1
 fi
@@ -116,7 +116,7 @@ if [ ! -f "/tmp/mad_1_run" ] ; then
     echo " Run it again to perform the indended migration, again: This SCRIPT is"
     echo " only to migrate from the old schema to the simplified one."
     echo ""
-    echo "======================================================================="
+    echo "========================================================================"
 
     touch /tmp/mad_1_run
     exit 0
@@ -161,23 +161,23 @@ for s in "${array[@]}" ; do
 done
 
 # get samba users list
-UL=`samba-tool user list`
-FILE=`mktemp`
-CHANGE=`mktemp`
-for U in `echo $UL | xargs` ; do
+UL=$(samba-tool user list)
+FILE=$(mktemp)
+CHANGE=$(mktemp)
+for U in $(echo $UL | xargs) ; do
     echo " "
     echo "===> Parsing '$U' data..."
     # get the data for the user
     ldbsearch -o ldif-wrap=no -H "$S4LDB" -b "$BDN" "SAMAccountName=$U" > $FILE
 
     # parse only if mail is present
-    MAIL=`cat $FILE | grep "mail: " | cut -d ' ' -f 2-`
+    MAIL=$(cat $FILE | grep "mail: " | cut -d ' ' -f 2-)
     if [ "$MAIL" ] ; then
         # user with mail found
-        DN=`cat $FILE | grep "dn:" | cut -d ' ' -f 2-`
-        STORAGE=`cat $FILE | grep "physicalDeliveryOfficeName:" | cut -d ' ' -f 2-`
-        HOME=`cat $FILE | grep  "wWWHomePage:" | cut -d ' ' -f 2-`
-        QUOTA=`cat $FILE | grep "telephoneNumber:" | cut -d ' ' -f 2-`
+        DN=$(cat $FILE | grep "dn:" | cut -d ' ' -f 2-)
+        STORAGE=$(cat $FILE | grep "physicalDeliveryOfficeName:" | cut -d ' ' -f 2-)
+        HOME=$(cat $FILE | grep  "wWWHomePage:" | cut -d ' ' -f 2-)
+        QUOTA=$(cat $FILE | grep "telephoneNumber:" | cut -d ' ' -f 2-)
 
         # if any of them is empty is a sign of a bad confgured or already migrated user
         if [ -z "$STORAGE" -o -z "$HOME" -o -z "$QUOTA" ] ; then
@@ -197,7 +197,7 @@ for U in `echo $UL | xargs` ; do
             echo "telephoneNumber: $QUOTA" >> $CHANGE
 
             # apply
-            R=`ldbmodify -H $S4LDB $CHANGE | grep " 1 record"`
+            R=$(ldbmodify -H $S4LDB $CHANGE | grep " 1 record")
             if [ -z "$R" ] ; then
                 echo "   ####> ERROR: user '$MAIL' failed to modify, plase check it by hand"
             fi
@@ -210,7 +210,7 @@ for U in `echo $UL | xargs` ; do
             echo "wWWHomePage: $QUOTA" >> $CHANGE
 
             # # apply
-            R=`ldbmodify -H $S4LDB $CHANGE | grep " 1 record"`
+            R=$(ldbmodify -H $S4LDB $CHANGE | grep " 1 record")
             if [ -z "$R" ] ; then
                 echo "   ####> ERROR: user '$MAIL' failed to modify, plase check it by hand"
             fi

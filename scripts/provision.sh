@@ -496,7 +496,7 @@ fi
 # optional stats
 if [ "$OPT_STATS" != "No" -o "$OPT_STATS" != "no" ] ; then
     # install swaks to handle the forged email as the mailadmin
-    apt install swaks
+    apt-get install swaks
     # and we have stats, thanks
     echo "===> Sending feedback to the creator & $ADMINMAIL"
     ./scripts/feedback.sh
