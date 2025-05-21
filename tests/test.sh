@@ -141,8 +141,8 @@ if [ "$NC" == "" ] ; then
 fi
 
 # others
-LOG=./test.log
-LOGP=./latest.log
+LOG=./tests/test.log
+LOGP=./tests/latest.log
 cat /dev/null > $LOG
 
 # Reset the locales
@@ -178,6 +178,9 @@ if [ $R -ne 0 ] ; then
     cat $LOGP
     exit 1
 else
+    # delay of 15 seconds to allow to process the mail
+    sleep 15
+
     # ok checking for a mail with that fingerprint
     R=`check_email "$F" "$ADMINMAIL" "$PASS"`
     if [ "$R" == "OK" ] ; then
@@ -213,6 +216,9 @@ if [ $R -ne 0 ] ; then
     cat $LOGP
     exit 1
 else
+    # delay of 15 seconds to allow to process the mail
+    sleep 15
+
     # ok checking for a mail with that fingerprint
     R=`check_email "$F" "$ADMINMAIL" "$PASS"`
     if [ "$R" == "OK" ] ; then
@@ -543,6 +549,9 @@ if [ $R -ne 0 ] ; then
     cat $LOGP
     exit 1
 else
+    # delay of 15 seconds to allow to process the mail
+    sleep 15
+
     # ok checking for a mail with that fingerprint
     R=`check_email "$F" "$NACUSER" "$NACUSERPASSWD"`
     if [ "$R" == "OK" ] ; then
@@ -580,6 +589,9 @@ if [ "$EVERYONE" != "" ] ; then
         cat $LOGP
         exit 1
     else
+        # delay of 15 seconds to allow to process the mail
+        sleep 15
+
         # ok checking for a mail with that fingerprint
         R=`check_email "$F" "$NACUSER" "$NACUSERPASSWD"`
         if [ "$R" == "OK" ] ; then
@@ -635,6 +647,9 @@ if [ "$EVERYONE" != "" ] ; then
             cat $LOGP
             exit 1
         else
+            # delay of 15 seconds to allow to process the mail
+            sleep 15
+
             # ok checking for a mail with that fingerprint
             R=`check_email "$F" "$NACUSER" "$NACUSERPASSWD"`
             if [ "$R" == "OK" ] ; then
