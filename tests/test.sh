@@ -42,9 +42,10 @@ if [ "$1" == "" ] ; then
             echo "===> Passed github runners IPs: $RUNNER_IPS, try that"
             # try all the runners IPs
             for ip in $(echo $RUNNER_IPS | xargs) ; do
+                echo "===> Testing $ip"
                 if nc -z "$ip" 110 &> /dev/null; then
                     SERVER="$ip"
-                    echo "===> Using detected IP $S for the server"
+                    echo "===> Using detected IP $ip for the server"
                     break
                 fi
             done
@@ -52,8 +53,10 @@ if [ "$1" == "" ] ; then
     fi
 
     # Default server
-    echo "===> Server not found, using ${HOSTNAME} as per config file"
-    SERVER="${HOSTNAME}"
+    if [ -z "$SERVER" ] ; then
+        echo "===> Server not found, using ${HOSTNAME} as per config file"
+        SERVER="${HOSTNAME}"
+    fi
 else
     echo "===> Using passed IP/hostname for the server: $1"
     SERVER="$1"
