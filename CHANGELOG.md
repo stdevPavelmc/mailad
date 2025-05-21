@@ -19,6 +19,14 @@ This is a note for developers about the recommended tags to keep track of the ch
 Dates must be YEAR-MONTH-DAY
 -->
 
+## [v1.2.1] - 2025-05-21
+
+- Changed: Improved documentation readability with better formatting, consistent lists, and clearer explanations
+- Changed: Replaced `apt` commands with `apt-get` in all scripts for better stability in scripting environments
+- Changed: Updated all bash scripts to use modern `$()` syntax instead of legacy backticks for command substitution
+- Fixed: Various typos and formatting issues in documentation
+- Fixed: Improved script reliability by using more consistent command syntax
+
 ## [v1.2.0] - 2025-04-10
 
 - Added: Webmails!!! Disabled by default, you need to upgrade first, you can pick RoundCube [default] or SnappyMail, see Features.md for details
