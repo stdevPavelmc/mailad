@@ -46,18 +46,27 @@ if [ "$1" == "" ] ; then
         echo "===> Server not specified, using ${HOSTNAME} as per config file"
         SERVER="${HOSTNAME}"
     else
-        echo "===> Test dev server for mailad.cu, detecting the server"
-
-        # try to detect the IP
-        for ip in 172.17.0.1 10.0.3.11 $HOSTNAME; do
-            S=$(test_smtp $ip)
-            if [ "$S" ] ; then
-                SERVER="$S"
-                echo "===> Using detected IP $S for the server: $SERVER"
-                break
-            fi
-        done
+        # is the MAILIP env var set? use that
+        if [ "$MAILIP" != "" ] ; then
+            SERVER="$MAILIP"
+            echo "===> Using passed IP/hostname via ENV, server: $SERVER"
+        else
+            echo "===> Test dev server for mailad.cu, detecting the server"
+            # try to detect the IP
+            for ip in 172.17.0.1 10.0.3.11 $HOSTNAME; do
+                S=$(test_smtp $ip)
+                if [ "$S" ] ; then
+                    SERVER="$S"
+                    echo "===> Using detected IP $S for the server: $SERVER"
+                    break
+                fi
+            done
+        fi
     fi
+
+    # Default server
+    echo "===> Server not found, using ${HOSTNAME} as per config file"
+    SERVER="${HOSTNAME}"
 else
     echo "===> Using passed IP/hostname for the server: $1"
     SERVER="$1"
