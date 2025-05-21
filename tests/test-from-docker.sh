@@ -21,4 +21,4 @@ cd /home/mailad/
 make conf
 
 # Ran tests
-make test "$1"
+./tests/test.sh
