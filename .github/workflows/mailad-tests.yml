@@ -9,13 +9,20 @@ on:
 
 jobs:
   Test:
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [ubuntu-latest, ubuntu-24.04, ubuntu-22.04]
+    runs-on: ${{ matrix.os }}
     outputs:
       auth_file: ${{ steps.create_auth.outputs.auth_file }}
       
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Expose the OS type and version
+        run: |
+          cat /etc/os-release | tee ${{ github.workspace }}/tests/os.log
 
       - name: Install mandatory dependency, make
         run: |
@@ -100,7 +107,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: test-logs
+          name: test-logs-${{ matrix.os }}
           path: ${{ github.workspace }}/tests/*.log
 
       - name: Stop containers
