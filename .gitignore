@@ -12,3 +12,6 @@ webmail
 
 # local storage to work on develop
 .localdata
+
+# dev files
+snappymail*.gz
