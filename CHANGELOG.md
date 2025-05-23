@@ -19,10 +19,11 @@ This is a note for developers about the recommended tags to keep track of the ch
 Dates must be YEAR-MONTH-DAY
 -->
 
-## [v1.2.1-rc] - 2025-05-22
+## [v1.2.1-rc] - 2025-05-23
 
 - Changed: Upgraded the Snappy Mail Webmail from version 2.36.4 to 2.38.2
 - Changed: Disabled Debian testing on the CI/CD matrix: Github does not supports Debian
+- Changed: If you install/upgrade/provision on a discontinued OS you will get a warning, the same with legacy ones. That's to notice the user to upgrade to a latest OS version.
 - Added: Webmails testing to CI/CD using Github Actions
 - Added: Test status badges ontop of the readme
 

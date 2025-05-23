@@ -42,6 +42,45 @@ if [ -f /etc/os-release ] ; then
     # import the file
     source /etc/os-release
 
+    # Notice on discontinued OS
+    if [[ " ${OS_DISCONTINUED[*]} " =~ " $VERSION_CODENAME " ]]; then
+        echo ""
+        echo "##### WARNING  WARNING  WARNING ######################################"
+        echo "#                                                                    #"
+        echo "#    You are installing on a discontinued OS, this is dangerous,     #"
+        echo "#  as the OS version my be outdated and vulnerable, please upgrade   #"
+        echo "#           go here and read how to upgrade your OS:                 #"
+        echo "#  https://github.com/stdevPavelmc/mailad/blob/develop/INSTALL.md    #"
+        echo "#                                                                    #"
+        echo "#                      You has been warned!                          #"
+        echo "#                                                                    #"
+        echo "####################################  WARNING  WARNING  WARNING ######"
+        echo ""
+
+        # delay notice
+        echo "This is just a warning, it will be dismissed in 10 seconds, and installation will continue"
+        sleep 10
+    fi
+
+    # Notice on legacy OS
+    if [[ " ${OS_LEGACY[*]} " =~ " $VERSION_CODENAME " ]]; then
+        echo ""
+        echo "##### WARNING  WARNING  WARNING ######################################"
+        echo "#                                                                    #"
+        echo "#       You are installing on a legacy OS, be aware that it may,     #"
+        echo "#  be outdated soon, please go here and read how to upgrade your OS: #"
+        echo "#  https://github.com/stdevPavelmc/mailad/blob/develop/INSTALL.md    #"
+        echo "#                                                                    #"
+        echo "#                      You has been warned!                          #"
+        echo "#                                                                    #"
+        echo "####################################  WARNING  WARNING  WARNING ######"
+        echo ""
+
+        # delay notice
+        echo "This is just a warning, it will be dismissed in 10 seconds, and installation will continue"
+        sleep 10
+    fi
+
     if [[ " ${OS_WORKING[*]} " =~ " $VERSION_CODENAME " ]]; then
         # Load the correct pkgs to be installed
         export DEBIAN_FRONTEND=noninteractive
