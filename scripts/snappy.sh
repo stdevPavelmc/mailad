@@ -24,11 +24,10 @@ apt-get remove -y $ROUNDCUBE_PKGS
 # notice
 echo "===> Installing SnappyMail webmail"
 
-#SNAPPY_VERSION="2.36.4"
 SNAPPY_VERSION="2.38.2"
 SNAPPY_FILE="snappymail-${SNAPPY_VERSION}.tar.gz"
-#SNAPPY_URL="https://github.com/the-djmaze/snappymail/releases/download/v${SNAPPY_VERSION}/${SNAPPY_FILE}"
-SNAPPY_URL="http://172.17.0.1:8081/$SNAPPY_FILE"
+SNAPPY_URL="https://github.com/the-djmaze/snappymail/releases/download/v${SNAPPY_VERSION}/${SNAPPY_FILE}"
+#SNAPPY_URL="http://172.17.0.1:8081/$SNAPPY_FILE"
 
 function fixperms {
     # just one parameter, the directory to apply the perms
