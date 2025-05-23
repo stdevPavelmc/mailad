@@ -42,37 +42,33 @@ if [ -f /etc/os-release ] ; then
     # import the file
     source /etc/os-release
 
-    ## Distros check
-    case "$VERSION_CODENAME" in
-        bionic|focal|jammy|noble|buster|bullseye|bookworm)
-            # install dependencies
-            export DEBIAN_FRONTEND=noninteractive
-            apt-get install -qy ${COMMON_DEPS_PKGS}
+    if [[ " ${OS_WORKING[*]} " =~ " $VERSION_CODENAME " ]]; then
+        # Load the correct pkgs to be installed
+        export DEBIAN_FRONTEND=noninteractive
+        apt-get install -qy ${COMMON_DEPS_PKGS}
 
-            # checking for success
-            R=$?
-            if [ $R -eq 0 ] ; then
-                # success finish
-                echo "done" > deps
-            else
-                # install failed
-                echo "==========================================================================="
-                echo "ERROR: The update and install of the dependencies failed, this is mostly"
-                echo "       a problem related to a bad configured repository or a not reacheable"
-                echo "       one, please fix that and try again."
-                echo "==========================================================================="
-                echo "       The deps install process will stop now"
-                echo "==========================================================================="
+        # checking for success
+        R=$?
+        if [ $R -eq 0 ] ; then
+            # success finish
+            echo "done" > deps
+        else
+            # install failed
+            echo "==========================================================================="
+            echo "ERROR: The update and install of the dependencies failed, this is mostly"
+            echo "       a problem related to a bad configured repository or a not reacheable"
+            echo "       one, please fix that and try again."
+            echo "==========================================================================="
+            echo "       The deps install process will stop now"
+            echo "==========================================================================="
 
-                # exit
-                exit 1
-            fi
-            ;;
-        *)
-            # not supported OS
-            os_not_supported
-            ;;
-    esac
+            # exit
+            exit 1
+        fi
+    else
+        # no support
+        os_not_supported
+    fi
 else
     # not supported OS
     os_not_supported

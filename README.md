@@ -24,17 +24,17 @@ After a few steps, you will have a mail server up and running in about 15 minute
 
 The recommended OS selection is as follows:
 
-| OS | Active Support | Legacy |
-|:--- |:---:|:---:|
-| Ubuntu Noble 24.04 LTS | ✅ |  |
-| Debian Bookworm 12 | ✅ |  |
-| Ubuntu Jammy 22.04 LTS |  | ⚠️ |
-| Debian Bullseye 11 |  | ⚠️ |
-| Ubuntu Focal 20.04 LTS |  | ⚠️ |
-| Debian Buster 10 |  | ⚠️ |
-| Ubuntu Bionic 18.04 LTS |  | ⚠️ |
+| OS | Active Support | Legacy | Discontinued |
+|:--- |:---:|:---:|:---:|
+| Ubuntu Noble 24.04 LTS | ✅ |  |  |
+| Debian Bookworm 12 | ✅ |  |  |
+| Ubuntu Jammy 22.04 LTS |  | ⚠️ |  |
+| Debian Bullseye 11 |  | ⚠️ |  |
+| Ubuntu Focal 20.04 LTS |  |  | 🚫 |
+| Debian Buster 10 |  |  | 🚫 |
+| Ubuntu Bionic 18.04 LTS |  |  | 🚫 |
 
-Legacy means it works but is not supported anymore. It's recommended to use the latest version.
+Legacy means it works but not recommended, Discontinued mean it works but not supported anymore: it's EOL. It's adviced to use an OS that has Active Support.
 
 ***Note:** If you are using Debian Buster or Bullseye in a LXC Container (Proxmox for example), you need to tweak the Dovecot installation or it will not work. See [this fix](https://serverfault.com/questions/976250/dovecot-lxc-apparmor-denied-buster) for more information.*
 
