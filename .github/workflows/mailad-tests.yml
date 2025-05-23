@@ -132,7 +132,6 @@ jobs:
 
       - name: Prepare test env with PlayWright
         id: playwright
-        if: steps.snappy_web_ok.outcome == 'success'
         run: |
           sudo apt-get install python3 python3-pip -y
           sudo pip3 install playwright
