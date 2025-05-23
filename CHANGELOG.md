@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 <!--
 This is a note for developers about the recommended tags to keep track of the changes:
 
+- Info: relevant notices about the update
 - Added: for new features.
 - Changed: for changes in existing functionality.
 - Deprecated: for soon-to-be removed features.
@@ -19,7 +20,12 @@ This is a note for developers about the recommended tags to keep track of the ch
 Dates must be YEAR-MONTH-DAY
 -->
 
-## [v1.2.1-rc] - 2025-05-23
+## [v1.2.1] - 2025-05-23
+
+- Changed: Improvements on the OS versions handling, there was a few places to change, now centralized on the common.conf file.
+- Changed: If you install/upgrade/provision on a discontinued OS you will get a warning, the same with legacy ones. That's to notice & push the sysadmin to upgrade to a latest OS version.
+
+## [v1.2.1-rc] - 2025-05-22
 
 - Changed: Upgraded the Snappy Mail Webmail from version 2.36.4 to 2.38.2
 - Changed: Disabled Debian testing on the CI/CD matrix: Github does not supports Debian
@@ -30,7 +36,7 @@ Dates must be YEAR-MONTH-DAY
 ## [v1.2.1-beta] - 2025-05-20
 
 - Info: This update is just an improvement in the developer side, no need to upgrade to it
-- Changed: Improved documentation readability with better formatting, consistent lists, and clearer explanations
+- Changed: Improved documentation with better formatting, consistent lists, and clearer explanations
 - Changed: Replaced `apt` commands with `apt-get` in all scripts for better stability in scripting environments
 - Changed: Updated all bash scripts to use modern `$()` syntax instead of legacy backticks for command substitution
 - Fixed: Various typos and formatting issues in documentation
