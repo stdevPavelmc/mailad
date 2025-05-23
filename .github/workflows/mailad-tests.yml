@@ -119,16 +119,16 @@ jobs:
       #     sudo make webmail
 
       # - name: Test if webmail is there
-        run: |
-          HTCODE=$(curl -s -o /dev/null -w "%{http_code}" http://localhost/)
-          if [ "$HTCODE" -eq 200 ]; then
-            echo "Webmail is there!"
-          else
-            echo "Webmail is not there, getting some debug"
-            curl -I http://localhost/ &> ${{ github.workspace }}/tests/webmail_roudcube_headers.log
-            curl http://localhost/ &> ${{ github.workspace }}/tests/webmail_roudcube_body.log
-            exit 1
-          fi
+      #   run: |
+      #     HTCODE=$(curl -s -o /dev/null -w "%{http_code}" http://localhost/)
+      #     if [ "$HTCODE" -eq 200 ]; then
+      #       echo "Webmail is there!"
+      #     else
+      #       echo "Webmail is not there, getting some debug"
+      #       curl -I http://localhost/ &> ${{ github.workspace }}/tests/webmail_roudcube_headers.log
+      #       curl http://localhost/ &> ${{ github.workspace }}/tests/webmail_roudcube_body.log
+      #       exit 1
+      #     fi
 
       - name: Prepare test env with PlayWright
         id: playwright

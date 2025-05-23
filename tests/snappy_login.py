@@ -50,7 +50,7 @@ def check_login(url, username, password, screenshot_path=None):
                     return 0
 
             except TimeoutError:
-                print("Timeout waiting for page elements")
+                print("Timeout waiting for initial page elements")
                 return 3
             except Exception as e:
                 print(f"Unexpected error: {str(e)}")
