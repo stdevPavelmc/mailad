@@ -22,6 +22,9 @@ Dates must be YEAR-MONTH-DAY
 ## [v1.2.1-rc] - 2025-05-22
 
 - Changed: Upgraded the Snappy Mail Webmail from version 2.36.4 to 2.38.2
+- Changed: Disabled Debian testing on the CI/CD matrix: Github does not supports Debian
+- Added: Webmails testing to CI/CD using Github Actions
+- Added: Test status badges ontop of the readme
 
 ## [v1.2.1-beta] - 2025-05-20
 
