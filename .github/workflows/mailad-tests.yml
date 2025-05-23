@@ -24,10 +24,10 @@ jobs:
         run: |
           cat /etc/os-release | tee ${{ github.workspace }}/tests/os.log
 
-      - name: Install mandatory dependency, make
+      - name: Install mandatory dependencies, make & curl
         run: |
           sudo apt-get update
-          sudo apt-get install -y make
+          sudo apt-get install -y make curl
 
       - name: Setup Local hostname to mail.mailad.cu
         run: |
@@ -54,6 +54,10 @@ jobs:
           # Linux bind user password
           LDAPBINDPASSWD='B1ndP@ss123!'
           EOF
+
+      - name: Disable feedback, not needed for testing
+        run: |
+          sudo sed -i "s/^.*OPT_STATS=.*$/OPT_STATS=no/" ${{ github.workspace }}/mailad.conf
 
       - name: Change the default dc host in the config
         run: |
@@ -102,6 +106,52 @@ jobs:
         if: steps.docker_run.outcome == 'success'
         run: |
           sudo docker exec -t -e RUNNER_IPS="${{ env.RUNNER_IPS }}" test /home/mailad/tests/test-from-docker.sh
+
+      - name: Activate the Roundcube webmail in plain HTML
+        run: |
+          sudo sed -i "s/^WEBMAIL_ENABLED=.*/WEBMAIL_ENABLED=yes/" /etc/mailad/mailad.conf
+          sudo sed -i "s/^WEBMAIL_APP=.*/WEBMAIL_APP=roundcube/" /etc/mailad/mailad.conf
+          sudo sed -i "s/^WEBSERVER_HTTP_ENABLED=.*/WEBSERVER_HTTP_ENABLED=yes/" /etc/mailad/mailad.conf
+
+      - name: Deploy Roundcube in plain HTML
+        run: |
+          cd ${{ github.workspace }}/
+          sudo make webmail
+
+      - name: Test if webmail is there
+        run: |
+          HTCODE=$(curl -s -o /dev/null -w "%{http_code}" http://localhost/)
+          if [ "$HTCODE" -eq 200 ]; then
+            echo "Webmail is there!"
+          else
+            echo "Webmail is not there, getting some debug"
+            curl -I http://localhost/ &> ${{ github.workspace }}/tests/webmail_roudcube_headers.log
+            curl http://localhost/ &> ${{ github.workspace }}/tests/webmail_roudcube_body.log
+            exit 1
+          fi
+
+      - name: Activate the Snappy webmail in plain HTML
+        run: |
+          sudo sed -i "s/^WEBMAIL_ENABLED=.*/WEBMAIL_ENABLED=yes/" /etc/mailad/mailad.conf
+          sudo sed -i "s/^WEBMAIL_APP=.*/WEBMAIL_APP=snappy/" /etc/mailad/mailad.conf
+          sudo sed -i "s/^WEBSERVER_HTTP_ENABLED=.*/WEBSERVER_HTTP_ENABLED=yes/" /etc/mailad/mailad.conf
+
+      - name: Deploy Snappy in plain HTML
+        run: |
+          cd ${{ github.workspace }}/
+          sudo make webmail
+
+      - name: Test if webmail is there
+        run: |
+          HTCODE=$(curl -s -o /dev/null -w "%{http_code}" http://localhost/)
+          if [ "$HTCODE" -eq 200 ]; then
+            echo "Webmail is there!"
+          else
+            echo "Webmail is not there, getting some debug"
+            curl -I http://localhost/ &> ${{ github.workspace }}/tests/webmail_snappy_headers.log
+            curl http://localhost/ &> ${{ github.workspace }}/tests/webmail_snappy_body.log
+            exit 1
+          fi
 
       - name: Upload test logs
         if: always()
