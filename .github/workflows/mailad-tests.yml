@@ -168,7 +168,8 @@ jobs:
           source /etc/mailad/mailad.conf
           cd ${{ github.workspace }}/
           source .mailadmin.auth
-          python3 tests/test_snappy.py "http://localhost/" "${ADMINMAIL%%@*}" "${PASS}" "${{ github.workspace }}/tests/webmail_snappy_result.png" &> | tee ${{ github.workspace }}/tests/webmail_snappy_login.log
+          python3 tests/test_snappy.py "http://localhost/" "${ADMINMAIL%%@*}" "${PASS}" "./tests/webmail_snappy_result.png" &> tests/webmail_snappy_login.log
+          cat tests/webmail_snappy_login.log
 
       - name: Upload test logs
         if: always()
