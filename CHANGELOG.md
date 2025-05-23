@@ -19,7 +19,11 @@ This is a note for developers about the recommended tags to keep track of the ch
 Dates must be YEAR-MONTH-DAY
 -->
 
-## [v1.2.1] - 2025-05-20
+## [v1.2.1-rc] - 2025-05-22
+
+- Changed: Upgraded the Snappy Mail Webmail from version 2.36.4 to 2.38.2
+
+## [v1.2.1-beta] - 2025-05-20
 
 - Info: This update is just an improvement in the developer side, no need to upgrade to it
 - Changed: Improved documentation readability with better formatting, consistent lists, and clearer explanations

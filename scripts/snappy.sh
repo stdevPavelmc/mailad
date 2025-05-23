@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # This script is part of MailAD, see https://github.com/stdevPavelmc/mailad/
-# Copyright 2024 Pavel Milanes Costa <pavelmc@gmail.com>
+# Copyright 2024-2025 Pavel Milanes Costa <pavelmc@gmail.com>
 # LICENCE: GPL 3.0 and later  
 #
 # Goals:
@@ -24,7 +24,7 @@ apt-get remove -y $ROUNDCUBE_PKGS
 # notice
 echo "===> Installing SnappyMail webmail"
 
-SNAPPY_VERSION="2.36.4"
+SNAPPY_VERSION="2.38.2"
 SNAPPY_FILE="snappymail-${SNAPPY_VERSION}.tar.gz"
 SNAPPY_URL="https://github.com/the-djmaze/snappymail/releases/download/v${SNAPPY_VERSION}/${SNAPPY_FILE}"
 #SNAPPY_URL="http://172.17.0.1:8081/$SNAPPY_FILE"
