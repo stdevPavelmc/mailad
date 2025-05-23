@@ -51,12 +51,12 @@ if [ -f ${DIS_TXT} ] ; then
     fi
 
     # Obtain the domain source & destination of the message
-    from_domain=`grep -m 1 "From:" in.$$ | cut -d "<" -f 2 | cut -d ">" -f 1 | cut -d "@" -f 2`
-    to_domain=`grep -m 1 "To:" in.$$ | cut -d "<" -f 2 | cut -d ">" -f 1 | cut -d "@" -f 2`
+    from_domain=$(grep -m 1 "From:" in.$$ | cut -d "<" -f 2 | cut -d ">" -f 1 | cut -d "@" -f 2)
+    to_domain=$(grep -m 1 "To:" in.$$ | cut -d "<" -f 2 | cut -d ">" -f 1 | cut -d "@" -f 2)
 
     # result vars
-    LOCAL=`grep -wi "^${from_domain}$" ${DISCLAIMER_DOMAINS}`
-    DEST=`grep -wi "^${to_domain}$" ${DISCLAIMER_DOMAINS}`
+    LOCAL=$(grep -wi "^${from_domain}$" ${DISCLAIMER_DOMAINS})
+    DEST=$(grep -wi "^${to_domain}$" ${DISCLAIMER_DOMAINS})
 
     # work out
     if [ "$DISCLAIMER_REACH_LOCALS" == "yes" -o "$DISCLAIMER_REACH_LOCALS" == "Yes" ] ; then

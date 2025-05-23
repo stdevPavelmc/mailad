@@ -18,26 +18,27 @@ if [ -f /etc/os-release ] ; then
     # Import the file
     source /etc/os-release
 
-    ## Distro check
-    case "$VERSION_CODENAME" in
-        bionic|focal|jammy|noble)
-            # Load the correct pkgs to be installed
+    # Distros check
+    if [[ " ${OS_WORKING[*]} " =~ " $VERSION_CODENAME " ]]; then
+        # Ubuntu
+        if [[ " ${OS_WORKING_U[*]} " =~ " $VERSION_CODENAME " ]]; then
             craft_pkg_list "ubuntu"
-            ;;
-        buster|bullseye|bookworm)
-            # Load the correct pkgs to be installed
+        fi
+
+        # Debian
+        if [[ " ${OS_WORKING_D[*]} " =~ " $VERSION_CODENAME " ]]; then
             craft_pkg_list "debian"
-            ;;
-        *)
-            echo "==========================================================================="
-            echo "ERROR: This Linux box has an unknown distro, if you feel this is wrong"
-            echo "       please visit https://github.com/stdevPavelmc/mailad/ and raise an"
-            echo "       issue about this."
-            echo "==========================================================================="
-            echo "       The uninstall process will stop now"
-            echo "==========================================================================="
-            ;;
-    esac
+        fi
+    else
+        # Un supported distro
+        echo "==========================================================================="
+        echo "ERROR: This linux box has an unknown distro, if you feel this is wrong"
+        echo "       please visit https://github.com/stdevPavelmc/mailad/ and raise an"
+        echo "       issue about this."
+        echo "==========================================================================="
+        echo "       The install process will stop now"
+        echo "==========================================================================="
+    fi
 
     # Remove the pkgs
     debian_remove_pkgs
@@ -50,7 +51,7 @@ if [ -f /etc/os-release ] ; then
     rm -rdf ${SNAPPY_DIR} || true
 
     # autoremove
-    apt autoremove -yq
+    apt-get autoremove -yq
 else
     # Unknown
     echo "==========================================================================="

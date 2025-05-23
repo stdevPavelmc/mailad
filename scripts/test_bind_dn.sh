@@ -50,6 +50,7 @@ fi
 
 echo "===> Trying to login as $LDAPBINDUSER"
 echo "===> in any of the servers: '$HOSTAD'"
+echo "===> with the LDAP URI: '$LDAPURI'"
 
 # LDAP query
 R=`ldapsearch -d 256 -o ldif-wrap=no -H "$LDAPURI" -D "$LDAPBINDUSER" -w "$LDAPBINDPASSWD" -b "$LDAPSEARCHBASE" 2>&1 `

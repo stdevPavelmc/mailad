@@ -1,0 +1,167 @@
+name: MailAD VM Integration Tests
+
+on:
+  push:
+    branches: [ master, develop ]
+  pull_request:
+    branches: [ master, develop ]
+  workflow_dispatch:
+
+jobs:
+  Test:
+    strategy:
+      matrix:
+        os: [ubuntu-24.04, ubuntu-22.04]
+    runs-on: ${{ matrix.os }}
+    outputs:
+      auth_file: ${{ steps.create_auth.outputs.auth_file }}
+      
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Expose the OS type and version
+        run: |
+          cat /etc/os-release | tee ${{ github.workspace }}/tests/os.log
+
+      - name: Install mandatory dependencies, make & curl
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y make curl
+
+      - name: Setup Local hostname to mail.mailad.cu
+        run: |
+          echo mail | sudo tee /etc/hostname
+          sudo hostname mail
+          sudo sed -i "s/^127.0.1.1.*//g" /etc/hosts
+          echo "127.0.1.1   mail.mailad.cu    mail" | sudo tee -a /etc/hosts
+
+      - name: Create auth file
+        id: create_auth
+        run: |
+          # Create a temporary auth file with credentials
+          cat > ${{ github.workspace }}/.mailadmin.auth << EOF
+          PASS='P@ssw0rd123!'
+          
+          # national user and credentials
+          NACUSER="starf@mailad.cu"
+          NACUSERPASSWD='N@tional123'
+          
+          # local user and credentials
+          LOCUSER="pepa@mailad.cu"
+          LOCUSERPASSWORD='L0cal123!'
+          
+          # Linux bind user password
+          LDAPBINDPASSWD='B1ndP@ss123!'
+          EOF
+
+      - name: Disable feedback, not needed for testing
+        run: |
+          sudo sed -i "s/^.*OPT_STATS=.*$/OPT_STATS=no/" ${{ github.workspace }}/mailad.conf
+
+      - name: Change the default dc host in the config
+        run: |
+          sudo sed -i "s/HOSTAD=.*/HOSTAD=mail.mailad.cu/" ${{ github.workspace }}/mailad.conf
+ 
+      - name: Change the default password on the linux link user on the config
+        run: |
+          source ${{ github.workspace }}/.mailadmin.auth
+          sudo sed -i "s/LDAPBINDPASSWD=.*/LDAPBINDPASSWD=${LDAPBINDPASSWD}/" ${{ github.workspace }}/mailad.conf
+
+      - name: Change the LDAP to secure by default on the config
+        run: |
+          source ${{ github.workspace }}/.mailadmin.auth
+          sudo sed -i "s/SECURELDAP=.*/SECURELDAP=yes/" ${{ github.workspace }}/mailad.conf
+
+      - name: make the conf files and install deps
+        run: |
+          cd ${{ github.workspace }}/
+          sudo make conf
+          sudo make deps
+
+      - name: Install Samba, configure it and start
+        run: |
+          cd ${{ github.workspace }}/
+          chmod +x ./utils/samba_scaffold.sh
+          sudo ./utils/samba_scaffold.sh
+
+      - name: Install MailAD, configure it and start
+        run: |
+          cd ${{ github.workspace }}/
+          sudo make all
+
+      - name: Setup the `test` docker container for the tests
+        id: docker_run
+        run: |
+          sudo docker run -d --name test -v ${{ github.workspace }}/:/home/mailad/ ubuntu:noble tail -f /dev/null
+
+      - name: Get the runers IPs
+        run: |
+          RUNNER_IPS=$(hostname -I)
+          echo "RUNNER_IPS=$RUNNER_IPS" >> $GITHUB_ENV
+          echo "IPs: $RUNNER_IPS"
+
+      - name: Run the test from the docker container
+        id: test
+        if: steps.docker_run.outcome == 'success'
+        run: |
+          sudo docker exec -t -e RUNNER_IPS="${{ env.RUNNER_IPS }}" test /home/mailad/tests/test-from-docker.sh
+
+      - name: Activate the Roundcube webmail in plain HTML
+        run: |
+          sudo sed -i "s/^WEBMAIL_ENABLED=.*/WEBMAIL_ENABLED=yes/" /etc/mailad/mailad.conf
+          sudo sed -i "s/^WEBMAIL_APP=.*/WEBMAIL_APP=roundcube/" /etc/mailad/mailad.conf
+          sudo sed -i "s/^WEBSERVER_HTTP_ENABLED=.*/WEBSERVER_HTTP_ENABLED=yes/" /etc/mailad/mailad.conf
+
+      - name: Deploy Roundcube in plain HTML
+        run: |
+          cd ${{ github.workspace }}/
+          sudo make webmail
+
+      - name: Test if webmail is there
+        run: |
+          HTCODE=$(curl -s -o /dev/null -w "%{http_code}" http://localhost/)
+          if [ "$HTCODE" -eq 200 ]; then
+            echo "Webmail is there!"
+          else
+            echo "Webmail is not there, getting some debug"
+            curl -I http://localhost/ &> ${{ github.workspace }}/tests/webmail_roudcube_headers.log
+            curl http://localhost/ &> ${{ github.workspace }}/tests/webmail_roudcube_body.log
+            exit 1
+          fi
+
+      - name: Activate the Snappy webmail in plain HTML
+        run: |
+          sudo sed -i "s/^WEBMAIL_ENABLED=.*/WEBMAIL_ENABLED=yes/" /etc/mailad/mailad.conf
+          sudo sed -i "s/^WEBMAIL_APP=.*/WEBMAIL_APP=snappy/" /etc/mailad/mailad.conf
+          sudo sed -i "s/^WEBSERVER_HTTP_ENABLED=.*/WEBSERVER_HTTP_ENABLED=yes/" /etc/mailad/mailad.conf
+
+      - name: Deploy Snappy in plain HTML
+        run: |
+          cd ${{ github.workspace }}/
+          sudo make webmail
+
+      - name: Test if webmail is there
+        run: |
+          HTCODE=$(curl -s -o /dev/null -w "%{http_code}" http://localhost/)
+          if [ "$HTCODE" -eq 200 ]; then
+            echo "Webmail is there!"
+          else
+            echo "Webmail is not there, getting some debug"
+            curl -I http://localhost/ &> ${{ github.workspace }}/tests/webmail_snappy_headers.log
+            curl http://localhost/ &> ${{ github.workspace }}/tests/webmail_snappy_body.log
+            exit 1
+          fi
+
+      - name: Upload test logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-logs-${{ matrix.os }}
+          path: ${{ github.workspace }}/tests/*.log
+
+      - name: Stop containers
+        if: steps.docker_run.outcome == 'success'
+        run: |
+          sudo docker stop test
+          sudo docker rm test

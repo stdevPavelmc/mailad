@@ -1,12 +1,22 @@
 # MailAD Installation Instructions
 
-Check this [simple console recording](https://asciinema.org/a/fD1LuVLfeb8RPCHOIgbR1J9d8) to see how looks a regular install.
+Check this [simple console recording](https://asciinema.org/a/fD1LuVLfeb8RPCHOIgbR1J9d8) to see how a regular install looks.
 
 ⚠️ ⚠️ ⚠️ ⚠️ ⚠️ ⚠️
 
 **WARNING:** Since the end of February 2021 we simplified the integration with AD, you **need** to check [this document](Simplify-AD-config.md) if you want to upgrade your old setup.
 
 Users of new installs will not have issues, just follow the install procedure below and you will be safe.
+
+## A notice on OS Support
+
+It's adviced to install MailAD on the latest LTS of Ubuntu or a latest stable from Debian, any older distro is supported (see README for OS support matrix) but not recommended for new installs, just for operations and upgrades.
+
+What if I have MailAD installed on an older distro like 2 Ubuntu LTS or 2 Debian releases behind?
+
+Easy: just upgrade the distro to the latest release (follow preferred way for your distro), reboot and then do a `make force-provision` on the MailAD repo folder. Just that.
+
+**Notice:** You must prevent the users to use the Mail services during the upgrades process, otherwise users may lose their mailboxes due to corruption.
 
 ## Introduction & Checks
 
