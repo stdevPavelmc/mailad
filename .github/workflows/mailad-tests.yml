@@ -145,7 +145,7 @@ jobs:
           source /etc/mailad/mailad.conf
           cd ${{ github.workspace }}/
           source .mailadmin.auth
-          python3 tests/snappy_login.py "http://localhost/" "${ADMINMAIL%%@*}" "${PASS}" "./tests/webmail_snappy_result.png" &> tests/webmail_snappy_login.log
+          sudo python3 tests/snappy_login.py "http://localhost/" "${ADMINMAIL%%@*}" "${PASS}" "./tests/webmail_snappy_result.png" &> tests/webmail_snappy_login.log
           cat tests/webmail_snappy_login.log
 
             # - name: Activate the Roundcube webmail in plain HTML
