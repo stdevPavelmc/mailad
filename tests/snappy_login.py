@@ -57,6 +57,17 @@ def check_login(url, username, password, screenshot_path=None):
                     else:
                         print("Unable to get error text, but login failed", flush=True)
                         if screenshot_path:
+                            screenshot_dir = Path(screenshot_path).parent
+                            mail_log_path = screenshot_dir / "mail.log"
+                            try:
+                                with open("/var/log/mail.log", "r") as f:
+                                    with open(mail_log_path, "w") as w:
+                                        w.write(f.read())
+                                print(f"mail.log copied to {mail_log_path}", flush=True)
+                            except Exception as e:
+                                print(f"Failed to copy mail.log: {str(e)}", flush=True)
+
+                            # take screnshot
                             page.screenshot(path=screenshot_path)
                             print(f"Screenshot saved", flush=True)
                         return 2
