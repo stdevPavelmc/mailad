@@ -57,6 +57,9 @@ def check_login(url, username, password, screenshot_path=None):
 
             except Exception as e:
                 print(f"Unexpected error: {str(e)}", flush=True)  # <-- FLUSH
+                if screenshot_path:
+                    page.screenshot(path=screenshot_path)
+                    print(f"Screenshot saved", flush=True)
                 return 3
             finally:
                 browser.close()
