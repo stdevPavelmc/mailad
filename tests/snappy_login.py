@@ -48,8 +48,9 @@ def check_login(url, username, password, screenshot_path=None):
                 except:
                     # Get error text from span tag
                     error_text = page.inner_text('span[data-bind="text: submitError"]').strip()
+                    error_detail = page.inner_text('div.alert p')
                     if error_text:
-                        print(f"Login error: {error_text}", flush=True)
+                        print(f"Login error: {error_text}, {error_detail}", flush=True)
                         if screenshot_path:
                             page.screenshot(path=screenshot_path)
                             print(f"Screenshot saved", flush=True)
