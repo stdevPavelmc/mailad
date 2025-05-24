@@ -107,29 +107,6 @@ jobs:
         run: |
           sudo docker exec -t -e RUNNER_IPS="${{ env.RUNNER_IPS }}" test /home/mailad/tests/test-from-docker.sh
 
-      # - name: Activate the Roundcube webmail in plain HTML
-      #   run: |
-      #     sudo sed -i "s/^WEBMAIL_ENABLED=.*/WEBMAIL_ENABLED=yes/" /etc/mailad/mailad.conf
-      #     sudo sed -i "s/^WEBMAIL_APP=.*/WEBMAIL_APP=roundcube/" /etc/mailad/mailad.conf
-      #     sudo sed -i "s/^WEBSERVER_HTTP_ENABLED=.*/WEBSERVER_HTTP_ENABLED=yes/" /etc/mailad/mailad.conf
-
-      # - name: Deploy Roundcube in plain HTML
-      #   run: |
-      #     cd ${{ github.workspace }}/
-      #     sudo make webmail
-
-      # - name: Test if webmail is there
-      #   run: |
-      #     HTCODE=$(curl -s -o /dev/null -w "%{http_code}" http://localhost/)
-      #     if [ "$HTCODE" -eq 200 ]; then
-      #       echo "Webmail is there!"
-      #     else
-      #       echo "Webmail is not there, getting some debug"
-      #       curl -I http://localhost/ &> ${{ github.workspace }}/tests/webmail_roudcube_headers.log
-      #       curl http://localhost/ &> ${{ github.workspace }}/tests/webmail_roudcube_body.log
-      #       exit 1
-      #     fi
-
       - name: Prepare test env with PlayWright
         id: playwright
         run: |
@@ -170,6 +147,31 @@ jobs:
           source .mailadmin.auth
           python3 tests/snappy_login.py "http://localhost/" "${ADMINMAIL%%@*}" "${PASS}" "./tests/webmail_snappy_result.png" &> tests/webmail_snappy_login.log
           cat tests/webmail_snappy_login.log
+
+            # - name: Activate the Roundcube webmail in plain HTML
+      
+      # - name: Activate the Roundcube webmail in plain HTML
+      #   run: |
+      #     sudo sed -i "s/^WEBMAIL_ENABLED=.*/WEBMAIL_ENABLED=yes/" /etc/mailad/mailad.conf
+      #     sudo sed -i "s/^WEBMAIL_APP=.*/WEBMAIL_APP=roundcube/" /etc/mailad/mailad.conf
+      #     sudo sed -i "s/^WEBSERVER_HTTP_ENABLED=.*/WEBSERVER_HTTP_ENABLED=yes/" /etc/mailad/mailad.conf
+
+      # - name: Deploy Roundcube in plain HTML
+      #   run: |
+      #     cd ${{ github.workspace }}/
+      #     sudo make webmail
+
+      # - name: Test if webmail is there
+      #   run: |
+      #     HTCODE=$(curl -s -o /dev/null -w "%{http_code}" http://localhost/)
+      #     if [ "$HTCODE" -eq 200 ]; then
+      #       echo "Webmail is there!"
+      #     else
+      #       echo "Webmail is not there, getting some debug"
+      #       curl -I http://localhost/ &> ${{ github.workspace }}/tests/webmail_roudcube_headers.log
+      #       curl http://localhost/ &> ${{ github.workspace }}/tests/webmail_roudcube_body.log
+      #       exit 1
+      #     fi
 
       - name: Upload test logs
         if: always()
