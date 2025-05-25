@@ -21,6 +21,7 @@ export DEBIAN_FRONTEND=noninteractive
 echo "===> Remove SnappyMail if it was previosly installed"
 apt-get remove -y "$SNAPPY_PKGS" 2> /dev/null
 rm -rdf "$SNAPPY_DIR" || true
+rm /etc/mailad/snappy_admin_pass || true
 
 # install the default site config
 NGINX_CONFIG=/etc/nginx/sites-available/default

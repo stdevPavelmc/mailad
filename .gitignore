@@ -15,3 +15,7 @@ webmail
 
 # dev files
 snappymail*.gz
+
+# test data
+tests/*.png
+tests/*.log
