@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # This script is part of MailAD, see https://github.com/stdevPavelmc/mailad/
-# Copyright 2020 Pavel Milanes Costa <pavelmc@gmail.com>
+# Copyright 2020-2025 Pavel Milanes Costa <pavelmc@gmail.com>
 # LICENCE: GPL 3.0 and later  
 #
 # Goals:
@@ -38,6 +38,7 @@ if [ -f /etc/os-release ] ; then
         echo "==========================================================================="
         echo "       The install process will stop now"
         echo "==========================================================================="
+        exit 1
     fi
 
     # Remove the pkgs
@@ -50,6 +51,9 @@ if [ -f /etc/os-release ] ; then
     apt-get purge -yq ${ROUNDCUBE_PKGS} ${SNAPPY_PKGS}
     rm -rdf ${SNAPPY_DIR} || true
 
+    # Remove webmail
+    apt-get purge -yq ${WEBSERVER_PKGS}
+
     # autoremove
     apt-get autoremove -yq
 else
@@ -61,4 +65,5 @@ else
     echo "==========================================================================="
     echo "       The uninstall process will stop now"
     echo "==========================================================================="
+    exit 1
 fi
