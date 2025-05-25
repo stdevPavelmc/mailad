@@ -4,7 +4,37 @@ import sys
 from pathlib import Path
 from playwright.sync_api import sync_playwright, TimeoutError
 
-def check_login(url, username, password, screenshot_path=None):
+# define the placeholders or the object and properties we need to detect on the go
+
+## define DOM object detection for the integration
+os_variables = {
+    'email': 'input[name="Email"]',
+    'password': 'input[name="Password"]',
+    'submit': 'button.buttonLogin',
+    'error_text': 'span[data-bind="text: submitError"]',
+    'error_detail': 'div.alert p',
+    'logged_in': 'div[id="V-MailFolderList"]'
+}
+or_variables = {
+    'email': 'input[id="rcmloginuser"]',
+    'password': 'input[id="rcmloginpwd"]',
+    'submit': 'button[id="rcmloginsubmit"]',
+    'error_text': '#messagestack div[role="alert"] span',
+    'error_detail': '#messagestack div[role="alert"] span',
+    'logged_in': 'div[id="folderlist-content"]'
+}
+
+def get_variables(snappy):
+    if snappy:
+        return os_variables
+    else:
+        return or_variables
+
+def check_login(url, username, password, screenshot_path=None, snappy=False):
+    # use one or another variables
+    obj = get_variables(snappy)
+
+    # do the magic, let's dance.
     try:
         with sync_playwright() as p:
             browser = p.chromium.launch(headless=True)
@@ -17,29 +47,15 @@ def check_login(url, username, password, screenshot_path=None):
                 return 2
 
             # Check for existing session and logout if needed
-            logged_in = 'div[id="V-MailFolderList"]'
-
-            ## Only needed if a persistent cookies and all is set, not the case
-            # logout = 'a[data-bind="click: logoutClick"]'
-            # if page.is_visible(logged_in):
-            #     print("Existing session detected. Logging out...", flush=True)
-            #     page.click(logout)
-            #     try:
-            #         page.wait_for_selector('input[name="Email"]', timeout=5000)
-            #     except TimeoutError:
-            #         print("Reloading page to ensure login form is present...", flush=True)
-            #         page.goto(url)
-            #         page.wait_for_selector('input[name="Email"]', timeout=5000)
-
             try:
                 # Fill login form
-                page.fill('input[name="Email"]', username)
-                page.fill('input[name="Password"]', password)
-                page.click('button.buttonLogin')
+                page.fill(obj["email"], username)
+                page.fill(obj["password"], password)
+                page.click(obj["submit"])
 
                 # Check for SUCCESS
                 try:
-                    page.wait_for_selector(logged_in, timeout=5000)
+                    page.wait_for_selector(obj["logged_in"], timeout=5000)
                     print(f"Successful login!", flush=True)
                     if screenshot_path:
                         page.screenshot(path=screenshot_path)
@@ -47,8 +63,10 @@ def check_login(url, username, password, screenshot_path=None):
                     return 0
                 except:
                     # Get error text from span tag
-                    error_text = page.inner_text('span[data-bind="text: submitError"]').strip()
-                    error_detail = page.inner_text('div.alert p')
+                    error_text = page.inner_text(obj["error_text"]).strip()
+                    error_detail = ""
+                    if snappy:
+                        error_detail = page.inner_text(obj["error_detail"]).strip()
                     if error_text:
                         print(f"Login error: {error_text}, {error_detail}", flush=True)
                         if screenshot_path:
@@ -87,20 +105,26 @@ def check_login(url, username, password, screenshot_path=None):
         return 3
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Snappy Mail Login Test with Screenshot')
+    parser = argparse.ArgumentParser(description='Mail Login Test with Screenshot')
+    parser.add_argument('-s', '--snappy',
+                        action='store_true',
+                        help='Use RoundCube by default, if passed -s, then use snappymail instead')
     parser.add_argument('url', help='Login page URL')
     parser.add_argument('user', help='Username/Email')
     parser.add_argument('password', help='Password')
     parser.add_argument('screenshot_path', nargs='?', default=None, 
-                      help='Optional path to save screenshot')
-    
+                        help='Optional path to save screenshot')
+
+
+
     args = parser.parse_args()
     
     exit_code = check_login(
         args.url,
         args.user,
         args.password,
-        args.screenshot_path
+        args.screenshot_path,
+        args.snappy
     )
 
     sys.exit(exit_code)
