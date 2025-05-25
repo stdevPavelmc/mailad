@@ -145,13 +145,13 @@ jobs:
             exit 1
           fi
 
-      # - name: Test if login works on Snappy
-      #   if: steps.playwright.outcome == 'success' && steps.snappy_web_ok.outcome == 'success'
-      #   run: |
-      #     source /etc/mailad/mailad.conf
-      #     cd ${{ github.workspace }}/
-      #     source .mailadmin.auth
-      #     sudo python3 tests/test_login.py -s "http://localhost/" "${ADMINMAIL%%@*}" "${PASS}" "./tests/webmail_snappy_result.png" &> tests/webmail_snappy_login.log
+      - name: Test if login works on Snappy
+        if: steps.playwright.outcome == 'success' && steps.snappy_web_ok.outcome == 'success'
+        run: |
+          source /etc/mailad/mailad.conf
+          cd ${{ github.workspace }}/
+          source .mailadmin.auth
+          sudo python3 tests/test_login.py -s "http://localhost/" "${ADMINMAIL%%@*}" "${PASS}" "./tests/webmail_snappy_result.png" &> tests/webmail_snappy_login.log
       
       - name: Activate the Roundcube webmail in plain HTML
         if: steps.docker_test.outcome == 'success'
