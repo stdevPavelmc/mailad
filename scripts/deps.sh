@@ -14,6 +14,7 @@
 
 # import he common file with the list of default pkgs
 source common.conf || source ../common.conf
+source /etc/mailad/mailad.conf
 
 # default error when I hit a distro I can't identify
 function os_not_supported {
@@ -48,7 +49,7 @@ if [ -f /etc/os-release ] ; then
         echo "##### WARNING  WARNING  WARNING ######################################"
         echo "#                                                                    #"
         echo "#    You are installing on a discontinued OS, this is dangerous,     #"
-        echo "#  as the OS version my be outdated and vulnerable, please upgrade   #"
+        echo "#      as the OS version my be outdated and vulnerable, please       #"
         echo "#           go here and read how to upgrade your OS:                 #"
         echo "#  https://github.com/stdevPavelmc/mailad/blob/develop/INSTALL.md    #"
         echo "#                                                                    #"
@@ -67,7 +68,7 @@ if [ -f /etc/os-release ] ; then
         echo ""
         echo "##### WARNING  WARNING  WARNING ######################################"
         echo "#                                                                    #"
-        echo "#       You are installing on a legacy OS, be aware that it may,     #"
+        echo "#       You are installing on a legacy OS, be aware that it may      #"
         echo "#  be outdated soon, please go here and read how to upgrade your OS: #"
         echo "#  https://github.com/stdevPavelmc/mailad/blob/develop/INSTALL.md    #"
         echo "#                                                                    #"
