@@ -54,10 +54,10 @@ apt-get install -y $SNAPPY_PKGS
 BPWD=$(pwd)
 
 # create log folder
-LOGS="/var/log/snappymail"
+LOGS="/var/log/snappymail/"
 mkdir -p $LOGS
-sudo chown -R www-data:www-data $LOGS
-sudo chmod -R 755 $LOGS
+sudo chown -R root:www-data $LOGS
+sudo chmod -R 775 $LOGS
 
 # notice
 echo "===> Pre-setup done, downloading SnappyMail package..."
@@ -201,7 +201,7 @@ done
 
 # change to base path to copy template file and plugins
 cd $BPWD
-cp -Rf --update=all ./var/snappy/* ${DEFAULTFOLDER}/
+cp -Rf ./var/snappy/* ${DEFAULTFOLDER}/
 mv -f "${DOMAINSFOLDER}/template.json" "${DOMAINSFOLDER}/${DOMAIN}.json"
 fixperms ${DEFAULTFOLDER}
 
