@@ -27,7 +27,7 @@ echo "===> Installing SnappyMail webmail"
 SNAPPY_VERSION="2.38.2"
 SNAPPY_FILE="snappymail-${SNAPPY_VERSION}.tar.gz"
 SNAPPY_URL="https://github.com/the-djmaze/snappymail/releases/download/v${SNAPPY_VERSION}/${SNAPPY_FILE}"
-#SNAPPY_URL="http://172.17.0.1:8081/$SNAPPY_FILE"
+#SNAPPY_URL="http://10.0.3.1:8081/$SNAPPY_FILE"
 
 function fixperms {
     # just one parameter, the directory to apply the perms
@@ -64,9 +64,17 @@ echo "===> Pre-setup done, downloading SnappyMail package..."
 
 # Install Snappy Webmail
 FILE=$(mktemp)
-wget -q --no-clobber "$SNAPPY_URL" -O "/tmp/$SNAPPY_FILE"
+R=0
+# test if snappy is here to use in develop
+if [ -f "./$SNAPPY_FILE" -a "$DOMAIN" == "mailad.cu" ]; then
+    cp "./$SNAPPY_FILE" "/tmp/$SNAPPY_FILE"
+else
+    wget -q --no-clobber "$SNAPPY_URL" -O "/tmp/$SNAPPY_FILE"
+    R=$?
+fi
+
 # check if download fails
-if [ $? -ne 0 -a $? -ne 1 ]; then
+if [ $R -ne 0 -a $R -ne 1 ]; then
     echo "===> Error!" > $FILE
     echo "  Download of the snappymail package failed" >> $FILE
     echo "  URL is: $SNAPPY_URL" >> $FILE
