@@ -20,6 +20,13 @@ This is a note for developers about the recommended tags to keep track of the ch
 Dates must be YEAR-MONTH-DAY
 -->
 
+## [v1.2.2] - 2025-05-25
+
+- Added: CI/CD testing now simulate the login into the webmails, to verify it works, on both, Snappy and RoundCube
+- Fixed: A bug that broke the deploy of Snappy Webmail on Ubuntu 22.04 and potentially on Debian 11
+- Fixed: On the install-purge script, remove the packages related to the web server if there.
+- Fixed: Remove the Snappy admin password when installing Roundcube, if it's there.
+
 ## [v1.2.1] - 2025-05-23
 
 - Changed: Improvements on the OS versions handling, there was a few places to change, now centralized on the common.conf file.
