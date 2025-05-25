@@ -84,6 +84,8 @@ jobs:
           cd ${{ github.workspace }}/
           chmod +x ./utils/samba_scaffold.sh
           sudo ./utils/samba_scaffold.sh
+          # add a delay to allow samba to start as test on the next step fails without it
+          sleep 10
 
       - name: Install MailAD, configure it and start
         run: |
@@ -102,12 +104,13 @@ jobs:
           echo "IPs: $RUNNER_IPS"
 
       - name: Run the test from the docker container
-        id: test
+        id: docker_test
         if: steps.docker_run.outcome == 'success'
         run: |
           sudo docker exec -t -e RUNNER_IPS="${{ env.RUNNER_IPS }}" test /home/mailad/tests/test-from-docker.sh
 
       - name: Prepare test env with PlayWright
+        if: steps.docker_test.outcome == 'success'
         id: playwright
         run: |
           sudo apt-get install python3 python3-pip -y
@@ -116,18 +119,21 @@ jobs:
           sudo playwright install-deps
 
       - name: Activate the Snappy webmail in plain HTML
+        if: steps.docker_test.outcome == 'success'
         run: |
           sudo sed -i "s/^WEBMAIL_ENABLED=.*/WEBMAIL_ENABLED=yes/" /etc/mailad/mailad.conf
           sudo sed -i "s/^WEBMAIL_APP=.*/WEBMAIL_APP=snappy/" /etc/mailad/mailad.conf
           sudo sed -i "s/^WEBSERVER_HTTP_ENABLED=.*/WEBSERVER_HTTP_ENABLED=yes/" /etc/mailad/mailad.conf
 
       - name: Deploy Snappy in plain HTML
+        if: steps.docker_test.outcome == 'success'
         run: |
           cd ${{ github.workspace }}/
           sudo make webmail
 
       - name: Test if webmail is there
         id: snappy_web_ok
+        if: steps.docker_test.outcome == 'success'
         run: |
           HTCODE=$(curl -s -o /dev/null -w "%{http_code}" http://localhost/)
           if [ "$HTCODE" -eq 200 ]; then
@@ -148,17 +154,20 @@ jobs:
       #     sudo python3 tests/test_login.py -s "http://localhost/" "${ADMINMAIL%%@*}" "${PASS}" "./tests/webmail_snappy_result.png" &> tests/webmail_snappy_login.log
       
       - name: Activate the Roundcube webmail in plain HTML
+        if: steps.docker_test.outcome == 'success'
         run: |
           sudo sed -i "s/^WEBMAIL_ENABLED=.*/WEBMAIL_ENABLED=yes/" /etc/mailad/mailad.conf
           sudo sed -i "s/^WEBMAIL_APP=.*/WEBMAIL_APP=roundcube/" /etc/mailad/mailad.conf
           sudo sed -i "s/^WEBSERVER_HTTP_ENABLED=.*/WEBSERVER_HTTP_ENABLED=yes/" /etc/mailad/mailad.conf
 
       - name: Deploy Roundcube in plain HTML
+        if: steps.docker_test.outcome == 'success'
         run: |
           cd ${{ github.workspace }}/
           sudo make webmail
 
       - name: Test if webmail is there
+        if: steps.docker_test.outcome == 'success'
         id: roundcube_web_ok
         run: |
           HTCODE=$(curl -s -o /dev/null -w "%{http_code}" http://localhost/)
@@ -187,9 +196,3 @@ jobs:
           path: |
             ${{ github.workspace }}/tests/*.log
             ${{ github.workspace }}/tests/*.png
-
-      - name: Stop containers
-        if: steps.docker_run.outcome == 'success'
-        run: |
-          sudo docker stop test
-          sudo docker rm test
