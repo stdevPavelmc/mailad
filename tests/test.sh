@@ -394,7 +394,7 @@ cat $LOGP >> $LOG
 if [ "$ENABLE_SPAMD" == "yes" -o "$ENABLE_SPAMD" == "Yes" ] ; then
     # send a fingerptinted email to trigger SPAM
     F=$(fingerprint)
-    cat ./var/spamassassin-related/GTUBE.txt | $SOFT -s $SERVER --protocol SMTP -t $ADMINMAIL -f "someuser@example.com" --header "Subject: $F" --body - > $LOGP
+    cat ./var/spamassassin/GTUBE.txt | $SOFT -s $SERVER --protocol SMTP -t $ADMINMAIL -f "someuser@example.com" --header "Subject: $F" --body - > $LOGP
     R=$?
     if [ $R -ne 0 ] ; then
         # error

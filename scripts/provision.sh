@@ -338,7 +338,7 @@ if [ "$ENABLE_SPAMD" == "yes" -o "$ENABLE_SPAMD" == "Yes" ] ; then
     echo "===> Enabling SpamAssassin"
 
     # Copy the template file
-    cp "${P}/var/spamassassin-related/spamassassin-${SPAMD_VERSION}" $SPAMD_MTT_FILE
+    cp "${P}/var/spamassassin/spamassassin-${SPAMD_VERSION}" $SPAMD_MTT_FILE
 
     # set the CRON maintenace task
     sed -i s/"^CRON=.*$"/"CRON=1"/ ${SPAMD_MTT_FILE}
