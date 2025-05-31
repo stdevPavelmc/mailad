@@ -312,15 +312,37 @@ else
 fi
 
 ### SPAMD setting
+# maintenance service cron
+SPAMD_MTT_FILE=/etc/default/spamassassin
+
+# Fail safe
+if [ -z "$SPAMD_VERSION"  ] ; then
+    # different file
+    SPAMD_VERSION=$(dpkg -l spamassassin | grep spam | awk '{print $3}' | cut -d '.' -f 1)
+fi
+
+# select the correct file
+if [ "$SPAMD_VERSION" == "4" ] ; then
+    # different file
+    SPAMD_MTT_FILE=/etc/cron.daily/spamassassin
+
+    # disable converting the maintenance into a systemd timer in moder version
+    touch /etc/spamassassin/skip-timer-conversion
+fi
+
+# do the dance
 if [ "$ENABLE_SPAMD" == "yes" -o "$ENABLE_SPAMD" == "Yes" ] ; then
     # enable the SPAMD
 
     # notice
     echo "===> Enabling SpamAssassin"
 
-    # enable the cron job in the default
-    sed -i s/"^CRON=.*$"/"CRON=1"/ /etc/default/spamassassin
+    # Copy the template file
+    cp "${P}/var/spamassassin-related/spamassassin-${SPAMD_VERSION}" $SPAMD_MTT_FILE
 
+    # set the CRON maintenace task
+    sed -i s/"^CRON=.*$"/"CRON=1"/ ${SPAMD_MTT_FILE}
+    
     # configure SMA filtering on amavis if not already active
     FILE="/etc/amavis/conf.d/15-content_filter_mode"
     ACTIVE=$(grep "^#@bypass_spam_checks_maps.*" $FILE)
@@ -336,41 +358,31 @@ if [ "$ENABLE_SPAMD" == "yes" -o "$ENABLE_SPAMD" == "Yes" ] ; then
     SA_PROXY=""
 
     # build the chain
-    if [ ! -z "$PROXY_HOST" -a ! -z "$PROXY_PORT" ] ; then
+    if [ "$PROXY_HOST" -a "$PROXY_PORT" ] ; then
         # notice
         echo "===> SpamAssassin need proxy"
 
         # check for auth
-        if [ ! -z "$PROXY_USER" -a ! -z "$PROXY_PASS" ] ; then
-            SA_PROXY="http://${PROXY_USER}:${PROXY_PASS}@${PROXY_HOST}:${PROXY_PORT}/"
-
+        if [ "$PROXY_USER" -a "$PROXY_PASS" ] ; then
             # notice
             echo "===> SpamAssassin proxy needs auth"
+            SA_PROXY="http://${PROXY_USER}:${PROXY_PASS}@${PROXY_HOST}:${PROXY_PORT}/"
         else
             SA_PROXY="http://${PROXY_HOST}:${PROXY_PORT}/"
         fi
     fi
 
     # set it up if needed
-    if [ ! -z "${SA_PROXY}" ] ; then
-        # clean proxy if there and then set
-        sed -i s/"^.*SA_PROXY.*$"/""/g /etc/default/spamassassin
-
-        # add it to the default config
-        echo "SA_PROXY=${SA_PROXY}" >> /etc/default/spamassassin
-
+    if [ "${SA_PROXY}" ] ; then
         # notice
         echo "===> Setting the SpamAssassin proxy in the default config file"
+
+        # clean proxy if there and then set
+        sed -i s/"^.*SA_PROXY=.*$"/"SA_PROXY=${SA_PROXY}"/g ${SPAMD_MTT_FILE}
     fi
 
     # enable the service
     enable_sa
-
-    # replace the default cron job if proxy enabled
-    if [ ! -z "$SA_PROXY" ] ; then
-        rm -f /etc/cron.daily/spamassassin
-        cp "$P/var/spamassassin-related/spamassassin" /etc/cron.daily/spamassassin
-    fi
 else
     # disable the SPAMD
 
@@ -389,7 +401,7 @@ else
     disable_sa
 
     # remove the daily job if there
-    test -x "/etc/cron.daily/spamassassin" && rm -f /etc/cron.daily/spamassassin
+    test -x "${SPAMD_MTT_FILE}" && rm -f "${SPAMD_MTT_FILE}"
 fi
 
 ### altermime
