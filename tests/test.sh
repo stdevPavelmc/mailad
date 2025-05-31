@@ -400,7 +400,7 @@ if [ "$ENABLE_SPAMD" == "yes" -o "$ENABLE_SPAMD" == "Yes" ] ; then
         # error
         echo "======================================================"
         echo "ERROR: Can't send a mail to a valid local email using"
-        echo "       simple SMTP (25)"
+        echo "       simple SMTP (25) [to test GTUBE]"
         echo " "
         echo "COMMENT: It's expected that your server can receive"
         echo "         emails for it's domain, please check your"

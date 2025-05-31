@@ -93,7 +93,7 @@ jobs:
         id: docker_test
         if: steps.docker_run.outcome == 'success'
         run: |
-          sudo docker exec -t -e RUNNER_IPS="${{ env.RUNNER_IPS }}" test /home/mailad/tests/test-from-docker.sh
+          sudo docker exec -t -e RUNNER_IPS="${{ env.RUNNER_IPS }}" test /home/mailad/tests/test-from-docker.sh || exit 1
 
       - name: Prepare test env with PlayWright
         if: steps.docker_test.outcome == 'success'
