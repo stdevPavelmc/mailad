@@ -11,7 +11,8 @@ CRON=0
 test -f /etc/default/spamassassin && . /etc/default/spamassassin
 
 # export proxy settings if activated
-if [ ! -z "$SA_PROXY" ] ; then
+SA_PROXY=""
+if [ "$SA_PROXY" ] ; then
     http_proxy="$SA_PROXY"
     https_proxy="$SA_PROXY"
     export http_proxy
