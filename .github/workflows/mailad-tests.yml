@@ -73,6 +73,10 @@ jobs:
           source ${{ github.workspace }}/.mailadmin.auth
           sudo sed -i "s/SECURELDAP=.*/SECURELDAP=yes/" ${{ github.workspace }}/mailad.conf
 
+      - name: Activate the spamd processing to trigger the tests
+        run: |
+          sudo sed -i "s/^ENABLE_SPAMD=.*/ENABLE_SPAMD=no/" ${{ github.workspace }}/mailad.conf
+
       - name: make the conf files and install deps
         run: |
           cd ${{ github.workspace }}/
