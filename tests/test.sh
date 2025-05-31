@@ -108,7 +108,7 @@ function check_email {
 
         # test
         R=$(echo $R | awk '{print $2}' | cut -c1-45)
-        if [ "$R" == "$F" ] ; then
+        if [ "$R" = "$F" ] || [[ "$R" == *"$F"* ]] ; then
             # bingo
             echo "OK"
             break
@@ -389,6 +389,45 @@ else
 fi
 # sum the logs
 cat $LOGP >> $LOG
+
+# if spamd is set send the GTUBE string to trigger SPAM
+if [ "$ENABLE_SPAMD" == "yes" -o "$ENABLE_SPAMD" == "Yes" ] ; then
+    # send a fingerptinted email to trigger SPAM
+    F=$(fingerprint)
+    cat ./var/spamassassin-related/GTUBE.txt | $SOFT -s $SERVER --protocol SMTP -t $ADMINMAIL -f "someuser@example.com" --header "Subject: $F" --body - > $LOGP
+    R=$?
+    if [ $R -ne 0 ] ; then
+        # error
+        echo "======================================================"
+        echo "ERROR: Can't send a mail to a valid local email using"
+        echo "       simple SMTP (25)"
+        echo " "
+        echo "COMMENT: It's expected that your server can receive"
+        echo "         emails for it's domain, please check your"
+        echo "         configuration"
+        echo " "
+        echo "Exit code: $R"
+        echo "Logs follow"
+        echo "======================================================"
+        cat $LOGP
+        exit 1
+    else
+        # ok checking for a mail with that fingerprint
+        R=$(check_email "SPAM" "$ADMINMAIL" "$PASS")
+        if [ "$R" == "OK" ] ; then
+            # all ok, received
+            echo "===> Ok: SpamAssassin Active and SPAM DETECTED as expected"
+        else
+            # can't verify the spam detection
+            echo "===> Ok: SpamAssassin Active but can't detect SPAM as expected"
+            echo ""
+            echo "Please check your SpamAssassin & Amavid-New configuration"
+            exit 1
+        fi
+    fi
+    # sum the logs
+    cat $LOGP > $LOG
+fi
 
 # NATIONAL
 
