@@ -58,6 +58,8 @@ def check_login(url, username, password, screenshot_path=None, snappy=False):
                     page.wait_for_selector(obj["logged_in"], timeout=5000)
                     print(f"Successful login!", flush=True)
                     if screenshot_path:
+                        # allow page to finish loading ajax content
+                        page.wait_for_timeout(3000)
                         page.screenshot(path=screenshot_path)
                         print(f"Screenshot saved", flush=True)
                     return 0
