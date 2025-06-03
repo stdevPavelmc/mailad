@@ -16,10 +16,6 @@ source .mailadmin.auth
 # some local vars
 MAILAD_CONF_FILE=./mailad.conf
 
-# Increase the testing time limit for github actions as it's to fast
-# and the emails are not yet droped on the mailbox when we test it.
-sed -i "s/sleep 10/sleep 60/" tests/test.sh
-
 # Mandatory for testing: secure LDAP
 sed -i "s/^SECURELDAP=.*$/SECURELDAP=yes/" $MAILAD_CONF_FILE
 
