@@ -190,6 +190,9 @@ fi
 # sum the logs
 cat $LOGP > $LOG
 
+# DEBUG / TEST
+exit 1 # to trigger exit 1 detection on github actions
+
 ### Send an email to the mail admin with auth as sender
 F=$(fingerprint)
 $SOFT -s "$SERVER" -p 587 -tls -a PLAIN -au "$ADMINMAIL" -ap "$PASS" \
