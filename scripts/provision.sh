@@ -301,7 +301,7 @@ else
 
     # set the hourly task to activate the filtering when fresclam end the update
     rm -f /etc/cron.hourly/av_filter_on_clamav_alive || exit 0
-    ln -s "$P/var/clamav-related/activate_clamav_on_alive.sh" /etc/cron.hourly/av_filter_on_clamav_alive
+    ln -s "$P/var/clamav/activate_clamav_on_alive.sh" /etc/cron.hourly/av_filter_on_clamav_alive
     echo "===> AV filtering provision is in place, but activation is delayed, we must wait for freshclam"
     echo "===> to update the AV database before enabling it or you will lose emails in the mean time"
     echo "===> you will be notified by mail when it's activated."
@@ -421,7 +421,7 @@ if [ "$ENABLE_DISCLAIMER" == "yes" -o "$ENABLE_DISCLAIMER" == "Yes" ] ; then
     chmod 750 /var/spool/filter
 
     # copy the script
-    cp var/disclaimer_related/disclaimer.sh /etc/postfix/disclaimer
+    cp var/disclaimer/disclaimer.sh /etc/postfix/disclaimer
     chgrp filter /etc/postfix/disclaimer
     chmod 750 /etc/postfix/disclaimer
 
@@ -432,7 +432,7 @@ if [ "$ENABLE_DISCLAIMER" == "yes" -o "$ENABLE_DISCLAIMER" == "Yes" ] ; then
     # copy the default disclaimer if not set (to the user config /etc/mailad/)
     if [ ! -f ${DIS_TXT} ] ; then
         # no default disclaimer, copy the template
-        cp var/disclaimer_related/default_disclaimer.txt ${DIS_TXT}
+        cp var/disclaimer/default_disclaimer.txt ${DIS_TXT}
     fi
 else
     # Disable the disclaimer
