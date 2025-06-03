@@ -90,29 +90,28 @@ function check_email {
         --user "${2}:${3}" --request "EXAMINE Inbox" \
         | grep "EXISTS" | awk '{print $2}')
 
-
     # cycle from last to back in the last 10 emails to find the fingerprint
-    if [ $ID -le 10 ] ; then
-        # less than 10 emails
-        UNTIL=10
-    else
+    UNTIL=0
+    if [ "$ID" -gt 10 ] ; then
         # more than 10 emails, get the last 10
-        UNTIL=$(expr $ID - 10)
+        UNTIL=$(expr "$ID" - 10)
     fi
 
-    while [ $ID -ge $UNTIL ] ; do
+    while (( ID >= UNTIL )) || (( ID == 0 )) ; do
         R=$(${CURL} --insecure --silent \
             --url "imaps://${SERVER}/Inbox;UID=${ID};SECTION=HEADER.FIELDS%20(SUBJECT)" \
             --user "${2}:${3}")
-        ID=$(expr $ID - 1)
 
         # test
-        R=$(echo $R | awk '{print $2}' | cut -c1-45)
-        if [ "$R" = "$F" ] || [[ "$R" == *"$F"* ]] ; then
+        RE=$(echo $R | awk '{print $2}' | cut -c1-45)
+        if [ "$RE" == "$F" ] || [[ "$RE" == *"$F"* ]] ; then
             # bingo
             echo "OK"
             break
         fi
+
+        # next message
+        ID=$(expr "$ID" - 1)
     done
 }
 
