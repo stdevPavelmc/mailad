@@ -34,6 +34,10 @@ El __merge__ por parte del dueño del repo (@stdevPavelmc) cerrará automáticam
 
 Este es un software libre y puedes usarlo sin cargos, pero si quieres expresar tu gratitud en forma monetaria estamos agradecidos por ello:
 
+### Open Collective
+
+Sí, tenemos una organización registrada bajo la iniciativa Open Collective para financiamiento público y abierto. Puedes ser un patrocinador de este proyecto, solo visítanos en nuestra [Página de OpenCollective](https://opencollective.com/mailad)
+
 ### Ponme una recarga a mi celular para mantenerme conectado
 
 Mi número de celular es: **`(+53) 53 847 819`**, puedes donar el monto que quieras.
