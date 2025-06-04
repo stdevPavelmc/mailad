@@ -94,7 +94,7 @@ jobs:
         # if: steps.docker_run.outcome == 'success'
         run: |
           set -e # fail fast
-          sudo docker run --rm \
+          docker run --rm \
             -v ${{ github.workspace }}/:/home/mailad/ \
             -e RUNNER_IPS="${{ env.RUNNER_IPS }}" \
             ubuntu:noble \
