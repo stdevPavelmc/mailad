@@ -115,6 +115,15 @@ function check_email {
     done
 }
 
+# function to set the fail condition if on github actions
+do_error() {
+    # do it only if we ran on github actions
+    if [ "$GITHUB_ACTIONS" ] ; then
+        touch /home/mailad/tests/docker_test_failed.log
+        exit 1
+    fi
+}
+
 # needed tools
 BC=$(which bc)
 if [ "$BC" == "" ] ; then
@@ -191,6 +200,7 @@ fi
 cat $LOGP > $LOG
 
 # DEBUG / TEST
+do_error
 exit 1 # to trigger exit 1 detection on github actions
 
 ### Send an email to the mail admin with auth as sender

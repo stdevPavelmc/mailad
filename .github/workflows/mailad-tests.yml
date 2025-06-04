@@ -78,11 +78,6 @@ jobs:
           cd ${{ github.workspace }}/
           sudo make all
 
-      # - name: Setup the `test` docker container for the tests
-      #   id: docker_run
-      #   run: |
-      #     sudo docker run -d --name test -v ${{ github.workspace }}/:/home/mailad/ ubuntu:noble tail -f /dev/null
-
       - name: Get the runers IPs
         run: |
           RUNNER_IPS=$(hostname -I)
@@ -90,15 +85,20 @@ jobs:
           echo "IPs: $RUNNER_IPS"
 
       - name: Run the test from the docker container
+        # will leave a file tests/docker_test_failed.log if failed
         id: docker_test
-        # if: steps.docker_run.outcome == 'success'
         run: |
           set -e # fail fast
           docker run --rm \
             -v ${{ github.workspace }}/:/home/mailad/ \
             -e RUNNER_IPS="${{ env.RUNNER_IPS }}" \
+            -e GITHUB_ACTIONS="$GITHUB_ACTIONS" \
             ubuntu:noble \
             bash -c "/home/mailad/tests/test-from-docker.sh"
+          if [ -f tests/docker_test_failed.log ]; then
+            echo "Docker test failed!"
+            exit 1
+          fi
 
       - name: Prepare test env with PlayWright
         if: steps.docker_test.outcome == 'success'
