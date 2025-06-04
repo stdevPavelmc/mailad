@@ -58,6 +58,11 @@ def check_login(url, username, password, screenshot_path=None, snappy=False):
                     page.wait_for_selector(obj["logged_in"], timeout=5000)
                     print(f"Successful login!", flush=True)
                     if screenshot_path:
+                        if not snappy:
+                            # Roundcube needs a delay to load emails, it's slow, yes
+                            page.wait_for_timeout(3000)
+                            # snappy needs to be fast to avoid the identity window ;)
+
                         page.screenshot(path=screenshot_path)
                         print(f"Screenshot saved", flush=True)
                     return 0

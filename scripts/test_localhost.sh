@@ -89,9 +89,9 @@ fi
 #vmail user
 GROUP=$(grep $VMAILNAME /etc/group | grep $VMAILGID)
 USER=$(grep $VMAILNAME /etc/passwd | grep $VMAILUID)
-if [ "$GROUP" == "" -o "$USER" == "" ] ; then
+if [ -z "$GROUP" -o -z "$USER" ] ; then
     # fix it!
-    ./vmail_create.sh || ./scripts/vmail_create.sh
+    ./scripts/vmail_create.sh || ./vmail_create.sh
 fi
 
 # hostname vs fqdn
@@ -194,8 +194,14 @@ fi
 
 # testing if a working DNS is configured if SPAMD is set to enabled
 if [ "$ENABLE_SPAMD" == "yes" -o "$ENABLE_SPAMD" == "Yes" ] ; then
-    # check if we can get the database fingerprint for spamassassin
-    DBF=$(dig TXT +short 2.4.3.updates.spamassassin.org | grep -P "\"[0-9]{5,}\"")
+    # test is targeted if on dev env
+    DBF=123456
+    if [ "$DOMAIN" != "mailad.cu" ] ; then 
+        # check if we can get the database fingerprint for spamassassin
+        DBF=$(dig TXT +short 2.4.3.updates.spamassassin.org | grep -P "\"[0-9]{5,}\"")
+    fi
+
+    # Test it        
     if [ -z "$DBF" ] ;  then
         # DNS not working
         echo "================================================================================"
@@ -221,8 +227,14 @@ fi
 
 # testing if a working DNS is configured if DNSBL is set to enabled
 if [ "$ENABLE_DNSBL" == "yes" -o "$ENABLE_DNSBL" == "Yes" ] ; then
-    # check if we can get the database fingerprint for spamassassin
-    DNSBL=$(dig 2.0.0.127.zen.spamhaus.org +short | grep -P "127")
+    # if dev env force a working config
+    DNSBL=127.0.0.1
+    if [ "$DOMAIN" != "mailad.cu" ] ; then
+        # check if we can get the database fingerprint for spamassassin
+        DNSBL=$(dig 2.0.0.127.zen.spamhaus.org +short | grep -P "127")
+    fi
+
+    # test it
     if [ -z "$DNSBL" ] ;  then
         # DNS not working
         echo "================================================================================"

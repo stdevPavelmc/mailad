@@ -27,7 +27,7 @@ else
     echo " "
     echo " You can learn about test in the README.md file inside the"
     echo " test directory of the repository"
-    exit 1
+    do_error
 fi
 
 # Capture the destination server or use the default
@@ -90,30 +90,40 @@ function check_email {
         --user "${2}:${3}" --request "EXAMINE Inbox" \
         | grep "EXISTS" | awk '{print $2}')
 
-
     # cycle from last to back in the last 10 emails to find the fingerprint
-    if [ $ID -le 10 ] ; then
-        # less than 10 emails
-        UNTIL=10
-    else
+    UNTIL=0
+    if [ "$ID" -gt 10 ] ; then
         # more than 10 emails, get the last 10
-        UNTIL=$(expr $ID - 10)
+        UNTIL=$(expr "$ID" - 10)
     fi
 
-    while [ $ID -ge $UNTIL ] ; do
+    while (( ID >= UNTIL )) || (( ID == 0 )) ; do
         R=$(${CURL} --insecure --silent \
             --url "imaps://${SERVER}/Inbox;UID=${ID};SECTION=HEADER.FIELDS%20(SUBJECT)" \
             --user "${2}:${3}")
-        ID=$(expr $ID - 1)
 
         # test
-        R=$(echo $R | awk '{print $2}' | cut -c1-45)
-        if [ "$R" == "$F" ] ; then
+        RE=$(echo $R | awk '{print $2}' | cut -c1-45)
+        if [ "$RE" == "$F" ] || [[ "$RE" == *"$F"* ]] ; then
             # bingo
             echo "OK"
             break
         fi
+
+        # next message
+        ID=$(expr "$ID" - 1)
     done
+}
+
+# function to set the fail condition if on github actions
+do_error() {
+    # do it only if we ran on github actions
+    if [ "$GITHUB_ACTIONS" ] ; then
+        touch /home/mailad/tests/docker_test_failed.log
+    fi
+
+    # and now fail
+    exit 1
 }
 
 # needed tools
@@ -176,7 +186,7 @@ if [ $R -ne 0 ] ; then
     echo "Logs follow"
     echo "======================================================"
     cat $LOGP
-    exit 1
+    do_error
 else
     # ok checking for a mail with that fingerprint
     R=$(check_email "$F" "$ADMINMAIL" "$PASS")
@@ -211,7 +221,7 @@ if [ $R -ne 0 ] ; then
     echo "Logs follow"
     echo "========================================================="
     cat $LOGP
-    exit 1
+    do_error
 else
     # ok checking for a mail with that fingerprint
     R=$(check_email "$F" "$ADMINMAIL" "$PASS")
@@ -246,7 +256,7 @@ if [ $R -ne 0 ] ; then
     echo "Logs follow"
     echo "=========================================================="
     cat $LOGP
-    exit 1
+    do_error
 else
     # ok
     echo "===> Ok: Authenticated users can send emails to the outside world"
@@ -271,7 +281,7 @@ if [ $R -ne 24 ] ; then
     echo "Logs follow"
     echo "=========================================================="
     cat $LOGP
-    exit 1
+    do_error
 else
     # ok
     echo "===> Ok: Your server reject unknown recipients"
@@ -299,7 +309,7 @@ if [ $R -ne 24 ] ; then
     echo "Logs follow"
     echo "========================================================"
     cat $LOGP
-    exit 1
+    do_error
 else
     # ok
     echo "===> Ok: Your server is not and open relay"
@@ -324,7 +334,7 @@ if [ $R -ne 24 ] ; then
     echo "Logs follow"
     echo "======================================================"
     cat $LOGP
-    exit 1
+    do_error
 else
     # ok
     echo "===> Ok: The server rejects relaying mail though unauthenticated SMTPS"
@@ -352,7 +362,7 @@ if [ $R -ne 24 ] ; then
     echo "Logs follow"
     echo "========================================================="
     cat $LOGP
-    exit 1
+    do_error
 else
     # ok
     echo "===> Ok: The server does NOT allow id spoofing"
@@ -382,13 +392,52 @@ if [ $R -ne 0 ] ; then
     echo "Logs follow"
     echo "======================================================"
     cat $LOGP
-    exit 1
+    do_error
 else
     # ok
     echo "===> Ok: Mail size restriction is working"
 fi
 # sum the logs
 cat $LOGP >> $LOG
+
+# if spamd is set send the GTUBE string to trigger SPAM
+if [ "$ENABLE_SPAMD" == "yes" -o "$ENABLE_SPAMD" == "Yes" ] ; then
+    # send a fingerptinted email to trigger SPAM
+    F=$(fingerprint)
+    cat ./var/spamassassin/GTUBE.txt | $SOFT -s $SERVER --protocol SMTP -t $ADMINMAIL -f "someuser@example.com" --header "Subject: $F" --body - > $LOGP
+    R=$?
+    if [ $R -ne 0 ] ; then
+        # error
+        echo "======================================================"
+        echo "ERROR: Can't send a mail to a valid local email using"
+        echo "       simple SMTP (25) [to test GTUBE]"
+        echo " "
+        echo "COMMENT: It's expected that your server can receive"
+        echo "         emails for it's domain, please check your"
+        echo "         configuration"
+        echo " "
+        echo "Exit code: $R"
+        echo "Logs follow"
+        echo "======================================================"
+        cat $LOGP
+        do_error
+    else
+        # ok checking for a mail with that fingerprint
+        R=$(check_email "SPAM" "$ADMINMAIL" "$PASS")
+        if [ "$R" == "OK" ] ; then
+            # all ok, received
+            echo "===> Ok: SpamAssassin Active and SPAM DETECTED as expected"
+        else
+            # can't verify the spam detection
+            echo "===> Ok: SpamAssassin Active but can't detect SPAM as expected"
+            echo ""
+            echo "Please check your SpamAssassin & Amavid-New configuration"
+            do_error
+        fi
+    fi
+    # sum the logs
+    cat $LOGP > $LOG
+fi
 
 # NATIONAL
 
@@ -409,7 +458,7 @@ if [ $R -ne 24 ] ; then
     echo "Logs follow"
     echo "======================================================"
     cat $LOGP
-    exit 1
+    do_error
 else
     # ok
     echo "===> Ok: National restricted users can't receive emails from outside"
@@ -435,7 +484,7 @@ if [ $R -ne 24 ] ; then
     echo "Logs follow"
     echo "=========================================================="
     cat $LOGP
-    exit 1
+    do_error
 else
     # ok
     echo "===> Ok: National restricted users can't send emails to internet"
@@ -462,7 +511,7 @@ if [ $R -ne 0 ] ; then
     echo "Logs follow"
     echo "=========================================================="
     cat $LOGP
-    exit 1
+    do_error
 else
     # ok
     echo "===> Ok: National restricted users can send emails to national address"
@@ -489,7 +538,7 @@ if [ $R -ne 24 ] ; then
     echo "Logs follow"
     echo "======================================================"
     cat $LOGP
-    exit 1
+    do_error
 else
     # ok
     echo "===> Ok: Local restricted users can't receive emails from outside"
@@ -514,7 +563,7 @@ if [ $R -ne 24 ] ; then
     echo "Logs follow"
     echo "=========================================================="
     cat $LOGP
-    exit 1
+    do_error
 else
     # ok
     echo "===> Ok: Local restricted users can't send emails to internet"
@@ -541,7 +590,7 @@ if [ $R -ne 0 ] ; then
     echo "Logs follow"
     echo "=========================================================="
     cat $LOGP
-    exit 1
+    do_error
 else
     # ok checking for a mail with that fingerprint
     R=$(check_email "$F" "$NACUSER" "$NACUSERPASSWD")
@@ -578,7 +627,7 @@ if [ "$EVERYONE" != "" ] ; then
         echo "Logs follow"
         echo "=========================================================="
         cat $LOGP
-        exit 1
+        do_error
     else
         # ok checking for a mail with that fingerprint
         R=$(check_email "$F" "$NACUSER" "$NACUSERPASSWD")
@@ -613,7 +662,7 @@ if [ "$EVERYONE" != "" ] ; then
             echo "Logs follow"
             echo "======================================================"
             cat $LOGP
-            exit 1
+            do_error
         else
             # ok
             echo "===> Ok: EVERYONE alias can't receive emails from outside"
@@ -633,7 +682,7 @@ if [ "$EVERYONE" != "" ] ; then
             echo "Exit code: $R"
             echo "Logs follow"
             cat $LOGP
-            exit 1
+            do_error
         else
             # ok checking for a mail with that fingerprint
             R=$(check_email "$F" "$NACUSER" "$NACUSERPASSWD")
@@ -649,3 +698,6 @@ if [ "$EVERYONE" != "" ] ; then
     # sum the logs
     cat $LOGP >> $LOG
 fi
+
+# success notice, if you reached this point a gone smooth.
+echo "=== ALL TEST PASSED ==="
