@@ -27,7 +27,7 @@ else
     echo " "
     echo " You can learn about test in the README.md file inside the"
     echo " test directory of the repository"
-    exit 1
+    do_error
 fi
 
 # Capture the destination server or use the default
@@ -120,8 +120,10 @@ do_error() {
     # do it only if we ran on github actions
     if [ "$GITHUB_ACTIONS" ] ; then
         touch /home/mailad/tests/docker_test_failed.log
-        exit 1
     fi
+
+    # and now fail
+    exit 1
 }
 
 # needed tools
@@ -184,7 +186,7 @@ if [ $R -ne 0 ] ; then
     echo "Logs follow"
     echo "======================================================"
     cat $LOGP
-    exit 1
+    do_error
 else
     # ok checking for a mail with that fingerprint
     R=$(check_email "$F" "$ADMINMAIL" "$PASS")
@@ -198,10 +200,6 @@ else
 fi
 # sum the logs
 cat $LOGP > $LOG
-
-# DEBUG / TEST
-do_error
-exit 1 # to trigger exit 1 detection on github actions
 
 ### Send an email to the mail admin with auth as sender
 F=$(fingerprint)
@@ -223,7 +221,7 @@ if [ $R -ne 0 ] ; then
     echo "Logs follow"
     echo "========================================================="
     cat $LOGP
-    exit 1
+    do_error
 else
     # ok checking for a mail with that fingerprint
     R=$(check_email "$F" "$ADMINMAIL" "$PASS")
@@ -258,7 +256,7 @@ if [ $R -ne 0 ] ; then
     echo "Logs follow"
     echo "=========================================================="
     cat $LOGP
-    exit 1
+    do_error
 else
     # ok
     echo "===> Ok: Authenticated users can send emails to the outside world"
@@ -283,7 +281,7 @@ if [ $R -ne 24 ] ; then
     echo "Logs follow"
     echo "=========================================================="
     cat $LOGP
-    exit 1
+    do_error
 else
     # ok
     echo "===> Ok: Your server reject unknown recipients"
@@ -311,7 +309,7 @@ if [ $R -ne 24 ] ; then
     echo "Logs follow"
     echo "========================================================"
     cat $LOGP
-    exit 1
+    do_error
 else
     # ok
     echo "===> Ok: Your server is not and open relay"
@@ -336,7 +334,7 @@ if [ $R -ne 24 ] ; then
     echo "Logs follow"
     echo "======================================================"
     cat $LOGP
-    exit 1
+    do_error
 else
     # ok
     echo "===> Ok: The server rejects relaying mail though unauthenticated SMTPS"
@@ -364,7 +362,7 @@ if [ $R -ne 24 ] ; then
     echo "Logs follow"
     echo "========================================================="
     cat $LOGP
-    exit 1
+    do_error
 else
     # ok
     echo "===> Ok: The server does NOT allow id spoofing"
@@ -394,7 +392,7 @@ if [ $R -ne 0 ] ; then
     echo "Logs follow"
     echo "======================================================"
     cat $LOGP
-    exit 1
+    do_error
 else
     # ok
     echo "===> Ok: Mail size restriction is working"
@@ -422,7 +420,7 @@ if [ "$ENABLE_SPAMD" == "yes" -o "$ENABLE_SPAMD" == "Yes" ] ; then
         echo "Logs follow"
         echo "======================================================"
         cat $LOGP
-        exit 1
+        do_error
     else
         # ok checking for a mail with that fingerprint
         R=$(check_email "SPAM" "$ADMINMAIL" "$PASS")
@@ -434,7 +432,7 @@ if [ "$ENABLE_SPAMD" == "yes" -o "$ENABLE_SPAMD" == "Yes" ] ; then
             echo "===> Ok: SpamAssassin Active but can't detect SPAM as expected"
             echo ""
             echo "Please check your SpamAssassin & Amavid-New configuration"
-            exit 1
+            do_error
         fi
     fi
     # sum the logs
@@ -460,7 +458,7 @@ if [ $R -ne 24 ] ; then
     echo "Logs follow"
     echo "======================================================"
     cat $LOGP
-    exit 1
+    do_error
 else
     # ok
     echo "===> Ok: National restricted users can't receive emails from outside"
@@ -486,7 +484,7 @@ if [ $R -ne 24 ] ; then
     echo "Logs follow"
     echo "=========================================================="
     cat $LOGP
-    exit 1
+    do_error
 else
     # ok
     echo "===> Ok: National restricted users can't send emails to internet"
@@ -513,7 +511,7 @@ if [ $R -ne 0 ] ; then
     echo "Logs follow"
     echo "=========================================================="
     cat $LOGP
-    exit 1
+    do_error
 else
     # ok
     echo "===> Ok: National restricted users can send emails to national address"
@@ -540,7 +538,7 @@ if [ $R -ne 24 ] ; then
     echo "Logs follow"
     echo "======================================================"
     cat $LOGP
-    exit 1
+    do_error
 else
     # ok
     echo "===> Ok: Local restricted users can't receive emails from outside"
@@ -565,7 +563,7 @@ if [ $R -ne 24 ] ; then
     echo "Logs follow"
     echo "=========================================================="
     cat $LOGP
-    exit 1
+    do_error
 else
     # ok
     echo "===> Ok: Local restricted users can't send emails to internet"
@@ -592,7 +590,7 @@ if [ $R -ne 0 ] ; then
     echo "Logs follow"
     echo "=========================================================="
     cat $LOGP
-    exit 1
+    do_error
 else
     # ok checking for a mail with that fingerprint
     R=$(check_email "$F" "$NACUSER" "$NACUSERPASSWD")
@@ -629,7 +627,7 @@ if [ "$EVERYONE" != "" ] ; then
         echo "Logs follow"
         echo "=========================================================="
         cat $LOGP
-        exit 1
+        do_error
     else
         # ok checking for a mail with that fingerprint
         R=$(check_email "$F" "$NACUSER" "$NACUSERPASSWD")
@@ -664,7 +662,7 @@ if [ "$EVERYONE" != "" ] ; then
             echo "Logs follow"
             echo "======================================================"
             cat $LOGP
-            exit 1
+            do_error
         else
             # ok
             echo "===> Ok: EVERYONE alias can't receive emails from outside"
@@ -684,7 +682,7 @@ if [ "$EVERYONE" != "" ] ; then
             echo "Exit code: $R"
             echo "Logs follow"
             cat $LOGP
-            exit 1
+            do_error
         else
             # ok checking for a mail with that fingerprint
             R=$(check_email "$F" "$NACUSER" "$NACUSERPASSWD")
