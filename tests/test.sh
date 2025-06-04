@@ -698,3 +698,6 @@ if [ "$EVERYONE" != "" ] ; then
     # sum the logs
     cat $LOGP >> $LOG
 fi
+
+# success notice, if you reached this point a gone smooth.
+echo "=== ALL TEST PASSED ==="

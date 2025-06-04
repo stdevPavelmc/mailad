@@ -20,12 +20,12 @@ This is a note for developers about the recommended tags to keep track of the ch
 Dates must be YEAR-MONTH-DAY
 -->
 
-## [Unreleased]
+## [v1.2.3-rc] - 2025-06-24
 
-- Fixed: SpamAssassin (spamd) service detection and configuration for Ubuntu Noble 24.04 (and other distros with SpamAssassin v4.x)
-- Changed: Improved testing for SpamAssassin with GTUBE test to verify spam detection is working properly
+- Fixed: BUG, SpamAssassin (spamd) service detection and configuration for Ubuntu Noble 24.04 (and other distros with recently upgraded SpamAssassin v4.x)
+- Changed: Improved testing for SpamAssassin with GTUBE test to verify spam detection is working properly [on CI/CD]
 - Changed: Reorganized folder structure for better maintainability (removed "-related" suffix from folders)
-- Fixed: Various improvements to the testing framework for more reliable CI/CD
+- Fixed: Various improvements to the testing framework in the CI/CD stage [reliable failure of the docker test & some tweaks on the screenshots for the webmails logins]
 
 ## [v1.2.2] - 2025-05-25
 
