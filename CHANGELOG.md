@@ -20,7 +20,7 @@ This is a note for developers about the recommended tags to keep track of the ch
 Dates must be YEAR-MONTH-DAY
 -->
 
-## [v1.2.3-rc] - 2025-06-24
+## [v1.2.3] - 2025-06-24
 
 - Fixed: BUG, SpamAssassin (spamd) service detection and configuration for Ubuntu Noble 24.04 (and other distros with recently upgraded SpamAssassin v4.x)
 - Changed: Improved testing for SpamAssassin with GTUBE test to verify spam detection is working properly [on CI/CD]
