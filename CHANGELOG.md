@@ -20,6 +20,13 @@ This is a note for developers about the recommended tags to keep track of the ch
 Dates must be YEAR-MONTH-DAY
 -->
 
+## [Unreleased]
+
+- Fixed: SpamAssassin (spamd) service detection and configuration for Ubuntu Noble 24.04 (and other distros with SpamAssassin v4.x)
+- Changed: Improved testing for SpamAssassin with GTUBE test to verify spam detection is working properly
+- Changed: Reorganized folder structure for better maintainability (removed "-related" suffix from folders)
+- Fixed: Various improvements to the testing framework for more reliable CI/CD
+
 ## [v1.2.2] - 2025-05-25
 
 - Added: CI/CD testing now simulate the login into the webmails, to verify it works, on both, Snappy and RoundCube
