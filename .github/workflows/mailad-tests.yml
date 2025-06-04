@@ -55,23 +55,9 @@ jobs:
           LDAPBINDPASSWD=dCgTyBu7s1fkGP
           EOF
 
-      - name: Disable feedback, not needed for testing
+      - name: Enable features
         run: |
-          sudo sed -i "s/^.*OPT_STATS=.*$/OPT_STATS=no/" ${{ github.workspace }}/mailad.conf
-
-      - name: Change the default dc host in the config
-        run: |
-          sudo sed -i "s/HOSTAD=.*/HOSTAD=mail.mailad.cu/" ${{ github.workspace }}/mailad.conf
- 
-      - name: Change the default password on the linux link user on the config
-        run: |
-          source ${{ github.workspace }}/.mailadmin.auth
-          sudo sed -i "s/LDAPBINDPASSWD=.*/LDAPBINDPASSWD=${LDAPBINDPASSWD}/" ${{ github.workspace }}/mailad.conf
-
-      - name: Change the LDAP to secure by default on the config
-        run: |
-          source ${{ github.workspace }}/.mailadmin.auth
-          sudo sed -i "s/SECURELDAP=.*/SECURELDAP=yes/" ${{ github.workspace }}/mailad.conf
+          sudo ./tests/enable_all_features_to_test.sh
 
       - name: make the conf files and install deps
         run: |
@@ -92,11 +78,6 @@ jobs:
           cd ${{ github.workspace }}/
           sudo make all
 
-      - name: Setup the `test` docker container for the tests
-        id: docker_run
-        run: |
-          sudo docker run -d --name test -v ${{ github.workspace }}/:/home/mailad/ ubuntu:noble tail -f /dev/null
-
       - name: Get the runers IPs
         run: |
           RUNNER_IPS=$(hostname -I)
@@ -104,10 +85,20 @@ jobs:
           echo "IPs: $RUNNER_IPS"
 
       - name: Run the test from the docker container
+        # will leave a file tests/docker_test_failed.log if failed
         id: docker_test
-        if: steps.docker_run.outcome == 'success'
         run: |
-          sudo docker exec -t -e RUNNER_IPS="${{ env.RUNNER_IPS }}" test /home/mailad/tests/test-from-docker.sh
+          set -e # fail fast
+          docker run --rm \
+            -v ${{ github.workspace }}/:/home/mailad/ \
+            -e RUNNER_IPS="${{ env.RUNNER_IPS }}" \
+            -e GITHUB_ACTIONS="$GITHUB_ACTIONS" \
+            ubuntu:noble \
+            bash -c "/home/mailad/tests/test-from-docker.sh"
+          if [ -f tests/docker_test_failed.log ]; then
+            echo "Docker test failed!"
+            exit 1
+          fi
 
       - name: Prepare test env with PlayWright
         if: steps.docker_test.outcome == 'success'
