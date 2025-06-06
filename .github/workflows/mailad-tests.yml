@@ -114,7 +114,13 @@ jobs:
         id: playwright
         run: |
           sudo apt-get install python3 python3-pip -y
-          sudo pip3 install playwright --break-system-packages
+          # Install Python Playwright but has different commands on ubuntu or debian
+          source /etc/os-release
+          if [ "$ID" == "debian" ] ; then
+            sudo pip3 install playwright --break-system-packages
+          else
+            sudo pip3 install playwright
+          fi
           sudo playwright install
           sudo playwright install-deps
 
