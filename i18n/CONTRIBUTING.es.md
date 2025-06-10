@@ -34,11 +34,17 @@ El __merge__ por parte del dueño del repo (@stdevPavelmc) cerrará automáticam
 
 Este es un software libre y puedes usarlo sin cargos, pero si quieres expresar tu gratitud en forma monetaria estamos agradecidos por ello:
 
+### Open Collective
+
+Sí, tenemos una organización registrada bajo la iniciativa Open Collective para financiamiento público y abierto. Puedes ser un patrocinador de este proyecto, solo visítanos en nuestra [Página de OpenCollective](https://opencollective.com/mailad)
+
 ### Ponme una recarga a mi celular para mantenerme conectado
 
 Mi número de celular es: **`(+53) 53 847 819`**, puedes donar el monto que quieras.
 
-- Los sitios oficiales para realizar las recargas son los siguientes:
+Consejo: Mi proveedor de servicios tiene promociones casi cada dos semanas que duplicarán cualquier cantidad superior a USD $20.00!
+
+- Los sitios oficiales para realizar las recargas son los siguientes (puedes verificarlos en www.etecsa.cu):
     - [Ding](https://www.ding.com)
     - [Recargas a Cuba](https://www.recargasacuba.com)
     - [CSQWorl](https://www.csqworld.com)
@@ -46,7 +52,7 @@ Mi número de celular es: **`(+53) 53 847 819`**, puedes donar el monto que quie
     - [Global DSD](https://www.globaldsd.com)
     - [Boss Revolution](https://www.bossrevolution.com)
     - [E-Topup Online](https://cubacel.etopuponline.com)
-- Usando **Criptomonedas** usando [BilRefill](https://www.bitrefill.com/buy/cubacel-cuba/?hl=es)
+- Usando **Criptomonedas** usando [BitRefill](https://www.bitrefill.com/buy/cubacel-cuba/?hl=es)
 
 ### Donaciones en dinero
 
@@ -80,3 +86,4 @@ Mi número de celular es: **`(+53) 53 847 819`**, puedes donar el monto que quie
 </p>
 
 **Gracias por su contribución!**
+

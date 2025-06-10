@@ -1,6 +1,6 @@
 # Contributor Covenant Code of Conduct
 
-This page is also available in the following languages: [ [Español](i18n/CODE_OF_CONDUCT.es.md) 🇪🇸 🇨🇺]
+This page is also available in the following languages: [ [Español](i18n/CODE_OF_CONDUCT.es.md) 🇪🇸 🇨🇺] [ [Deutsch](i18n/CODE_OF_CONDUCT.de.md) 🇩🇪] *Warning: translations may be outdated.*
 
 ## Our Pledge
 

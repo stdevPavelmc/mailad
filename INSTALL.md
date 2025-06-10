@@ -1,5 +1,7 @@
 # MailAD Installation Instructions
 
+This page is also available in the following languages: [ [Español](i18n/INSTALL.es.md) 🇪🇸 🇨🇺] [ [Deutsch](i18n/INSTALL.de.md) 🇩🇪] *Warning: translations may be outdated.*
+
 Check this [simple console recording](https://asciinema.org/a/fD1LuVLfeb8RPCHOIgbR1J9d8) to see how a regular install looks.
 
 ⚠️ ⚠️ ⚠️ ⚠️ ⚠️ ⚠️

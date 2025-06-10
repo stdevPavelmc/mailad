@@ -1,6 +1,6 @@
 # MailAD FAQ
 
-This page is also available in the following languages: [ [Español](i18n/FAQ.es.md) 🇪🇸 🇨🇺]
+This page is also available in the following languages: [ [Español](i18n/FAQ.es.md) 🇪🇸 🇨🇺] [ [Deutsch](i18n/FAQ.de.md) 🇩🇪] *Warning: translations may be outdated.*
 
 Here you can find the most Frequently Asked Questions, this file will grow with the users feedback.
 

@@ -1,7 +1,7 @@
 <!-- Original translation by: @stdevPavelmc "Pavel Milanes" <pavelmc@gmail.com> -->
 # Translations
 
-This page is also available in the following language(s): [ [Español](i18n/Translations.es.md) 🇪🇸 🇨🇺]
+This page is also available in the following language(s): [ [Español](i18n/Translations.es.md) 🇪🇸 🇨🇺] [ [Deutsch](i18n/Translations.de.md) 🇩🇪] *Warning: translations may be outdated.*
 
 This document contains the guidelines for MailAD translations.
 
@@ -26,4 +26,3 @@ These are the main guidelines, which may change over time:
 5. You can claim authorship of a translation by inserting a hidden line like the one at the top of this document with your information. I will respect this attribution when you submit it *(this line will not be shown via web but will be visible locally)*.
 
 6. When you intend to start a translation, please go to [issue #10](https://github.com/stdevPavelmc/mailad/issues/10) and check if anyone else is already working on that document and language.
-
