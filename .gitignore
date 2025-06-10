@@ -9,6 +9,7 @@ provision
 install
 webmail
 *.log
+*.eml
 
 # local storage to work on develop
 .localdata
