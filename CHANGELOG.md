@@ -20,6 +20,10 @@ This is a note for developers about the recommended tags to keep track of the ch
 Dates must be YEAR-MONTH-DAY
 -->
 
+## [v1.2.3] - 2025-06-10
+
+- Changed: Added & improved [AI] translations to major doc/features files in the project.
+
 ## [v1.2.2] - 2025-05-25
 
 - Added: CI/CD testing now simulate the login into the webmails, to verify it works, on both, Snappy and RoundCube
