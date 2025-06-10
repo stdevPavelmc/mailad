@@ -2,38 +2,38 @@
 
 Esta es una página larga, así que aquí hay un índice:
 
-* [Webmails](Features.md#webmails)
-* [Bajo Consumo de Recursos](Features.md#low-resource-footprint)
-* [Protección de Seguridad Contra Ataques Conocidos de SSL y Correo](Features.md#security-protection-against-well-known-SSL-and-mail-attacks)
-* [Integración y Gestión con Active Directory](Features.md#active-directory-integration-and-management)
-* [Sistema de Cuotas General y Específico](Features.md#general-and-specific-quota-system)
-* [Resumen Diario de Tráfico de Correo](Features.md#daily-mail-traffic-summary)
-* [Los Datos de Usuarios Eliminados se Manejan con Extremo Cuidado](Features.md#data-from-deleted-users-is-handled-with-extreme-care)
-* [Soporte para Certificados Let's Encrypt](Features.md#lets-encrypt-certificates-support)
-* [Alias Automáticos Usando Grupos de AD](Features.md#automatic-alias-using-ad-groups)
-* [Filtrado Dovecot (Sieve)](Features.md#dovecot-filtering-sieve)
-* [Filtrado Avanzado de Correo: Extensiones, Tipos MIME y AV, SPAM y SPF Opcionales](Features.md#advanced-mail-filtering-extensions-mime-types-and-optional-av-spam-and-spf)
-* [Almacenamiento Centralizado de Correo](Features.md#centralized-mail-storage)
-* [Extras Opcionales de Protección contra SPAM a través de DNSBL y Otros Trucos](Features.md#optional-spam-protection-extras-via-dnsbl-and-other-tricks)
-* [Cifrado Opcional para Comunicaciones LDAP](Features.md#optional-encryption-for-LDAP-communications)
-* [Notificaciones Opcionales a Grupos en Lugar de Solo al Administrador de Correo](Features.md#optional-notifications-to-groups-instead-of-only-the-mail-admin)
-* [Descargo de Responsabilidad Opcional en Cada Correo Saliente](Features.md#optional-disclaimer-on-every-outgoing-mail)
-* [Lista Opcional para Todos con Dirección Personalizada](Features.md#optional-everyone-list-with-custom-address)
-* [Acceso Opcional de Privilegios de Usuario a través de Grupos de AD](Features.md#optional-user-privilege-access-via-ad-groups)
-* [Alias Manuales para Manejar Errores Tipográficos o Posiciones Empresariales](Features.md#manual-alias-to-handle-typos-or-enterprise-positions)
-* [Lista Manual de Prohibición para Direcciones Problemáticas](Features.md#manual-ban-list-for-troublesome-address)
-* [Listas Manuales de Verificación de Encabezados y Cuerpo](Features.md#manual-headers-and-body-check-lists)
-* [Suite de Pruebas](Features.md#test-suite)
-* [Opciones de Copia de Seguridad y Restauración en Bruto](Features.md#raw-backup-and-restore-options)
-* [Actualizaciones sin Problemas](Features.md#painless-upgrades)
-* [Comprobaciones semanales de actualizaciones](Features.md#weekly-update-checks)
-* [Buzón físico de los usuarios dividido por ubicación](Features.md#physical-mailbox-of-the-users-split-by-location)
+* [Webmails](i18n/Features.es.md#webmails)
+* [Bajo Consumo de Recursos](i18n/Features.es.md#bajo-consumo-de-recursos)
+* [Protección de Seguridad Contra Ataques Conocidos de SSL y Correo](i18n/Features.es.md#protección-de-seguridad-contra-ataques-conocidos-de-ssl-y-correo)
+* [Integración y Gestión con Active Directory](i18n/Features.es.md#integración-y-gestión-con-active-directory)
+* [Sistema de Cuotas General y Específico](i18n/Features.es.md#sistema-de-cuotas-general-y-específico)
+* [Resumen Diario de Tráfico de Correo](i18n/Features.es.md#resumen-diario-de-tráfico-de-correo)
+* [Los Datos de Usuarios Eliminados se Manejan con Extremo Cuidado](i18n/Features.es.md#los-datos-de-usuarios-eliminados-se-manejan-con-extremo-cuidado)
+* [Soporte para Certificados Let's Encrypt](i18n/Features.es.md#soporte-para-certificados-lets-encrypt)
+* [Alias Automáticos Usando Grupos de AD](i18n/Features.es.md#alias-automáticos-usando-grupos-de-ad)
+* [Filtrado Dovecot (Sieve)](i18n/Features.es.md#filtrado-dovecot-sieve)
+* [Filtrado Avanzado de Correo: Extensiones, Tipos MIME y AV, SPAM y SPF Opcionales](i18n/Features.es.md#filtrado-avanzado-de-correo-extensiones-tipos-mime-y-av-spam-y-spf-opcionales)
+* [Almacenamiento Centralizado de Correo](i18n/Features.es.md#almacenamiento-centralizado-de-correo)
+* [Extras Opcionales de Protección contra SPAM a través de DNSBL y Otros Trucos](i18n/Features.es.md#extras-opcionales-de-protección-contra-spam-a-través-de-dnsbl-y-otros-trucos)
+* [Cifrado Opcional para Comunicaciones LDAP](i18n/Features.es.md#cifrado-opcional-para-comunicaciones-ldap)
+* [Notificaciones Opcionales a Grupos en Lugar de Solo al Administrador de Correo](i18n/Features.es.md#notificaciones-opcionales-a-grupos-en-lugar-de-solo-al-administrador-de-correo)
+* [Descargo de Responsabilidad Opcional en Cada Correo Saliente](i18n/Features.es.md#descargo-de-responsabilidad-opcional-en-cada-correo-saliente)
+* [Lista Opcional para Todos con Dirección Personalizada](i18n/Features.es.md#lista-opcional-para-todos-con-dirección-personalizada)
+* [Acceso Opcional de Privilegios de Usuario a través de Grupos de AD](i18n/Features.es.md#acceso-opcional-de-privilegios-de-usuario-a-través-de-grupos-de-ad)
+* [Alias Manuales para Manejar Errores Tipográficos o Posiciones Empresariales](i18n/Features.es.md#alias-manuales-para-manejar-errores-tipográficos-o-posiciones-empresariales)
+* [Lista Manual de Prohibición para Direcciones Problemáticas](i18n/Features.es.md#lista-manual-de-prohibición-para-direcciones-problemáticas)
+* [Listas Manuales de Verificación de Encabezados y Cuerpo](i18n/Features.es.md#listas-manuales-de-verificación-de-encabezados-y-cuerpo)
+* [Suite de Pruebas](i18n/Features.es.md#suite-de-pruebas)
+* [Opciones de Copia de Seguridad y Restauración en Bruto](i18n/Features.es.md#opciones-de-copia-de-seguridad-y-restauración-en-bruto)
+* [Actualizaciones sin Problemas](i18n/Features.es.md#actualizaciones-sin-problemas)
+* [Comprobaciones semanales de actualizaciones](i18n/Features.es.md#comprobaciones-semanales-de-actualizaciones)
+* [Buzón físico de los usuarios dividido por ubicación](i18n/Features.es.md#buzón-físico-de-los-usuarios-dividido-por-ubicación)
 
 ## Webmails
 
 Desde abril de 2025, MailAD admite el uso de un Webmail en el mismo host que el servidor de correo. Estas son algunas características y cosas que debe saber al respecto.
 
-Esta característica es opcional, está deshabilitada de forma predeterminada para mantener la compatibilidad con versiones anteriores; actualice a la última versión de MailAD utilizando las [Instrucciones de actualización](INSTALL.md#upgrading)
+Esta característica es opcional, está deshabilitada de forma predeterminada para mantener la compatibilidad con versiones anteriores; actualice a la última versión de MailAD utilizando las [Instrucciones de actualización](i18n/INSTALL.es.md#actualización)
 
 - Utiliza de forma predeterminada el nombre de host del servidor de correo, por lo que si su servidor de correo es mail.empresa.cu, entonces el webmail será https://mail.empresa.cu
 - Utiliza el servidor web Nginx con php-fpm, utiliza la versión predeterminada de php-fpm en su sistema operativo.
@@ -58,7 +58,7 @@ Aviso: después de una reconfiguración, actualización o re-aprovisionamiento, 
 
 Para más detalles, consulte el [Sitio Web Oficial](https://snappymail.eu/)
 
-[Volver al índice](Features.md#mailad-features-explained)
+[Volver al índice](i18n/Features.es.md#características-de-mailad-explicadas)
 
 ## Bajo Consumo de Recursos
 
@@ -72,7 +72,7 @@ La característica más exigente es el filtrado de SPAM y Antivirus (AV), sin es
 
 Si está dispuesto, por favor comparta algunas estadísticas y detalles de hardware conmigo para actualizar esta sección (configuración de hardware, características activadas, flujo de correo diario/mensual, etc.).
 
-[Volver al índice](Features.md#mailad-features-explained)
+[Volver al índice](i18n/Features.es.md#características-de-mailad-explicadas)
 
 ## Protección de Seguridad Contra Ataques Conocidos de SSL y Correo
 
@@ -86,7 +86,7 @@ Si está dispuesto, por favor comparta algunas estadísticas y detalles de hardw
 
 Respaldado por el conocimiento colectivo de la comunidad de SysAdmins [SysAdminsdeCuba](https://t.me/sysadmincuba).
 
-[Volver al índice](Features.md#mailad-features-explained)
+[Volver al índice](i18n/Features.es.md#características-de-mailad-explicadas)
 
 ## Integración y Gestión con Active Directory
 
@@ -98,7 +98,7 @@ Para un administrador de Windows, esto será fácil, simplemente configure e imp
 
 Si es usuario de Linux, puede usar `samba-tool` para administrar usuarios de dominio en el shell o usar RSAT en una máquina virtual de Windows con acceso remoto.
 
-[Volver al índice](Features.md#mailad-features-explained)
+[Volver al índice](i18n/Features.es.md#características-de-mailad-explicadas)
 
 ## Sistema de Cuotas General y Específico
 
@@ -127,13 +127,13 @@ Las unidades son estándar:
 
 Hay una restricción leve aquí: no se le permite usar decimales, pero puede usar la unidad inferior para obtener el mismo efecto: en lugar de 1.5G puede decir 1500M.
 
-[Volver al índice](Features.md#mailad-features-explained)
+[Volver al índice](i18n/Features.es.md#características-de-mailad-explicadas)
 
 ## Resumen Diario de Tráfico de Correo
 
 La cuenta configurada como administrador del sistema de correo _(o las asociadas al grupo SYSADMINS, si se especifica)_ recibirá un resumen de tráfico de correo (diario) del día anterior. El resumen se construye con la herramienta pflogsumm.
 
-[Volver al índice](Features.md#mailad-features-explained)
+[Volver al índice](i18n/Features.es.md#características-de-mailad-explicadas)
 
 ## Los Datos de Usuarios Eliminados se Manejan con Extremo Cuidado
 
@@ -149,7 +149,7 @@ Aquí jugamos un truco:
 - Los administradores con maildirs para usuarios eliminados entre 10 y 11.999 meses serán advertidos sobre la eliminación inminente.
 - Los maildirs para usuarios eliminados con más de 365 días (1 año) serán eliminados automáticamente.
 
-[Volver al índice](Features.md#mailad-features-explained)
+[Volver al índice](i18n/Features.es.md#características-de-mailad-explicadas)
 
 ## Soporte para Certificados Let's Encrypt
 
@@ -159,7 +159,7 @@ Para que esto funcione, debe tener un certificado válido en la ruta `/etc/letse
 
 Si no tiene un certificado Let's Encrypt, MailAD generará un certificado autofirmado para usted.
 
-[Volver al índice](Features.md#mailad-features-explained)
+[Volver al índice](i18n/Features.es.md#características-de-mailad-explicadas)
 
 ## Alias Automáticos Usando Grupos de AD
 
@@ -167,7 +167,7 @@ Desde junio de 2020, MailAD admite alias automáticos utilizando grupos de AD. E
 
 Para que esto funcione, debe crear un grupo en su AD con un nombre que comience con "mail-" y luego agregar usuarios a ese grupo. Por ejemplo, si crea un grupo llamado "mail-developers", todos los miembros de ese grupo recibirán correos enviados a developers@domain.tld.
 
-[Volver al índice](Features.md#mailad-features-explained)
+[Volver al índice](i18n/Features.es.md#características-de-mailad-explicadas)
 
 ## Filtrado Dovecot (Sieve)
 
@@ -175,7 +175,7 @@ Desde junio de 2020, MailAD admite filtrado Dovecot (Sieve). Esto significa que 
 
 Para que esto funcione, los usuarios deben crear un archivo llamado `.dovecot.sieve` en su directorio de inicio. Este archivo debe contener reglas de filtrado válidas de Sieve.
 
-[Volver al índice](Features.md#mailad-features-explained)
+[Volver al índice](i18n/Features.es.md#características-de-mailad-explicadas)
 
 ## Filtrado Avanzado de Correo: Extensiones, Tipos MIME y AV, SPAM y SPF Opcionales
 
@@ -187,13 +187,13 @@ MailAD admite filtrado avanzado de correo. Esto incluye:
 - Filtrado SPAM: puede escanear correos en busca de SPAM utilizando SpamAssassin.
 - Filtrado SPF: puede verificar si el remitente está autorizado a enviar correos desde su dominio.
 
-[Volver al índice](Features.md#mailad-features-explained)
+[Volver al índice](i18n/Features.es.md#características-de-mailad-explicadas)
 
 ## Almacenamiento Centralizado de Correo
 
 MailAD utiliza un almacenamiento centralizado de correo. Esto significa que todos los correos se almacenan en un solo lugar, lo que facilita la copia de seguridad y la restauración.
 
-[Volver al índice](Features.md#mailad-features-explained)
+[Volver al índice](i18n/Features.es.md#características-de-mailad-explicadas)
 
 ## Extras Opcionales de Protección contra SPAM a través de DNSBL y Otros Trucos
 
@@ -202,85 +202,84 @@ MailAD admite extras opcionales de protección contra SPAM. Esto incluye:
 - DNSBL: puede bloquear correos de remitentes conocidos de SPAM utilizando listas negras DNS.
 - Otros trucos: puede utilizar varios trucos para bloquear SPAM, como bloquear correos sin asunto, bloquear correos con ciertos patrones en el asunto, etc.
 
-[Volver al índice](Features.md#mailad-features-explained)
+[Volver al índice](i18n/Features.es.md#características-de-mailad-explicadas)
 
 ## Cifrado Opcional para Comunicaciones LDAP
 
 MailAD admite cifrado opcional para comunicaciones LDAP. Esto significa que puede cifrar la comunicación entre MailAD y su servidor LDAP.
 
-[Volver al índice](Features.md#mailad-features-explained)
+[Volver al índice](i18n/Features.es.md#características-de-mailad-explicadas)
 
 ## Notificaciones Opcionales a Grupos en Lugar de Solo al Administrador de Correo
 
 MailAD admite notificaciones opcionales a grupos en lugar de solo al administrador de correo. Esto significa que puede enviar notificaciones a un grupo de usuarios en lugar de solo al administrador de correo.
 
-[Volver al índice](Features.md#mailad-features-explained)
+[Volver al índice](i18n/Features.es.md#características-de-mailad-explicadas)
 
 ## Descargo de Responsabilidad Opcional en Cada Correo Saliente
 
 MailAD admite un descargo de responsabilidad opcional en cada correo saliente. Esto significa que puede agregar un descargo de responsabilidad a cada correo que sale de su servidor.
 
-[Volver al índice](Features.md#mailad-features-explained)
+[Volver al índice](i18n/Features.es.md#características-de-mailad-explicadas)
 
 ## Lista Opcional para Todos con Dirección Personalizada
 
 MailAD admite una lista opcional para todos con dirección personalizada. Esto significa que puede crear una lista que incluya a todos los usuarios de su dominio.
 
-[Volver al índice](Features.md#mailad-features-explained)
+[Volver al índice](i18n/Features.es.md#características-de-mailad-explicadas)
 
 ## Acceso Opcional de Privilegios de Usuario a través de Grupos de AD
 
 MailAD admite acceso opcional de privilegios de usuario a través de grupos de AD. Esto significa que puede controlar qué usuarios tienen acceso a qué recursos utilizando grupos de AD.
 
-[Volver al índice](Features.md#mailad-features-explained)
+[Volver al índice](i18n/Features.es.md#características-de-mailad-explicadas)
 
 ## Alias Manuales para Manejar Errores Tipográficos o Posiciones Empresariales
 
 MailAD admite alias manuales para manejar errores tipográficos o posiciones empresariales. Esto significa que puede crear alias para direcciones comúnmente mal escritas o para posiciones empresariales.
 
-[Volver al índice](Features.md#mailad-features-explained)
+[Volver al índice](i18n/Features.es.md#características-de-mailad-explicadas)
 
 ## Lista Manual de Prohibición para Direcciones Problemáticas
 
 MailAD admite una lista manual de prohibición para direcciones problemáticas. Esto significa que puede bloquear correos de direcciones específicas.
 
-[Volver al índice](Features.md#mailad-features-explained)
+[Volver al índice](i18n/Features.es.md#características-de-mailad-explicadas)
 
 ## Listas Manuales de Verificación de Encabezados y Cuerpo
 
 MailAD admite listas manuales de verificación de encabezados y cuerpo. Esto significa que puede bloquear correos basados en patrones en los encabezados o el cuerpo del correo.
 
-[Volver al índice](Features.md#mailad-features-explained)
+[Volver al índice](i18n/Features.es.md#características-de-mailad-explicadas)
 
 ## Suite de Pruebas
 
 MailAD incluye una suite de pruebas para verificar que su servidor de correo esté funcionando correctamente.
 
-[Volver al índice](Features.md#mailad-features-explained)
+[Volver al índice](i18n/Features.es.md#características-de-mailad-explicadas)
 
 ## Opciones de Copia de Seguridad y Restauración en Bruto
 
 MailAD incluye opciones de copia de seguridad y restauración en bruto. Esto significa que puede hacer una copia de seguridad de su servidor de correo y restaurarlo en caso de fallo.
 
-[Volver al índice](Features.md#mailad-features-explained)
+[Volver al índice](i18n/Features.es.md#características-de-mailad-explicadas)
 
 ## Actualizaciones sin Problemas
 
 MailAD admite actualizaciones sin problemas. Esto significa que puede actualizar su servidor de correo sin perder datos o configuración.
 
-[Volver al índice](Features.md#mailad-features-explained)
+[Volver al índice](i18n/Features.es.md#características-de-mailad-explicadas)
 
 ## Comprobaciones semanales de actualizaciones
 
 MailAD realiza comprobaciones semanales de actualizaciones. Esto significa que su servidor de correo verificará si hay actualizaciones disponibles y le notificará si las hay.
 
-[Volver al índice](Features.md#mailad-features-explained)
+[Volver al índice](i18n/Features.es.md#características-de-mailad-explicadas)
 
 ## Buzón físico de los usuarios dividido por ubicación
 
 MailAD admite la división del buzón físico de los usuarios por ubicación. Esto significa que puede dividir los buzones de los usuarios por oficina, provincia, ciudad, etc.
 
-[Volver al índice](Features.md#mailad-features-explained)
+[Volver al índice](i18n/Features.es.md#características-de-mailad-explicadas)
 
 FIN DEL ARCHIVO
-
