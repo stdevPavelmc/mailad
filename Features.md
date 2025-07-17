@@ -31,7 +31,7 @@ This is a long page, so here is an index:
 
 ## Webmails
 
-Since late December 2024 MailAD supports the use of a Webmail on the same host that the mail server, this are some features and things you need to know about it.
+Since April 2025 MailAD supports the use of a Webmail on the same host that the mail server, this are some features and things you need to know about it.
 
 This feature is an opt in one, it's disabled by default to maintain compatibility with older releases; upgrade to the latest MailAD using the [Upgrade Instructions](INSTALL.md#upgrading)
 
@@ -39,7 +39,7 @@ This feature is an opt in one, it's disabled by default to maintain compatibilit
 - It uses Nginx web server with php-fpm, it uses the default php-fpm version in your OS.
 - It will use HTTPS by default with the MailAD generated ssl cert, or the Let's Encrypt ones if present, see install for details.
 - If you need HTTP because you use a reverse proxy with HTTPS to expose it to the outside world... there is a setting to force HTTP, check the section on /etc/mailad/mailad.conf
-- We offer two popular and free to use webmail solutions
+- We offer two popular and free to use webmail solutions, RoundCube and SnappyMail.
 - Both webmails will use email auto-completion from the LDAP server.
 
 ### RoundCube
@@ -50,7 +50,7 @@ For more details check the [Official Website](https://roundcube.net/)
 
 ### SnappyMail
 
-This is an option and will be downloaded from the internet, so you need to setup the proxy options in the `/etc/mailad/mailad.conf` file if you use one on your network. It's a fresh, light and resposive modern webmail, that evolved from RainLoop when it became unmaintained.
+This is an alternative option and will be downloaded from the internet, so you need to setup the proxy options in the `/etc/mailad/mailad.conf` file if you use one on your network. It's a fresh, light and resposive modern webmail, that evolved from RainLoop when it became unmaintained.
 
 Snappy mail has a special admin page (https://yourmail.domain.cu/?admin) where you can install extra plugins, etc; during the install the script will notice you of the default password, if you don't see it then it's also stored on the file `/etc/mailad/snappy_admin_pass` the user is always `admin`.
 

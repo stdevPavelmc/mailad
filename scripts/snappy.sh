@@ -19,7 +19,7 @@ export DEBIAN_FRONTEND=noninteractive
 
 # notice
 echo "===> Remove RoundCube if it was previosly installed"
-apt-get remove -y "roundcube*"
+apt-get remove -y $ROUNDCUBE_PKGS
 
 # notice
 echo "===> Installing SnappyMail webmail"
@@ -58,24 +58,41 @@ LOGS="/var/log/snappymail"
 mkdir -p $LOGS
 
 
+# notice
+echo "===> Pre-setup done, downloading SnappyMail package..."
+
 # Install Snappy Webmail
-mkdir -p $SNAPPY_DIR
-cd $SNAPPY_DIR
-wget -q --no-clobber "$SNAPPY_URL"
-# check if doenload fails
-if [ $? -ne 0 ]; then
-    echo "===> Error!"
-    echo "  Download of the snappymail package failed"
-    echo "  URL is: $SNAPPY_URL"
-    echo "  This is a connectivity issue, if you use a proxy go to /etc/mailad/mailad.conf"
-    echo "  and configure the proxy there."
-    echo ""
-    echo "  Installation aborted"
+FILE=$(mktemp)
+wget -q --no-clobber "$SNAPPY_URL" -O "/tmp/$SNAPPY_FILE"
+# check if download fails
+if [ $? -ne 0 -a $? -ne 1 ]; then
+    echo "===> Error!" > $FILE
+    echo "  Download of the snappymail package failed" >> $FILE
+    echo "  URL is: $SNAPPY_URL" >> $FILE
+    echo "  This is a connectivity issue, if you use a proxy go to /etc/mailad/mailad.conf" >> $FILE
+    echo "  and configure the proxy there." >> $FILE
+    echo "" >> $FILE
+    echo "  Webmail Installation aborted" >> $FILE
+
+    # dump msg $FILE
+    cat $FILE
+
+    # add some instructions for the email
+    echo "" >> $FILE
+    echo "  You can try later with the command: make webmail" >> $FILE
+    echo "" >> $FILE
+
+    # send the email as a reminder
+    send_email "MailAD provision error." "$ADMINMAIL" "$FILE"
+
     exit 1
 fi
+mkdir -p ${SNAPPY_DIR}
+cd ${SNAPPY_DIR}
+cp /tmp/$SNAPPY_FILE ./
 tar xzf ${SNAPPY_FILE}
 fixperms /var/www
-rm snappymail-${SNAPPY_VERSION}.tar.gz
+rm $SNAPPY_FILE
 
 # back to base pwd
 cd $BPWD
@@ -90,14 +107,14 @@ if [ "$WEBSERVER_HTTP_ENABLED" == "yes" ]; then
 
     # User notice:
     echo ""
-    echo "####################  WARNING  WARNING  WARNING ######################"
+    echo "##### WARNING  WARNING  WARNING ######################################"
     echo "#                                                                    #"
     echo "# You selected an HTTP only web server, this is dangerous unless you #"
     echo "#    use a reverse proxy with a TLS/SSL wrapper [HTTPS wrapper]      #"
     echo "#                                                                    #"
     echo "#                      You has been warned!                          #"
     echo "#                                                                    #"
-    echo "#####################  WARNING  WARNING  WARNING #####################"
+    echo "####################################  WARNING  WARNING  WARNING ######"
     echo ""
 fi
 cp ${NGINX_TEMPLATE} ${NGINX_CONFIG}
@@ -146,10 +163,14 @@ DOMAINSFOLDER="$DEFAULTFOLDER/domains"
 PASS="${DEFAULTFOLDER}/admin_password.txt"
 CONFIG="${CONFIGFOLDER}/application.ini"
 
-# small delay to allow the service to create the default config
+# small delay to allow the service to create the default config; options
+OPTS="--no-check-certificate"
+if [ "$WEBSERVER_HTTP_ENABLED" == "yes" ]; then OPTS="--no-hsts" ; fi
 while [ ! -f "$PASS" ] ; do
-    wget -q --no-check-certificate "$WEBPROTO://$HOSTNAME/?admin" -O /dev/null
-    wget -q --no-check-certificate "$WEBPROTO://$HOSTNAME/?/AdminAppData/0/5220854561746323/" -O /dev/null
+    # get it...
+    wget -q ${OPTS} "$WEBPROTO://$HOSTNAME/?admin" -O /dev/null
+    sleep 2
+    wget -q ${OPTS} "$WEBPROTO://$HOSTNAME/?/AdminAppData/0/5220854561746323/" -O /dev/null
     sleep 2
     echo "."
 done

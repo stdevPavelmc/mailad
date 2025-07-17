@@ -12,7 +12,7 @@ This is a To Do list with no particular order
 
 ## Already Done Items
 
-- Webmails, RoundCube and SnappyMail [December/2024, gift efforts for the 5th birthday]
+- Webmails, RoundCube and SnappyMail [April/2025]
 - Users access segregation via AD groups (local/national/international access) [July/2020]
 - Daily statistics via pflogsumm [August/2020]
 - Content filtering (mime & extensions) beyond the basics [September/2020]

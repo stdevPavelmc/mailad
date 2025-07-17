@@ -3,21 +3,27 @@
 
 This page is also available in the following language(s): [ [Español](i18n/Translations.es.md) 🇪🇸 🇨🇺]
 
-This document contains the guidelines for MailAD Translations
+This document contains the guidelines for MailAD translations.
 
 ## Goal
 
-The mail goal is to stablish the guidelines for contributing translations to languages other than English. This should avoid duplicity of work and loss of time.
+The main goal is to establish guidelines for contributing translations to languages other than English. This should avoid duplication of work and loss of time.
 
-At the begining the focus will be the documentation. 
+At the beginning, the focus will be on the documentation.
 
 ## Guidelines
 
-This are the main ones, it can change with time:
+These are the main guidelines, which may change over time:
 
-0. The translations must be done in a new file from the original adding the [two letter language code](https://es.wikipedia.org/wiki/ISO_639-1) to the name, so for Spanish `README.md` will be `README.es.md` the new files must be placed under the `i18n` directory.
-0. You must start with the original file and only translate the explanatory text, don't translate the texts inside a code block as it's a software generated one, that must remain in the original language.
-0. All documentation translations PR must be made against the `development` branch, I will be responsible for revision and merging.
-0. Please just make a PR when you have a translation of a document in full, avoid to send partial translations, this will waste your time and mine.
-0. You can claim the authorship of a translation, you can insert a hidden line like the one on top of this document with your data, I will respect them when you send it _(this line will not be shown via web but yes locally)_
-0. When you intend to start a translation please go to [issue #10](https://github.com/stdevPavelmc/mailad/issues/10) and check if no other person is working on that document and language.
+1. Translations must be done in a new file derived from the original by adding the [two-letter language code](https://es.wikipedia.org/wiki/ISO_639-1) to the name. For example, for Spanish, `README.md` will become `README.es.md`. The new files must be placed under the `i18n` directory.
+
+2. You must start with the original file and only translate the explanatory text. Don't translate the text inside code blocks as they are software-generated and must remain in the original language.
+
+3. All documentation translation PRs must be made against the `development` branch. I will be responsible for review and merging.
+
+4. Please only make a PR when you have a complete translation of a document. Avoid sending partial translations, as this will waste both your time and mine.
+
+5. You can claim authorship of a translation by inserting a hidden line like the one at the top of this document with your information. I will respect this attribution when you submit it *(this line will not be shown via web but will be visible locally)*.
+
+6. When you intend to start a translation, please go to [issue #10](https://github.com/stdevPavelmc/mailad/issues/10) and check if anyone else is already working on that document and language.
+

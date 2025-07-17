@@ -10,7 +10,7 @@ $config['username_domain'] = '_DOMAIN_';
 $config['product_name'] = 'MailAD Webmail [RoundCube]';
 
 // only accept https traffic
-$config['use_https'] = true;
+$config['use_https'] = _HTTPS_ONLY_;
 
 // Allow browser-autocompletion on login form.
 // 0 - disabled, 1 - username and host only, 2 - username, host, password
@@ -106,8 +106,8 @@ $config['ldap_public']["global_ldap_book"]['conn_options'] = array(
 
 // local DB [sqlite3]
 $dbtype='sqlite3';
-$basepath='/var/lib/mailad';
-$dbname='roundcube.sqlite3';
-$config['db_dsnw'] = "sqlite:///$basepath/$dbname?mode=0640";
+$basepath='_SQLITE_STORAGE_';
+$dbname='_SQLITE_DB_';
+$config['db_dsnw'] = "sqlite:///$basepath/$dbname?mode=0664";
 
 ?>

@@ -12,10 +12,10 @@
 source /etc/mailad/mailad.conf
 
 # loading vars
-PFSL=`which pflogsumm`
+PFSL=$(which pflogsumm)
 OPTS="-d yesterday -e -i --iso-date-time --problems-first"
 FILE="/var/log/mail.log /var/log/mail.log.1"
-TMP=`mktemp`
+TMP=$(mktemp)
 
 # check for soft
 if [ "$PFSL" == "" ] ; then
