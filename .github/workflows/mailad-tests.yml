@@ -1,0 +1,189 @@
+name: MailAD VM Integration Tests
+
+on:
+  push:
+    branches: [ master, develop ]
+  pull_request:
+    branches: [ master, develop ]
+  workflow_dispatch:
+
+jobs:
+  Test:
+    strategy:
+      matrix:
+        os: [ubuntu-24.04, ubuntu-22.04]
+    runs-on: ${{ matrix.os }}
+    outputs:
+      auth_file: ${{ steps.create_auth.outputs.auth_file }}
+      
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Expose the OS type and version
+        run: |
+          cat /etc/os-release | tee ${{ github.workspace }}/tests/os.log
+
+      - name: Install mandatory dependencies, make & curl
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y make curl
+
+      - name: Setup Local hostname to mail.mailad.cu
+        run: |
+          echo mail | sudo tee /etc/hostname
+          sudo hostname mail
+          sudo sed -i "s/^127.0.1.1.*//g" /etc/hosts
+          echo "127.0.1.1   mail.mailad.cu    mail" | sudo tee -a /etc/hosts
+
+      - name: Create auth file
+        id: create_auth
+        run: |
+          # Create a temporary auth file with credentials
+          cat > ${{ github.workspace }}/.mailadmin.auth << EOF
+          PASS=TsEDuP53azjhLRE
+          
+          # national user and credentials
+          NACUSER="starf@mailad.cu"
+          NACUSERPASSWD=KGkbsia5Kh5A3BFaC
+          
+          # local user and credentials
+          LOCUSER="pepa@mailad.cu"
+          LOCUSERPASSWORD=QDt1Uyf5hdCgTyBu7
+          
+          # Linux bind user password
+          LDAPBINDPASSWD=dCgTyBu7s1fkGP
+          EOF
+
+      - name: Enable features
+        run: |
+          sudo ./tests/enable_all_features_to_test.sh
+
+      - name: make the conf files and install deps
+        run: |
+          cd ${{ github.workspace }}/
+          sudo make conf
+          sudo make deps
+
+      - name: Install Samba, configure it and start
+        run: |
+          cd ${{ github.workspace }}/
+          chmod +x ./utils/samba_scaffold.sh
+          sudo ./utils/samba_scaffold.sh
+          # add a delay to allow samba to start as test on the next step fails without it
+          sleep 10
+
+      - name: Install MailAD, configure it and start
+        run: |
+          cd ${{ github.workspace }}/
+          sudo make all
+
+      - name: Get the runers IPs
+        run: |
+          RUNNER_IPS=$(hostname -I)
+          echo "RUNNER_IPS=$RUNNER_IPS" >> $GITHUB_ENV
+          echo "IPs: $RUNNER_IPS"
+
+      - name: Run the test from the docker container
+        # will leave a file tests/docker_test_failed.log if failed
+        id: docker_test
+        run: |
+          set -e # fail fast
+          docker run --rm \
+            -v ${{ github.workspace }}/:/home/mailad/ \
+            -e RUNNER_IPS="${{ env.RUNNER_IPS }}" \
+            -e GITHUB_ACTIONS="$GITHUB_ACTIONS" \
+            ubuntu:noble \
+            bash -c "/home/mailad/tests/test-from-docker.sh"
+          if [ -f tests/docker_test_failed.log ]; then
+            echo "Docker test failed!"
+            exit 1
+          fi
+
+      - name: Prepare test env with PlayWright
+        if: steps.docker_test.outcome == 'success'
+        id: playwright
+        run: |
+          sudo apt-get install python3 python3-pip -y
+          sudo pip3 install playwright
+          sudo playwright install
+          sudo playwright install-deps
+
+      - name: Activate the Snappy webmail in plain HTML
+        if: steps.docker_test.outcome == 'success'
+        run: |
+          sudo sed -i "s/^WEBMAIL_ENABLED=.*/WEBMAIL_ENABLED=yes/" /etc/mailad/mailad.conf
+          sudo sed -i "s/^WEBMAIL_APP=.*/WEBMAIL_APP=snappy/" /etc/mailad/mailad.conf
+          sudo sed -i "s/^WEBSERVER_HTTP_ENABLED=.*/WEBSERVER_HTTP_ENABLED=yes/" /etc/mailad/mailad.conf
+
+      - name: Deploy Snappy in plain HTML
+        if: steps.docker_test.outcome == 'success'
+        run: |
+          cd ${{ github.workspace }}/
+          sudo make webmail
+
+      - name: Test if webmail is there
+        id: snappy_web_ok
+        if: steps.docker_test.outcome == 'success'
+        run: |
+          HTCODE=$(curl -s -o /dev/null -w "%{http_code}" http://localhost/)
+          if [ "$HTCODE" -eq 200 ]; then
+            echo "Webmail is there!"
+          else
+            echo "Webmail is not there, getting some debug"
+            curl -I http://localhost/ &> ${{ github.workspace }}/tests/webmail_snappy_headers.log
+            curl http://localhost/ &> ${{ github.workspace }}/tests/webmail_snappy_body.log
+            exit 1
+          fi
+
+      - name: Test if login works on Snappy
+        if: steps.playwright.outcome == 'success' && steps.snappy_web_ok.outcome == 'success'
+        run: |
+          source /etc/mailad/mailad.conf
+          cd ${{ github.workspace }}/
+          source .mailadmin.auth
+          sudo python3 tests/test_login.py -s "http://localhost/" "${ADMINMAIL%%@*}" "${PASS}" "./tests/webmail_snappy_result.png" &> tests/webmail_snappy_login.log
+      
+      - name: Activate the Roundcube webmail in plain HTML
+        if: steps.docker_test.outcome == 'success'
+        run: |
+          sudo sed -i "s/^WEBMAIL_ENABLED=.*/WEBMAIL_ENABLED=yes/" /etc/mailad/mailad.conf
+          sudo sed -i "s/^WEBMAIL_APP=.*/WEBMAIL_APP=roundcube/" /etc/mailad/mailad.conf
+          sudo sed -i "s/^WEBSERVER_HTTP_ENABLED=.*/WEBSERVER_HTTP_ENABLED=yes/" /etc/mailad/mailad.conf
+
+      - name: Deploy Roundcube in plain HTML
+        if: steps.docker_test.outcome == 'success'
+        run: |
+          cd ${{ github.workspace }}/
+          sudo make webmail
+
+      - name: Test if webmail is there
+        if: steps.docker_test.outcome == 'success'
+        id: roundcube_web_ok
+        run: |
+          HTCODE=$(curl -s -o /dev/null -w "%{http_code}" http://localhost/)
+          if [ "$HTCODE" -eq 200 ]; then
+            echo "Webmail is there!"
+          else
+            echo "Webmail is not there, getting some debug"
+            curl -I http://localhost/ &> ${{ github.workspace }}/tests/webmail_roudcube_headers.log
+            curl http://localhost/ &> ${{ github.workspace }}/tests/webmail_roudcube_body.log
+            exit 1
+          fi
+
+      - name: Test if login works on Roundcube
+        if: steps.playwright.outcome == 'success' && steps.roundcube_web_ok.outcome == 'success'
+        run: |
+          source /etc/mailad/mailad.conf
+          cd ${{ github.workspace }}/
+          source .mailadmin.auth
+          sudo python3 tests/test_login.py "http://localhost/" "${ADMINMAIL%%@*}" "${PASS}" "./tests/webmail_roundcube_result.png" &> tests/webmail_roundcube_login.log
+
+      - name: Upload test logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-logs-${{ matrix.os }}
+          path: |
+            ${{ github.workspace }}/tests/*.log
+            ${{ github.workspace }}/tests/*.png

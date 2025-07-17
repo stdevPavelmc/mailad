@@ -1,5 +1,7 @@
 # MailAD Features Explained
 
+This page is also available in the following languages: [ [Español](i18n/Features.es.md) 🇪🇸 🇨🇺] [ [Deutsch](i18n/Features.de.md) 🇩🇪] *Warning: translations may be outdated.*
+
 This is a long page, so here is an index:
 
 * [Webmails](Features.md#webmails)

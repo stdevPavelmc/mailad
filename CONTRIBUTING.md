@@ -1,6 +1,6 @@
 # Contributing To MailAD
 
-This page is also available in the following languages: [ [Español](i18n/CONTRIBUTING.es.md) 🇪🇸 🇨🇺]
+This page is also available in the following languages: [ [Español](i18n/CONTRIBUTING.es.md) 🇪🇸 🇨🇺] [ [Deutsch](i18n/CONTRIBUTING.de.md) 🇩🇪] *Warning: translations may be outdated.*
 
 ## Developer Process & Workflows
 

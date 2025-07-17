@@ -25,38 +25,33 @@ if [ -f /etc/os-release ] ; then
     # import the file
     source /etc/os-release
 
-    ## Distros check
-    case "$VERSION_CODENAME" in
-        bionic|focal|jammy|noble)
-            # Load the correct pkgs to be installed
+    # Distros check
+    if [[ " ${OS_WORKING[*]} " =~ " $VERSION_CODENAME " ]]; then
+        # Ubuntu
+        if [[ " ${OS_WORKING_U[*]} " =~ " $VERSION_CODENAME " ]]; then
             craft_pkg_list "ubuntu"
+        fi
 
-            # Check
-            already_installed_debs
-
-            # Install
-            install_debs
-            ;;
-        buster|bullseye|bookworm)
-            # Load the correct pkgs to be installed
+        # Debian
+        if [[ " ${OS_WORKING_D[*]} " =~ " $VERSION_CODENAME " ]]; then
             craft_pkg_list "debian"
+        fi
 
-            # Check
-            already_installed_debs
+        # Check
+        already_installed_debs
 
-            # Install
-            install_debs
-            ;;
-        *)
-            echo "==========================================================================="
-            echo "ERROR: This linux box has an unknown distro, if you feel this is wrong"
-            echo "       please visit https://github.com/stdevPavelmc/mailad/ and raise an"
-            echo "       issue about this."
-            echo "==========================================================================="
-            echo "       The install process will stop now"
-            echo "==========================================================================="
-            ;;
-    esac
+        # Install
+        install_debs
+    else
+        # Un supported distro
+        echo "==========================================================================="
+        echo "ERROR: This linux box has an unknown distro, if you feel this is wrong"
+        echo "       please visit https://github.com/stdevPavelmc/mailad/ and raise an"
+        echo "       issue about this."
+        echo "==========================================================================="
+        echo "       The install process will stop now"
+        echo "==========================================================================="
+    fi
 
     # Fix permissions for clamav into amavis if AV is enabled
     if [ "$ENABLE_AV" == "yes" -o "$ENABLE_AV" == "Yes" ] ; then

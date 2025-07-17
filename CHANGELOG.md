@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 <!--
 This is a note for developers about the recommended tags to keep track of the changes:
 
+- Info: relevant notices about the update
 - Added: for new features.
 - Changed: for changes in existing functionality.
 - Deprecated: for soon-to-be removed features.
@@ -18,6 +19,47 @@ This is a note for developers about the recommended tags to keep track of the ch
 
 Dates must be YEAR-MONTH-DAY
 -->
+
+## [v1.2.4] - 2025-06-10
+
+- Changed: Added & improved [AI] translations to major doc/features files in the project
+
+## [v1.2.3] - 2025-05-24
+
+- Fixed: BUG, SpamAssassin (spamd) service detection and configuration for Ubuntu Noble 24.04 (and other distros with recently upgraded SpamAssassin v4.x)
+- Changed: Improved testing for SpamAssassin with GTUBE test to verify spam detection is working properly [on CI/CD]
+- Changed: Reorganized folder structure for better maintainability (removed "-related" suffix from folders)
+- Fixed: Various improvements to the testing framework in the CI/CD stage [reliable failure of the docker test & some tweaks on the screenshots for the webmails logins]
+
+## [v1.2.2] - 2025-05-25
+
+- Added: CI/CD testing now simulate the login into the webmails, to verify it works, on both, Snappy and RoundCube
+- Fixed: A bug that broke the deploy of Snappy Webmail on Ubuntu 22.04 and potentially on Debian 11
+- Fixed: On the install-purge script, remove the packages related to the web server if there.
+- Fixed: Remove the Snappy admin password when installing Roundcube, if it's there.
+
+## [v1.2.1] - 2025-05-23
+
+- Changed: Improvements on the OS versions handling, there was a few places to change, now centralized on the common.conf file.
+- Changed: If you install/upgrade/provision on a discontinued OS you will get a warning, the same with legacy ones. That's to notice & push the sysadmin to upgrade to a latest OS version.
+
+## [v1.2.1-rc] - 2025-05-22
+
+- Changed: Upgraded the Snappy Mail Webmail from version 2.36.4 to 2.38.2
+- Changed: Disabled Debian testing on the CI/CD matrix: Github does not supports Debian
+- Changed: If you install/upgrade/provision on a discontinued OS you will get a warning, the same with legacy ones. That's to notice the user to upgrade to a latest OS version.
+- Added: Webmails testing to CI/CD using Github Actions
+- Added: Test status badges ontop of the readme
+
+## [v1.2.1-beta] - 2025-05-20
+
+- Info: This update is just an improvement in the developer side, no need to upgrade to it
+- Changed: Improved documentation with better formatting, consistent lists, and clearer explanations
+- Changed: Replaced `apt` commands with `apt-get` in all scripts for better stability in scripting environments
+- Changed: Updated all bash scripts to use modern `$()` syntax instead of legacy backticks for command substitution
+- Fixed: Various typos and formatting issues in documentation
+- Fixed: Improved script reliability by using more consistent command syntax
+- Added: CI/CD using Github Actions, now any changes/PR are validated against the test we included.
 
 ## [v1.2.0] - 2025-04-10
 

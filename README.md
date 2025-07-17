@@ -1,10 +1,6 @@
-# MailAD v1.2.0
+# MailAD v1.2.4
 
-[![Chat on Telegram](https://img.shields.io/badge/Chat%20on-Telegram-brightgreen?style=flat-square)](https://t.me/MailAD_dev) [![Twitter Follow](https://img.shields.io/twitter/follow/co7wt?label=Follow&style=flat-square)](https://twitter.com/co7wt) [![GitHub Issues](https://img.shields.io/github/issues/stdevPavelmc/mailad?style=flat-square)](https://github.com/stdevPavelmc/mailad/issues) [![GitHub Issues Closed](https://img.shields.io/github/issues-closed/stdevPavelmc/mailad?style=flat-square)](https://github.com/stdevPavelmc/mailad/issues?q=is%3Aissue+is%3Aclosed) [![GitHub repo size](https://img.shields.io/github/repo-size/stdevPavelmc/mailad?style=flat-square)](https://github.com/stdevPavelmc/mailad/archive/master.zip) [![GitHub last commit](https://img.shields.io/github/last-commit/stdevPavelmc/mailad?style=flat-square)](https://github.com/stdevPavelmc/mailad/commits/master) [![GitHub commit rate](https://img.shields.io/github/commit-activity/m/stdevPavelmc/mailad?style=flat-square)](https://github.com/stdevPavelmc/mailad/commits/master) [![Financial contributors](https://opencollective.com/mailad/tiers/badge.svg)](https://opencollective.com/mailad)
-
-<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-11-orange.svg?style=flat-square)](#contributors-)
-<!-- ALL-CONTRIBUTORS-BADGE:END -->
+[![Chat on Telegram](https://img.shields.io/badge/Chat%20on-Telegram-brightgreen?style=flat-square)](https://t.me/MailAD_dev) [![GitHub Issues](https://img.shields.io/github/issues/stdevPavelmc/mailad?style=flat-square)](https://github.com/stdevPavelmc/mailad/issues) [![GitHub Issues Closed](https://img.shields.io/github/issues-closed/stdevPavelmc/mailad?style=flat-square)](https://github.com/stdevPavelmc/mailad/issues?q=is%3Aissue+is%3Aclosed) [![GitHub repo size](https://img.shields.io/github/repo-size/stdevPavelmc/mailad?style=flat-square)](https://github.com/stdevPavelmc/mailad/archive/master.zip) [![GitHub last commit](https://img.shields.io/github/last-commit/stdevPavelmc/mailad?style=flat-square)](https://github.com/stdevPavelmc/mailad/commits/master) [![GitHub commit rate](https://img.shields.io/github/commit-activity/m/stdevPavelmc/mailad?style=flat-square)](https://github.com/stdevPavelmc/mailad/commits/master) [![Financial contributors](https://opencollective.com/mailad/tiers/badge.svg?style=flat-square)](https://opencollective.com/mailad) [![Develop Testing Status](https://img.shields.io/github/actions/workflow/status/stdevPavelmc/mailad/mailad-tests.yml?branch=develop&label=Develop+Testing+Status&style=flat-square)](https://github.com/stdevPavelmc/mailad/actions/workflows/mailad-tests.yml) [![Production Testing Status](https://img.shields.io/github/actions/workflow/status/stdevPavelmc/mailad/mailad-tests.yml?branch=master&label=Production+Testing+Status&style=flat-square)](https://github.com/stdevPavelmc/mailad/actions/workflows/mailad-tests.yml)
 
 ![MailAD Logo](./logos/MailAD-logo-full_white_background.png)
 
@@ -26,19 +22,19 @@ This repository is intended to be cloned on your fresh OS install under `/root` 
 
 After a few steps, you will have a mail server up and running in about 15 minutes tops. *(This time is based on a 2Mbps internet connection to a repository. If you have a local repository, it will be less.)*
 
-This tool is tested and supported on:
+The recommended OS selection is as follows:
 
-| OS | Active Support | Legacy |
-|:--- |:---:|:---:|
-| Ubuntu Noble 24.04 LTS | ✅ |  |
-| Debian Bookworm 12 | ✅ |  |
-| Ubuntu Jammy 22.04 LTS |  | ⚠️ |
-| Debian Bullseye 11 |  | ⚠️ |
-| Ubuntu Focal 20.04 LTS |  | ⚠️ |
-| Debian Buster 10 |  | ⚠️ |
-| Ubuntu Bionic 18.04 LTS |  | ⚠️ |
+| OS | Active Support | Legacy | Discontinued |
+|:--- |:---:|:---:|:---:|
+| Ubuntu Noble 24.04 LTS | ✅ |  |  |
+| Debian Bookworm 12 | ✅ |  |  |
+| Ubuntu Jammy 22.04 LTS |  | ⚠️ |  |
+| Debian Bullseye 11 |  | ⚠️ |  |
+| Ubuntu Focal 20.04 LTS |  |  | 🚫 |
+| Debian Buster 10 |  |  | 🚫 |
+| Ubuntu Bionic 18.04 LTS |  |  | 🚫 |
 
-Legacy means it works but is not supported anymore. It's recommended to use the latest version.
+Legacy means it works but not recommended, Discontinued mean it works but not supported anymore: it's EOL. It's adviced to use an OS that has Active Support.
 
 ***Note:** If you are using Debian Buster or Bullseye in a LXC Container (Proxmox for example), you need to tweak the Dovecot installation or it will not work. See [this fix](https://serverfault.com/questions/976250/dovecot-lxc-apparmor-denied-buster) for more information.*
 
@@ -98,6 +94,10 @@ Use the Issues tab in the repository URL or drop me a message via [Twitter](http
 ## Contributors ✨
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
+
+<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
+[![All Contributors](https://img.shields.io/badge/all_contributors-11-orange.svg?style=flat-square)](#contributors-)
+<!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
 <!-- prettier-ignore-start -->

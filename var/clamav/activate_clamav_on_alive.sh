@@ -24,13 +24,13 @@ systemctl restart clamav-daemon
 sleep 5
 
 # test if clamav-daemon is runnig already, it will run only when freshclam manages to get a full db download
-R=`systemctl show -p SubState --value clamav-daemon`
+R=$(systemctl show -p SubState --value clamav-daemon)
 if [ "$R" == "running" ] ; then
     # it's alive!, doing our thing
 
     # configure AV filtering on amavis if not already active
     FILE="/etc/amavis/conf.d/15-content_filter_mode"
-    ACTIVE=`cat $FILE | grep "^#@bypass_virus_checks_maps.*"`
+    ACTIVE=$(cat $FILE | grep "^#@bypass_virus_checks_maps.*")
     if [ ! -z "$ACTIVE" ] ; then
         # not active, activating
         sed -i s/"#@bypass_virus_checks_maps"/"@bypass_virus_checks_maps"/g $FILE

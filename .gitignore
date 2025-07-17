@@ -9,6 +9,14 @@ provision
 install
 webmail
 *.log
+*.eml
 
 # local storage to work on develop
 .localdata
+
+# dev files
+snappymail*.gz
+
+# test data
+tests/*.png
+tests/*.log

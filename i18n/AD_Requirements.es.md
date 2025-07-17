@@ -3,7 +3,7 @@
 
 Como mencionamos anteriormente, esta herramienta supone que tiene acceso administrativo a un servidor Active Directory bien configurado.
 
-Recomendamos el uso de Samba 4 AD. Internet está lleno de buenos tutoriales sobre cómo usar Samba como controlador AD; pero si solo está probando MailAD, eche un vistazo al  [Utils README](utils/README.md) for a recipe to deploy a testing Samba 4 domain.
+Recomendamos el uso de Samba 4 AD. Internet está lleno de buenos tutoriales sobre cómo usar Samba como controlador AD; pero si solo está probando MailAD, eche un vistazo al archivo [Utils README](utils/README.md) para una receta para desplegar un dominio de prueba de Samba 4.
 
 ## LDAPS o cómo proteger sus comunicaciones LDAP
 

@@ -1,6 +1,6 @@
 # TODO
 
-This page is also available in the following languages: [ [Español](i18n/TODO.es.md) 🇪🇸 🇨🇺]
+This page is also available in the following languages: [ [Español](i18n/TODO.es.md) 🇪🇸 🇨🇺] [ [Deutsch](i18n/TODO.de.md) 🇩🇪] *Warning: translations may be outdated.*
 
 This is a To Do list with no particular order
 
