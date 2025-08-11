@@ -1,0 +1,35 @@
+# Static passdb. Included from auth.conf.
+
+# This can be used for situations where Dovecot doesn't need to verify the
+# username or the password, or if there is a single password for all users:
+#
+#  - proxy frontend, where the backend verifies the password
+#  - proxy backend, where the frontend already verified the password
+#  - authentication with SSL certificates
+#  - simple testing
+# 
+# Each passdb must have unique name, but if you onlu use it once per driver
+# you can use driver name as passdb/userdb section name.
+
+#passdb static {
+#  fields {
+#    proxy = y
+#    host = %{user|md5|substr(1)}.example.com
+#    nopassword = y
+#  }
+#}
+
+#passdb static2 {
+#  driver = static
+#  fields {
+#    password = test
+#  }
+#}
+
+#userdb static {
+#  fields {
+#    uid = vmail
+#    gid = vmail
+#    home = /home/%{user}
+#  }
+#}

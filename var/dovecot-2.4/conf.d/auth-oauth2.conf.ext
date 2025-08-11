@@ -1,0 +1,23 @@
+#auth_mechanisms {
+#  xoauth2 = yes
+#  oauthbearer = yes
+#}
+#oauth2 {
+#  tokeninfo_url = https://www.googleapis.com/oauth2/v3/tokeninfo?access_token=
+#  introspection_url = https://www.googleapis.com/oauth2/v2/userinfo
+#  #force_introspection = yes
+#  username_attribute = email
+#}
+
+# with local validation
+#oauth2 {
+#  introspection_mode = local
+#  username_attribute = email
+#  oauth2_local_validation {
+#    dict fs {
+#      fs posix {
+#        prefix = /etc/dovecot/oauth2-keys/
+#      }
+#    }
+#  }
+#}
