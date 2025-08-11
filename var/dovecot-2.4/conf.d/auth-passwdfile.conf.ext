@@ -1,0 +1,20 @@
+# Authentication for passwd-file users. Included from auth.conf.
+#
+# passwd-like file with specified location.
+# <https://doc.dovecot.org/latest/core/config/auth/databases/passwd_file.html>
+
+#passdb passwd-file {
+#  default_password_scheme = crypt
+#  auth_username_format = %{user}
+#  passwd_file_path = /etc/dovecot/users
+#}
+
+#userdb passwd-file {
+#  auth_username_format=%{user}
+#  passwd_file_path = /etc/dovecot/users
+
+#  fields {
+#    quota_rule:default=*:storage=1G
+#    home=/home/virtual/%{user}
+#  }
+#}
