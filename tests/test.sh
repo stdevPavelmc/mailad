@@ -265,30 +265,30 @@ fi
 cat $LOGP >> $LOG
 
 ### Send an email to the postmaster from outside
-# $SOFT -s "$SERVER" -t "postmaster@$DOMAIN" -f "fake@example.com"  > $LOGP
-# R=$?
-# if [ $R -ne 0 ] ; then
-#     # error
-#     echo "=========================================================="
-#     echo "ERROR: Can't send a mail to the postmaster as an outside"
-#     echo "       user using SMTP that needs to be posssble."
-#     echo " "
-#     echo "COMMENT: It's expected that your server can accept an email"
-#     echo "         to the postmaster alias from an external user,"
-#     echo "         that's needed as part of the RFC of email to report"
-#     echo "         abuse or problems. Please check your configuration"
-#     echo " "
-#     echo "Exit code: $R"
-#     echo "Logs follow"
-#     echo "=========================================================="
-#     cat $LOGP
-#     do_error
-# else
-#     # ok
-#     echo "===> Ok: External users can send emails to the postmaster alias."
-# fi
-# # sum the logs
-# cat $LOGP >> $LOG
+$SOFT -s "$SERVER" -t "postmaster@$DOMAIN" -f "fake@example.com"  > $LOGP
+R=$?
+if [ $R -ne 0 ] ; then
+    # error
+    echo "=========================================================="
+    echo "ERROR: Can't send a mail to the postmaster as an outside"
+    echo "       user using SMTP, that needs to be posssble."
+    echo " "
+    echo "COMMENT: It's expected that your server can accept an email"
+    echo "         to the postmaster alias from an external user,"
+    echo "         that's needed as part of the RFC of email to report"
+    echo "         abuse or problems. Please check your configuration"
+    echo " "
+    echo "Exit code: $R"
+    echo "Logs follow"
+    echo "=========================================================="
+    cat $LOGP
+    do_error
+else
+    # ok
+    echo "===> Ok: External users can send emails to the postmaster alias."
+fi
+# sum the logs
+cat $LOGP >> $LOG
 
 ### Send an email to the postmaster alias as a valid user with auth
 $SOFT -s "$SERVER" -p 587 -tls -a PLAIN -au "$ADMINMAIL" -ap "$PASS" \
