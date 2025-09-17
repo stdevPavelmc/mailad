@@ -20,8 +20,8 @@ LASTWORKINGBACKUPFILE="${LIBFOLDER}/latest_working_backup"
 echo "===> Starting a backup of all actual configs to $BKPFOLDER"
 
 # create the backup folder 
-mkdir -p ${BKPFOLDER} 2> /dev/null || exit 0
-mkdir -p ${LIBFOLDER} 2> /dev/null || exit 0
+mkdir -p ${BKPFOLDER} 2> /dev/null || true
+mkdir -p ${LIBFOLDER} 2> /dev/null || true
 
 # check if a non ideal backup is left behind
 if [ -f "$LASTBACKUPFILE" ] ; then
@@ -29,20 +29,20 @@ if [ -f "$LASTBACKUPFILE" ] ; then
     if [ -f "$LASTWORKINGBACKUPFILE" ] ; then
         # case one: backup & working backup
         # erase it only if points to different files
-        LAST=`cat "$LASTBACKUPFILE"`
-        WORKING=`cat "$LASTWORKINGBACKUPFILE"`
+        LAST=$(cat "$LASTBACKUPFILE")
+        WORKING=$(cat "$LASTWORKINGBACKUPFILE")
         if [ "$LAST" != "$WORKING" ] ; then
             # erase the file
-            rm -f "$LAST" || exit 0
+            rm -f "$LAST" || true
         fi
     else
         # case two: backup & no working backup, erase the file
-        rm -f `cat "$LASTBACKUPFILE"` || exit 0
+        rm -f $(cat "$LASTBACKUPFILE") || true
     fi
 fi
 
 # create the backup
-TIMESTAMP=`date +%Y%m%d_%H%M%S`
+TIMESTAMP=$(date +%Y%m%d_%H%M%S)
 BKPFILE="${BKPFOLDER}/${TIMESTAMP}.tar.gz"
 tar -cvzf ${BKPFILE} ${FOLDERS}
 

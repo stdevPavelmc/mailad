@@ -30,7 +30,7 @@ function get_ldap_uri {
 
     SOUT=""
     # Fun start here
-    for DC in `echo "${HOSTAD}"` ; do
+    for DC in $(echo "${HOSTAD}") ; do
         SOUT="${SOUT} ${PROTO}://${DC}:${PORT}"
     done
 
@@ -43,11 +43,10 @@ function getfp {
 }
 
 # Get the file's fingerprint to know if it changed
-INITIALFP=`getfp`
-REPORT=`mktemp`
+INITIALFP=$(getfp)
+REPORT=$(mktemp)
+LDAPURI=$(get_ldap_uri)
 ERROR=""
-
-LDAPURI=`get_ldap_uri`
 
 # check if we need to get the everyone group
 if [ -z "$EVERYONE" ] ; then
@@ -61,7 +60,7 @@ else
     echo "===> as $LDAPBINDUSER" >> $REPORT
 
     # LDAP query
-    RESULT=`ldapsearch -o ldif-wrap=no -H "$LDAPURI" -D "$LDAPBINDUSER" -w "$LDAPBINDPASSWD" -b "$LDAPSEARCHBASE" "(&(objectCategory=person)(objectClass=user)(sAMAccountName=*))" mail | grep "mail: " | grep "@$DOMAIN" | awk '{print $2}' | tr '\n' ','`
+    RESULT=$(ldapsearch -o ldif-wrap=no -H "$LDAPURI" -D "$LDAPBINDUSER" -w "$LDAPBINDPASSWD" -b "$LDAPSEARCHBASE" "(&(objectCategory=person)(objectClass=user)(sAMAccountName=*))" mail | grep "mail: " | grep "@$DOMAIN" | awk '{print $2}' | tr '\n' ',')
 
     if [ "$RESULT" == "" ] ; then
         # empy result: Fail
@@ -78,17 +77,17 @@ else
 fi
 
 # Getting the list of the groups in the search base
-TEMP=`mktemp`
+TEMP=$(mktemp)
 ldapsearch -o ldif-wrap=no -H "$LDAPURI" -D "$LDAPBINDUSER" -w "$LDAPBINDPASSWD" -b "$LDAPSEARCHBASE" "(&(objectClass=group)(mail=*))" dn | grep "^dn:" > $TEMP
 
 declare -a RES
 # parsing the group names, as it can be coded in base64 when non default charset is used
 while IFS= read -r line ; do
-    L=`echo $line | grep '::'`
+    L=$(echo $line | grep '::')
     if [ -z "$L" ] ; then
-        R=`echo $line | cut -d " " -f 2- `
+        R=$(echo $line | cut -d " " -f 2- )
     else
-        R=`echo $line | cut -d " " -f 2-  | base64 -d`
+        R=$(echo $line | cut -d " " -f 2-  | base64 -d)
     fi
 
     # aggregate
@@ -99,10 +98,10 @@ rm $TEMP
 
 for G in "${RES[@]}"; do
     # search the group dn
-    GEM=`ldapsearch -o ldif-wrap=no -H "$LDAPURI" -D "$LDAPBINDUSER" -w "$LDAPBINDPASSWD" -b "$LDAPSEARCHBASE" "(&(objectClass=group)(distinguishedName=$G))" mail | grep "mail: " | awk '{print $2}'`
+    GEM=$(ldapsearch -o ldif-wrap=no -H "$LDAPURI" -D "$LDAPBINDUSER" -w "$LDAPBINDPASSWD" -b "$LDAPSEARCHBASE" "(&(objectClass=group)(distinguishedName=$G))" mail | grep "mail: " | awk '{print $2}')
 
     if [ "$GEM" ] ; then
-        RESULT=`ldapsearch -o ldif-wrap=no -H "$LDAPURI" -D "$LDAPBINDUSER" -w "$LDAPBINDPASSWD" -b "$LDAPSEARCHBASE" "(&(objectCategory=person)(objectClass=user)(sAMAccountName=*)(memberOf=$G))" mail | grep "mail: " | awk '{print$2}' | tr '\n' ','`
+        RESULT=$(ldapsearch -o ldif-wrap=no -H "$LDAPURI" -D "$LDAPBINDUSER" -w "$LDAPBINDPASSWD" -b "$LDAPSEARCHBASE" "(&(objectCategory=person)(objectClass=user)(sAMAccountName=*)(memberOf=$G))" mail | grep "mail: " | awk '{print$2}' | tr '\n' ',')
 
         echo "===> Parsing members of the group: $G" >> $REPORT
         echo "# Group: $G" >> /etc/postfix/aliases/auto_aliases
@@ -115,7 +114,7 @@ done
 cd /etc/postfix/aliases && postmap auto_aliases
 postfix reload 2> /dev/null
 
-FINALFP=`getfp`
+FINALFP=$(getfp)
 if [ "$INITIALFP" != "$FINALFP" ] ; then
     # need to send the email
     cat $REPORT
@@ -125,10 +124,10 @@ fi
 # check for the sysadmin group alias if set
 if [ "$SYSADMINS" ] ; then
     # search for it on the aliases files
-    R=`cat /etc/postfix/aliases/auto_aliases /etc/postfix/aliases/alias_virtuales | awk '{print $1}' | grep "$SYSADMINS"`
+    R=$(cat /etc/postfix/aliases/auto_aliases /etc/postfix/aliases/alias_virtuales | awk '{print $1}' | grep "$SYSADMINS")
     if [ -z "$R" ] ; then
         # build the email
-        F=`mktemp`
+        F=$(mktemp)
         echo "You have a SYSADMIN group configured to recieve notifications in /etc/mailad/mailad.conf" > $F
         echo "but the group checking & updating procedure can't find the group you mention in the config," >> $F
         echo "that means you are losing notification emails, daily mail summaries, etc." >> $F

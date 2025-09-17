@@ -1,0 +1,72 @@
+# Authentication for system users. Included from auth.conf.
+#
+# <https://doc.dovecot.org/latest/core/config/auth/passdb.html>
+# <https://doc.dovecot.org/latest/core/config/auth/userdb.html>
+
+# Driver is only needed if the section name is not same as driver's name.
+
+# PAM authentication. Preferred nowadays by most systems.
+# PAM is typically used with either userdb passwd or userdb static.
+# REMEMBER: You'll need /etc/pam.d/dovecot file created for PAM
+# authentication to actually work. <https://doc.dovecot.org/latest/core/config/auth/databases/pam.html>
+passdb pam {
+#  driver = pam
+#  session = yes
+#  setcred = yes
+#  failure_show_msg = yes
+#  max_requests = 20
+#  service_name = dovecot
+#  skip = authenticated 
+#  fields {
+#  }
+}
+
+userdb passwd {
+}
+
+# System users (NSS, /etc/passwd, or similiar).
+# In many systems nowadays this uses Name Service Switch, which is
+# configured in /etc/nsswitch.conf. <https://doc.dovecot.org/latest/core/config/auth/databases/passwd.html>
+#passdb passwb {
+#}
+
+# PAM-like authentication for OpenBSD.
+# <https://doc.dovecot.org/latest/core/config/auth/databases/bsd.html>
+#passdb bsdauth {
+#}
+
+##
+## User databases
+##
+
+# System users (NSS, /etc/passwd, or similiar). In many systems nowadays this
+# uses Name Service Switch, which is configured in /etc/nsswitch.conf.
+#userdb passwd-file {
+  #driver = passwd-file
+  #auth_username_format=%{user|lower}
+  #passwd_file_path = /etc/passwd
+  #fields {
+  #  user= %{user|lower}
+  #  name = %{user|lower}
+  #  home = /var/vmail/%{user}
+  #}
+  #skip = found
+#}
+
+# Static settings generated from template <https://doc.dovecot.org/latest/core/config/auth/databases/static.html>
+#userdb static {
+  #driver = static
+  # Can return anything a userdb could normally return. For example:
+  # fields {
+  #   uid = 500
+  #   gid = 500
+  #   home = /var/mail/%{user}
+  # }
+  # LDA and LMTP needs to look up users only from the userdb. This of course
+  # doesn't work with static userdb because there is no list of users.
+  # Normally static userdb handles this by doing a passdb lookup. This works
+  # with most passdbs, with PAM being the most notable exception. If you do
+  # the user verification another way, you can add allow_all_users=yes
+  # in which case the passdb lookup is skipped.
+  #allow_all_users = yes
+#}

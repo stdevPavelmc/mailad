@@ -199,7 +199,7 @@ else
     fi
 fi
 # sum the logs
-cat $LOGP > $LOG
+cat $LOGP >> $LOG
 
 ### Send an email to the mail admin with auth as sender
 F=$(fingerprint)
@@ -260,6 +260,60 @@ if [ $R -ne 0 ] ; then
 else
     # ok
     echo "===> Ok: Authenticated users can send emails to the outside world"
+fi
+# sum the logs
+cat $LOGP >> $LOG
+
+### Send an email to the postmaster from outside
+$SOFT -s "$SERVER" -t "postmaster@$DOMAIN" -f "fake@example.com"  > $LOGP
+R=$?
+if [ $R -ne 0 ] ; then
+    # error
+    echo "=========================================================="
+    echo "ERROR: Can't send a mail to the postmaster as an outside"
+    echo "       user using SMTP, that needs to be posssble."
+    echo " "
+    echo "COMMENT: It's expected that your server can accept an email"
+    echo "         to the postmaster alias from an external user,"
+    echo "         that's needed as part of the RFC of email to report"
+    echo "         abuse or problems. Please check your configuration"
+    echo " "
+    echo "Exit code: $R"
+    echo "Logs follow"
+    echo "=========================================================="
+    cat $LOGP
+    do_error
+else
+    # ok
+    echo "===> Ok: External users can send emails to the postmaster alias."
+fi
+# sum the logs
+cat $LOGP >> $LOG
+
+### Send an email to the postmaster alias as a valid user with auth
+$SOFT -s "$SERVER" -p 587 -tls -a PLAIN -au "$ADMINMAIL" -ap "$PASS" \
+    -t "postmaster@$DOMAIN" -f "$ADMINMAIL"  > $LOGP
+R=$?
+if [ $R -ne 0 ] ; then
+    # error
+    echo "=========================================================="
+    echo "ERROR: Can't send a mail to the postmaster as a valid auth"
+    echo "       user using SUBMISSION (587), that needs to be"
+    echo "       posssble."
+    echo " "
+    echo "COMMENT: It's expected that your server can send an email"
+    echo "         to the postmaster from a valid user of the"
+    echo "         domain using auth, some alias unfolding is failing"
+    echo "         on the configuration, please check."
+    echo " "
+    echo "Exit code: $R"
+    echo "Logs follow"
+    echo "=========================================================="
+    cat $LOGP
+    do_error
+else
+    # ok
+    echo "===> Ok: Authenticated users can send emails to the postmaster alias."
 fi
 # sum the logs
 cat $LOGP >> $LOG
@@ -344,7 +398,7 @@ cat $LOGP >> $LOG
 
 ### Send an email as an user and auth as other (id spoofing)
 $SOFT -s "$SERVER" -p 587 -tls -a PLAIN -au "$ADMINMAIL" -ap "$PASS" \
-    -t "$ADMINMAIL" -f "$USER@$DOMAIN" > $LOGP
+    -t "$ADMINMAIL" -f "$NACUSER" > $LOGP
 R=$?
 if [ $R -ne 24 ] ; then
     # error
@@ -436,7 +490,7 @@ if [ "$ENABLE_SPAMD" == "yes" -o "$ENABLE_SPAMD" == "Yes" ] ; then
         fi
     fi
     # sum the logs
-    cat $LOGP > $LOG
+    cat $LOGP >> $LOG
 fi
 
 # NATIONAL

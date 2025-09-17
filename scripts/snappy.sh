@@ -19,7 +19,7 @@ export DEBIAN_FRONTEND=noninteractive
 
 # notice
 echo "===> Remove RoundCube if it was previosly installed"
-apt-get remove -y $ROUNDCUBE_PKGS
+apt-get remove ${APT_OPTS} $ROUNDCUBE_PKGS
 
 # notice
 echo "===> Installing SnappyMail webmail"
@@ -48,7 +48,7 @@ if [ ! -z "$PROXY_HOST" -a ! -z "$PROXY_PORT" ] ; then
 fi
 
 # install php dependencies:
-apt-get install -y $SNAPPY_PKGS
+apt-get install ${APT_OPTS} $SNAPPY_PKGS
 
 # preserve PWD
 BPWD=$(pwd)
@@ -134,11 +134,11 @@ VARS="${VARS} WWW_ROOT"
 
 # replace vars
 echo "===> Provisioning Nginx..."
-for v in `echo $VARS | xargs` ; do
+for v in $(echo $VARS | xargs) ; do
     # get the var content
     CONTp=${!v}
 
-    # escape possible "/" in there
+    # escape possible "/" in there [KEEP THE BACKTICKS]
     CONT=`echo ${CONTp//\//\\\\/}`
 
     sed -i s/"\_$v\_"/"$CONT"/g ${NGINX_CONFIG}
@@ -230,11 +230,11 @@ VARS="${VARS} PASSHASH LDAP_HOSTS LOGS DATETIME"
 
 for f in $(find "${DEFAULTFOLDER}/" -type f -type f \( -name "*.json" -o -name "*.ini" \)) ; do
     echo "===> Provisioning $(echo $f | rev | cut -d '/' -f 1 | rev)..."
-    for v in `echo $VARS | xargs` ; do
+    for v in $(echo $VARS | xargs) ; do
         # get the var content
         CONTp=${!v}
 
-        # escape possible "/" in there
+        # escape possible "/" in there [KEEP THE BACKTICKS]
         CONT=`echo ${CONTp//\//\\\\/}`
 
         sed -i s/"\_$v\_"/"$CONT"/g ${f}
@@ -243,4 +243,4 @@ done
 
 # clean
 echo "===> Cleaning..."
-apt-get autoremove -y
+apt-get autoremove ${APT_OPTS}
