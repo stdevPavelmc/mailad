@@ -18,17 +18,17 @@ source common.conf
 source /etc/mailad/mailad.conf
 
 # get the LDAP URI
-LDAPURI=`get_ldap_uri`
+LDAPURI=$(get_ldap_uri)
 
 echo "===> Searching for the user that owns the email: $ADMINMAIL"
 
-TEMP=`mktemp`
+TEMP=$(mktemp)
 ldapsearch -o ldif-wrap=no -H "$LDAPURI" -D "$LDAPBINDUSER" -w "$LDAPBINDPASSWD" -b "$LDAPSEARCHBASE" "(&(objectClass=person)(mail=$ADMINMAIL))" > $TEMP
-RESULTS=`cat $TEMP | grep "numEntries: " | awk '{print $3}'`
+RESULTS=$(cat $TEMP | grep "numEntries: " | awk '{print $3}')
 
 if [ -z "$RESULTS" ] ; then
     # check for a bad LDAPSEARCHBASE
-    BSD=`cat $TEMP | grep "acl_read"`
+    BSD=$(cat $TEMP | grep "acl_read")
     if [ -z "$BSD" ] ; then
         # fail
         echo "================================================================================="
@@ -59,7 +59,7 @@ else
 fi
 
 # Extract the office parameter "physicalDeliveryOfficeName"
-OFFICE=`cat $TEMP | grep physicalDeliveryOfficeName | awk '{print $2}'`
+OFFICE=$(cat $TEMP | grep physicalDeliveryOfficeName | awk '{print $2}')
 if [ "$OFFICE" == "$VMAILSTORAGE" ] ; then
     # fail, old config
     echo "================================================================================="
@@ -74,11 +74,11 @@ if [ "$OFFICE" == "$VMAILSTORAGE" ] ; then
 fi
 
 # Extract the web page parameter "wWWHomePage"
-WP=`cat $TEMP | grep wWWHomePage | awk '{print $2}'`
+WP=$(cat $TEMP | grep wWWHomePage | awk '{print $2}')
 if [ "$WP" != "" ] ; then
     # success 1/2
     echo "===> Found some text on the wWWHomePage parameter... hum..."
-    LAST=`echo "${WP: -1}"`
+    LAST=$(echo "${WP: -1}")
     if [ "$LAST" == "/" ] ; then
         # fail old config
         echo "================================================================================="
@@ -97,5 +97,5 @@ fi
 # succcess
 echo "===> User $ADMINMAIL is configured ok"
 echo "===> You can use that user as an example to set up the others!"
-rm $TEMP || exit 0
+rm $TEMP || true
 exit 0

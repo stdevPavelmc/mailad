@@ -21,7 +21,7 @@ echo "===> Starting a selective restore of custom data"
 # check if the last backup file exist
 if [ -f "${LASTWORKINGBACKUPFILE}" ] ; then
     # check if the content exist
-    BKPFILE=`cat ${LASTWORKINGBACKUPFILE}`
+    BKPFILE=$(cat ${LASTWORKINGBACKUPFILE})
 
     if [ ! -f "${BKPFILE}" ] ; then
         # backup trace there but no backup?

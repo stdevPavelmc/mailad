@@ -20,6 +20,20 @@ This is a note for developers about the recommended tags to keep track of the ch
 Dates must be YEAR-MONTH-DAY
 -->
 
+## [v1.2.5] - 2025-09-xx-beta
+
+- Added: rsyslog as a dependency on all OS/versions, as some bare metal server deploys don't have it.
+- Added: Support for Debian 13 "trixie", easing the way for Ubuntu 16.04 next year.
+-Added: Two more tests about the alias routing feature of postfix to verify it's working properly.
+- Changed: On Debian 13, the TLS security is more strict now, so you will need to copy the samba CA cert file from the samba server to the mail server host by hand if the samba server use a self signed cert. Other alternatives are 1- use a valid cert 2- use a non secure connection with the LDAP server.
+- Changed: Debian 13 updated the dovecot package from 2.3 to 2.4 so some features changed and the dovecot support was rewrited entirely on MailAD, major issues are the removal of the dovecot mailbox replica and the dovecot cache auth, the new dovecot cache auth is based on the new dovecot auth system and is more secure.
+- Changed: APT is made less noisy when installing packages
+- Changed: Shell [Bash] code standarization on nested and exit command calls to use just one way.
+- Changed: Modern distros has changed spamassassin to spamd as a service name and package, we made changes to support that.
+- Fixed: When using multi AD DC setups the uri string construction algorithn was slipping a space and spoiling the whole feature; detected and fixed.
+- Fixed: When provisioning some times the auto-backup and restore mechanism was failing [if some features was not activated] and dumping noise over the posvision log. 
+
+
 ## [v1.2.4] - 2025-06-10
 
 - Changed: Added & improved [AI] translations to major doc/features files in the project

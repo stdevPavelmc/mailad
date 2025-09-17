@@ -28,23 +28,23 @@ PMFILES="/etc/postfix/rules/lista_negra /etc/postfix/rules/everyone_list_check /
 export DEBIAN_FRONTEND=noninteractive
 
 # capture the local path
-P=`pwd`
+P=$(pwd)
 
 #### Some previous processing of the vars
 
 # Calc the max size of the message from the MB parameter in the vars
 # plus a little percent to allow for encoding grow
 t="$MESSAGESIZE"
-MESSAGESIZE=`echo $(( $t * 1132462))`
+MESSAGESIZE=$(echo $(( $t * 1132462)))
 
 # detect the dovecot version to pick the right files to sync
-DOVERSION=`dpkg -l | grep dovecot-core | awk '{print $3}' | cut -c3-5`
+DOVERSION=$(dpkg -l | grep dovecot-core | awk '{print $3}' | cut -c3-5)
 if [ "$DOVERSION" == "" ] ; then
     # error, must not be empty
-    dovecot_version
+    dovecot_version "not detected"
 else
     # ok, check if it's a supported version
-    if [ "$DOVERSION" == "2.2" -o "$DOVERSION" == "2.3" ] ; then
+    if [ "$DOVERSION" == "2.2" -o "$DOVERSION" == "2.3" -o "$DOVERSION" == "2.4" ] ; then
         # supported versions
         echo "===> Detected a compatible dovecot version: $DOVERSION"
     else
@@ -67,10 +67,10 @@ if [ -z "$SYSADMINS" ] ; then
 fi
 
 # add the escaped sysadmins var
-ESC_SYSADMINS=`echo $SYSADMINS | sed s/"@"/"\\\@"/`
+ESC_SYSADMINS=$(echo $SYSADMINS | sed s/"@"/"\\\@"/)
 
 # get the LDAP URI
-LDAPURI=`get_ldap_uri`
+LDAPURI=$(get_ldap_uri)
 
 # check if the optional mail storage is enabled
 MBSUBFOLDER=''
@@ -83,13 +83,13 @@ fi
 VARS="${VARS} LDAPURI ESC_SYSADMINS MBSUBFOLDER"
 
 # replace the vars in the folders
-for f in `echo "/etc/postfix /etc/dovecot /etc/amavis" | xargs` ; do
+for f in $(echo "/etc/postfix /etc/dovecot /etc/amavis" | xargs) ; do
     echo "===> Provisioning $f..."
-    for v in `echo $VARS | xargs` ; do
+    for v in $(echo $VARS | xargs) ; do
         # get the var content
         CONTp=${!v}
 
-        # escape possible "/" in there
+        # escape possible "/" in there [KEEP THE BACKTICKS]
         CONT=`echo ${CONTp//\//\\\\/}`
 
         find "$f/" -type f -exec \
@@ -144,7 +144,7 @@ chmod +x "$P/scripts/check_maildirs.sh"
 ln -s "$P/scripts/check_maildirs.sh" /etc/cron.monthly/check_maildirs
 
 # Dovecot Sieve config: create the directory if not present
-mkdir -p /var/lib/dovecot/sieve/ || exit 0
+mkdir -p /var/lib/dovecot/sieve/ || true
 
 # Create a default junk filter if required to
 if [ "$DOVECOT_SPAM_FILTER_ENABLED" == "yes" -o "$DOVECOT_SPAM_FILTER_ENABLED" == "Yes" -o "$DOVECOT_SPAM_FILTER_ENABLED" == "YES" ] ; then
@@ -180,7 +180,7 @@ if [ "$EVERYONE" != "" ] ; then
     # grant access from outside
     if [ "$EVERYONE_ALLOW_EXTERNAL_ACCESS" == "yes" -o "$EVERYONE_ALLOW_EXTERNAL_ACCESS" == "Yes" ] ; then
         # disable the outside protection from the main.cf file
-        T=`mktemp`
+        T=$(mktemp)
         cat /etc/postfix/main.cf | grep -v "veryone" > $T
         cat $T > /etc/postfix/main.cf
         rm $T
@@ -188,13 +188,13 @@ if [ "$EVERYONE" != "" ] ; then
 fi
 
 # process postmap files
-for f in `echo "$PMFILES" | xargs` ; do
+for f in $(echo "$PMFILES" | xargs) ; do
     postmap $f
 done
 
 # local aliases and redirect to sysadmins all local mail
 ALIASES="/etc/aliases"
-rm -rdf $ALIASES || exit 0
+rm -rdf $ALIASES || true
 echo "# File modified at provision time, #MailAD" > $ALIASES
 echo "postmaster:       root" >> $ALIASES
 echo "clamav:		root" >> $ALIASES
@@ -223,7 +223,7 @@ if [ "$ENABLE_AV" == "no" -o "$ENABLE_AV" == "No" -o -z "$ENABLE_AV" ] ; then
     disable_av
 
     # remove the link for the test of AV activation
-    rm -f /etc/cron.hourly/av_filter_on_clamav_alive || exit 0
+    rm -f /etc/cron.hourly/av_filter_on_clamav_alive || true
 else
     # subject config file
     FILE="/etc/clamav/freshclam.conf"
@@ -231,7 +231,7 @@ else
     ### Configure the services
     if [ "$USE_AV_ALTERNATE_MIRROR" != "no" -o "$USE_AV_ALTERNATE_MIRROR" != "No" -o "$USE_AV_ALTERNATE_MIRROR" != "" ] ; then
         # check if the alternates mirror haves an address
-        R=`echo "${AV_ALT_MIRRORS}" | grep -P "(.*\.)+"`
+        R=$(echo "${AV_ALT_MIRRORS}" | grep -P "(.*\.)+")
         if [ -z "$R" ] ; then
             # no alternate mirror detected on the config file
             echo "========================================================================"
@@ -253,14 +253,14 @@ else
             cat /tmp/1 > $FILE
 
             # dump the config
-            for M in `echo "${AV_ALT_MIRRORS}" | xargs` ;  do
+            for M in $(echo "${AV_ALT_MIRRORS}" | xargs) ;  do
                 # if a proxy is set remove the 'http://' and 'https://' from the variables
 
                 if [ ! -z "$PROXY_HOST" -a ! -z "$PROXY_PORT" ] ; then
                     # general proxy, but we must use it ?
                     if [ "$AV_UPDATES_USE_PROXY" == "yes" -o "$AV_UPDATES_USE_PROXY" == "Yes" ] ; then
                         # ok, by all means add proxy remove the prefix
-                        Mm=`echo ${M} | sed s/'http:\/\/'//g | sed s/'https:\/\/'//g`
+                        Mm=$(echo ${M} | sed s/'http:\/\/'//g | sed s/'https:\/\/'//g)
                         echo "DatabaseMirror ${Mm}" >> $FILE
                     else
                         # no proxy
@@ -300,7 +300,7 @@ else
     enable_av
 
     # set the hourly task to activate the filtering when fresclam end the update
-    rm -f /etc/cron.hourly/av_filter_on_clamav_alive || exit 0
+    rm -f /etc/cron.hourly/av_filter_on_clamav_alive || true
     ln -s "$P/var/clamav/activate_clamav_on_alive.sh" /etc/cron.hourly/av_filter_on_clamav_alive
     echo "===> AV filtering provision is in place, but activation is delayed, we must wait for freshclam"
     echo "===> to update the AV database before enabling it or you will lose emails in the mean time"
@@ -409,14 +409,14 @@ if [ "$ENABLE_DISCLAIMER" == "yes" -o "$ENABLE_DISCLAIMER" == "Yes" ] ; then
     # enable disclaimer
     echo "===> Disclaimer enabled on config, installing altermime..."
 
-    apt-get install $DEBIAN_DISCLAIMER_PKGS -y
+    apt-get install ${APT_OPTS} $DEBIAN_DISCLAIMER_PKGS
 
     # notice
     echo "===> Enabling Altermime tweaks for disclaimer addition"
 
     # creating the users's space
     useradd -r -c "Postfix Filters" -d /var/spool/filter filter
-    mkdir -p /var/spool/filter || exit 0
+    mkdir -p /var/spool/filter || true
     chown filter:filter /var/spool/filter
     chmod 750 /var/spool/filter
 
@@ -439,7 +439,7 @@ else
     echo "===> Disclaimer disabled on config, disabling"
 
     # remove the altermime package
-    apt-get purge $DEBIAN_DISCLAIMER_PKGS -y || exit 0
+    apt-get purge ${APT_OPTS} $DEBIAN_DISCLAIMER_PKGS || true
 
     # disable the dfilt line in the master.cf file on postfix
     sed -i s/"content_filter=dfilt:"/"content_filter="/g /etc/postfix/master.cf
@@ -508,7 +508,7 @@ fi
 # optional stats
 if [ "$OPT_STATS" != "No" -o "$OPT_STATS" != "no" ] ; then
     # install swaks to handle the forged email as the mailadmin
-    apt-get install swaks
+    apt-get install ${APT_OPTS} swaks
     # and we have stats, thanks
     echo "===> Sending feedback to the creator & $ADMINMAIL"
     ./scripts/feedback.sh

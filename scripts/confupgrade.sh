@@ -9,7 +9,7 @@
 #   - Warn the user about a new features or config var he need to know
 
 # Get all the vars
-CONVARS=`cat /etc/mailad/mailad.conf | grep -v "#" | grep "=" | cut -d "=" -f 1 | tr '\n' ' '`
+CONVARS=$(cat /etc/mailad/mailad.conf | grep -v "#" | grep "=" | cut -d "=" -f 1 | tr '\n' ' ')
 
 # load the actual confver
 source ./mailad.conf
@@ -35,14 +35,14 @@ echo "===> Different versions of config file, doing upgrade"
 CONFVER=$NCONFVER
 
 # backup the actual config with a timestamp
-TS=`date +"%Y%m%d_%H%M%S"`
+TS=$(date +"%Y%m%d_%H%M%S")
 cp /etc/mailad/mailad.conf /etc/mailad/mailad.conf_$TS
 
 # create a target file to work with
 cat mailad.conf > /etc/mailad/mailad.conf
 
 # loop in the options and switch them as needed
-for O in `echo $CONVARS | xargs` ; do
+for O in $(echo $CONVARS | xargs) ; do
     # get the raw content of the var
     Vr=${!O}
     # excape possibles / in the string

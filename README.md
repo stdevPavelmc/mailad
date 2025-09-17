@@ -26,6 +26,7 @@ The recommended OS selection is as follows:
 
 | OS | Active Support | Legacy | Discontinued |
 |:--- |:---:|:---:|:---:|
+| Debian Trixie 13 | ✅ |  |  |
 | Ubuntu Noble 24.04 LTS | ✅ |  |  |
 | Debian Bookworm 12 | ✅ |  |  |
 | Ubuntu Jammy 22.04 LTS |  | ⚠️ |  |

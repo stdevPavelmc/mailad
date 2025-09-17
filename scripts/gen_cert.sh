@@ -47,7 +47,7 @@ else
     echo "===> Generating a Self Signed Certificate for this node"
 
     # moving to a temp dir to work
-    TMP=`mktemp -d`
+    TMP=$(mktemp -d)
     cd "$TMP"
 
     # Generate self signed root CA cert
