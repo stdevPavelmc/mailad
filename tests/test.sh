@@ -199,7 +199,7 @@ else
     fi
 fi
 # sum the logs
-cat $LOGP > $LOG
+cat $LOGP >> $LOG
 
 ### Send an email to the mail admin with auth as sender
 F=$(fingerprint)
@@ -490,7 +490,7 @@ if [ "$ENABLE_SPAMD" == "yes" -o "$ENABLE_SPAMD" == "Yes" ] ; then
         fi
     fi
     # sum the logs
-    cat $LOGP > $LOG
+    cat $LOGP >> $LOG
 fi
 
 # NATIONAL
