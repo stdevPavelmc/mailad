@@ -17,7 +17,7 @@ LASTWORKINGBACKUPFILE="${LIBFOLDER}/latest_working_backup"
 BKPFOLDER="/var/backups/mailad"
 
 # fun start here
-LIST=`ls $BKPFOLDER`
+LIST=$(ls $BKPFOLDER)
 if [ -z "$LIST" ] ; then
     # no backups
     echo "===> No backups found on the backup folder, exit."
@@ -26,10 +26,10 @@ fi
 
 # notice
 c=1
-tf=`mktemp -d`
+tf=$(mktemp -d)
 echo "===> We found the following backups, pick one to restore:"
-for f in `echo "$LIST" | sort -r | xargs` ; do
-    n=`echo $f | cut -d "." -f 1`
+for f in $(echo "$LIST" | sort -r | xargs) ; do
+    n=$(echo $f | cut -d "." -f 1)
     printf "    %s)\t%s\n" $c $n
     echo "$f" > "$tf/$c"
     c=$(( $c+1 ))
@@ -44,7 +44,7 @@ if [ $BKPINDEX -ge $c ] ; then
     exit 0
 else
     # valid file
-    F=`cat $tf/$BKPINDEX`
+    F=$(cat $tf/$BKPINDEX)
     FILE="$BKPFOLDER/$F"
     if [ ! -f "$FILE" ] ; then
         echo "===> You selected a non valid option, abort!"

@@ -22,7 +22,7 @@ UPSTREAM_VERSION_URL="${REPO_URL}/raw/master/VERSION"
 UPSTREAM_VERSION_TMP="/tmp/VERSION"
 UPSTREAM_VERSION='v1.0.0'
 VERSION='v0.1.0'
-MAIL=`mktemp`
+MAIL=$(mktemp)
 
 # TODO
 # - Add the proxy settings if present, data from /etc/mailad/mailad.conf
@@ -56,7 +56,7 @@ fi
 if [ -f "${CHANGELOG}" ] ; then
     # sample:
     # ## [v1.0.0] - 2022-09-04 v1.0.0
-    VERSION=`cat "${CHANGELOG}" | grep "##" | head -n 1 | awk '{print $2}' | tr -d "[]"`
+    VERSION=$(cat "${CHANGELOG}" | grep "##" | head -n 1 | awk '{print $2}' | tr -d "[]")
     
     # DEBUG
     if [ "${DEBUG}" ] ; then
@@ -70,7 +70,7 @@ fi
 # Get upstream version
 if wget -q "${UPSTREAM_VERSION_URL}" -O "${UPSTREAM_VERSION_TMP}" ; then
     # All fine, got file
-    UPSTREAM_VERSION=`cat "${UPSTREAM_VERSION_TMP}" | head -n 1`
+    UPSTREAM_VERSION=$(cat "${UPSTREAM_VERSION_TMP}" | head -n 1)
 
     # DEBUG
     if [ "${DEBUG}" ] ; then
@@ -85,7 +85,7 @@ if wget -q "${UPSTREAM_VERSION_URL}" -O "${UPSTREAM_VERSION_TMP}" ; then
         TMPCGL="/tmp/CHANGELOG.md"
         rm "${TMPCGL}" 2>/dev/null
         wget -q "${REPO_URL}/raw/master/CHANGELOG.md" -O ${TMPCGL}
-        CHANGES=`diff "${TMPCGL}" "${CHANGELOG}" | sed s/"^< "/''/g | egrep -v -E -i '^.{1,3},.{1,3}d.{1,3}'`
+        CHANGES=$(diff "${TMPCGL}" "${CHANGELOG}" | sed s/"^< "/''/g | egrep -v -E -i '^.{1,3},.{1,3}d.{1,3}')
 
         # output message
         echo "Hi there" > ${MAIL}

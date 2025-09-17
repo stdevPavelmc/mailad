@@ -45,17 +45,17 @@ if [ -f /etc/os-release ] ; then
     debian_remove_pkgs
 
     # remove packages from deps.sh
-    apt-get purge -yq ${COMMON_DEPS_PKGS}
+    apt-get purge ${APT_OPTS} ${COMMON_DEPS_PKGS}
 
     # remove webmails packages and data if there
-    apt-get purge -yq ${ROUNDCUBE_PKGS} ${SNAPPY_PKGS}
+    apt-get purge ${APT_OPTS} ${ROUNDCUBE_PKGS} ${SNAPPY_PKGS}
     rm -rdf ${SNAPPY_DIR} || true
 
     # Remove webmail
-    apt-get purge -yq ${WEBSERVER_PKGS}
+    apt-get purge ${APT_OPTS} ${WEBSERVER_PKGS}
 
     # autoremove
-    apt-get autoremove -yq
+    apt-get autoremove ${APT_OPTS}
 else
     # Unknown
     echo "==========================================================================="

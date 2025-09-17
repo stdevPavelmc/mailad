@@ -152,6 +152,10 @@ mail_local_out = check_recipient_access regexp:/etc/postfix/rules/filter_loc
 ## Everyone
 everyone_list = check_sender_access regexp:/etc/postfix/rules/filter_loc
 
+# Policy filtering
+# if fails or not answer ignore the response and follow with the other rules
+smtpd_policy_service_default_action = DUNNO
+
 #### POSTSCREEN filtering on port 25
 # By default postscreen withelist the mynetworks net.
 postscreen_access_list = permit_mynetworks
@@ -201,18 +205,14 @@ smtpd_sender_restrictions =
     # check everyone list protection
     check_recipient_access hash:/etc/postfix/rules/everyone_list_check
 
-    # Permite solo envios con LOGIN
+    # Permite solo envios con auth
     permit_sasl_authenticated
 
+# local recipient maps before the recipient restrictions
+local_recipient_maps = $alias_maps $virtual_alias_maps
 
 # Restricciones de destinatarios
 smtpd_recipient_restrictions =
-    # politicas de buzón de correos (quota devecot)
-    check_policy_service inet:127.0.0.1:12340
-
-    # check spf settings
-    check_policy_service unix:private/policy-spf
-
     # tengo que dejar permit mynetworks arriba, porque ahora permit soy yo
     permit_mynetworks
 
@@ -230,6 +230,12 @@ smtpd_recipient_restrictions =
     # rechazar si no es para mi destino cuando viene de afuera
     reject_unauth_destination
 
+    # politicas de buzón de correos (quota devecot)
+    check_policy_service inet:127.0.0.1:12340
+
+    # check spf settings
+    check_policy_service unix:private/policy-spf
+
     # Permite si se ha autenticado y haz llegado hasta aqui
     permit_sasl_authenticated
 
@@ -242,8 +248,8 @@ receive_override_options = no_address_mappings
 
 # Debug para diagnosticos sobre esta IP...
 # revisar /var/log/mail.log, recuerda desactivarlo al final
-#debug_peer_list = 10.0.3.161
-#debug_peer_level = 16
+#debug_peer_list = 10.0.3.1
+#debug_peer_level = 2
 
 # declaracion del dominio virtual...
 virtual_mailbox_domains = _DOMAIN_

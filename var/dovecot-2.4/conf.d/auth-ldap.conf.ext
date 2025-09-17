@@ -3,38 +3,62 @@
 # <https://doc.dovecot.org/latest/core/config/auth/databases/ldap.html>
 
 ## See <https://doc.dovecot.org/latest/core/config/dict.html#ldap>
- 
-#ldap_uris = ldap://localhost
-#ldap_auth_dn = cn=admin 
-#ldap_auth_dn_password = supersecret
 
-#passdb ldap {
-#  ldap_filter = (&(objectClass=posixAccount)(uid=%{user}))
-#  ldap_bind = no
+# General settings
+ldap_version = 3
+ldap_uris = _LDAPURI_
+ldap_auth_dn = _LDAPBINDUSER_
+ldap_auth_dn_password = _LDAPBINDPASSWD_
+ldap_base = _LDAPSEARCHBASE_
 
-#  fields {
-    # user=%{ldap:uid}
-    # password=%{ldap:userPassword}
-    # userdb_home=%{ldap:homeDirectory}
-    # userdb_uid=%{ldap:uidNumber}
-    # userdb_gid=%{ldap:gidNumber}
-#  }
-#}
+# password and user data retrieval
+passdb ldap {
+  #   %u - username as the user pass it, same as %{user}
+  #   %n - user part in user@domain, same as %u if there's no domain
+  #   %d - domain part in user@domain, empty if user there's no domain
+  # ldap_filter = (&(objectClass=posixAccount)(uid=%{user}))
+  ldap_filter = (&(objectClass=person)(mail=%{user})(|(userAccountControl=512)(userAccountControl=66048)(userAccountControl=8398120)))
+  
+  # bind as the user to test passwords once you get a result.
+  ldap_bind = yes
+
+  # fields returned user=sAMAccountName to match identity matching on postfix
+  fields {
+    # mandatory atributes
+    user = %{ldap:sAMAccountName}
+    
+    # optional attributes
+    userdb_home = _VMAILSTORAGE_/_MBSUBFOLDER_%{user|username}
+    userdb_uid = _VMAILUID_
+    userdb_gid = _VMAILGID_
+    quota_storage_size = %{ldap:wWWHomePage | default}
+  }
+}
 
 # "prefetch" user database means that the passdb already provided the
 # needed information and there's no need to do a separate userdb lookup.
 # <https://doc.dovecot.org/latest/core/config/auth/databases/prefetch.html>
-#userdb prefetch {
-#}
+userdb prefetch {
+  driver = prefetch
+}
 
-#userdb ldap {
-#  ldap_filter = (&(objectClass=posixAccount)(uid=%{user}))
-
-# Default fields can be used to specify defaults that LDAP may override
-#  fields {
-#    home=/home/virtual/%{user}
-#  }
-#}
+# yes, quota and others need it, prefetch is whortless without this
+userdb ldap {
+  #   %u - username as the user pass it, same as %{user}
+  #   %n - user part in user@domain, same as %u if there's no domain
+  #   %d - domain part in user@domain, empty if user there's no domain
+  # ldap_filter = (&(objectClass=posixAccount)(uid=%{user}))
+  ldap_filter = (&(objectClass=person)(mail=%{user})(|(userAccountControl=512)(userAccountControl=66048)(userAccountControl=8398120)))
+  
+  # fields returned user=sAMAccountName to match identity matching on postfix
+  fields {
+    user = %{ldap:sAMAccountName}
+    home = _VMAILSTORAGE_/_MBSUBFOLDER_%{user|username}
+    uid = _VMAILUID_
+    gid = _VMAILGID_
+    quota_storage_size = %{ldap:wWWHomePage | default}
+  }
+}
 
 # If you don't have any user-specific settings, you can avoid the userdb LDAP
 # lookup by using userdb static instead of userdb ldap, for example:

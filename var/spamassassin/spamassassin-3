@@ -19,9 +19,9 @@ if [ "$SA_PROXY" ] ; then
     export https_proxy
 fi
 
-test -x /usr/bin/sa-update || exit 0
-test -x /etc/init.d/spamassassin || exit 0
-command -v gpg > /dev/null || exit 0
+test -x /usr/bin/sa-update || true
+test -x /etc/init.d/spamassassin || true
+command -v gpg > /dev/null || true
 
 if [ "$CRON" = "0" ] ; then
     exit 0

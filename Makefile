@@ -8,13 +8,13 @@ conf: ## Create a configuration file in /etc/
 	scripts/conf.sh
 
 clean: ## Clean the environment to have a fresh start (preserve SSL/DH certs in /etc/ssl)
-	-rm deps conf-check install provision all || exit 0
+	-rm deps conf-check install provision all || true
 
 reset: clean install-purge ## Reset all configurations and remove/purge all softwares & certificates
-	-rm certs || exit 0
-	-rm /etc/ssl/private/mail.key /etc/ssl/certs/mail.crt /etc/ssl/certs/cacert.pem || exit 0
-	-rm -rdf /etc/dovecot || exit 0
-	-rm -rdf /etc/postfix || exit 0
+	-rm certs || true
+	-rm /etc/ssl/private/mail.key /etc/ssl/certs/mail.crt /etc/ssl/certs/cacert.pem || true
+	-rm -rdf /etc/dovecot || true
+	-rm -rdf /etc/postfix || true
 
 deps: ## Install all the needed deps to test & build it
 	scripts/deps.sh
@@ -41,9 +41,9 @@ install: conf-check deps certs ## Install all the software from the repository
 
 install-purge: deps ## Uninstall software already installed for MailAD (and purge config also)
 	scripts/install_purge.sh
-	rm install || exit 0
-	rm conf-check || exit 0
-	rm deps || exit 0
+	rm install || true
+	rm conf-check || true
+	rm deps || true
 
 provision: install ## Provision the server, this will copy over the config files and set the vars
 	# Check for config upgrades
@@ -58,8 +58,8 @@ all: provision ## Run all targets logically ordered, run this to make it all
 
 force-provision: ## Force a re-provisioning of the system
 	# removing the targets files
-	rm provision || exit 0
-	rm conf-check || exit 0
+	rm provision || true
+	rm conf-check || true
 	# Check for config upgrades
 	scripts/confupgrade.sh
 	# configuration checks
@@ -104,8 +104,8 @@ samba: ## Scaffold a samba AD-DC for testing, just for testing purposes!
 	utils/samba_scaffold.sh
 
 purge-backups: ## WARNING, DANGEROUS! this command will erase the backup folder
-	rm -rdf /var/lib/mailad || exit 0
-	rm -rdf /var/backups/mailad || exit 0
+	rm -rdf /var/lib/mailad || true
+	rm -rdf /var/backups/mailad || true
 
 help:
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
