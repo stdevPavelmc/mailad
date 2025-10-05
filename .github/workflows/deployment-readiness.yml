@@ -1,0 +1,345 @@
+name: Deployment Readiness Tests
+
+on:
+  push:
+    branches: [ master, develop ]
+  pull_request:
+    branches: [ master, develop ]
+  workflow_dispatch:
+
+jobs:
+  deployment-validation:
+    name: Deployment Validation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Installation Prerequisites Check
+        run: |
+          echo "=== Checking Installation Prerequisites ==="
+          
+          # Check if all required installation scripts exist
+          REQUIRED_SCRIPTS=(
+            "scripts/deps.sh"
+            "scripts/conf.sh"
+            "scripts/install_mail.sh"
+            "scripts/provision.sh"
+          )
+          
+          for script in "${REQUIRED_SCRIPTS[@]}"; do
+            if [ -f "$script" ]; then
+              echo "✅ Found required script: $script"
+            else
+              echo "❌ Missing required script: $script"
+              exit 1
+            fi
+          done
+          
+          # Check if Makefile exists and has required targets
+          if [ -f "Makefile" ]; then
+            echo "✅ Makefile found"
+            
+            REQUIRED_TARGETS=("conf" "deps" "install" "all")
+            for target in "${REQUIRED_TARGETS[@]}"; do
+              if grep -q "^${target}:" Makefile; then
+                echo "✅ Found Makefile target: $target"
+              else
+                echo "⚠️  Missing Makefile target: $target"
+              fi
+            done
+          else
+            echo "❌ Makefile not found"
+            exit 1
+          fi
+
+      - name: Configuration Template Validation
+        run: |
+          echo "=== Validating Configuration Templates ==="
+          
+          # Check for configuration files
+          if [ -f "mailad.conf" ]; then
+            echo "✅ Main configuration template found"
+            
+            # Check for required configuration variables
+            REQUIRED_VARS=(
+              "DOMAIN"
+              "HOSTNAME"
+              "LDAPURI"
+              "ADMINMAIL"
+              "MESSAGESIZE"
+            )
+            
+            for var in "${REQUIRED_VARS[@]}"; do
+              if grep -q "^${var}=" mailad.conf || grep -q "^#${var}=" mailad.conf; then
+                echo "✅ Configuration variable found: $var"
+              else
+                echo "⚠️  Configuration variable missing: $var"
+              fi
+            done
+          else
+            echo "❌ Main configuration file not found"
+            exit 1
+          fi
+          
+          # Check common.conf
+          if [ -f "common.conf" ]; then
+            echo "✅ Common configuration found"
+          else
+            echo "❌ common.conf not found"
+            exit 1
+          fi
+
+      - name: Dependencies and Package Validation
+        run: |
+          echo "=== Validating Package Dependencies ==="
+          
+          # Check deps.sh for package installation logic
+          if [ -f "scripts/deps.sh" ]; then
+            echo "Analyzing package dependencies..."
+            
+            # Look for apt-get install commands
+            if grep -q "apt-get install" scripts/deps.sh; then
+              echo "✅ Found package installation commands"
+              
+              # Extract package names (basic parsing)
+              grep "apt-get install" scripts/deps.sh | head -5
+            else
+              echo "⚠️  No apt-get install commands found in deps.sh"
+            fi
+            
+            # Check for common mail server packages
+            EXPECTED_PACKAGES=("postfix" "dovecot" "samba")
+            for pkg in "${EXPECTED_PACKAGES[@]}"; do
+              if grep -q "$pkg" scripts/deps.sh; then
+                echo "✅ Found expected package: $pkg"
+              else
+                echo "⚠️  Package not found in deps: $pkg"
+              fi
+            done
+          fi
+
+      - name: Service Configuration Validation
+        run: |
+          echo "=== Validating Service Configurations ==="
+          
+          # Check for service configuration directories
+          SERVICE_DIRS=("var/postfix" "var/dovecot" "var/samba")
+          for dir in "${SERVICE_DIRS[@]}"; do
+            if [ -d "$dir" ]; then
+              echo "✅ Found service config directory: $dir"
+              
+              # Count configuration files
+              CONFIG_COUNT=$(find "$dir" -name "*.conf" -o -name "*.cfg" -o -name "*.cf" | wc -l)
+              echo "  -> Contains $CONFIG_COUNT configuration files"
+            else
+              echo "⚠️  Service config directory not found: $dir"
+            fi
+          done
+          
+          # Check for template files
+          echo "Checking for configuration templates..."
+          find var/ -name "*.template" -o -name "*.example" | while read template; do
+            echo "✅ Found template: $template"
+          done
+
+      - name: Script Permissions and Executability
+        run: |
+          echo "=== Validating Script Permissions ==="
+          
+          # Check if installation scripts are executable
+          find scripts/ -name "*.sh" -type f | while read script; do
+            if [ -x "$script" ]; then
+              echo "✅ Script is executable: $script"
+            else
+              echo "⚠️  Script is not executable: $script"
+              # Fix permissions for testing
+              chmod +x "$script"
+              echo "  -> Fixed permissions for: $script"
+            fi
+          done
+          
+          # Check for sensitive scripts that should not be world-readable
+          find . -name "*.sh" -type f -perm -004 | while read script; do
+            if echo "$script" | grep -q -E "(backup|restore|passwd|auth)"; then
+              echo "⚠️  Potentially sensitive script is world-readable: $script"
+            fi
+          done
+
+      - name: Network Configuration Validation
+        run: |
+          echo "=== Validating Network Configuration ==="
+          
+          # Check for network-related configuration
+          if [ -f "mailad.conf" ]; then
+            # Check for network settings
+            if grep -q "HOSTNAME" mailad.conf; then
+              echo "✅ Hostname configuration found"
+            fi
+            
+            if grep -q "DOMAIN" mailad.conf; then
+              echo "✅ Domain configuration found"
+            fi
+            
+            # Look for IP or network restrictions
+            if grep -q -E "(IP|NETWORK|SUBNET)" mailad.conf; then
+              echo "✅ Network restrictions configuration found"
+            fi
+          fi
+          
+          # Check for firewall or iptables configuration
+          find . -name "*.sh" -type f -exec grep -l -E "(iptables|ufw|firewall)" {} \; | while read script; do
+            echo "✅ Found firewall configuration in: $script"
+          done
+
+      - name: Backup and Recovery Validation
+        run: |
+          echo "=== Validating Backup and Recovery ==="
+          
+          # Check for backup scripts
+          if [ -f "scripts/backup.sh" ]; then
+            echo "✅ Backup script found"
+            
+            # Check if backup script has proper structure
+            if grep -q "tar\|rsync\|cp" scripts/backup.sh; then
+              echo "✅ Backup script contains backup commands"
+            else
+              echo "⚠️  Backup script may not contain backup logic"
+            fi
+          else
+            echo "⚠️  Backup script not found"
+          fi
+          
+          # Check for restore scripts
+          if [ -f "scripts/restore.sh" ]; then
+            echo "✅ Restore script found"
+          else
+            echo "⚠️  Restore script not found"
+          fi
+
+      - name: Error Handling and Logging Validation
+        run: |
+          echo "=== Validating Error Handling and Logging ==="
+          
+          # Check for proper error handling in scripts
+          ERROR_HANDLING_COUNT=0
+          find scripts/ -name "*.sh" -type f | while read script; do
+            if grep -q -E "(set -e|exit 1|\|\| exit)" "$script"; then
+              echo "✅ Error handling found in: $script"
+              ERROR_HANDLING_COUNT=$((ERROR_HANDLING_COUNT + 1))
+            fi
+            
+            if grep -q -E "(echo.*ERROR|logger|syslog)" "$script"; then
+              echo "✅ Error logging found in: $script"
+            fi
+          done
+          
+          # Check for log file management
+          if find . -name "*.sh" -type f -exec grep -l "/var/log\|\.log" {} \; | head -3; then
+            echo "✅ Log file management found in scripts"
+          fi
+
+  security-deployment-check:
+    name: Security Deployment Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Security Configuration Validation
+        run: |
+          echo "=== Security Configuration Validation ==="
+          
+          # Check for SSL/TLS configuration
+          if find . -name "*.sh" -o -name "*.conf" -o -name "*.cfg" | xargs grep -l -E "(ssl|tls|certificate|cert)" | head -5; then
+            echo "✅ SSL/TLS configuration found"
+          else
+            echo "⚠️  No SSL/TLS configuration detected"
+          fi
+          
+          # Check for authentication configuration
+          if find . -name "*.sh" -o -name "*.conf" | xargs grep -l -E "(auth|ldap|password)" | head -5; then
+            echo "✅ Authentication configuration found"
+          fi
+          
+          # Check for common security practices
+          echo "Checking for security best practices..."
+          
+          # Look for proper file permissions handling
+          if find scripts/ -name "*.sh" -exec grep -l "chmod\|chown" {} \; | head -3; then
+            echo "✅ File permissions management found"
+          fi
+
+      - name: Production Readiness Check
+        run: |
+          echo "=== Production Readiness Check ==="
+          
+          # Check for production-specific configurations
+          PROD_INDICATORS=()
+          
+          # Check for systemd service files or init scripts
+          if find . -name "*.service" -o -name "*.init" | head -3; then
+            echo "✅ System service files found"
+          else
+            echo "ℹ️  No systemd service files found"
+          fi
+          
+          # Check for monitoring/health check scripts
+          if find . -name "*check*" -name "*.sh" | head -5; then
+            echo "✅ Health check scripts found:"
+            find . -name "*check*" -name "*.sh" | head -5
+          fi
+          
+          # Check for maintenance scripts
+          if find . -name "*maintenance*" -o -name "*cleanup*" -name "*.sh" | head -3; then
+            echo "✅ Maintenance scripts found"
+          fi
+          
+          echo ""
+          echo "🚀 Deployment readiness assessment completed!"
+          echo "Review any warnings above before deploying to production."
+
+  environment-compatibility:
+    name: Environment Compatibility
+    strategy:
+      matrix:
+        os: [ubuntu-20.04, ubuntu-22.04, ubuntu-24.04]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: System Compatibility Check
+        run: |
+          echo "=== System Compatibility Check for ${{ matrix.os }} ==="
+          
+          # System information
+          cat /etc/os-release
+          echo ""
+          
+          # Check available packages
+          echo "Checking package availability..."
+          
+          # Test package manager access
+          sudo apt-get update -qq
+          
+          # Check for common packages needed by mail servers
+          PACKAGES=("postfix" "dovecot-core" "samba" "bind9" "nginx" "apache2")
+          for pkg in "${PACKAGES[@]}"; do
+            if apt-cache show "$pkg" >/dev/null 2>&1; then
+              echo "✅ Package available: $pkg"
+            else
+              echo "❌ Package not available: $pkg"
+            fi
+          done
+          
+          # Check Python version for scripts
+          if command -v python3 >/dev/null 2>&1; then
+            PYTHON_VERSION=$(python3 --version)
+            echo "✅ Python available: $PYTHON_VERSION"
+          else
+            echo "❌ Python3 not available"
+          fi
+          
+          echo ""
+          echo "✅ Environment compatibility check completed for ${{ matrix.os }}"
