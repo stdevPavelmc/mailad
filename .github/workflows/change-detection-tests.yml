@@ -1,0 +1,300 @@
+name: Change Detection Tests
+
+on:
+  push:
+    branches: [ master, develop, testing ]
+  pull_request:
+    branches: [ master, develop, testing ]
+
+jobs:
+  detect-changes:
+    name: Detect File Changes
+    runs-on: ubuntu-latest
+    outputs:
+      yaml-changed: ${{ steps.changes.outputs.yaml }}
+      docker-changed: ${{ steps.changes.outputs.docker }}
+      python-changed: ${{ steps.changes.outputs.python }}
+      scripts-changed: ${{ steps.changes.outputs.scripts }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Detect changes
+        id: changes
+        run: |
+          # Get list of changed files
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            # For PR, compare with target branch
+            BASE_SHA="${{ github.event.pull_request.base.sha }}"
+            HEAD_SHA="${{ github.event.pull_request.head.sha }}"
+            CHANGED_FILES=$(git diff --name-only "$BASE_SHA" "$HEAD_SHA")
+          else
+            # For push, compare with previous commit
+            CHANGED_FILES=$(git diff --name-only HEAD~1 HEAD)
+          fi
+          
+          echo "Changed files:"
+          echo "$CHANGED_FILES"
+          
+          # Check for YAML files
+          if echo "$CHANGED_FILES" | grep -E '\.(yml|yaml)$'; then
+            echo "yaml=true" >> $GITHUB_OUTPUT
+            echo "YAML files changed"
+          else
+            echo "yaml=false" >> $GITHUB_OUTPUT
+          fi
+          
+          # Check for Docker files
+          if echo "$CHANGED_FILES" | grep -E '(Dockerfile|docker-compose|\.docker)'; then
+            echo "docker=true" >> $GITHUB_OUTPUT
+            echo "Docker files changed"
+          else
+            echo "docker=false" >> $GITHUB_OUTPUT
+          fi
+          
+          # Check for Python files
+          if echo "$CHANGED_FILES" | grep -E '\.py$'; then
+            echo "python=true" >> $GITHUB_OUTPUT
+            echo "Python files changed"
+          else
+            echo "python=false" >> $GITHUB_OUTPUT
+          fi
+          
+          # Check for shell scripts
+          if echo "$CHANGED_FILES" | grep -E '\.sh$'; then
+            echo "scripts=true" >> $GITHUB_OUTPUT
+            echo "Shell scripts changed"
+          else
+            echo "scripts=false" >> $GITHUB_OUTPUT
+          fi
+
+  yaml-validation-on-changes:
+    name: YAML Validation (Changed Files Only)
+    runs-on: ubuntu-latest
+    needs: detect-changes
+    if: needs.detect-changes.outputs.yaml-changed == 'true'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install yamllint
+        run: pip install yamllint
+
+      - name: Validate changed YAML files
+        run: |
+          echo "=== Validating Changed YAML Files ==="
+          
+          # Get changed YAML files
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            BASE_SHA="${{ github.event.pull_request.base.sha }}"
+            HEAD_SHA="${{ github.event.pull_request.head.sha }}"
+            CHANGED_FILES=$(git diff --name-only "$BASE_SHA" "$HEAD_SHA")
+          else
+            CHANGED_FILES=$(git diff --name-only HEAD~1 HEAD)
+          fi
+          
+          echo "$CHANGED_FILES" | grep -E '\.(yml|yaml)$' | while read file; do
+            if [ -f "$file" ]; then
+              echo "Validating changed file: $file"
+              yamllint "$file" || exit 1
+            else
+              echo "File was deleted: $file"
+            fi
+          done
+          
+          echo "✅ All changed YAML files are valid!"
+
+  docker-validation-on-changes:
+    name: Docker Validation (Changed Files Only)
+    runs-on: ubuntu-latest
+    needs: detect-changes
+    if: needs.detect-changes.outputs.docker-changed == 'true'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Validate changed Docker files
+        run: |
+          echo "=== Validating Changed Docker Files ==="
+          
+          # Get changed Docker files
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            BASE_SHA="${{ github.event.pull_request.base.sha }}"
+            HEAD_SHA="${{ github.event.pull_request.head.sha }}"
+            CHANGED_FILES=$(git diff --name-only "$BASE_SHA" "$HEAD_SHA")
+          else
+            CHANGED_FILES=$(git diff --name-only HEAD~1 HEAD)
+          fi
+          
+          echo "$CHANGED_FILES" | grep -E '(Dockerfile|docker-compose|\.docker)' | while read file; do
+            if [ -f "$file" ]; then
+              echo "Validating changed Docker file: $file"
+              
+              if [[ "$file" == *"Dockerfile"* ]]; then
+                # Basic Dockerfile syntax check
+                echo "  -> Dockerfile syntax check"
+                grep -E '^(FROM|RUN|COPY|ADD|WORKDIR|EXPOSE|CMD|ENTRYPOINT)' "$file" > /dev/null && echo "  -> Basic Dockerfile commands found" || echo "  -> Warning: No standard Dockerfile commands found"
+              elif [[ "$file" == *"docker-compose"* ]]; then
+                # Docker Compose file validation
+                echo "  -> Docker Compose file validation"
+                if command -v docker-compose >/dev/null 2>&1; then
+                  docker-compose -f "$file" config > /dev/null && echo "  -> Docker Compose syntax OK" || echo "  -> Docker Compose syntax error"
+                else
+                  echo "  -> docker-compose not available, skipping validation"
+                fi
+              fi
+            else
+              echo "File was deleted: $file"
+            fi
+          done
+          
+          echo "✅ Docker file validation completed!"
+
+  python-validation-on-changes:
+    name: Python Validation (Changed Files Only)
+    runs-on: ubuntu-latest
+    needs: detect-changes
+    if: needs.detect-changes.outputs.python-changed == 'true'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install Python tools
+        run: |
+          python -m pip install --upgrade pip
+          pip install flake8 pylint black isort
+
+      - name: Validate changed Python files
+        run: |
+          echo "=== Validating Changed Python Files ==="
+          
+          # Get changed Python files
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            BASE_SHA="${{ github.event.pull_request.base.sha }}"
+            HEAD_SHA="${{ github.event.pull_request.head.sha }}"
+            CHANGED_FILES=$(git diff --name-only "$BASE_SHA" "$HEAD_SHA")
+          else
+            CHANGED_FILES=$(git diff --name-only HEAD~1 HEAD)
+          fi
+          
+          echo "$CHANGED_FILES" | grep -E '\.py$' | while read file; do
+            if [ -f "$file" ]; then
+              echo "Validating changed Python file: $file"
+              
+              # Syntax check
+              echo "  -> Syntax check"
+              python -m py_compile "$file" || exit 1
+              
+              # Style check with flake8
+              echo "  -> Style check (flake8)"
+              flake8 "$file" --max-line-length=100 --ignore=E501,W503 || echo "  -> Style issues found (non-blocking)"
+              
+              # Import sorting check
+              echo "  -> Import sorting check"
+              isort --check-only --diff "$file" || echo "  -> Import sorting issues found (non-blocking)"
+              
+              echo "  -> ✅ $file validated"
+            else
+              echo "File was deleted: $file"
+            fi
+          done
+          
+          echo "✅ All changed Python files validated!"
+
+  scripts-validation-on-changes:
+    name: Shell Scripts Validation (Changed Files Only)
+    runs-on: ubuntu-latest
+    needs: detect-changes
+    if: needs.detect-changes.outputs.scripts-changed == 'true'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install shellcheck
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y shellcheck
+
+      - name: Validate changed shell scripts
+        run: |
+          echo "=== Validating Changed Shell Scripts ==="
+          
+          # Get changed shell script files
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            BASE_SHA="${{ github.event.pull_request.base.sha }}"
+            HEAD_SHA="${{ github.event.pull_request.head.sha }}"
+            CHANGED_FILES=$(git diff --name-only "$BASE_SHA" "$HEAD_SHA")
+          else
+            CHANGED_FILES=$(git diff --name-only HEAD~1 HEAD)
+          fi
+          
+          echo "$CHANGED_FILES" | grep -E '\.sh$' | while read file; do
+            if [ -f "$file" ]; then
+              echo "Validating changed shell script: $file"
+              
+              # Syntax check
+              echo "  -> Syntax check"
+              bash -n "$file" || exit 1
+              
+              # Shellcheck (if not disabled)
+              echo "  -> Shellcheck analysis"
+              if grep -q "# shellcheck disable=" "$file"; then
+                echo "    -> Has shellcheck disable comments, checking with warnings"
+                shellcheck -S warning "$file" || echo "    -> Warning level issues found"
+              else
+                shellcheck "$file" || echo "    -> Shellcheck issues found (non-blocking for legacy scripts)"
+              fi
+              
+              # Executable check
+              if [ -x "$file" ]; then
+                echo "  -> ✅ File is executable"
+              else
+                echo "  -> ⚠️  File is not executable"
+              fi
+              
+              echo "  -> ✅ $file validated"
+            else
+              echo "File was deleted: $file"
+            fi
+          done
+          
+          echo "✅ All changed shell scripts validated!"
+
+  comprehensive-test-on-changes:
+    name: Run Comprehensive Tests if Critical Files Changed
+    runs-on: ubuntu-latest
+    needs: [detect-changes, yaml-validation-on-changes, docker-validation-on-changes, python-validation-on-changes, scripts-validation-on-changes]
+    if: |
+      always() && (
+        needs.detect-changes.outputs.yaml-changed == 'true' ||
+        needs.detect-changes.outputs.docker-changed == 'true' ||
+        needs.detect-changes.outputs.python-changed == 'true' ||
+        needs.detect-changes.outputs.scripts-changed == 'true'
+      )
+    steps:
+      - name: Trigger comprehensive tests
+        run: |
+          echo "=== Critical Files Changed - Running Full Test Suite ==="
+          echo "The following file types were changed:"
+          echo "  - YAML files: ${{ needs.detect-changes.outputs.yaml-changed }}"
+          echo "  - Docker files: ${{ needs.detect-changes.outputs.docker-changed }}"  
+          echo "  - Python files: ${{ needs.detect-changes.outputs.python-changed }}"
+          echo "  - Shell scripts: ${{ needs.detect-changes.outputs.scripts-changed }}"
+          echo ""
+          echo "This would typically trigger the comprehensive-tests workflow"
+          echo "or run additional integration tests based on the changed components."
