@@ -23,8 +23,12 @@ Dates must be YEAR-MONTH-DAY
 ## [v1.2.5] - 2025-09-xx-beta
 
 - Added: rsyslog as a dependency on all OS/versions, as some bare metal server deploys don't have it.
-- Added: Support for Debian 13 "trixie", easing the way for Ubuntu 16.04 next year.
+- Added: Support for Debian 13 "trixie", easing the way for Ubuntu 26.04 next year.
 - Added: Two more tests about the alias routing feature of postfix to verify it's working properly.
+- Added: Cause of failed LDAP connections with AD: "the SSL certificate has expired" as some old users is starting to find that as a cause of failing re-deployment/update.
+- Added: As MailAD is old enough, it's time to have some check & warn service for expiring SSL certs, a weekly cron job will check for expiring certs and notify the sysadmin group/user about it. Default is 3 weeks ahead warning and every week after expiring.
+- Added: Related to the previous issue, now we have a new make target `cert-ssc-renwe` to erase the old ones and re-create the new ones. WARNING!: it's only intended to be used if you have a Self-Signed-Certificate.
+- Changed: New quota notify scripts for over quota services; users will receive warnings on 75, 90, over 100 and falling under 100% of quota. Take into account that notify emails is triggered by a delivery of an email on the mailbox.
 - Changed: On Debian 13, the TLS security is more strict now, so you will need to copy the samba CA cert file from the samba server to the mail server host by hand if the samba server use a self signed cert. Other alternatives are 1- use a valid cert 2- use a non secure connection with the LDAP server.
 - Changed: Debian 13 updated the dovecot package from 2.3 to 2.4 so some features changed and the dovecot support was rewrited entirely on MailAD, major issues are the removal of the dovecot mailbox replica and the dovecot cache auth, the new dovecot cache auth is based on the new dovecot auth system and is more secure.
 - Changed: APT is made less noisy when installing packages

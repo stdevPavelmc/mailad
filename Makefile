@@ -3,6 +3,7 @@
 .PHONY : conf clean reset fix-vmail install-purge all force-provision force-certs webmail test upgrade backup restore purge-backups help
 
 PWD = $(shell pwd)
+FILES_TO_CLEAN_CERT = /etc/ssl/certs/mail.crt /etc/ssl/private/mail.key /etc/ssl/certs/cacert.pem certs
 
 conf: ## Create a configuration file in /etc/
 	scripts/conf.sh
@@ -34,6 +35,12 @@ fix-vmail: ## Fix the warning by creating the vmail user as per the conf file
 certs: conf-check ## Generate a self-signed certificate for the server SSL/TLS options
 	scripts/gen_cert.sh
 	echo "done" > certs
+
+cert-ssc-renew: certs ## Renew the SELF SIGNED SSL/TLS certificates, don't use is Let's Encypt, see INSTALL.md
+	rm -f $(FILES_TO_CLEAN_CERT)
+	scripts/gen_cert.sh
+	systemctl restart postfix dovecot
+	scripts/cert_weekly_check.sh
 
 install: conf-check deps certs ## Install all the software from the repository
 	scripts/install_mail.sh

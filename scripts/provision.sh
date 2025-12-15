@@ -76,11 +76,14 @@ LDAPURI=$(get_ldap_uri)
 MBSUBFOLDER=''
 if [ "${USE_MS_SUBFOLDER}" == "yes" -o "${USE_MS_SUBFOLDER}" == "Yes" ] ; then
     # set the var, must end in /, a escaped /
-    MBSUBFOLDER='%{ldap:physicalDeliveryOfficeName:}/'
+    MBSUBFOLDER='%{ldap:physicalDeliveryOfficeName}/'
 fi
 
-# add the LDAPURI & ESC_SYSADMINS to the vars
-VARS="${VARS} LDAPURI ESC_SYSADMINS MBSUBFOLDER"
+# Default MAILBOX SIZE in bytes as per new dovecot installs
+DEFAULT_MBSB=$(echo "$DEFAULT_MAILBOX_SIZE" | numfmt --from=iec)
+
+# add the processed vars to the default ones
+VARS="${VARS} LDAPURI ESC_SYSADMINS MBSUBFOLDER DEFAULT_MBSB"
 
 # replace the vars in the folders
 for f in $(echo "/etc/postfix /etc/dovecot /etc/amavis" | xargs) ; do
@@ -522,3 +525,9 @@ cp ./scripts/check_new_version.sh /usr/local/bin/check_new_version.sh
 chmod +x /usr/local/bin/check_new_version.sh
 rm /etc/cron.weekly/mailad_check 2>/dev/null
 ln -s /usr/local/bin/check_new_version.sh /etc/cron.weekly/mailad_check
+
+# copy the cert weekly check and install the weekly cron job
+cp ./scripts/cert_weekly_check.sh /usr/local/bin/cert_weekly_check.sh
+chmod +x /usr/local/bin/cert_weekly_check.sh
+rm /etc/cron.weekly/mailad_cert_check 2>/dev/null
+ln -s /usr/local/bin/cert_weekly_check.sh /etc/cron.weekly/mailad_cert_check

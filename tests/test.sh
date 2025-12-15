@@ -426,7 +426,9 @@ cat $LOGP >> $LOG
 
 ### Send an email to the mail admin with an attachment bigger than the
 # allowed: port 25
-MS=$(echo "$MESSAGESIZE*1024*1024*1.2" | bc -q | cut -d '.' -f 1)
+M=$(echo "${MESSAGESIZE}M" | numfmt --from=iec)
+MS=$(( ${M} * 12 / 10 )) # * 1.2
+
 TMP=$(mktemp)
 dd if=/dev/zero of=$TMP bs=1 count="$MS" 2>/dev/null
 $SOFT -s $SERVER --protocol SMTP -t $ADMINMAIL --attach "@${TMP}" > $LOGP

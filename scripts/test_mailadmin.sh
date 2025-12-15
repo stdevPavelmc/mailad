@@ -98,4 +98,21 @@ fi
 echo "===> User $ADMINMAIL is configured ok"
 echo "===> You can use that user as an example to set up the others!"
 rm $TEMP || true
+
+# Add tests for the default mailbox size in iect standard
+echo "===> Testing the DEFAULT MAILBOX SIZE is in correct IEC format..."
+dumy=$(echo "$DEFAULT_MAILBOX_SIZE" | numfmt --from=iec)
+R=$?
+if [ $R -ne 0 ] ; then
+    # nope...
+    echo "================================================================================="
+    echo "ERROR!:"
+    echo "    DEFAULT_MAILBOX_SIZE is not in IEC format, you must use a number and a unit,"
+    echo "    some valid examples are: 100M, 1G, 1T; also if you want to express fractions"
+    echo "    you can use them or use the lower unit, this are the same: 1.5G = 1500M"
+    echo "================================================================================="
+    echo " "
+    exit 1
+fi
+
 exit 0

@@ -15,6 +15,7 @@ Here you can find the most Frequently Asked Questions, this file will grow with 
 - [Why it complains and fail when using IPs for the DC server?](FAQ.md#why-it-complains-and-fail-when-using-ips-for-the-dc-server)
 - [Configuration stops and tell that sbin is missing?](FAQ.md#configuration-stops-and-tell-that-sbin-is-missing)
 - [I have installed according to the instructions, everything works correctly but users cannot authenticate, I use Windows server 2019](FAQ.md#i-have-installed-according-to-the-instructions-everything-works-correctly-but-some-users-cannot-authenticate-i-use-windows-server-2019)
+- [My SSL self signed certificate expired, how can I renew it?](FAQ.md#my-ssl-self-signed-certificate-expired-how-can-i-renew-it)
 
 ## Usage Related
 
@@ -233,3 +234,19 @@ Likewise, if your entity has other attributes (UAC) you must modify all the filt
 ### Upgrade to a new version if we have modified (adapted) the filters to our entity
 
 After doing the **upgrade** to the new version, we must again go to all these filters and change them to our needs and then make a **provition** to put our filter properties (UAC)
+
+## My SSL self signed certificate expired, how can I renew it?
+
+Be aware that using a self signed certificate is not a good practive unless you have a closed and tightly controlled environments, but it's usefull in some cases.
+
+Simple, connect to the server that holds MailAD using a SSH client and move to the folder that holds the clone of Mailad; after that just ran this command:
+
+``` sh
+make cert-ssc-renew
+```
+
+It will erase the old certificates, generate a new self signed one and install it, then it will restart the services and ran the check script.
+
+If everything went well the certificate will be valid for another 3 years and you will not have any new mail, in case of problems, the sysadmin/mailadmin will receive an email with the problem.
+
+Tip: Since version ~1.2.5 there is a weekly cron job that test the expiration of the cert and warn the sysadmin group/user about the issue with 3 weeks ahead.

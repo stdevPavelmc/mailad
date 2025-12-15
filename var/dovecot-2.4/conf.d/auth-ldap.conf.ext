@@ -31,7 +31,7 @@ passdb ldap {
     userdb_home = _VMAILSTORAGE_/_MBSUBFOLDER_%{user|username}
     userdb_uid = _VMAILUID_
     userdb_gid = _VMAILGID_
-    quota_storage_size = %{ldap:wWWHomePage | default}
+    quota_storage_size = %{ldap:wWWHomePage | default(_DEFAULT_MBSB_)}
   }
 }
 
@@ -56,7 +56,7 @@ userdb ldap {
     home = _VMAILSTORAGE_/_MBSUBFOLDER_%{user|username}
     uid = _VMAILUID_
     gid = _VMAILGID_
-    quota_storage_size = %{ldap:wWWHomePage | default}
+    quota_storage_size = %{ldap:wWWHomePage | default(_DEFAULT_MBSB_)}
   }
 }
 
