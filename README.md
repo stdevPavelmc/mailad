@@ -16,6 +16,14 @@ We have also some derived projects you might find interesting:
 - [MailD](https://github.com/stdevPavelmc/maild/) - A multi-domain Docker solution with no AD linking, an all-web solution.
 - [MailAD ansible role](https://github.com/stdevPavelmc/mailad-ansible-role) - An Ansible role for the mail server.
 
+## Who uses MailAD
+
+MailAD is primarily used in Cuba, which is its specific target market. As of December 2025, there were at least 50 reported domains using it (note that statistics reporting is optional).
+
+![User's Mosaic](./logos/mosaic.png)
+
+The mosaic shown is a contribution from users who have reported using it. If you use it and wish to have your logo included, go to the [Telegram group](https://t.me/MailAD_dev) and provide your logo for inclusion. When a logo represents a chain or group of companies, it doesn't mean all of them use it, but rather that more than one company within that chain does.
+
 ## Rationale
 
 This repository is intended to be cloned on your fresh OS install under `/root` (you can use a LXC instance, VM, etc.) and setup via a main configuration file as per the file comments. Then run the steps in a makefile and follow the instructions to configure your server.
