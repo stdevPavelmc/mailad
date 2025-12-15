@@ -20,6 +20,10 @@ This is a note for developers about the recommended tags to keep track of the ch
 Dates must be YEAR-MONTH-DAY
 -->
 
+## [v1.2.5] - 2025-12-15
+
+- Added: Section on the README about the users of MailAD, as a request of the users [included a mosaic of logos and some notices] 
+
 ## [v1.2.4] - 2025-06-10
 
 - Changed: Added & improved [AI] translations to major doc/features files in the project
