@@ -10,6 +10,7 @@ install
 webmail
 *.log
 *.eml
+*.code-workspace
 
 # local storage to work on develop
 .localdata
