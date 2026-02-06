@@ -20,6 +20,10 @@ This is a note for developers about the recommended tags to keep track of the ch
 Dates must be YEAR-MONTH-DAY
 -->
 
+## [v1.2.6] - 2026-02-05
+
+- Added: Cron as a forced base dependency as some slim/basic os versions has no cron an then the programmed tasks fails, not to mention the provision process
+
 ## [v1.2.5] - 2025-12-15
 
 - Added: Section on the README about the users of MailAD, as a request of the users [included a mosaic of logos and some notices] 
