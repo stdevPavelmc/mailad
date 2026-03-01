@@ -56,6 +56,7 @@ NETBIOS=$(echo ${DOMAIN} | cut -d '.' -f 1 | tr [:lower:] [:upper:])
 ADMINUSER=$(echo ${ADMINMAIL} | cut -d '@' -f 1)
 LUCU=$(echo ${LOCUSER} | cut -d '@' -f 1)
 NATU=$(echo ${NACUSER} | cut -d '@' -f 1)
+TESTGROUP=testgroup
 
 # Set default DNS forwarder if not already set
 if [ -z "$DNSFWD" ] ; then
@@ -146,3 +147,11 @@ echo ">>> add local to local group"
 samba-tool group addmembers Local_mail ${LUCU}
 echo ">>> add national to national group"
 samba-tool group addmembers National_mail ${NATU}
+
+# Create test-group and assign members
+echo ">>> create test group with email ${TESTGROUP}@${DOMAIN}"
+samba-tool group create ${TESTGROUP} --groupou="ou=${NETBIOS}" --mail-address="${TESTGROUP}@${DOMAIN}"
+echo ">>> add local user to test group"
+samba-tool group addmembers ${TESTGROUP} ${LUCU}
+echo ">>> add national user to test group"
+samba-tool group addmembers ${TESTGROUP} ${NATU}

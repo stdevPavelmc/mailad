@@ -755,5 +755,58 @@ if [ "$EVERYONE" != "" ] ; then
     cat $LOGP >> $LOG
 fi
 
+# TESTGROUP testing
+if [ "$DOMAIN" != "" ] ; then
+    ### Send an email to the testgroup as the sysadmin
+    F=$(fingerprint)
+    $SOFT -s "$SERVER" -p 587 -tls -a PLAIN -au "$ADMINMAIL" -ap "$PASS" \
+        -t "testgroup@$DOMAIN" -f "$ADMINMAIL" --header "Subject: $F" > $LOGP
+    R=$?
+    if [ $R -ne 0 ] ; then
+        # error
+        echo "=========================================================="
+        echo "ERROR: Can't send a mail to the testgroup declared"
+        echo "       in the config using the sysadmin authenticated account"
+        echo "       using SUBMISSION (587)"
+        echo " "
+        echo "COMMENT: It's not the expected, your server must allow the"
+        echo "         sysadmin to send the mail to the testgroup, please"
+        echo "         check your configuration"
+        echo ""
+        echo "MAYBE: You need to ran the /etc/cron.daily/mail_groups_update"
+        echo "       to update the group alias list on the mailad server"
+        echo " "
+        echo "Exit code: $R"
+        echo "Logs follow"
+        echo "=========================================================="
+        cat $LOGP
+        do_error
+    else
+        # ok checking for a mail with that fingerprint in loc user inbox
+        R=$(check_email "$F" "$LOCUSER" "$LOCUSERPASSWORD")
+        if [ "$R" == "OK" ] ; then
+            # all ok, received by loc user
+            echo "===> Ok: testgroup email reached loc user inbox"
+        else
+            # sent but not received yet by loc user
+            echo "===> ERROR: testgroup email did not reach loc user inbox"
+            do_error
+        fi
+        
+        # ok checking for a mail with that fingerprint in nat user inbox
+        R=$(check_email "$F" "$NACUSER" "$NACUSERPASSWD")
+        if [ "$R" == "OK" ] ; then
+            # all ok, received by nat user
+            echo "===> Ok: testgroup email reached nat user inbox"
+        else
+            # sent but not received yet by nat user
+            echo "===> ERROR: testgroup email did not reach nat user inbox"
+            do_error
+        fi
+    fi
+    # sum the logs
+    cat $LOGP >> $LOG
+fi
+
 # success notice, if you reached this point a gone smooth.
 echo "=== ALL TEST PASSED ==="

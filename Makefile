@@ -4,6 +4,7 @@
 
 PWD = $(shell pwd)
 FILES_TO_CLEAN_CERT = /etc/ssl/certs/mail.crt /etc/ssl/private/mail.key /etc/ssl/certs/cacert.pem certs
+TESTIP = 10.0.3.3
 
 conf: ## Create a configuration file in /etc/
 	scripts/conf.sh
@@ -94,7 +95,7 @@ webmail: ## Install/remove webmail from the configuration
 	scripts/webmails.sh
 
 test: ## Make all tests (to be run from a PC other than the server, outside the my_networks segment)
-	tests/test.sh $(ip)
+	tests/test.sh $(TESTIP)
 
 upgrade: force-provision ## Upgrade a setup, see README.md for details
 	echo "Upgrade done!"

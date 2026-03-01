@@ -34,6 +34,7 @@ The recommended OS selection is as follows:
 
 | OS | Active Support | Legacy | Discontinued |
 |:--- |:---:|:---:|:---:|
+| Ubuntu Resolute 26.04 rc | ⚙️ |  |  |
 | Debian Trixie 13 | ✅ |  |  |
 | Ubuntu Noble 24.04 LTS | ✅ |  |  |
 | Debian Bookworm 12 | ✅ |  |  |
@@ -43,7 +44,11 @@ The recommended OS selection is as follows:
 | Debian Buster 10 |  |  | 🚫 |
 | Ubuntu Bionic 18.04 LTS |  |  | 🚫 |
 
-Legacy means it works but not recommended, Discontinued mean it works but not supported anymore: it's EOL. It's adviced to use an OS that has Active Support.
+> *Legend:*
+> - ⚙️:  Support in the works, stay tuned!
+> - Active Support ✅: This is the recommended version to install
+> - Legacy ⚠️: it works but not recommended, no support and updates
+> - Discontinued 🚫: may work but not supported anymore, it's EOL
 
 ***Note:** If you are using Debian Buster or Bullseye in a LXC Container (Proxmox for example), you need to tweak the Dovecot installation or it will not work. See [this fix](https://serverfault.com/questions/976250/dovecot-lxc-apparmor-denied-buster) for more information.*
 
