@@ -62,13 +62,17 @@ else
     if [ "$PROXY_HOST" -a "$PROXY_PORT" ] ; then
         # Set both HTTP and HTTPS proxy environment variables
         export HTTP_PROXY="http://$PROXY_HOST:$PROXY_PORT"
+        export http_proxy="http://$PROXY_HOST:$PROXY_PORT"
         export HTTPS_PROXY="http://$PROXY_HOST:$PROXY_PORT"
+        export https_proxy="http://$PROXY_HOST:$PROXY_PORT"
         echo "===> Proxy configured: $HTTP_PROXY"
 
         # check for auth tyo add auth
         if [ "$PROXY_USER" -a "$PROXY_PASS" ] ; then
             export HTTP_PROXY="http://$PROXY_USER:$PROXY_PASS@$PROXY_HOST:$PROXY_PORT"
+            export http_proxy="http://$PROXY_USER:$PROXY_PASS@$PROXY_HOST:$PROXY_PORT"
             export HTTPS_PROXY="http://$PROXY_USER:$PROXY_PASS@$PROXY_HOST:$PROXY_PORT"
+            export https_proxy="http://$PROXY_USER:$PROXY_PASS@$PROXY_HOST:$PROXY_PORT"
             echo "===> Proxy authentication enabled for user: $PROXY_USER"
         fi
     fi
@@ -78,8 +82,7 @@ else
     R=$?
 
     # Unset proxy variables to avoid get them used locally
-    unset HTTP_PROXY
-    unset HTTPS_PROXY
+    unset HTTP_PROXY; unset http_proxy; unset HTTPS_PROXY; unset https_proxy
 fi
 
 # check if download fails
@@ -202,10 +205,6 @@ OPTS="--no-check-certificate"
 if [ "$WEBSERVER_HTTP_ENABLED" == "yes" ]; then
     OPTS="--no-hsts"
 fi
-
-# forcibly disable any proxy setting
-export HTTP_PROXY=""; export HTTPS_PROXY=""; export http_proxy=""; export https_proxy=""; export socks_proxy=""
-unset HTTP_PROXY; unset HTTPS_PROXY; unset http_proxy; unset https_proxy; unset socks_proxy
 
 echo -n "Waiting for SnappyMail to be ready..."
 while [ ! -f "$PASS" ] ; do
