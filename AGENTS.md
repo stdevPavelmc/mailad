@@ -1872,3 +1872,15 @@ For enterprise support and consulting services, contact the maintainer directly 
 ---
 
 **Note**: This document is maintained by the MailAD development team and community. For the most up-to-date information, always refer to the latest version in the repository.
+
+## Translations
+
+This project uses American English as default language, but his main target is a Spanish speaking country, so the most important documentation files (.md files) will have a notice about othen languages available at the begining of the files.
+
+That extra translations will reside on the `i18n` folder and will be named as the original file but with the 2 code leters of the translation in lower caps before the md extension.
+
+If asked to update translations the AI Agent must check the .md file that has the translation notices and see if the tranlated linked document is up to date and updated if not.
+
+For new translations the translation comment will be set and the tranalated document on the i18n folder will be non existent or empty, then you must fo the translation and create/populate that file as needed.
+
+You can read the Translations.md file for more references.

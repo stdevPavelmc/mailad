@@ -1,5 +1,7 @@
 # Active Directory Requirements For This Tool
 
+This page is also available in the following languages: [ [Español](i18n/AD_Requirements.es.md) 🇪🇸 🇨🇺] [ [Deutsch](i18n/AD_Requirements.de.md) 🇩🇪] *Warning: translations may be outdated.*
+
 As we mentioned earlier, this tool assumes you have administrative access to a well configured Active Directory server.
 
 We encourage the use of Samba 4 AD. The internet is full of good tutorials about how to use Samba as an AD controller; but if you are just testing MailAD then take a peek on the [Utils README](utils/README.md) for a recipe to deploy a testing Samba 4 domain.
