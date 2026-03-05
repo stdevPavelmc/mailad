@@ -22,7 +22,7 @@ if [ "$WEBMAIL_ENABLED" == "yes" -o "$ENABLE_WEBMAILS" == "Yes" ] ; then
     echo "===> Enabling Webmails!"
 
     # install the webmails
-    apt-get install ${WEBSERVER_PKGS} -y
+    apt-get install ${APT_OPTS} ${WEBSERVER_PKGS}
 
     # configure php post and upload size
     #
@@ -53,9 +53,9 @@ else
     echo "     purging any related config..."
 
     # make sure the webmails are disabled
-    apt-get purge ${ROUNDCUBE_PKGS} ${SNAPPY_PKGS} ${WEBSERVER_PKGS} -y
+    apt-get purge ${APT_OPTS} ${ROUNDCUBE_PKGS} ${SNAPPY_PKGS} ${WEBSERVER_PKGS}
     rm -rdf ${SNAPPY_DIR} 2>/dev/null
 
     # clean
-    apt-get autoremove -y
+    apt-get autoremove ${APT_OPTS}
 fi

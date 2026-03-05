@@ -32,10 +32,10 @@ function os_not_supported {
 }
 
 # Do update, and upgrade only if not in mailad.cu domain
-apt-get update
+apt-get update ${APT_OPTS}
 if [ $DOMAIN != "mailad.cu" ] ; then
     export DEBIAN_FRONTEND=noninteractive
-    apt-get upgrade -qy
+    apt-get upgrade ${APT_OPTS}
 fi
 
 # loading the os-release file
@@ -85,7 +85,7 @@ if [ -f /etc/os-release ] ; then
     if [[ " ${OS_WORKING[*]} " =~ " $VERSION_CODENAME " ]]; then
         # Load the correct pkgs to be installed
         export DEBIAN_FRONTEND=noninteractive
-        apt-get install -qy ${COMMON_DEPS_PKGS}
+        apt-get install ${APT_OPTS} ${COMMON_DEPS_PKGS}
 
         # checking for success
         R=$?

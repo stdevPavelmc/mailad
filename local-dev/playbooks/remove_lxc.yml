@@ -1,0 +1,87 @@
+# Pavel Milanes [pavelmc@gmail.com] 2021
+#
+# Target: Erase all LXCs related to mailad testing
+#
+# Requisites:
+# - ansible-galaxy collection install community.general (use ppa, not repository as it to old)
+# - apt install python3-lxc
+# - Read docs on how to setup a proper LXC env here: https://ubuntu.com/server/docs/containers-lxc
+
+---
+- name: Create the LXCs
+  hosts: localhost
+  connection: local
+  become: yes
+  vars_files:
+    - "../vars/general.yml"
+  vars:
+    arch: amd64
+
+  tasks:
+    - name: Check if running as root
+      shell: id -u
+      register: current_user_id
+      changed_when: false
+
+    - name: Check if sudo is available
+      shell: which sudo
+      register: sudo_check
+      changed_when: false
+      when: current_user_id.stdout != "0"
+
+    - name: Test sudo access
+      shell: sudo -n true
+      register: sudo_test
+      changed_when: false
+      ignore_errors: true
+      when: current_user_id.stdout != "0" and sudo_check.rc == 0
+
+    - name: Fail with helpful message if not root and sudo not available
+      fail:
+        msg: |
+          ERROR: This playbook requires root privileges to manage LXC containers.
+          
+          You are running as user: {{ ansible_user }} (UID: {{ current_user_id.stdout }})
+          
+          To run this playbook correctly:
+          
+          Option 1 - Run as root:
+            sudo ansible-playbook local-dev/playbooks/create_lxc.yml
+          
+          Option 2 - Run as regular user with sudo (recommended):
+            ansible-playbook local-dev/playbooks/create_lxc.yml --ask-become-pass
+          
+          Troubleshooting:
+          - Ensure you are in the sudoers file
+          - Check that sudo is installed: sudo apt install sudo
+          - Verify your user has permission to run LXC commands
+      when: 
+        - current_user_id.stdout != "0"
+        - (sudo_check.rc != 0 or sudo_test.rc != 0)
+
+    - name: Install python3-lxc
+      package:
+        name: python3-lxc
+        state: present
+      tags: dependency
+
+    - name: Check for the community general collection
+      shell: ansible-galaxy collection list | grep community.general
+      register: comgen
+      tags: dependency
+
+    - name: Install the community.general collection
+      shell: ansible-galaxy collection install community.general
+      when: not 'community.general' in comgen.stdout
+      tags: dependency
+
+    - name: Remove the listed LXCs in the general var file 
+      become: True
+      community.general.lxc_container:
+        name: "{{ item.key }}"
+        template: download
+        state: absent
+      with_dict: "{{ lxcs }}"
+      tags: create
+
+   

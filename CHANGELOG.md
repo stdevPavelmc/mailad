@@ -20,13 +20,34 @@ This is a note for developers about the recommended tags to keep track of the ch
 Dates must be YEAR-MONTH-DAY
 -->
 
+## [v1.2.7] - 2026-03-04
+
+- Added: rsyslog, cron and sudo as a dependency on all OS/versions, as some bare metal server deploys don't have it.
+- Added: Support for Debian 13 "trixie", easing the way for Ubuntu 26.04 next year.
+- Added: More tests about the alias routing feature of postfix to verify it's working properly.
+- Added: Cause of failed LDAP connections with AD: "the SSL certificate has expired" as some old users is starting to find that as a cause of failing re-deployment/update.
+- Added: As MailAD is old enough, it's time to have some check & warn service for expiring SSL certs, a weekly cron job will check for expiring certs and notify the sysadmin group/user about it. Default is 3 weeks ahead warning and every week after expiring.
+- Added: Related to the previous issue, now we have a new make target `cert-ssc-renwe` to erase the old ones and re-create the new ones. WARNING!: it's only intended to be used if you have a Self-Signed-Certificate.
+- Added: local-dev folder with an ansible playbook to easily create a develop environment on local using lxc on Ubuntu, now you have a way to test it locally BEFORE rolling changes on your infra.
+- Added: AGENTS.md to support AI agentic refactor and features.
+- Changed: New quota notify scripts for over quota services; users will receive warnings on 75, 90, over 100 and falling under 100% of quota. Take into account that notify emails is triggered by a delivery of an email on the mailbox.
+- Changed: On Debian 13, the TLS security is more strict now, so you will need to copy the samba CA cert file from the samba server to the mail server host by hand if the samba server use a self signed cert. Other alternatives are 1- use a valid cert 2- use a non secure connection with the LDAP server.
+- Changed: Debian 13 updated the dovecot package from 2.3 to 2.4 so some features changed and the dovecot support was rewrited entirely on MailAD, major issues are the removal of the dovecot mailbox replica and the dovecot cache auth, the new dovecot cache auth is based on the new dovecot auth system and is more secure.
+- Changed: APT is made less noisy when installing packages
+- Changed: Shell [Bash] code standarization on nested and exit command calls to use just one way.
+- Changed: Modern distros has changed spamassassin to spamd as a service name and package, we made changes to support that.
+- Fixed: When using multi AD DC setups the uri string construction algorithn was slipping a space and spoiling the whole feature; detected and fixed.
+- Fixed: When provisioning some times the auto-backup and restore mechanism was failing [if some features was not activated] and dumping noise over the provision log.
+- Fixed: Correct handling of proxy for the snappy package download and setup
+
 ## [v1.2.6] - 2026-02-05
 
 - Added: Cron as a forced base dependency as some slim/basic os versions has no cron an then the programmed tasks fails, not to mention the provision process
 
 ## [v1.2.5] - 2025-12-15
 
-- Added: Section on the README about the users of MailAD, as a request of the users [included a mosaic of logos and some notices] 
+- Added: Section on the README about the users of MailAD, as a request of the users [included a mosaic of logos and some notices]
+
 
 ## [v1.2.4] - 2025-06-10
 

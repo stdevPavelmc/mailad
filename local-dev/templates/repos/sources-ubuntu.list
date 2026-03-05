@@ -1,0 +1,5 @@
+# This is not jinja2, this is designed to be replaced on the fly on the target server
+ 
+deb [arch=_arch_] http://_repos_:_port_/ubuntu _release_ main universe multiverse restricted
+deb [arch=_arch_] http://_repos_:_port_/ubuntu _release_-updates main universe multiverse restricted
+deb [arch=_arch_] http://_repos_:_port_/ubuntu _release_-security main universe multiverse restricted

@@ -1,4 +1,4 @@
-# MailAD v1.2.6
+# MailAD v1.2.7
 
 [![Chat on Telegram](https://img.shields.io/badge/Chat%20on-Telegram-brightgreen?style=flat-square)](https://t.me/MailAD_dev) [![GitHub Issues](https://img.shields.io/github/issues/stdevPavelmc/mailad?style=flat-square)](https://github.com/stdevPavelmc/mailad/issues) [![GitHub Issues Closed](https://img.shields.io/github/issues-closed/stdevPavelmc/mailad?style=flat-square)](https://github.com/stdevPavelmc/mailad/issues?q=is%3Aissue+is%3Aclosed) [![GitHub repo size](https://img.shields.io/github/repo-size/stdevPavelmc/mailad?style=flat-square)](https://github.com/stdevPavelmc/mailad/archive/master.zip) [![GitHub last commit](https://img.shields.io/github/last-commit/stdevPavelmc/mailad?style=flat-square)](https://github.com/stdevPavelmc/mailad/commits/master) [![GitHub commit rate](https://img.shields.io/github/commit-activity/m/stdevPavelmc/mailad?style=flat-square)](https://github.com/stdevPavelmc/mailad/commits/master) [![Financial contributors](https://opencollective.com/mailad/tiers/badge.svg?style=flat-square)](https://opencollective.com/mailad) [![Develop Testing Status](https://img.shields.io/github/actions/workflow/status/stdevPavelmc/mailad/mailad-tests.yml?branch=develop&label=Develop+Testing+Status&style=flat-square)](https://github.com/stdevPavelmc/mailad/actions/workflows/mailad-tests.yml) [![Production Testing Status](https://img.shields.io/github/actions/workflow/status/stdevPavelmc/mailad/mailad-tests.yml?branch=master&label=Production+Testing+Status&style=flat-square)](https://github.com/stdevPavelmc/mailad/actions/workflows/mailad-tests.yml)
 
@@ -34,6 +34,8 @@ The recommended OS selection is as follows:
 
 | OS | Active Support | Legacy | Discontinued |
 |:--- |:---:|:---:|:---:|
+| Ubuntu Resolute 26.04 rc | ⚙️ |  |  |
+| Debian Trixie 13 | ✅ |  |  |
 | Ubuntu Noble 24.04 LTS | ✅ |  |  |
 | Debian Bookworm 12 | ✅ |  |  |
 | Ubuntu Jammy 22.04 LTS |  | ⚠️ |  |
@@ -42,7 +44,11 @@ The recommended OS selection is as follows:
 | Debian Buster 10 |  |  | 🚫 |
 | Ubuntu Bionic 18.04 LTS |  |  | 🚫 |
 
-Legacy means it works but not recommended, Discontinued mean it works but not supported anymore: it's EOL. It's adviced to use an OS that has Active Support.
+> *Legend:*
+> - ⚙️:  Support in the works, stay tuned!
+> - Active Support ✅: This is the recommended version to install
+> - Legacy ⚠️: it works but not recommended, no support and updates
+> - Discontinued 🚫: may work but not supported anymore, it's EOL
 
 ***Note:** If you are using Debian Buster or Bullseye in a LXC Container (Proxmox for example), you need to tweak the Dovecot installation or it will not work. See [this fix](https://serverfault.com/questions/976250/dovecot-lxc-apparmor-denied-buster) for more information.*
 

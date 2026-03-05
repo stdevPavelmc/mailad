@@ -1,5 +1,7 @@
 # Simplification of the Active Directory Users Configuration
 
+This page is also available in the following languages: [ [Español](i18n/Simplify_AD_config.es.md) 🇪🇸 🇨🇺] [ [Deutsch](i18n/Simplify_AD_config.de.md) 🇩🇪] *Warning: translations may be outdated.*
+
 Since the end of February 2020 we introduced a simplified version of AD user's properties configuration schema.
 
 Formerly you had to setup 4 properties for a single user, a tedious task if you has many users, the properties were these (just for the record):

@@ -28,6 +28,7 @@ Esta es una página larga, así que aquí hay un índice:
 * [Actualizaciones sin Problemas](i18n/Features.es.md#actualizaciones-sin-problemas)
 * [Comprobaciones semanales de actualizaciones](i18n/Features.es.md#comprobaciones-semanales-de-actualizaciones)
 * [Buzón físico de los usuarios dividido por ubicación](i18n/Features.es.md#buzón-físico-de-los-usuarios-dividido-por-ubicación)
+* [Entorno de desarrollo LXC](i18n/Features.es.md#entorno-de-desarrollo-lxc)
 
 ## Webmails
 
@@ -279,6 +280,38 @@ MailAD realiza comprobaciones semanales de actualizaciones. Esto significa que s
 ## Buzón físico de los usuarios dividido por ubicación
 
 MailAD admite la división del buzón físico de los usuarios por ubicación. Esto significa que puede dividir los buzones de los usuarios por oficina, provincia, ciudad, etc.
+
+[Volver al índice](i18n/Features.es.md#características-de-mailad-explicadas)
+
+## Entorno de desarrollo LXC
+
+Desde marzo de 2026, MailAD incluye un entorno de desarrollo LXC para facilitar las pruebas y el desarrollo. Este entorno permite crear contenedores LXC para probar MailAD en diferentes configuraciones sin afectar su entorno de producción.
+
+### Características del entorno LXC
+
+- **Contenedores aislados**: Cada contenedor LXC proporciona un entorno aislado para pruebas
+- **Soporte multi-OS**: Permite probar MailAD en diferentes distribuciones Linux
+- **Automatización con Ansible**: El entorno se gestiona mediante playbooks de Ansible
+- **Configuración de red**: Configuración de red para simular entornos DMZ
+- **Integración con Active Directory**: Contenedores para servidores AD y servidores de correo
+
+### Contenedores incluidos
+
+- **dc**: Servidor Active Directory (Ubuntu Noble)
+- **mailu**: Servidor de correo (Ubuntu Noble) - para pruebas en Ubuntu
+- **maild**: Servidor de correo (Debian Bookworm) - para pruebas en Debian
+- **test**: Contenedor de pruebas general
+
+### Uso del entorno LXC
+
+Para usar el entorno de desarrollo LXC:
+
+1. Configure las credenciales de prueba en el directorio local-dev
+2. Ejecute los playbooks de Ansible para crear los contenedores
+3. Realice pruebas de MailAD en los contenedores aislados
+4. Verifique el funcionamiento antes de implementar en producción
+
+Este entorno es ideal para desarrolladores y administradores que desean probar nuevas características o configuraciones antes de implementarlas en entornos de producción.
 
 [Volver al índice](i18n/Features.es.md#características-de-mailad-explicadas)
 

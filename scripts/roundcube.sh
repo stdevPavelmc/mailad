@@ -19,7 +19,7 @@ export DEBIAN_FRONTEND=noninteractive
 
 # notice
 echo "===> Remove SnappyMail if it was previosly installed"
-apt-get remove -y "$SNAPPY_PKGS" 2> /dev/null
+apt-get remove ${APT_OPTS} "$SNAPPY_PKGS"
 rm -rdf "$SNAPPY_DIR" || true
 rm /etc/mailad/snappy_admin_pass || true
 
@@ -51,11 +51,11 @@ VARS="${VARS} WWW_ROOT HTTPS_ONLY"
 
 # replace vars
 echo "===> Provisioning Nginx..."
-for v in `echo $VARS | xargs` ; do
+for v in $(echo $VARS | xargs) ; do
     # get the var content
     CONTp=${!v}
 
-    # escape possible "/" in there
+    # escape possible "/" in there [KEEP THE BACKTICKS]
     CONT=`echo ${CONTp//\//\\\\/}`
 
     sed -i s/"\_$v\_"/"$CONT"/g ${NGINX_CONFIG}
@@ -81,7 +81,7 @@ systemctl restart nginx php${PHP_FPM_VER}-fpm
 echo "===> Installing Roundcube webmail"
 
 # install rainloop pkgs
-apt-get install ${ROUNDCUBE_PKGS} -yq
+apt-get install ${APT_OPTS} ${ROUNDCUBE_PKGS}
 
 # roundcube needs a stable an unique DES key per installation, check and create if needed
 ROUNDCUBE_DESKEY_FILE=/etc/mailad/roudcube_des_key
@@ -122,13 +122,13 @@ done
 VARS="${VARS} ROUNDCUBE_DESKEY LDAP_HOSTS SQLITE_STORAGE SQLITE_DB"
 
 # replace the vars in the folders
-for f in `echo "$ROUNDCUBE_CONFIG_FOLDER" | xargs` ; do
+for f in $(echo "$ROUNDCUBE_CONFIG_FOLDER" | xargs) ; do
     echo "===> Provisioning $f..."
-    for v in `echo $VARS | xargs` ; do
+    for v in $(echo $VARS | xargs) ; do
         # get the var content
         CONTp=${!v}
 
-        # escape possible "/" in there
+        # escape possible "/" in there [KEEP THE BACKTICKS]
         CONT=`echo ${CONTp//\//\\\\/}`
 
         find "$f/" -type f -exec \

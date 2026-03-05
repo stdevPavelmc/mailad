@@ -9,6 +9,9 @@
 #       - If you pass a 'backup' argument then create a backup file
 #       - If you pass a 'restore' argument then restore the backup data
 
+# do nothing if no freshclam present
+if [ ! -f /etc/clamav/freshclam.conf ] ; then exit 0 ; fi
+
 # vars:
 DBDIR=$(grep DatabaseDirectory /etc/clamav/freshclam.conf | awk '{print $2}')
 BKPFILE='/tmp/clamavbkp.tar'

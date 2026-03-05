@@ -3,18 +3,20 @@
 .PHONY : conf clean reset fix-vmail install-purge all force-provision force-certs webmail test upgrade backup restore purge-backups help
 
 PWD = $(shell pwd)
+FILES_TO_CLEAN_CERT = /etc/ssl/certs/mail.crt /etc/ssl/private/mail.key /etc/ssl/certs/cacert.pem certs
+TESTIP = 10.0.3.3
 
 conf: ## Create a configuration file in /etc/
 	scripts/conf.sh
 
 clean: ## Clean the environment to have a fresh start (preserve SSL/DH certs in /etc/ssl)
-	-rm deps conf-check install provision all || exit 0
+	-rm deps conf-check install provision all || true
 
 reset: clean install-purge ## Reset all configurations and remove/purge all softwares & certificates
-	-rm certs || exit 0
-	-rm /etc/ssl/private/mail.key /etc/ssl/certs/mail.crt /etc/ssl/certs/cacert.pem || exit 0
-	-rm -rdf /etc/dovecot || exit 0
-	-rm -rdf /etc/postfix || exit 0
+	-rm certs || true
+	-rm /etc/ssl/private/mail.key /etc/ssl/certs/mail.crt /etc/ssl/certs/cacert.pem || true
+	-rm -rdf /etc/dovecot || true
+	-rm -rdf /etc/postfix || true
 
 deps: ## Install all the needed deps to test & build it
 	scripts/deps.sh
@@ -35,15 +37,21 @@ certs: conf-check ## Generate a self-signed certificate for the server SSL/TLS o
 	scripts/gen_cert.sh
 	echo "done" > certs
 
+cert-ssc-renew: certs ## Renew the SELF SIGNED SSL/TLS certificates, don't use is Let's Encypt, see INSTALL.md
+	rm -f $(FILES_TO_CLEAN_CERT)
+	scripts/gen_cert.sh
+	systemctl restart postfix dovecot
+	scripts/cert_weekly_check.sh
+
 install: conf-check deps certs ## Install all the software from the repository
 	scripts/install_mail.sh
 	echo "done" > install
 
 install-purge: deps ## Uninstall software already installed for MailAD (and purge config also)
 	scripts/install_purge.sh
-	rm install || exit 0
-	rm conf-check || exit 0
-	rm deps || exit 0
+	rm install || true
+	rm conf-check || true
+	rm deps || true
 
 provision: install ## Provision the server, this will copy over the config files and set the vars
 	# Check for config upgrades
@@ -58,8 +66,8 @@ all: provision ## Run all targets logically ordered, run this to make it all
 
 force-provision: ## Force a re-provisioning of the system
 	# removing the targets files
-	rm provision || exit 0
-	rm conf-check || exit 0
+	rm provision || true
+	rm conf-check || true
 	# Check for config upgrades
 	scripts/confupgrade.sh
 	# configuration checks
@@ -87,7 +95,7 @@ webmail: ## Install/remove webmail from the configuration
 	scripts/webmails.sh
 
 test: ## Make all tests (to be run from a PC other than the server, outside the my_networks segment)
-	tests/test.sh $(ip)
+	tests/test.sh $(TESTIP)
 
 upgrade: force-provision ## Upgrade a setup, see README.md for details
 	echo "Upgrade done!"
@@ -104,8 +112,8 @@ samba: ## Scaffold a samba AD-DC for testing, just for testing purposes!
 	utils/samba_scaffold.sh
 
 purge-backups: ## WARNING, DANGEROUS! this command will erase the backup folder
-	rm -rdf /var/lib/mailad || exit 0
-	rm -rdf /var/backups/mailad || exit 0
+	rm -rdf /var/lib/mailad || true
+	rm -rdf /var/backups/mailad || true
 
 help:
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'

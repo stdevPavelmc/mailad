@@ -14,8 +14,8 @@ CRON=0
 
 test -f /etc/default/spamassassin && . /etc/default/spamassassin
 
-test -x /usr/bin/sa-update || exit 0
-command -v gpg > /dev/null || exit 0
+test -x /usr/bin/sa-update || true
+command -v gpg > /dev/null || true
 
 # export proxy settings if activated
 SA_PROXY=""

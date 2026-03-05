@@ -20,7 +20,7 @@ function make_it {
 
     # doit!
     cp mailad.conf /etc/mailad/
-    rm /tmp/conf-already 2>/dev/null || exit 0
+    rm /tmp/conf-already 2>/dev/null || true
 }
 
 # Check if there is a MailAD config there

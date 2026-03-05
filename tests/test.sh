@@ -199,7 +199,7 @@ else
     fi
 fi
 # sum the logs
-cat $LOGP > $LOG
+cat $LOGP >> $LOG
 
 ### Send an email to the mail admin with auth as sender
 F=$(fingerprint)
@@ -260,6 +260,60 @@ if [ $R -ne 0 ] ; then
 else
     # ok
     echo "===> Ok: Authenticated users can send emails to the outside world"
+fi
+# sum the logs
+cat $LOGP >> $LOG
+
+### Send an email to the postmaster from outside
+$SOFT -s "$SERVER" -t "postmaster@$DOMAIN" -f "fake@example.com"  > $LOGP
+R=$?
+if [ $R -ne 0 ] ; then
+    # error
+    echo "=========================================================="
+    echo "ERROR: Can't send a mail to the postmaster as an outside"
+    echo "       user using SMTP, that needs to be posssble."
+    echo " "
+    echo "COMMENT: It's expected that your server can accept an email"
+    echo "         to the postmaster alias from an external user,"
+    echo "         that's needed as part of the RFC of email to report"
+    echo "         abuse or problems. Please check your configuration"
+    echo " "
+    echo "Exit code: $R"
+    echo "Logs follow"
+    echo "=========================================================="
+    cat $LOGP
+    do_error
+else
+    # ok
+    echo "===> Ok: External users can send emails to the postmaster alias."
+fi
+# sum the logs
+cat $LOGP >> $LOG
+
+### Send an email to the postmaster alias as a valid user with auth
+$SOFT -s "$SERVER" -p 587 -tls -a PLAIN -au "$ADMINMAIL" -ap "$PASS" \
+    -t "postmaster@$DOMAIN" -f "$ADMINMAIL"  > $LOGP
+R=$?
+if [ $R -ne 0 ] ; then
+    # error
+    echo "=========================================================="
+    echo "ERROR: Can't send a mail to the postmaster as a valid auth"
+    echo "       user using SUBMISSION (587), that needs to be"
+    echo "       posssble."
+    echo " "
+    echo "COMMENT: It's expected that your server can send an email"
+    echo "         to the postmaster from a valid user of the"
+    echo "         domain using auth, some alias unfolding is failing"
+    echo "         on the configuration, please check."
+    echo " "
+    echo "Exit code: $R"
+    echo "Logs follow"
+    echo "=========================================================="
+    cat $LOGP
+    do_error
+else
+    # ok
+    echo "===> Ok: Authenticated users can send emails to the postmaster alias."
 fi
 # sum the logs
 cat $LOGP >> $LOG
@@ -344,7 +398,7 @@ cat $LOGP >> $LOG
 
 ### Send an email as an user and auth as other (id spoofing)
 $SOFT -s "$SERVER" -p 587 -tls -a PLAIN -au "$ADMINMAIL" -ap "$PASS" \
-    -t "$ADMINMAIL" -f "$USER@$DOMAIN" > $LOGP
+    -t "$ADMINMAIL" -f "$NACUSER" > $LOGP
 R=$?
 if [ $R -ne 24 ] ; then
     # error
@@ -372,7 +426,9 @@ cat $LOGP >> $LOG
 
 ### Send an email to the mail admin with an attachment bigger than the
 # allowed: port 25
-MS=$(echo "$MESSAGESIZE*1024*1024*1.2" | bc -q | cut -d '.' -f 1)
+M=$(echo "${MESSAGESIZE}M" | numfmt --from=iec)
+MS=$(( ${M} * 12 / 10 )) # * 1.2
+
 TMP=$(mktemp)
 dd if=/dev/zero of=$TMP bs=1 count="$MS" 2>/dev/null
 $SOFT -s $SERVER --protocol SMTP -t $ADMINMAIL --attach "@${TMP}" > $LOGP
@@ -436,7 +492,7 @@ if [ "$ENABLE_SPAMD" == "yes" -o "$ENABLE_SPAMD" == "Yes" ] ; then
         fi
     fi
     # sum the logs
-    cat $LOGP > $LOG
+    cat $LOGP >> $LOG
 fi
 
 # NATIONAL
@@ -695,6 +751,59 @@ if [ "$EVERYONE" != "" ] ; then
             fi
         fi
     fi 
+    # sum the logs
+    cat $LOGP >> $LOG
+fi
+
+# TESTGROUP testing
+if [ "$DOMAIN" != "" ] ; then
+    ### Send an email to the testgroup as the sysadmin
+    F=$(fingerprint)
+    $SOFT -s "$SERVER" -p 587 -tls -a PLAIN -au "$ADMINMAIL" -ap "$PASS" \
+        -t "testgroup@$DOMAIN" -f "$ADMINMAIL" --header "Subject: $F" > $LOGP
+    R=$?
+    if [ $R -ne 0 ] ; then
+        # error
+        echo "=========================================================="
+        echo "ERROR: Can't send a mail to the testgroup declared"
+        echo "       in the config using the sysadmin authenticated account"
+        echo "       using SUBMISSION (587)"
+        echo " "
+        echo "COMMENT: It's not the expected, your server must allow the"
+        echo "         sysadmin to send the mail to the testgroup, please"
+        echo "         check your configuration"
+        echo ""
+        echo "MAYBE: You need to ran the /etc/cron.daily/mail_groups_update"
+        echo "       to update the group alias list on the mailad server"
+        echo " "
+        echo "Exit code: $R"
+        echo "Logs follow"
+        echo "=========================================================="
+        cat $LOGP
+        do_error
+    else
+        # ok checking for a mail with that fingerprint in loc user inbox
+        R=$(check_email "$F" "$LOCUSER" "$LOCUSERPASSWORD")
+        if [ "$R" == "OK" ] ; then
+            # all ok, received by loc user
+            echo "===> Ok: testgroup email reached loc user inbox"
+        else
+            # sent but not received yet by loc user
+            echo "===> ERROR: testgroup email did not reach loc user inbox"
+            do_error
+        fi
+        
+        # ok checking for a mail with that fingerprint in nat user inbox
+        R=$(check_email "$F" "$NACUSER" "$NACUSERPASSWD")
+        if [ "$R" == "OK" ] ; then
+            # all ok, received by nat user
+            echo "===> Ok: testgroup email reached nat user inbox"
+        else
+            # sent but not received yet by nat user
+            echo "===> ERROR: testgroup email did not reach nat user inbox"
+            do_error
+        fi
+    fi
     # sum the logs
     cat $LOGP >> $LOG
 fi
