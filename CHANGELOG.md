@@ -20,9 +20,9 @@ This is a note for developers about the recommended tags to keep track of the ch
 Dates must be YEAR-MONTH-DAY
 -->
 
-## [v1.2.5] - 2025-09-xx-beta
+## [v1.2.7-rc] - 2026-03-xx
 
-- Added: rsyslog as a dependency on all OS/versions, as some bare metal server deploys don't have it.
+- Added: rsyslog, cron and sudo as a dependency on all OS/versions, as some bare metal server deploys don't have it.
 - Added: Support for Debian 13 "trixie", easing the way for Ubuntu 26.04 next year.
 - Added: More tests about the alias routing feature of postfix to verify it's working properly.
 - Added: Cause of failed LDAP connections with AD: "the SSL certificate has expired" as some old users is starting to find that as a cause of failing re-deployment/update.
@@ -38,6 +38,16 @@ Dates must be YEAR-MONTH-DAY
 - Changed: Modern distros has changed spamassassin to spamd as a service name and package, we made changes to support that.
 - Fixed: When using multi AD DC setups the uri string construction algorithn was slipping a space and spoiling the whole feature; detected and fixed.
 - Fixed: When provisioning some times the auto-backup and restore mechanism was failing [if some features was not activated] and dumping noise over the provision log.
+- Fixed: Correct handling of proxy for the snappy package download
+
+## [v1.2.6] - 2026-02-05
+
+- Added: Cron as a forced base dependency as some slim/basic os versions has no cron an then the programmed tasks fails, not to mention the provision process
+
+## [v1.2.5] - 2025-12-15
+
+- Added: Section on the README about the users of MailAD, as a request of the users [included a mosaic of logos and some notices]
+
 
 ## [v1.2.4] - 2025-06-10
 
