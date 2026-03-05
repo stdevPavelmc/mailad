@@ -59,7 +59,7 @@ if [ -f "./$SNAPPY_FILE" -a "$DOMAIN" == "mailad.cu" ]; then
     cp "./$SNAPPY_FILE" "/tmp/$SNAPPY_FILE"
 else
     # Setup proxy if needed
-    if [ "$PROXY_HOST" -a "$PROXY_PORT"] ; then
+    if [ "$PROXY_HOST" -a "$PROXY_PORT" ] ; then
         # Set both HTTP and HTTPS proxy environment variables
         export HTTP_PROXY="http://$PROXY_HOST:$PROXY_PORT"
         export HTTPS_PROXY="http://$PROXY_HOST:$PROXY_PORT"
