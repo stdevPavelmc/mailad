@@ -199,10 +199,17 @@ CONFIG="${CONFIGFOLDER}/application.ini"
 
 # small delay to allow the service to create the default config; options
 OPTS="--no-check-certificate"
-if [ "$WEBSERVER_HTTP_ENABLED" == "yes" ]; then OPTS="--no-hsts" ; fi
+if [ "$WEBSERVER_HTTP_ENABLED" == "yes" ]; then
+    OPTS="--no-hsts"
+fi
 
+# forcibly disable any proxy setting
+export HTTP_PROXY=""; export HTTPS_PROXY=""; export http_proxy=""; export https_proxy=""; export socks_proxy=""
+unset HTTP_PROXY; unset HTTPS_PROXY; unset http_proxy; unset https_proxy; unset socks_proxy
+
+echo -n "Waiting for SnappyMail to be ready..."
 while [ ! -f "$PASS" ] ; do
-    # get it...
+    # triggers the initial setup
     wget -q ${OPTS} "$WEBPROTO://$HOSTNAME/?admin" -O /dev/null
     sleep 2
     wget -q ${OPTS} "$WEBPROTO://$HOSTNAME/?/AdminAppData/0/5220854561746323/" -O /dev/null
