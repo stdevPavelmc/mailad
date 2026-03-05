@@ -28,6 +28,7 @@ Dies ist eine lange Seite, hier ist ein Inhaltsverzeichnis:
 * [Problemlose Upgrades](i18n/Features.de.md#problemlose-upgrades)
 * [Wöchentliche Update-Prüfungen](i18n/Features.de.md#wöchentliche-update-prüfungen)
 * [Physisches Postfach der Benutzer nach Standort aufgeteilt](i18n/Features.de.md#physisches-postfach-der-benutzer-nach-standort-aufgeteilt)
+* [LXC-Entwicklungsumgebung](i18n/Features.de.md#lxc-entwicklungsumgebung)
 
 ## Webmails
 
@@ -279,6 +280,38 @@ MailAD führt wöchentliche Update-Prüfungen durch. Das bedeutet, dass Ihr Mail
 ## Physisches Postfach der Benutzer nach Standort aufgeteilt
 
 MailAD unterstützt die Aufteilung des physischen Postfachs der Benutzer nach Standort. Das bedeutet, dass Sie die Postfächer der Benutzer nach Büro, Provinz, Stadt usw. aufteilen können.
+
+[Zurück zum Inhaltsverzeichnis](i18n/Features.de.md#mailad-funktionen-erklärt)
+
+## LXC-Entwicklungsumgebung
+
+Seit März 2026 enthält MailAD eine LXC-Entwicklungsumgebung, um das Testen und Entwickeln zu erleichtern. Diese Umgebung ermöglicht das Erstellen von LXC-Containern zum Testen von MailAD in verschiedenen Konfigurationen, ohne Ihre Produktionsumgebung zu beeinträchtigen.
+
+### Merkmale der LXC-Umgebung
+
+- **Isolierte Container**: Jeder LXC-Container bietet eine isolierte Umgebung für Tests
+- **Multi-OS-Unterstützung**: Ermöglicht das Testen von MailAD auf verschiedenen Linux-Distributionen
+- **Automatisierung mit Ansible**: Die Umgebung wird über Ansible-Playbooks verwaltet
+- **Netzwerkkonfiguration**: Netzwerkkonfiguration zur Simulation von DMZ-Umgebungen
+- **Active Directory-Integration**: Container für AD-Server und Mail-Server
+
+### Enthaltene Container
+
+- **dc**: Active Directory-Server (Ubuntu Noble)
+- **mailu**: Mail-Server (Ubuntu Noble) - für Tests unter Ubuntu
+- **maild**: Mail-Server (Debian Bookworm) - für Tests unter Debian
+- **test**: Allgemeiner Testcontainer
+
+### Verwendung der LXC-Umgebung
+
+Um die LXC-Entwicklungsumgebung zu verwenden:
+
+1. Konfigurieren Sie die Test-Anmeldeinformationen im local-dev-Verzeichnis
+2. Führen Sie die Ansible-Playbooks aus, um die Container zu erstellen
+3. Führen Sie MailAD-Tests in den isolierten Containern durch
+4. Überprüfen Sie das Funktionieren, bevor Sie es in der Produktion implementieren
+
+Diese Umgebung ist ideal für Entwickler und Administratoren, die neue Funktionen oder Konfigurationen testen möchten, bevor sie sie in Produktionsumgebungen implementieren.
 
 [Zurück zum Inhaltsverzeichnis](i18n/Features.de.md#mailad-funktionen-erklärt)
 

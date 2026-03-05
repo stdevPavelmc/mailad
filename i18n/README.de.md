@@ -1,101 +1,117 @@
-# MailAD v1.2.2
+# MailAD v1.2.7
 
 [![Chat on Telegram](https://img.shields.io/badge/Chat%20on-Telegram-brightgreen?style=flat-square)](https://t.me/MailAD_dev) [![GitHub Issues](https://img.shields.io/github/issues/stdevPavelmc/mailad?style=flat-square)](https://github.com/stdevPavelmc/mailad/issues) [![GitHub Issues Closed](https://img.shields.io/github/issues-closed/stdevPavelmc/mailad?style=flat-square)](https://github.com/stdevPavelmc/mailad/issues?q=is%3Aissue+is%3Aclosed) [![GitHub repo size](https://img.shields.io/github/repo-size/stdevPavelmc/mailad?style=flat-square)](https://github.com/stdevPavelmc/mailad/archive/master.zip) [![GitHub last commit](https://img.shields.io/github/last-commit/stdevPavelmc/mailad?style=flat-square)](https://github.com/stdevPavelmc/mailad/commits/master) [![GitHub commit rate](https://img.shields.io/github/commit-activity/m/stdevPavelmc/mailad?style=flat-square)](https://github.com/stdevPavelmc/mailad/commits/master) [![Financial contributors](https://opencollective.com/mailad/tiers/badge.svg?style=flat-square)](https://opencollective.com/mailad) [![Develop Testing Status](https://img.shields.io/github/actions/workflow/status/stdevPavelmc/mailad/mailad-tests.yml?branch=develop&label=Develop+Testing+Status&style=flat-square)](https://github.com/stdevPavelmc/mailad/actions/workflows/mailad-tests.yml) [![Production Testing Status](https://img.shields.io/github/actions/workflow/status/stdevPavelmc/mailad/mailad-tests.yml?branch=master&label=Production+Testing+Status&style=flat-square)](https://github.com/stdevPavelmc/mailad/actions/workflows/mailad-tests.yml)
 
-<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-11-orange.svg?style=flat-square)](#contributors-)
-<!-- ALL-CONTRIBUTORS-BADGE:END -->
+![MailAD Logo](./logos/MailAD-logo-full_white_background.png)
 
-![MailAD Logo](../logos/MailAD-logo-full_white_background.png)
+Diese Seite ist auch in folgenden Sprachen verfügbar: [ [English](README.md) 🇺🇸 🇬🇧] [ [Español](i18n/README.es.md) 🇪🇸 🇨🇺] *Warnung: Übersetzungen können veraltet sein.*
 
-Dies ist ein praktisches Tool, um einen Mailserver unter Linux bereitzustellen, der mit einem Active Directory-Server (im Folgenden AD genannt, Samba oder Windows) verbunden ist, wobei einige Einschränkungen zu berücksichtigen sind. Dies ist eine typische Mail-Konfiguration, die in Kuba gemäß gesetzlichen Vorschriften und Sicherheitsanforderungen verwendet wird, kann aber in jeder Domain eingesetzt werden. Sie können eine einfache Bereitstellung in [diesem Asciinema-Film](https://asciinema.org/a/fD1LuVLfeb8RPCHOIgbR1J9d8) sehen.
+Dies ist ein praktisches Werkzeug, um einen Mailserver unter Linux einzurichten, der mit einem Active Directory (AD) Server (Samba oder Windows) verknüpft ist und dabei einige Einschränkungen berücksichtigt. Dies ist eine typische Mail-Konfiguration für den Einsatz in Kuba, wie sie von Gesetz und Sicherheitsvorschriften vorgeschrieben wird, kann aber in jeder Domain verwendet werden. Sie können eine einfache Einrichtung in [diesem Asciinema-Film](https://asciinema.org/a/fD1LuVLfeb8RPCHOIgbR1J9d8) sehen.
 
 ## Hinweis
 
-Wir haben auch einige abgeleitete Projekte, die Sie interessant finden könnten:
+Wir haben auch einige abgeleitete Projekte, die Sie interessieren könnten:
 
 - [MailAD-Docker](https://github.com/stdevPavelmc/mailad-docker/) - Eine Docker Compose-Version dieser Software.
-- [MailD](https://github.com/stdevPavelmc/maild/) - Eine Multi-Domain-Docker-Lösung ohne AD-Anbindung, eine reine Web-Lösung.
+- [MailD](https://github.com/stdevPavelmc/maild/) - Eine Multi-Domain Docker-Lösung ohne AD-Verknüpfung, eine vollständig webbasierte Lösung.
 - [MailAD ansible role](https://github.com/stdevPavelmc/mailad-ansible-role) - Eine Ansible-Rolle für den Mailserver.
+
+## Wer nutzt MailAD
+
+MailAD wird hauptsächlich in Kuba eingesetzt, was sein spezifischer Zielmarkt ist. Im Dezember 2025 gab es mindestens 50 gemeldete Domains, die es nutzen (beachten Sie, dass die Statistikberichterstattung optional ist).
+
+![Benutzer-Mosaik](./logos/mosaic.png)
+
+Das gezeigte Mosaik ist ein Beitrag von Benutzern, die berichtet haben, es zu nutzen. Wenn Sie es nutzen und Ihr Logo aufnehmen möchten, gehen Sie zur [Telegram-Gruppe](https://t.me/MailAD_dev) und stellen Sie Ihr Logo zur Aufnahme bereit. Wenn ein Logo eine Kette oder Gruppe von Unternehmen darstellt, bedeutet dies nicht, dass alle sie nutzen, sondern dass mehr als ein Unternehmen innerhalb dieser Kette es tut.
 
 ## Begründung
 
-Dieses Repository soll auf Ihrer neuen Betriebssysteminstallation unter `/root` geklont werden (Sie können eine LXC-Instanz, VM, etc. verwenden) und gemäß den Dateikommentaren in einer Hauptkonfigurationsdatei eingerichtet werden. Führen Sie dann die Schritte in einem Makefile aus und befolgen Sie die Anweisungen zur Konfiguration Ihres Servers.
+Dieses Repository soll unter `/root` auf Ihrer frischen OS-Installation geklont werden (Sie können eine LXC-Instanz, VM usw. verwenden) und über eine Hauptkonfigurationsdatei gemäß den Dateikommentaren eingerichtet werden. Führen Sie dann die Schritte in einer Makefile aus und befolgen Sie die Anweisungen, um Ihren Server zu konfigurieren.
 
-Nach ein paar Schritten haben Sie einen Mailserver, der in etwa 15 Minuten einsatzbereit ist. *(Diese Zeit basiert auf einer 2-Mbit/s-Internetverbindung zu einem Repository. Wenn Sie ein lokales Repository haben, ist diese geringer.)*
+Nach einigen Schritten haben Sie in etwa 15 Minuten einen funktionierenden Mailserver. *(Diese Zeit basiert auf einer 2-Mbps-Internetverbindung zu einem Repository. Bei einem lokalen Repository ist es weniger.)*
 
-Dieses Tool wird auf folgenden Systemen getestet und unterstützt:
+Die empfohlene OS-Auswahl ist wie folgt:
 
-| OS | Aktiver Support | Legacy |
-|:--- |:---:|:---:|
-| Ubuntu Noble 24.04 LTS | ✅ |  |
-| Debian Bookworm 12 | ✅ |  |
-| Ubuntu Jammy 22.04 LTS |  | ⚠️ |
-| Debian Bullseye 11 |  | ⚠️ |
-| Ubuntu Focal 20.04 LTS |  | ⚠️ |
-| Debian Buster 10 |  | ⚠️ |
-| Ubuntu Bionic 18.04 LTS |  | ⚠️ |
+| OS | Aktiver Support | Legacy | Eingestellt |
+|:--- |:---:|:---:|:---:|
+| Ubuntu Resolute 26.04 rc | ⚙️ |  |  |
+| Debian Trixie 13 | ✅ |  |  |
+| Ubuntu Noble 24.04 LTS | ✅ |  |  |
+| Debian Bookworm 12 | ✅ |  |  |
+| Ubuntu Jammy 22.04 LTS |  | ⚠️ |  |
+| Debian Bullseye 11 |  | ⚠️ |  |
+| Ubuntu Focal 20.04 LTS |  |  | 🚫 |
+| Debian Buster 10 |  |  | 🚫 |
+| Ubuntu Bionic 18.04 LTS |  |  | 🚫 |
 
-Legacy bedeutet, dass es funktioniert, aber nicht mehr unterstützt wird. Es wird empfohlen, die neueste Version zu verwenden.
+> *Legende:*
+> - ⚙️:  Support in Arbeit, bleiben Sie dran!
+> - Aktiver Support ✅: Dies ist die empfohlene Version für die Installation
+> - Legacy ⚠️: funktioniert, aber nicht empfohlen, kein Support und keine Updates
+> - Eingestellt 🚫: funktioniert möglicherweise, aber nicht mehr unterstützt, es ist EOL
 
-***Hinweis:** Wenn Sie Debian Buster oder Bullseye in einem LXC-Container verwenden (z.B. Proxmox), müssen Sie die Dovecot-Installation anpassen, sonst funktioniert sie nicht. Siehe [diese Lösung](https://serverfault.com/questions/976250/dovecot-lxc-apparmor-denied-buster) für weitere Informationen.*
+***Hinweis:** Wenn Sie Debian Buster oder Bullseye in einem LXC-Container (z. B. Proxmox) verwenden, müssen Sie die Dovecot-Installation anpassen, sonst funktioniert sie nicht. Weitere Informationen finden Sie in [diesem Fix](https://serverfault.com/questions/976250/dovecot-lxc-apparmor-denied-buster).*
 
-Es wird empfohlen, dass die MailAD-Instanz in Ihrem DMZ-Segment mit einer Firewall zwischen ihr und Ihren Benutzern und einem Mail-Gateway wie [Proxmox Mail Gateway](https://www.proxmox.com/de/proxmox-mail-gateway) zwischen ihr und dem externen Netzwerk platziert wird.
+Es wird empfohlen, dass die MailAD-Instanz in Ihrem DMZ-Segment sitzt, mit einer Firewall zwischen ihr und Ihren Benutzern und einem Mail-Gateway wie [Proxmox Mail Gateway](https://www.proxmox.com/en/proxmox-mail-gateway) zwischen ihr und dem externen Netzwerk.
 
-## Eigenschaften
+## Funktionen
 
-Dadurch wird ein Mailserver für ein Unternehmen bereitgestellt, der Unternehmensbenutzer bedient. Die wichtigsten Funktionen finden Sie in der Datei [Features.md](../Features.md). Unter anderem finden Sie Folgendes:
+Dies richtet einen Mailserver für ein Unternehmen ein, das Unternehmensbenutzer bedient. Die wichtigsten Funktionen finden Sie in der Datei [Features.md](Features.md). Darunter finden Sie unter anderem:
 
-1. Geringer Ressourcenbedarf.
-2. Erweiterte (und optionale) E-Mail-Filterfunktionen, die Anhänge, SPF, AntiVirus und Spam umfassen.
+1. Geringer Ressourcenverbrauch.
+2. Fortgeschrittene (und optionale) Mail-Filterfunktionen, die Anhänge, SPF, Antivirus & Spam umfassen.
 3. Verschlüsselte LDAP-Kommunikation als Option.
-4. Integrierter Schutz vor größeren und bekannten SSL- und Mail-Service-Angriffen.
-5. Automatischer Alias mit AD-Gruppen.
-6. Manueller Alias, manuelles Verbot, manuelle Header- und Body-Checks.
-7. Bedarfsgerechte Sicherung und Wiederherstellung von Rohkonfigurationen.
+4. In-situ-Schutz vor großen und bekannten SSL- und Mail-Service-Angriffen.
+5. Automatische Aliase mit AD-Gruppen.
+6. Manuelle Aliase, manuelles Verbot, manuelle Header- und Body-Checks.
+7. Auf Abruf Backup und Wiederherstellung von Rohkonfigurationen.
 8. Wirklich schmerzlose Upgrades.
-9. Tägliche Zusammenfassung des E-Mail-Verkehrs in Ihrem Posteingang.
-10. Optionaler Zugriff auf Benutzerrechte über AD-Gruppen (lokal/national/international).
-11. Optionaler Haftungsausschluss/Hinweis/Warnung bei jeder ausgehenden E-Mail.
+9. Tägliche Mail-Verkehrszusammenfassung in Ihrem Posteingang.
+10. Optionaler Benutzerprivilegien-Zugriff über AD-Gruppen (lokal/national/international).
+11. Optionaler Haftungsausschluss/Vermerk/Warnung in jeder ausgehenden Mail.
 12. Optionale aggressive SPAM-Bekämpfungsmaßnahmen.
-13. Wöchentliche Hintergrundprüfung auf neue Versionen mit einer detaillierten E-Mail, wenn Sie ein Upgrade durchführen müssen.
-14. Optionale Postfachtrennung nach Büro/Stadt/Land.
-15. Optionales Webmail, Sie können zwischen Roundcube oder SnappyMail wählen.
+13. Wöchentliche Hintergrundprüfung auf neue Versionen mit detaillierter E-Mail, wenn Sie ein Upgrade benötigen.
+14. Optionale Aufteilung des Postfachs nach Büro/Stadt/Land.
+15. Optionaler Webmail, Sie haben die Wahl zwischen Roundcube und SnappyMail.
 
 ## TODO
 
-Es gibt eine [TODO-Liste](../TODO.md), die als eine Art "Roadmap" für neue Funktionen dient. Aber da ich (bisher der einzige Entwickler) ein Leben, eine Familie und einen täglichen Job habe, wissen Sie...
+Es gibt eine [TODO-Liste](TODO.md), die als eine Art "Roadmap" für neue Funktionen dient. Aber da ich (der einzige Entwickler bisher) ein Leben, eine Familie und einen Vollzeitjob habe, wissen Sie...
 
-Die gesamte Entwicklung erfolgt am Wochenende oder spät in der Nacht (schauen Sie sich ernsthaft die Commit-Daten an!). Wenn Sie eine Funktion oder eine Fehlerbehebung ASAP benötigen, denken Sie bitte darüber nach, eine Spende zu machen oder mich zu kontaktieren, und ich werde Ihnen gerne so schnell wie möglich helfen. Meine Kontaktinformationen finden Sie am Ende dieser Seite.
+Die gesamte Entwicklung erfolgt am Wochenende oder spät in der Nacht (ernsthaft, werfen Sie einen Blick auf die Commit-Daten!). Wenn Sie dringend ein Feature oder ein Fix benötigen, erwägen Sie bitte eine Spende oder kontaktieren Sie mich, und ich helfe Ihnen gerne so schnell wie möglich weiter. Meine Kontaktdaten finden Sie am Ende dieser Seite.
 
 ## Einschränkungen und Anforderungen
 
-Erinnern Sie sich an den Kommentar am Anfang der Seite über *"...mit einigen Einschränkungen im Hinterkopf..."*? Ja, hier sind sie:
+Erinnern Sie sich an den Kommentar oben auf der Seite über *"...mit einigen Einschränkungen im Hinterkopf..."*? Ja, hier sind sie:
 
-1. Ihre Benutzerbasis und Konfiguration stammen wie erwähnt aus AD. Wir bevorzugen Samba AD, aber es funktioniert auch unter Windows; siehe [die AD-Anforderungen für dieses Tool](../AD_Requirements.md).
-2. Der Benutzernameteil der E-Mail darf 20 Zeichen nicht überschreiten, daher wird `thisisalongemailaddress@domain.com` auf `thisisalongemailaddr@domain.com` gekürzt. Dies ist nicht unsere Regel, sondern eine Einschränkung des LDAP-Verzeichnisses gemäß Windows-Schema.
-3. Der E-Mail-Speicher wird ein Ordner in `/home/vmail` sein. Alle E-Mails gehören einem Benutzer namens `vmail` mit uid:5000 & gid:5000. Tipp: Dieser Ordner kann ein NFS-Mount oder eine andere Art von Netzwerkspeicher sein (konfigurierbar).
-4. Sie verwenden einen Windows-PC zur Steuerung und Verwaltung der Domäne (muss ein Domänenmitglied sein und RSAT installiert und aktiviert haben). Wir empfehlen Windows 10 LTSC/Professional.
-5. Die Kommunikation mit dem Server erfolgt auf folgende Weise: (Siehe [diese Frage](../FAQ.md#what-ports-i-need-to-get-open-to-make-sure-the-servers-works-ok) in der FAQ-Datei, um mehr zu erfahren)
+1. Ihre Benutzerbasis und Konfiguration stammen von AD wie erwähnt. Wir bevorzugen Samba AD, funktioniert aber auch unter Windows; siehe [die AD-Anforderungen für dieses Tool](AD_Requirements.md).
+2. Der Benutzername-Teil der E-Mail darf 20 Zeichen nicht überschreiten, daher wird `thisisalongemailaddress@domain.com` zu `thisisalongemailaddr@domain.com` gekürzt. Dies ist nicht unsere Regel, sondern eine Einschränkung des LDAP-Verzeichnisses, wie vom Windows-Schema vorgegeben.
+3. Die Mail-Speicherung erfolgt in einem Ordner unter `/home/vmail`. Die gesamte Mail gehört einem Benutzer namens `vmail` mit uid:5000 & gid:5000. Tipp: Dieser Ordner kann ein NFS-Mount oder jede andere Art von Netzwerkspeicher sein (konfigurierbar).
+4. Sie verwenden einen Windows-PC, um die Domain zu steuern und zu verwalten (muss ein Domänenmitglied sein und RSAT installiert und aktiviert haben). Wir empfehlen Windows 10 LTSC/Professional.
+5. Die Kommunikation mit dem Server erfolgt auf diese Weise: (Siehe [diese Frage](FAQ.md#what-ports-i-need-to-get-open-to-make-sure-the-servers-works-ok) in der FAQ-Datei für weitere Informationen)
     - Port 25 (SMTP) wird verwendet, um eingehenden Verkehr von der Außenwelt oder von einem Mail-Gateway zu empfangen.
-    - Port 587 (SUBMISSION) wird verwendet, um E-Mails von den Benutzern zu empfangen, die lokal zugestellt oder an andere Server weitergeleitet werden sollen.
-    - Port 465 (SMTPS) wird wie Port 587 verwendet, ist aber nur als Legacy-Option aktiviert; seine Verwendung wird zugunsten von Port 587 nicht empfohlen.
-    - Port 993 (IMAPS) die bevorzugte Methode zum Abrufen von E-Mails vom Server.
-    - Port 995 (POP3S) wird wie 993 verwendet, wird aber zugunsten von IMAPS nicht empfohlen (es sei denn, Sie haben eine sehr langsame Verbindung).
+    - Port 587 (SUBMISSION) wird verwendet, um E-Mails von Benutzern zu empfangen, die lokal zugestellt oder an andere Server weitergeleitet werden sollen.
+    - Port 465 (SMTPS) wird wie Port 587 verwendet, ist aber nur als Legacy-Option aktiviert; seine Verwendung wird zugunsten von Port 587 abgeraten.
+    - Port 993 (IMAPS) ist die bevorzugte Methode, um E-Mails vom Server abzurufen.
+    - Port 995 (POP3S) wird wie 993 verwendet, aber IMAPS wird gegenüber POP3S empfohlen (es sei denn, Sie befinden sich in einer sehr langsamen Verbindung).
 
-## Wie installiere ich es oder probiere es aus?
+## Wie installiert oder testet man es?
 
-Wir haben eine [INSTALL.md](../INSTALL.md)-Datei genau dafür und auch eine [FAQ](../FAQ.md)-Datei mit häufigen Problemen.
+Wir haben eine [INSTALL.md](INSTALL.md)-Datei genau dafür, und auch eine [FAQ](FAQ.md)-Datei mit häufigen Problemen.
 
 ## Dies ist freie Software!
 
-Haben Sie einen Kommentar, eine Frage, Beiträge oder eine Korrektur?
+Haben Sie einen Kommentar, eine Frage, einen Beitrag oder ein Fix?
 
-Verwenden Sie die Registerkarte "Issues" in der Repository-URL oder senden Sie mir eine Nachricht über [Twitter](https://twitter.com/co7wt) oder [Telegram](https://t.me/pavelmc).
+Verwenden Sie die Issues-Registerkarte in der Repository-URL oder senden Sie mir eine Nachricht über [Twitter](https://twitter.com/co7wt) oder [Telegram](https://t.me/pavelmc).
 
 ## Mitwirkende ✨
 
-Vielen Dank an diese wunderbaren Menschen ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
+Vielen Dank an diese wunderbaren Menschen ([Emoji-Schlüssel](https://allcontributors.org/docs/en/emoji-key)):
+
+<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
+[![All Contributors](https://img.shields.io/badge/all_contributors-11-orange.svg?style=flat-square)](#mitwirkende-)
+<!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
 <!-- prettier-ignore-start -->
@@ -125,6 +141,6 @@ Vielen Dank an diese wunderbaren Menschen ([emoji key](https://allcontributors.o
 
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
-Bitte lesen Sie die [CONTRIBUTING.md](../CONTRIBUTING.md)-Datei, wenn Sie zu MailAD beitragen möchten, um die Details zu erfahren, wie Sie dies tun können. Alle Arten von Beiträgen sind willkommen: Ideen, Korrekturen, Fehlerberichte, Verbesserungen und sogar eine Telefonaufladung, um mich online zu halten.
+Bitte lesen Sie die [CONTRIBUTING.md](CONTRIBUTING.md)-Datei, wenn Sie zu MailAD beitragen möchten, um die Details zu erfahren. Alle Arten von Beiträgen sind willkommen: Ideen, Fixes, Fehlerberichte, Verbesserungen und sogar ein Guthabenaufladung für das Telefon, um mich online zu halten.
 
-Dieses Projekt folgt der [all-contributors](https://github.com/all-contributors/all-contributors)-Spezifikation. Beiträge jeder Art sind willkommen!
+Dieses Projekt folgt der [all-contributors](https://github.com/all-contributors/all-contributors)-Spezifikation. Jede Art von Beiträgen ist willkommen!
