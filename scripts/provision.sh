@@ -259,7 +259,7 @@ else
             for M in $(echo "${AV_ALT_MIRRORS}" | xargs) ;  do
                 # if a proxy is set remove the 'http://' and 'https://' from the variables
 
-                if [ ! -z "$PROXY_HOST" -a ! -z "$PROXY_PORT" ] ; then
+                if [ "$PROXY_HOST" -a "$PROXY_PORT" ] ; then
                     # general proxy, but we must use it ?
                     if [ "$AV_UPDATES_USE_PROXY" == "yes" -o "$AV_UPDATES_USE_PROXY" == "Yes" ] ; then
                         # ok, by all means add proxy remove the prefix
@@ -278,7 +278,7 @@ else
     fi
 
     ### configure proxy if needed
-    if [ ! -z "$PROXY_HOST" -a ! -z "$PROXY_PORT" ] ; then
+    if [ "$PROXY_HOST" -a "$PROXY_PORT" ] ; then
         # general proxy, but we must use it ?
         if [ "$AV_UPDATES_USE_PROXY" == "yes" -o "$AV_UPDATES_USE_PROXY" == "Yes" ] ; then
             # ok, by all means add proxy
@@ -286,7 +286,7 @@ else
             echo "HTTPProxyPort $PROXY_PORT" >> $FILE
 
             # check for auth
-            if [ ! -z "$PROXY_USER" -a ! -z "$PROXY_PASS" ] ; then
+            if [ "$PROXY_USER" -a "$PROXY_PASS" ] ; then
                 echo "HTTPProxyUsername $PROXY_USER" >> $FILE
                 echo "HTTPProxyPassword $PROXY_PASS" >> $FILE
             fi
@@ -349,7 +349,7 @@ if [ "$ENABLE_SPAMD" == "yes" -o "$ENABLE_SPAMD" == "Yes" ] ; then
     # configure SMA filtering on amavis if not already active
     FILE="/etc/amavis/conf.d/15-content_filter_mode"
     ACTIVE=$(grep "^#@bypass_spam_checks_maps.*" $FILE)
-    if [ ! -z "$ACTIVE" ] ; then
+    if [ "$ACTIVE" ] ; then
         # not active, activating
         sed -i s/"#@bypass_spam_checks_maps"/"@bypass_spam_checks_maps"/g $FILE
 
@@ -392,7 +392,7 @@ else
     # disable spamassasin on amavis
     FILE="/etc/amavis/conf.d/15-content_filter_mode"
     ACTIVE=$(grep "^@bypass_spam_checks_maps.*" $FILE)
-    if [ ! -z "$ACTIVE" ] ; then
+    if [ "$ACTIVE" ] ; then
         # not active, activating
         sed -i s/"@bypass_spam_checks_maps"/"#@bypass_spam_checks_maps"/g $FILE
 

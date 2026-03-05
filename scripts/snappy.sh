@@ -36,21 +36,6 @@ function fixperms {
     chown -R www-data:www-data "$1/"
 }
 
-# Handle http proxy if set - comprehensive proxy support matching provision.sh
-function setup_proxy_environment {
-    # Set both HTTP and HTTPS proxy environment variables
-    export HTTP_PROXY="http://$PROXY_HOST:$PROXY_PORT"
-    export HTTPS_PROXY="http://$PROXY_HOST:$PROXY_PORT"
-    echo "===> Proxy configured: $PROXY_HOST:$PROXY_PORT"
-
-    # check for auth
-    if [ ! -z "$PROXY_USER" -a ! -z "$PROXY_PASS" ] ; then
-        export HTTP_PROXY="http://$PROXY_USER:$PROXY_PASS@$PROXY_HOST:$PROXY_PORT"
-        export HTTPS_PROXY="http://$PROXY_USER:$PROXY_PASS@$PROXY_HOST:$PROXY_PORT"
-        echo "===> Proxy authentication enabled for user: $PROXY_USER"
-    fi
-}
-
 # install php dependencies:
 apt-get install ${APT_OPTS} $SNAPPY_PKGS
 
@@ -73,16 +58,28 @@ R=0
 if [ -f "./$SNAPPY_FILE" -a "$DOMAIN" == "mailad.cu" ]; then
     cp "./$SNAPPY_FILE" "/tmp/$SNAPPY_FILE"
 else
-    # Add proxy options to wget for package download if proxy is configured
-    WGET_OPTS="--no-clobber"
-    if [ "$PROXY_HOST" -a "$PROXY_PORT" ] ; then
-        echo "===> Using proxy for SnappyMail package download: $PROXY_HOST:$PROXY_PORT"  | tee -a $FILE
-        WGET_OPTS="${WGET_OPTS} --proxy=on --http-proxy=\"$HTTP_PROXY\" --https-proxy=\"$HTTPS_PROXY\""
+    # Setup proxy if needed
+    if [ "$PROXY_HOST" -a "$PROXY_PORT"] ; then
+        # Set both HTTP and HTTPS proxy environment variables
+        export HTTP_PROXY="http://$PROXY_HOST:$PROXY_PORT"
+        export HTTPS_PROXY="http://$PROXY_HOST:$PROXY_PORT"
+        echo "===> Proxy configured: $HTTP_PROXY"
+
+        # check for auth tyo add auth
+        if [ "$PROXY_USER" -a "$PROXY_PASS" ] ; then
+            export HTTP_PROXY="http://$PROXY_USER:$PROXY_PASS@$PROXY_HOST:$PROXY_PORT"
+            export HTTPS_PROXY="http://$PROXY_USER:$PROXY_PASS@$PROXY_HOST:$PROXY_PORT"
+            echo "===> Proxy authentication enabled for user: $PROXY_USER"
+        fi
     fi
-    
+
     echo "===> Downloading SnappyMail package from: $SNAPPY_URL" | tee -a $FILE
-    wget -q ${WGET_OPTS} "$SNAPPY_URL" -O "/tmp/$SNAPPY_FILE"
+    wget -q -c "$SNAPPY_URL" -O "/tmp/$SNAPPY_FILE"
     R=$?
+
+    # Unset proxy variables to avoid get them used locally
+    unset HTTP_PROXY
+    unset HTTPS_PROXY
 fi
 
 # check if download fails
@@ -93,9 +90,9 @@ if [ $R -ne 0 -a $R -ne 1 ]; then
     echo "  Return code: $R" | tee -a $FILE
     
     # Provide specific proxy-related error messages
-    if [ ! -z "$PROXY_HOST" -a ! -z "$PROXY_PORT" ] ; then
+    if [ "$PROXY_HOST" -a "$PROXY_PORT" ] ; then
         echo "  Proxy configured: $PROXY_HOST:$PROXY_PORT" | tee -a $FILE
-        if [ ! -z "$PROXY_USER" -a ! -z "$PROXY_PASS" ] ; then
+        if [ "$PROXY_USER" -a "$PROXY_PASS" ] ; then
             echo "  Proxy authentication: enabled for user $PROXY_USER" | tee -a $FILE
         fi
         echo "  This could be a proxy authentication or connectivity issue." | tee -a $FILE
