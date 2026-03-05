@@ -20,7 +20,7 @@ This is a note for developers about the recommended tags to keep track of the ch
 Dates must be YEAR-MONTH-DAY
 -->
 
-## [v1.2.7-rc] - 2026-03-xx
+## [v1.2.7] - 2026-03-04
 
 - Added: rsyslog, cron and sudo as a dependency on all OS/versions, as some bare metal server deploys don't have it.
 - Added: Support for Debian 13 "trixie", easing the way for Ubuntu 26.04 next year.
@@ -38,7 +38,7 @@ Dates must be YEAR-MONTH-DAY
 - Changed: Modern distros has changed spamassassin to spamd as a service name and package, we made changes to support that.
 - Fixed: When using multi AD DC setups the uri string construction algorithn was slipping a space and spoiling the whole feature; detected and fixed.
 - Fixed: When provisioning some times the auto-backup and restore mechanism was failing [if some features was not activated] and dumping noise over the provision log.
-- Fixed: Correct handling of proxy for the snappy package download
+- Fixed: Correct handling of proxy for the snappy package download and setup
 
 ## [v1.2.6] - 2026-02-05
 
