@@ -1,0 +1,5 @@
+# This is not jinja2, this is designed to be replaced on the fly on the target server
+ 
+deb [arch=_arch_] http://_repos_:_port_/debian _release_ main contrib non-free
+deb [arch=_arch_] http://_repos_:_port_/debian _release_-updates main contrib non-free
+deb [arch=_arch_] http://_repos_:_port_/debian _release_-security main contrib non-free

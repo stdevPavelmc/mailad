@@ -1,0 +1,198 @@
+# Pavel Milanes [pavelmc@gmail.com] 2021-2026
+#
+# Target: Create the CT machines using a local LXC service
+#
+# Requisites:
+# - apt install ansible python3-lxc
+# - ansible-galaxy collection install community.general (use ppa, not repository as it to old)
+# - Read docs on how to setup a proper LXC env here: https://ubuntu.com/server/docs/containers-lxc
+
+---
+- name: Create the LXCs
+  hosts: localhost
+  connection: local
+  become: yes
+  vars_files:
+    - "../vars/general.yml"
+
+  tasks:
+    - name: Check if running as root
+      shell: id -u
+      register: current_user_id
+      changed_when: false
+
+    - name: Check if sudo is available
+      shell: which sudo
+      register: sudo_check
+      changed_when: false
+      when: current_user_id.stdout != "0"
+
+    - name: Test sudo access
+      shell: sudo -n true
+      register: sudo_test
+      changed_when: false
+      ignore_errors: true
+      when: current_user_id.stdout != "0" and sudo_check.rc == 0
+
+    - name: Fail with helpful message if not root and sudo not available
+      fail:
+        msg: |
+          ERROR: This playbook requires root privileges to manage LXC containers.
+          
+          You are running as user: {{ ansible_user }} (UID: {{ current_user_id.stdout }})
+          
+          To run this playbook correctly:
+          
+          Option 1 - Run as root:
+            sudo ansible-playbook local-dev/playbooks/create_lxc.yml
+          
+          Option 2 - Run as regular user with sudo (recommended):
+            ansible-playbook local-dev/playbooks/create_lxc.yml --ask-become-pass
+          
+          Troubleshooting:
+          - Ensure you are in the sudoers file
+          - Check that sudo is installed: sudo apt install sudo
+          - Verify your user has permission to run LXC commands
+      when: 
+        - current_user_id.stdout != "0"
+        - (sudo_check.rc != 0 or sudo_test.rc != 0)
+
+    - name: Install python3-lxc
+      package:
+        name: python3-lxc
+        state: present
+      tags: dependency
+
+    - name: Check for the community general collection
+      shell: ansible-galaxy collection list | grep community.general
+      register: comgen
+      tags: dependency
+
+    - name: Install the community.general collection
+      shell: ansible-galaxy collection install community.general
+      when: not 'community.general' in comgen.stdout
+      tags: dependency
+
+    - name: Check which LXC containers exist
+      shell: "lxc-ls -f | grep -E '(RUNNING|STOPPED)' | awk '{print $1}'"
+      register: existing_lxcs
+      changed_when: false
+
+    - name: Check which LXC containers are running
+      shell: "lxc-ls -f | grep RUNNING | awk '{print $1}'"
+      register: running_lxcs
+      changed_when: false
+
+    - name: Stop running LXC containers
+      shell: lxc-stop "{{ item.key }}"
+      with_dict: "{{ lxcs }}"
+      when: item.key in running_lxcs.stdout_lines
+      tags: create
+
+    - name: Create non-existent LXC containers
+      community.general.lxc_container:
+        name: "{{ item.key }}"
+        template: download
+        state: stopped
+        template_options: --dist "{{ item.value.distro }}" --release "{{ item.value.release }}" --arch "{{ repos.arch }}"
+      with_dict: "{{ lxcs }}"
+      when: item.key not in existing_lxcs.stdout_lines
+      tags: create
+
+    - name: Ensure all LXC containers are in stopped state
+      community.general.lxc_container:
+        name: "{{ item.key }}"
+        state: stopped
+      with_dict: "{{ lxcs }}"
+      tags: create
+
+    - name: Map the mailad folder inside the containers
+      lineinfile:
+        path: "/var/lib/lxc/{{ item.key }}/config"
+        regexp: '^lxc\.mount\.entry.*$'
+        line: "lxc.mount.entry = {{ mailad_at }} root/mailad none bind,create=dir 0 0"
+        owner: root
+        group: root
+        mode: 0640
+      with_dict: "{{ lxcs }}"
+
+    - name: Adjust FQDN hostname in /etc/hosts for each lxc
+      lineinfile:
+        path: "/var/lib/lxc/{{ item.key }}/rootfs/etc/hosts"
+        regexp: '^127\.0\.1\.1'
+        line: "127.0.1.1    {{ item.key }}.{{ domain }}    {{ item.key }}"
+        owner: root
+        group: root
+        mode: 0644
+      with_dict: "{{ lxcs }}"
+
+    - name: Reset dhcp leases for the LXC interface
+      ansible.builtin.file:
+        path: /var/lib/misc/dnsmasq.lxcbr0.leases
+        state: absent
+
+    - name: restart service
+      systemd:
+        state: restarted
+        name: lxc-net
+
+    - name: Ensure all LXC containers are in started for the next steps
+      community.general.lxc_container:
+        name: "{{ item.key }}"
+        state: started
+      with_dict: "{{ lxcs }}"
+      tags: create
+
+    - name: Show the IP of the dc host
+      debug:
+        msg: "The IP address is {{ lxcs['dc'].host }}"
+
+    - name: Adjust DNS server in mail ones to point to DC
+      shell: echo "resolvectl dns eth0 {{ lxcs['dc'].host }}" | lxc-attach --name="{{ item.key }}" -- 
+      with_dict: "{{ lxcs }}"
+      when: '"mail" in item.key'
+      changed_when: False
+
+    - name: Create the ubuntu source.list template
+      shell: cat ../templates/repos/sources-ubuntu.list | sed s/\_repos\_/"{{ repos.ubuntu.host }}"/g | sed s/\_port\_/"{{ repos.ubuntu.port }}"/g
+      register: ubuntu_repo
+      changed_when: False
+      tags: create
+    
+    - name: Create the debian source.list template
+      shell: cat ../templates/repos/sources-debian.list | sed s/\_repos\_/"{{ repos.debian.host }}"/g | sed s/\_port\_/"{{ repos.debian.port }}"/g
+      register: debian_repo
+      changed_when: False
+      tags: create
+
+    - name: Inject the local repository [ubuntu]
+      shell: echo "REL=\`cat /etc/os-release | grep VERSION_CODENAME | cut -d '=' -f 2\`; echo \"{{ubuntu_repo.stdout}}\" | sed s/\\\_release\\\_/\${REL}/g | tee /etc/apt/sources.list" | lxc-attach --name="{{ item.key }}" --
+      with_dict: "{{ lxcs }}"
+      when: item.value.distro in 'ubuntu'
+      changed_when: False
+      tags: create
+
+    - name: Inject the local repository [debian]
+      shell: echo "REL=\`cat /etc/os-release | grep VERSION_CODENAME | cut -d '=' -f 2\`; echo \"{{debian_repo.stdout}}\" | sed s/\\\_release\\\_/\${REL}/g | tee /etc/apt/sources.list" | lxc-attach --name="{{ item.key }}" -- 
+      with_dict: "{{ lxcs }}"
+      when: item.value.distro in 'debian'
+      changed_when: False
+      tags: create
+
+    - name: Update the pkgs
+      shell: echo "apt update -q" | lxc-attach --name="{{ item.key }}" -- 
+      with_dict: "{{ lxcs }}"
+      changed_when: False
+      tags: create
+
+    - name: Install make & nano on all CTs
+      shell: echo "apt-get install make nano -y" | lxc-attach --name="{{ item.key }}" -- 
+      with_dict: "{{ lxcs }}"
+      changed_when: False
+      tags: create
+
+    - name: Set correct timezone on the nodes
+      shell: echo "timedatectl set-timezone {{ timezone }}" | lxc-attach --name="{{ item.key }}" -- 
+      with_dict: "{{ lxcs }}"
+      changed_when: False
+      tags: create

@@ -1,0 +1,43 @@
+# General variables
+#
+# Notes:
+# - 
+#
+
+---
+
+# misc
+timezone: "America/Havana"
+domain: mailad.cu
+mailad_at: /home/pavel/Documents/Software/MailAD_Family/mailad
+
+# repo sources
+repos:
+  arch: amd64
+  ubuntu:
+    host: 10.0.3.3
+    port: 8080
+  debian:
+    host: repos.ou.edu.cu
+    port: 80
+
+# LXCs data
+# Warn: host must match that on the inventory
+lxcs:
+  dc:
+    distro: ubuntu
+    release: noble
+    host: 10.0.3.2
+  mailu:
+    distro: ubuntu
+    release: noble
+    host: 10.0.3.3
+  maild:
+    distro: debian
+    release: trixie
+    host: 10.0.3.4
+  test:
+    distro: ubuntu
+    release: noble
+    host: 10.0.3.5
+
