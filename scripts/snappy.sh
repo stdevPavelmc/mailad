@@ -204,12 +204,6 @@ CONFIG="${CONFIGFOLDER}/application.ini"
 OPTS="--no-check-certificate"
 if [ "$WEBSERVER_HTTP_ENABLED" == "yes" ]; then OPTS="--no-hsts" ; fi
 
-# Add proxy options to wget if proxy is configured
-if [ ! -z "$PROXY_HOST" -a ! -z "$PROXY_PORT" ] ; then
-    OPTS="${OPTS} --proxy=on --http-proxy=$HTTP_PROXY --https-proxy=$HTTPS_PROXY"
-    echo "===> Using proxy for SnappyMail admin setup: $PROXY_HOST:$PROXY_PORT"
-fi
-
 while [ ! -f "$PASS" ] ; do
     # get it...
     wget -q ${OPTS} "$WEBPROTO://$HOSTNAME/?admin" -O /dev/null
