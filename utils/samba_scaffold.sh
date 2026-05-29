@@ -61,7 +61,7 @@ NATU=$(echo ${NACUSER} | cut -d '@' -f 1)
 TESTGROUP=testgroup
 
 # Set default DNS forwarder if not already set
-if [ -z "$DNSFWD" ] ; then
+if [ -z "${DNSFWD:-}" ] ; then
     DNSFWD=1.1.1.1
 fi
 
