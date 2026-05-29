@@ -75,8 +75,14 @@ echo "==== END DEBUG ===="
 # update the package data
 apt-get update
 
-# install samba and winbind( for ubuntu 26.04 need to be installed together with samba-ad-dc)
-apt-get install samba winbind samba-ad-dc python3-setproctitle -yq
+# install samba and winbind
+# samba-ad-dc is a separate package only on Ubuntu 26.04 (resolute) and later
+source /etc/os-release
+SAMBA_PKGS="samba winbind python3-setproctitle"
+if [ "${VERSION_CODENAME}" = "resolute" ]; then
+    SAMBA_PKGS="${SAMBA_PKGS} samba-ad-dc"
+fi
+apt-get install ${SAMBA_PKGS} -yq
 
 # config samba related services
 for a in stop disable mask ; do
