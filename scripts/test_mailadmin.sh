@@ -65,7 +65,7 @@ echo "===> Searching for the user that owns the email: $ADMINMAIL"
 TEMP=$(mktemp)
 
 # Try initial search without forcing TLS
-perform_ldap_search "(&(objectClass=person)(mail=$ADMINMAIL))" $TEMP "no"
+perform_ldap_search "(&(objectClass=user)(mail=$ADMINMAIL))" $TEMP "no"
 
 # Check if encryption is required
 if has_tls_error $TEMP && grep -q "encryption required" $TEMP; then
