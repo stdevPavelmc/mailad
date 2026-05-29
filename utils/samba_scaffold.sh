@@ -108,6 +108,14 @@ samba-tool domain provision \
     --dns-backend=SAMBA_INTERNAL \
     --adminpass=${APSWD}
 
+# Install Samba's CA certificate to the system trust store so all scripts
+# can verify LDAP/LDAPS TLS connections without LDAPTLS_REQCERT=never
+echo ">>> Installing Samba CA certificate to system trust store"
+if [ -f /var/lib/samba/private/tls/ca.pem ] ; then
+    cp /var/lib/samba/private/tls/ca.pem /usr/local/share/ca-certificates/samba-ca.crt
+    update-ca-certificates
+fi
+
 # fix the DNS to point to myself and alternatives
 echo "search mailad.cu" > /etc/resolv.conf
 echo "nameserver 127.0.0.1" >> /etc/resolv.conf

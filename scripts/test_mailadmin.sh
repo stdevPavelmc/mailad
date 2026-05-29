@@ -13,6 +13,11 @@ source /etc/mailad/mailad.conf
 # get the LDAP URI
 LDAPURI=$(get_ldap_uri)
 
+# For ldapsearch, always use StartTLS (ldap:// port 389 + -ZZ) rather than
+# ldaps:// + -ZZ. The combination of ldaps:// and -ZZ is unreliable with
+# self-signed certificates in some OpenLDAP versions — StartTLS is more robust.
+LDAPURI_ZZ=$(echo "$LDAPURI" | sed 's|ldaps://|ldap://|; s|:636|:389|')
+
 echo "===> Searching for the user that owns the email: $ADMINMAIL"
 
 # Create temp file
@@ -20,7 +25,7 @@ TEMP=$(mktemp)
 
 # Direct ldapsearch command - this works!
 LDAPTLS_REQCERT=never ldapsearch -ZZ -o ldif-wrap=no \
-    -H "$LDAPURI" \
+    -H "$LDAPURI_ZZ" \
     -D "$LDAPBINDUSER" \
     -w "$LDAPBINDPASSWD" \
     -b "$LDAPSEARCHBASE" \
@@ -33,7 +38,7 @@ if [ -z "$RESULTS" ] || [ "$RESULTS" == "0" ]; then
     # Try with userPrincipalName
     echo "===> Trying with userPrincipalName..."
     LDAPTLS_REQCERT=never ldapsearch -ZZ -o ldif-wrap=no \
-        -H "$LDAPURI" \
+        -H "$LDAPURI_ZZ" \
         -D "$LDAPBINDUSER" \
         -w "$LDAPBINDPASSWD" \
         -b "$LDAPSEARCHBASE" \
@@ -47,7 +52,7 @@ if [ -z "$RESULTS" ] || [ "$RESULTS" == "0" ]; then
     USERNAME=$(echo $ADMINMAIL | cut -d@ -f1)
     echo "===> Trying with sAMAccountName=$USERNAME..."
     LDAPTLS_REQCERT=never ldapsearch -ZZ -o ldif-wrap=no \
-        -H "$LDAPURI" \
+        -H "$LDAPURI_ZZ" \
         -D "$LDAPBINDUSER" \
         -w "$LDAPBINDPASSWD" \
         -b "$LDAPSEARCHBASE" \
@@ -70,7 +75,7 @@ if [ -z "$RESULTS" ] || [ "$RESULTS" == "0" ]; then
     
     # List all users for debugging
     LDAPTLS_REQCERT=never ldapsearch -ZZ -o ldif-wrap=no \
-        -H "$LDAPURI" \
+        -H "$LDAPURI_ZZ" \
         -D "$LDAPBINDUSER" \
         -w "$LDAPBINDPASSWD" \
         -b "$LDAPSEARCHBASE" \
