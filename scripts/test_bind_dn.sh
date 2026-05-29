@@ -92,17 +92,23 @@ echo "===> with the LDAP URI: '$LDAPURI'"
 
 # LDAP query
 R=$(ldapsearch -d 256 -o ldif-wrap=no -H "$LDAPURI" -D "$LDAPBINDUSER" -w "$LDAPBINDPASSWD" -b "$LDAPSEARCHBASE" 2>&1 )
-EMPTY=$(echo $R | grep numResponses)
-ERROR=$(echo $R | grep "encryption required")
+EMPTY=$(echo "$R" | grep numResponses)
+ERROR=$(echo "$R" | grep "encryption required")
 
 if [ "$ERROR" ] ; then
-    # empty: Fail
-    echo "======================================================"
-    echo "ERROR: LDAP server refused the connection, maybe you"
-    echo "       need to swith to use 'SECURELDAP=yes' in the"
-    echo "       /etc/mailad/mailad.conf file?"
-    echo "======================================================"
-    exit 1
+    echo "===> LDAP server requested encryption. Retrying with StartTLS (-ZZ)..."
+    R=$(ldapsearch -ZZ -d 256 -o ldif-wrap=no -H "$LDAPURI" -D "$LDAPBINDUSER" -w "$LDAPBINDPASSWD" -b "$LDAPSEARCHBASE" 2>&1 )
+    EMPTY=$(echo "$R" | grep numResponses)
+    ERROR=$(echo "$R" | grep "encryption required")
+
+    if [ "$ERROR" ] ; then
+        echo "======================================================"
+        echo "ERROR: LDAP server refused the connection even with StartTLS (-ZZ)."
+        echo "       Please check your LDAP configuration and whether the"
+        echo "       server accepts STARTTLS or LDAPS."
+        echo "======================================================"
+        exit 1
+    fi
 fi
 
 if [ -z "$EMPTY" ] ; then
