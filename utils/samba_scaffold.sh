@@ -1,6 +1,5 @@
 #!/bin/bash
 set -euo pipefail
-trap 'rc=$?; echo "======================================================"; echo "ERROR: command failed with exit code ${rc}"; echo "       at: ${BASH_COMMAND}"; echo "======================================================"; exit ${rc}' ERR
 
 # This script is part of MailAD, see https://github.com/stdevPavelmc/mailad/
 # Copyright 2022 Pavel Milanes Costa <pavelmc@gmail.com>
@@ -77,7 +76,7 @@ echo "==== END DEBUG ===="
 apt-get update
 
 # install samba and winbind
-apt-get install samba samba-ad-dc winbind python3-setproctitle -yq
+apt-get install samba winbind python3-setproctitle -yq
 
 # config samba related services
 for a in stop disable mask ; do
