@@ -104,7 +104,7 @@ else
         # Success
         echo "===> Success, found users for EVERYONE list" >> $REPORT
         echo "# Everyone list" > /etc/postfix/aliases/auto_aliases
-        echo "$EVERYONE:    $RESULT" >> /etc/postfix/aliases/auto_aliases
+        echo "$EVERYONE    $RESULT" >> /etc/postfix/aliases/auto_aliases
         echo " " >> /etc/postfix/aliases/auto_aliases
     fi
 fi
@@ -159,11 +159,11 @@ for G in "${RES[@]}"; do
         echo "===> Parsing members of the group: $G (email: $GEM)" >> $REPORT
         echo "# Group: $G" >> /etc/postfix/aliases/auto_aliases
         if [ -n "$RESULT" ]; then
-            echo "$GEM:    $RESULT" >> /etc/postfix/aliases/auto_aliases
+            echo "$GEM    $RESULT" >> /etc/postfix/aliases/auto_aliases
             echo "===>   Found $(echo $RESULT | tr ',' '\n' | wc -l) members" >> $REPORT
         else
             echo "# WARNING: No members found for group $G" >> /etc/postfix/aliases/auto_aliases
-            echo "$GEM:    postmaster@$DOMAIN" >> /etc/postfix/aliases/auto_aliases
+            echo "$GEM    postmaster@$DOMAIN" >> /etc/postfix/aliases/auto_aliases
             echo "===>   WARNING: No members found, redirecting to postmaster" >> $REPORT
         fi
         echo " " >> /etc/postfix/aliases/auto_aliases
@@ -187,7 +187,7 @@ fi
 # check for the sysadmin group alias if set
 if [ -n "$SYSADMINS" ] ; then
     # search for it on the aliases files
-    R=$(cat /etc/postfix/aliases/auto_aliases /etc/postfix/aliases/alias_virtuales 2>/dev/null | awk '{print $1}' | grep "^$SYSADMINS:$")
+    R=$(cat /etc/postfix/aliases/auto_aliases /etc/postfix/aliases/alias_virtuales 2>/dev/null | awk '{print $1}' | grep "^$SYSADMINS$")
     if [ -z "$R" ] ; then
         # build the email
         F=$(mktemp)
