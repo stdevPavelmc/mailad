@@ -77,7 +77,7 @@ echo "==== END DEBUG ===="
 apt-get update
 
 # install samba and winbind
-apt-get install samba winbind python3-setproctitle -yq
+apt-get install samba samba-ad-dc winbind python3-setproctitle -yq
 
 # config samba related services
 for a in stop disable mask ; do
