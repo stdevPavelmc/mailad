@@ -1,4 +1,6 @@
 #!/bin/bash
+set -euo pipefail
+trap 'rc=$?; echo "======================================================"; echo "ERROR: command failed with exit code ${rc}"; echo "       at: ${BASH_COMMAND}"; echo "======================================================"; exit ${rc}' ERR
 
 # This script is part of MailAD, see https://github.com/stdevPavelmc/mailad/
 # Copyright 2022 Pavel Milanes Costa <pavelmc@gmail.com>
@@ -115,6 +117,16 @@ fi
 # start the new domain
 echo ">>> start samba"
 systemctl start samba-ad-dc
+
+# sanity check after provision
+if [ ! -f /var/lib/samba/private/sam.ldb ]; then
+    echo "======================================================"
+    echo "ERROR: samba provisioning failed to create /var/lib/samba/private/sam.ldb"
+    echo "       The domain was not provisioned successfully."
+    echo "       Check the samba-tool output above and try again."
+    echo "======================================================"
+    exit 1
+fi
 
 # create the link user
 echo ">>> create user linux"
