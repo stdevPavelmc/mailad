@@ -37,49 +37,16 @@ function get_ldap_uri {
     echo "${SOUT}"
 }
 
-# Helper function to perform LDAP search with TLS handling
-ldap_search() {
-    local FILTER=$1
-    local ATTRS=$2
-    local EXTRA_ARGS=$3
-    
-    # Build base command with environment
-    local CMD=""
-    
-    # Always use relaxed TLS verification for compatibility
-    CMD="LDAPTLS_REQCERT=never "
-    
-    # Add ldapsearch command
-    CMD="${CMD}ldapsearch -o ldif-wrap=no"
-    
-    # Add StartTLS if using standard LDAP (not LDAPS)
-    if [[ "$LDAPURI" == ldap://* ]] && [ "$SECURELDAP" != "no" ]; then
-        CMD="$CMD -ZZ"
-    fi
-    
-    # Add remaining parameters
-    CMD="$CMD -H \"$LDAPURI\" -D \"$LDAPBINDUSER\" -w \"$LDAPBINDPASSWD\" -b \"$LDAPSEARCHBASE\""
-    
-    if [ -n "$EXTRA_ARGS" ]; then
-        CMD="$CMD $EXTRA_ARGS"
-    fi
-    
-    CMD="$CMD \"$FILTER\""
-    
-    if [ -n "$ATTRS" ]; then
-        CMD="$CMD $ATTRS"
-    fi
-    
-    # Execute and return output
-    eval $CMD 2>/dev/null
-}
-
 # Simplified LDAP search for single attribute
+# NOTE: Do NOT use -ZZ (StartTLS) here. When SECURELDAP=yes the URI is
+# ldaps://:636 which is already TLS; adding -ZZ to an ldaps:// connection
+# causes "TLS already started" and the search returns empty silently.
+# LDAPTLS_REQCERT=never handles self-signed certs for both ldap:// and ldaps://.
 ldap_search_simple() {
     local FILTER=$1
     local ATTRIBUTE=$2
     
-    LDAPTLS_REQCERT=never ldapsearch -o ldif-wrap=no -ZZ \
+    LDAPTLS_REQCERT=never ldapsearch -o ldif-wrap=no \
         -H "$LDAPURI" \
         -D "$LDAPBINDUSER" \
         -w "$LDAPBINDPASSWD" \
@@ -87,12 +54,13 @@ ldap_search_simple() {
         "$FILTER" "$ATTRIBUTE" 2>/dev/null | grep "^$ATTRIBUTE:" | awk '{print $2}'
 }
 
-# Simplified LDAP search for multiple results
+# LDAP search returning all matching values of an attribute (one per line)
+# Same TLS note as ldap_search_simple: no -ZZ, LDAPTLS_REQCERT=never is enough.
 ldap_search_list() {
     local FILTER=$1
     local ATTRIBUTE=$2
     
-    LDAPTLS_REQCERT=never ldapsearch -o ldif-wrap=no -ZZ \
+    LDAPTLS_REQCERT=never ldapsearch -o ldif-wrap=no \
         -H "$LDAPURI" \
         -D "$LDAPBINDUSER" \
         -w "$LDAPBINDPASSWD" \
