@@ -78,14 +78,6 @@ jobs:
           cd ${{ github.workspace }}/
           sudo make all
 
-      - name: Refresh mail group aliases
-        # provision.sh runs mail_groups_update during 'make all', but Samba may
-        # not yet have answered reliably at that moment (only 10s sleep before).
-        # Running it again here ensures testgroup and other AD groups are present
-        # in the virtual alias table before the tests start.
-        run: |
-          sudo /etc/cron.daily/mail_groups_update
-
       - name: Get the runers IPs
         run: |
           RUNNER_IPS=$(hostname -I)
