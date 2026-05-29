@@ -75,8 +75,8 @@ echo "==== END DEBUG ===="
 # update the package data
 apt-get update
 
-# install samba and winbind
-apt-get install samba winbind python3-setproctitle -yq
+# install samba and winbind( for ubuntu 26.04 need to be installed together with samba-ad-dc)
+apt-get install samba winbind samba-ad-dc python3-setproctitle -yq
 
 # config samba related services
 for a in stop disable mask ; do
