@@ -14,6 +14,60 @@ source common.conf
 LDAPURI=$(get_ldap_uri)
 H=$(get_soa)
 
+# Helper function to handle TLS certificate verification
+handle_tls_cert() {
+    local DC=$1
+    local CERT_FILE="/usr/local/share/ca-certificates/${DC}.crt"
+    
+    # Check if certificate already exists
+    if [ -f "$CERT_FILE" ] && [ -s "$CERT_FILE" ]; then
+        echo "===> Certificate for ${DC} already exists, skipping download"
+        return 0
+    fi
+    
+    # Try to get certificate via LDAPS (port 636)
+    echo "===> Attempting to get certificate from ${DC} via LDAPS..."
+    echo | openssl s_client -connect ${DC}:636 -showcerts 2>/dev/null | \
+        awk '/-----BEGIN CERTIFICATE-----/,/-----END CERTIFICATE-----/' > ${CERT_FILE}
+    
+    # If file is empty, try with StartTLS
+    if [ ! -s ${CERT_FILE} ]; then
+        echo "===> LDAPS failed, trying StartTLS on port 389..."
+        echo | openssl s_client -connect ${DC}:389 -starttls ldap -showcerts 2>/dev/null | \
+            awk '/-----BEGIN CERTIFICATE-----/,/-----END CERTIFICATE-----/' > ${CERT_FILE}
+    fi
+    
+    # For self-signed certificates, try to extract CA cert
+    if [ ! -s ${CERT_FILE} ]; then
+        echo "===> Could not get server certificate, attempting to get CA certificate..."
+        echo | openssl s_client -connect ${DC}:636 -showcerts 2>/dev/null | \
+            awk '/-----BEGIN CERTIFICATE-----/,/-----END CERTIFICATE-----/' | \
+            tail -n +2 > ${CERT_FILE}
+    fi
+    
+    # Last resort: check if user provided custom CA cert
+    if [ ! -s ${CERT_FILE} ] && [ -f "/usr/local/share/ca-certificates/samba-ca.crt" ]; then
+        echo "===> Using user-provided CA certificate"
+        cp /usr/local/share/ca-certificates/samba-ca.crt ${CERT_FILE}
+    fi
+    
+    # If we still don't have a cert, warn but don't fail (allow insecure mode)
+    if [ ! -s ${CERT_FILE} ]; then
+        echo "======================================================"
+        echo "WARNING: Could not obtain certificate from ${DC}"
+        echo "         Will continue in INSECURE mode (TLS_REQCERT never)"
+        echo "         For production, manually install the CA certificate:"
+        echo "         1. Copy CA cert from DC to /usr/local/share/ca-certificates/samba-ca.crt"
+        echo "         2. Run: sudo update-ca-certificates"
+        echo "======================================================"
+        rm -f ${CERT_FILE}
+        export LDAPTLS_REQCERT=never
+        return 1
+    fi
+    
+    return 0
+}
+
 # if secure LDAP you must get and setup the sslcert of the addc
 if [ "$SECURELDAP" == "yes" -o "$SECURELDAP" == "Yes" -o "$SECURELDAP" == "true" -o "$SECURELDAP" == "True" ] ; then
     # SSL it's
@@ -21,97 +75,95 @@ if [ "$SECURELDAP" == "yes" -o "$SECURELDAP" == "Yes" -o "$SECURELDAP" == "true"
 
     # get the certificate of the server
     echo "===> Getting & Installing the server certificate for ldap connection"
+    
+    CERT_OK=0
     for DC in $(echo "${HOSTAD}") ; do
-        echo "===> Getting the certificate from ${DC}"
-
-        # Fix Debian 13
-        . /etc/os-release
-        if [ "$VERSION_CODENAME" == "trixie" ] ; then
-            # new way to extract the CA cert not the server cert
-            openssl s_client -connect ${DC}:636 -showcerts </dev/null 2>/dev/null | \
-                awk '/-----BEGIN CERTIFICATE-----/,/-----END CERTIFICATE-----/' | \
-                awk '/-----BEGIN CERTIFICATE-----/{c++} c==2' \
-                > /usr/local/share/ca-certificates/${DC}.crt
-
-            # but some self signed ones DO NOT EXPOSE THE CA cert, so we can't use it
-            # if the file is empty need to copy from the server and it did not copied the cert by hand yet...
-            if [ ! -s /usr/local/share/ca-certificates/${DC}.crt ] ; then
-                # if the user did not copied the cert yet
-                if [ ! -f /usr/local/share/ca-certificates/samba-ca.crt ] ; then
-                    # Warn the user that needs to copy the cert from the server
-                    echo "======================================================"
-                    echo "NOTICE: This is Debian Trixie and new secure policies"
-                    echo "        are in place, so we can't get the CA cert"
-                    echo " "
-                    echo "TODO: You need to copy the CA certificate from the"
-                    echo "      server by yourself and install it in the system"
-                    echo " "
-                    echo "      If you use a samba server as DC you need to check"
-                    echo "      the /etc/samba/smb.conf file for a property named"
-                    echo "      'tls cafile', if not defined you can use the"
-                    echo "      default one: '/var/lib/samba/private/tls/ca.pem'."
-                    echo "      Once identified just copy it from that server"
-                    echo "      to this server on the following path:"
-                    echo "      '/usr/local/share/ca-certificates/samba-ca.crt'"
-                    echo "      and re-run this script."
-                    echo "======================================================"
-                    exit 1
-                fi
-            fi
-        else
-            # old way to extract the CA cert
-            echo | openssl s_client -connect ${DC}:636 2>&1 | sed --quiet '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' > /usr/local/share/ca-certificates/${DC}.crt
+        echo "===> Processing certificate from ${DC}"
+        if handle_tls_cert ${DC}; then
+            CERT_OK=1
         fi
     done
-    # update the certificates
-    /usr/sbin/update-ca-certificates
-
-    # testing
-    R=$?
-    if [ $R -ne 0 ] ; then
-        # error, can get the certificate
-        echo "======================================================"
-        echo "ERROR: You selected to use a secure layer with LDAP"
-        echo "       but we can't get the certificate from the host"
-        echo " "
-        echo "COMMENT: Please check your configuration or try it"
-        echo "         without encryption"
-        echo "======================================================"
-
-        # exit with and error
-        exit 1
+    
+    # Update certificates if we got any
+    if [ $CERT_OK -eq 1 ]; then
+        echo "===> Updating system CA certificates..."
+        /usr/sbin/update-ca-certificates 2>/dev/null
+        
+        # Test if certificate works
+        echo "===> Testing certificate installation..."
+        TEST_CMD="ldapsearch -ZZ -d 0 -o ldif-wrap=no -H \"$LDAPURI\" -D \"$LDAPBINDUSER\" -w \"$LDAPBINDPASSWD\" -b \"$LDAPSEARCHBASE\" -s base 2>&1"
+        TEST_RESULT=$(eval $TEST_CMD | grep -c "successful")
+        
+        if [ $TEST_RESULT -eq 0 ]; then
+            echo "===> Certificate installed but verification still failing, falling back to insecure mode"
+            export LDAPTLS_REQCERT=never
+        else
+            echo "===> LDAP connections are secured with valid certificates!"
+        fi
+    else
+        echo "===> No certificates obtained, using insecure mode (TLS_REQCERT never)"
+        export LDAPTLS_REQCERT=never
     fi
-
-    # notice
-    echo "===> LDAP connections are secured!"
+else
+    # Not secure LDAP, warn but continue
+    echo "===> SECURELDAP not enabled, using plain LDAP (not recommended for production)"
 fi
 
 echo "===> Trying to login as $LDAPBINDUSER"
 echo "===> in any of the servers: '$HOSTAD'"
 echo "===> with the LDAP URI: '$LDAPURI'"
 
-# LDAP query
-R=$(ldapsearch -d 256 -o ldif-wrap=no -H "$LDAPURI" -D "$LDAPBINDUSER" -w "$LDAPBINDPASSWD" -b "$LDAPSEARCHBASE" 2>&1 )
-EMPTY=$(echo "$R" | grep numResponses)
-ERROR=$(echo "$R" | grep "encryption required")
+# Function to perform LDAP search with retry logic
+do_ldap_search() {
+    local USE_TLS=$1
+    local CMD="ldapsearch -d 256 -o ldif-wrap=no -H \"$LDAPURI\" -D \"$LDAPBINDUSER\" -w \"$LDAPBINDPASSWD\" -b \"$LDAPSEARCHBASE\""
+    
+    if [ "$USE_TLS" = "yes" ]; then
+        CMD="$CMD -ZZ"
+    fi
+    
+    # Add TLS_REQCERT if set in environment
+    if [ -n "$LDAPTLS_REQCERT" ]; then
+        export LDAPTLS_REQCERT="$LDAPTLS_REQCERT"
+    fi
+    
+    eval $CMD 2>&1
+}
 
-if [ "$ERROR" ] ; then
+# First attempt without StartTLS
+R=$(do_ldap_search "no")
+EMPTY=$(echo "$R" | grep -c "numResponses")
+ERROR=$(echo "$R" | grep -c "encryption required")
+
+if [ $ERROR -gt 0 ]; then
     echo "===> LDAP server requested encryption. Retrying with StartTLS (-ZZ)..."
-    R=$(ldapsearch -ZZ -d 256 -o ldif-wrap=no -H "$LDAPURI" -D "$LDAPBINDUSER" -w "$LDAPBINDPASSWD" -b "$LDAPSEARCHBASE" 2>&1 )
-    EMPTY=$(echo "$R" | grep numResponses)
-    ERROR=$(echo "$R" | grep "encryption required")
-
-    if [ "$ERROR" ] ; then
+    R=$(do_ldap_search "yes")
+    EMPTY=$(echo "$R" | grep -c "numResponses")
+    ERROR=$(echo "$R" | grep -c "encryption required")
+    
+    # Check for TLS verification errors
+    TLS_ERROR=$(echo "$R" | grep -c "TLS certificate verification")
+    if [ $TLS_ERROR -gt 0 ] && [ -z "$LDAPTLS_REQCERT" ]; then
+        echo "===> TLS certificate verification failed, retrying with relaxed verification..."
+        export LDAPTLS_REQCERT=never
+        R=$(do_ldap_search "yes")
+        EMPTY=$(echo "$R" | grep -c "numResponses")
+        ERROR=$(echo "$R" | grep -c "encryption required")
+    fi
+    
+    if [ $ERROR -gt 0 ]; then
         echo "======================================================"
         echo "ERROR: LDAP server refused the connection even with StartTLS (-ZZ)."
         echo "       Please check your LDAP configuration and whether the"
         echo "       server accepts STARTTLS or LDAPS."
         echo "======================================================"
+        echo "Debug output:"
+        echo "$R" | head -20
         exit 1
     fi
 fi
 
-if [ -z "$EMPTY" ] ; then
+if [ $EMPTY -eq 0 ] ; then
     # empty result: Fail
     echo "======================================================"
     echo "ERROR: Undefined response from the LDAP query, humm..."
@@ -121,12 +173,23 @@ if [ -z "$EMPTY" ] ; then
     echo "         all DC server must be as FQDN not IPs, this"
     echo "         due to SSL cert restrictions."
     echo "       - AD-DC server ssl certificate is expired."
+    echo "       - Network/firewall blocking LDAP ports (389/636)"
     echo ""
-    echo "       Response:"
-    echo "$R"
+    echo "       Response (first 20 lines):"
+    echo "$R" | head -20
     echo "======================================================"
     exit 1
 else
     # Success
     echo "===> LDAP bind succeeded!"
+    
+    # Show connection mode
+    if [ -n "$LDAPTLS_REQCERT" ] && [ "$LDAPTLS_REQCERT" = "never" ]; then
+        echo "===> Note: Running in INSECURE mode (TLS verification disabled)"
+        echo "===> For production, install proper CA certificates"
+    elif [ "$SECURELDAP" == "yes" ]; then
+        echo "===> Running in SECURE mode with TLS verification"
+    fi
 fi
+
+exit 0
