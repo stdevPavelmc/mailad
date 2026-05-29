@@ -30,10 +30,8 @@ perform_ldap_search() {
     local CMD="ldapsearch -o ldif-wrap=no -H \"$LDAPURI\" -D \"$LDAPBINDUSER\" -w \"$LDAPBINDPASSWD\" -b \"$LDAPSEARCHBASE\""
     
     # Add TLS options if needed
-    if [ "$SECURELDAP" == "yes" -o "$SECURELDAP" == "Yes" -o "$SECURELDAP" == "true" -o "$SECURELDAP" == "True" ]; then
-        if [ "$USE_TLS" == "auto" ] || [ "$USE_TLS" == "yes" ]; then
-            CMD="$CMD -ZZ"
-        fi
+    if [ "$USE_TLS" == "yes" ]; then
+        CMD="$CMD -ZZ"
     fi
     
     # Add TLS_REQCERT if set in environment
@@ -64,69 +62,64 @@ echo "===> Searching for the user that owns the email: $ADMINMAIL"
 
 TEMP=$(mktemp)
 
-# Try initial search without forcing TLS
-perform_ldap_search "(&(objectClass=user)(mail=$ADMINMAIL))" $TEMP "no"
+# Try multiple search filters
+SEARCH_FILTERS=(
+    "(mail=$ADMINMAIL)"
+    "(&(objectClass=user)(mail=$ADMINMAIL))"
+    "(&(objectClass=person)(mail=$ADMINMAIL))"
+    "(userPrincipalName=$ADMINMAIL)"
+)
 
-# Check if encryption is required
-if has_tls_error $TEMP && grep -q "encryption required" $TEMP; then
-    echo "===> LDAP server requested encryption. Retrying with StartTLS (-ZZ)..."
-    perform_ldap_search "(&(objectClass=user)(mail=$ADMINMAIL))" $TEMP "no"
+FOUND=0
+for FILTER in "${SEARCH_FILTERS[@]}"; do
+    echo "===> Trying filter: $FILTER"
     
-    # Check for TLS verification errors and retry with relaxed verification
-    if has_tls_error $TEMP && grep -q "TLS certificate verification\|certificate verify failed" $TEMP; then
-        echo "===> TLS certificate verification failed, retrying with relaxed verification..."
-        export LDAPTLS_REQCERT=never
-        perform_ldap_search "(&(objectClass=user)(mail=$ADMINMAIL))" $TEMP "no"
-    fi
-fi
-
-# Extract results
-RESULTS=$(grep "numEntries: " $TEMP | awk '{print $3}')
-
-if [ -z "$RESULTS" ] ; then
-    # Check for different types of errors
-    if has_acl_error $TEMP; then
-        # Connection/LDAP base error
-        echo "================================================================================="
-        echo "ERROR!:"
-        echo "    Cannot connect to LDAP server or invalid search base."
-        echo "    This is most likely a problem with LDAPSEARCHBASE or network connectivity."
-        echo " "
-        echo "    LDAPSEARCHBASE value: $LDAPSEARCHBASE"
-        echo "    LDAPURI value: $LDAPURI"
-        echo " "
-        echo "    Common fixes:"
-        echo "    1. Verify LDAPSEARCHBASE matches your AD structure (e.g., dc=domain,dc=com)"
-        echo "    2. Check if LDAP server is reachable: nc -zv mail.mailad.cu 389"
-        echo "    3. Verify credentials: $LDAPBINDUSER"
-        echo "================================================================================="
-        echo " "
-        echo "Debug output (first 10 lines):"
-        head -10 $TEMP
-        rm $TEMP
-        exit 1
-    else
-        # No results found
-        echo "================================================================================="
-        echo "ERROR!:"
-        echo "    There is no user in the AD with the email you provided in the ADMINMAIL setting"
-        echo "    Please check and set the correct value."
-        echo " "
-        echo "    Current ADMINMAIL: $ADMINMAIL"
-        echo "    Search base: $LDAPSEARCHBASE"
-        echo "================================================================================="
-        echo " "
-        rm $TEMP
-        exit 1
-    fi
-else
-    # Success, we found entries
-    echo "===> Found $RESULTS object(s), parsing the data..."
+    # Try without TLS first
+    perform_ldap_search "$FILTER" $TEMP "no"
     
-    # If more than one result, warn but continue with first
-    if [ $RESULTS -gt 1 ]; then
-        echo "===> Warning: Found $RESULTS users with email $ADMINMAIL, using first one"
+    # Check if encryption is required
+    if has_tls_error $TEMP && grep -q "encryption required" $TEMP; then
+        echo "===> LDAP server requested encryption. Retrying with StartTLS (-ZZ)..."
+        perform_ldap_search "$FILTER" $TEMP "yes"
+        
+        # Check for TLS verification errors and retry with relaxed verification
+        if has_tls_error $TEMP && grep -q "TLS certificate verification\|certificate verify failed" $TEMP; then
+            echo "===> TLS certificate verification failed, retrying with relaxed verification..."
+            export LDAPTLS_REQCERT=never
+            perform_ldap_search "$FILTER" $TEMP "yes"
+        fi
     fi
+    
+    # Extract results
+    RESULTS=$(grep "numEntries: " $TEMP | awk '{print $3}')
+    
+    if [ -n "$RESULTS" ] && [ $RESULTS -gt 0 ]; then
+        echo "===> Found $RESULTS object(s) with filter: $FILTER"
+        FOUND=1
+        break
+    fi
+done
+
+if [ $FOUND -eq 0 ]; then
+    # Show debug info with actual users
+    echo "================================================================================="
+    echo "ERROR!:"
+    echo "    No user found with email: $ADMINMAIL"
+    echo " "
+    echo "    Search base: $LDAPSEARCHBASE"
+    echo " "
+    echo "    Existing users in this OU with email:"
+    echo "    ------------------------------------"
+    
+    # Perform a debug search to show available users
+    DEBUG_TEMP=$(mktemp)
+    perform_ldap_search "(mail=*)" $DEBUG_TEMP "yes" 2>/dev/null
+    grep -E "^(dn:|mail:)" $DEBUG_TEMP | paste - - | sed 's/dn: //; s/mail: / - email: /'
+    rm $DEBUG_TEMP
+    
+    echo "================================================================================="
+    rm $TEMP
+    exit 1
 fi
 
 # Extract the office parameter "physicalDeliveryOfficeName"
