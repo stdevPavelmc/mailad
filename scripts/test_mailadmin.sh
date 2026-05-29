@@ -70,13 +70,13 @@ perform_ldap_search "(&(objectClass=user)(mail=$ADMINMAIL))" $TEMP "no"
 # Check if encryption is required
 if has_tls_error $TEMP && grep -q "encryption required" $TEMP; then
     echo "===> LDAP server requested encryption. Retrying with StartTLS (-ZZ)..."
-    perform_ldap_search "(&(objectClass=person)(mail=$ADMINMAIL))" $TEMP "yes"
+    perform_ldap_search "(&(objectClass=user)(mail=$ADMINMAIL))" $TEMP "no"
     
     # Check for TLS verification errors and retry with relaxed verification
     if has_tls_error $TEMP && grep -q "TLS certificate verification\|certificate verify failed" $TEMP; then
         echo "===> TLS certificate verification failed, retrying with relaxed verification..."
         export LDAPTLS_REQCERT=never
-        perform_ldap_search "(&(objectClass=person)(mail=$ADMINMAIL))" $TEMP "yes"
+        perform_ldap_search "(&(objectClass=user)(mail=$ADMINMAIL))" $TEMP "no"
     fi
 fi
 
