@@ -50,10 +50,36 @@ fi
 source /etc/mailad/mailad.conf
 source .mailadmin.auth
 
+SAMBA_TLS_DIR=/var/lib/samba/private/tls
+SAMBA_CA_CERT=${SAMBA_TLS_DIR}/ca.pem
+SAMBA_SERVER_CERT=${SAMBA_TLS_DIR}/cert.pem
+SYSTEM_SAMBA_CA=/usr/local/share/ca-certificates/samba-ca.crt
+LDAP_ROOT_DN="dc=${DOMAIN//./,dc=}"
+LDAP_TEST_HOST=$(echo "${HOSTAD}" | awk '{print $1}')
+
+wait_for_samba_tls_material() {
+    local attempt
+
+    for attempt in $(seq 1 15) ; do
+        if [ -s "$SAMBA_CA_CERT" ] && [ -s "$SAMBA_SERVER_CERT" ] && [ -s "${SAMBA_TLS_DIR}/key.pem" ] ; then
+            return 0
+        fi
+
+        echo ">>> Waiting for Samba TLS material (attempt ${attempt}/15)"
+        sleep 2
+    done
+
+    echo "======================================================"
+    echo "ERROR: Samba did not generate its TLS files in time"
+    echo "       Expected files under: ${SAMBA_TLS_DIR}"
+    echo "======================================================"
+    return 1
+}
+
 ### Some var casting
 # Administrator PASSWD!
 APSWD=${PASS}
-NETBIOS=$(echo ${DOMAIN} | cut -d '.' -f 1 | tr [:lower:] [:upper:])
+NETBIOS=$(echo ${DOMAIN} | cut -d '.' -f 1 | tr '[:lower:]' '[:upper:]')
 ADMINUSER=$(echo ${ADMINMAIL} | cut -d '@' -f 1)
 LUCU=$(echo ${LOCUSER} | cut -d '@' -f 1)
 NATU=$(echo ${NACUSER} | cut -d '@' -f 1)
@@ -108,13 +134,17 @@ samba-tool domain provision \
     --dns-backend=SAMBA_INTERNAL \
     --adminpass=${APSWD}
 
-# Install Samba's CA certificate to the system trust store so all scripts
-# can verify LDAP/LDAPS TLS connections without LDAPTLS_REQCERT=never
+# Wait until Samba finishes generating its PKI before installing the CA.
+wait_for_samba_tls_material
+
+# Install Samba's CA certificate into this host trust store so local LDAP
+# clients can validate LDAPS without disabling certificate verification.
 echo ">>> Installing Samba CA certificate to system trust store"
-if [ -f /var/lib/samba/private/tls/ca.pem ] ; then
-    cp /var/lib/samba/private/tls/ca.pem /usr/local/share/ca-certificates/samba-ca.crt
-    update-ca-certificates
-fi
+cp "$SAMBA_CA_CERT" "$SYSTEM_SAMBA_CA"
+update-ca-certificates --fresh
+
+echo ">>> Verifying Samba TLS certificate chain"
+openssl verify -CAfile "$SAMBA_CA_CERT" "$SAMBA_SERVER_CERT"
 
 # fix the DNS to point to myself and alternatives
 echo "search mailad.cu" > /etc/resolv.conf
