@@ -3,6 +3,12 @@
 # This script is part of MailAD, see https://github.com/stdevPavelmc/mailad/
 # Copyright 2020 Pavel Milanes Costa <pavelmc@gmail.com>
 # LICENCE: GPL 3.0 and later  
+#
+# Goal:
+#   - Pass or Fail by querying the AD with the configured bind DN
+#   - Search for the admin user by its declared email, with AD-friendly fallbacks
+#   - Detect legacy AD field values that still require migration
+#   - Validate DEFAULT_MAILBOX_SIZE format
 
 # source the common config
 source common.conf
@@ -13,82 +19,95 @@ source /etc/mailad/mailad.conf
 # get the LDAP URI
 LDAPURI=$(get_ldap_uri)
 
-# For ldapsearch, always use StartTLS (ldap:// port 389 + -ZZ) rather than
-# ldaps:// + -ZZ. The combination of ldaps:// and -ZZ is unreliable with
-# self-signed certificates in some OpenLDAP versions — StartTLS is more robust.
-LDAPURI_ZZ=$(echo "$LDAPURI" | sed 's|ldaps://|ldap://|; s|:636|:389|')
-
 echo "===> Searching for the user that owns the email: $ADMINMAIL"
 
 # Create temp file
 TEMP=$(mktemp)
 
-# Direct ldapsearch command - this works!
-LDAPTLS_REQCERT=never ldapsearch -ZZ -o ldif-wrap=no \
-    -H "$LDAPURI_ZZ" \
-    -D "$LDAPBINDUSER" \
-    -w "$LDAPBINDPASSWD" \
-    -b "$LDAPSEARCHBASE" \
-    "(mail=$ADMINMAIL)" > $TEMP 2>&1
+run_search() {
+    local FILTER=$1
 
-# Extract results
-RESULTS=$(grep "^# numEntries:" $TEMP | awk '{print $3}')
+    ldapsearch -o ldif-wrap=no \
+        -H "$LDAPURI" \
+        -D "$LDAPBINDUSER" \
+        -w "$LDAPBINDPASSWD" \
+        -b "$LDAPSEARCHBASE" \
+        "$FILTER" > "$TEMP" 2>&1
+
+    SEARCH_RC=$?
+    RESULTS=$(grep "^# numEntries:" "$TEMP" | awk '{print $3}')
+}
+
+SEARCH_RC=0
+run_search "(&(objectClass=person)(mail=$ADMINMAIL))"
 
 if [ -z "$RESULTS" ] || [ "$RESULTS" == "0" ]; then
     # Try with userPrincipalName
     echo "===> Trying with userPrincipalName..."
-    LDAPTLS_REQCERT=never ldapsearch -ZZ -o ldif-wrap=no \
-        -H "$LDAPURI_ZZ" \
-        -D "$LDAPBINDUSER" \
-        -w "$LDAPBINDPASSWD" \
-        -b "$LDAPSEARCHBASE" \
-        "(userPrincipalName=$ADMINMAIL)" > $TEMP 2>&1
-    
-    RESULTS=$(grep "^# numEntries:" $TEMP | awk '{print $3}')
+    run_search "(userPrincipalName=$ADMINMAIL)"
 fi
 
 if [ -z "$RESULTS" ] || [ "$RESULTS" == "0" ]; then
     # Try with sAMAccountName
-    USERNAME=$(echo $ADMINMAIL | cut -d@ -f1)
+    USERNAME=$(echo "$ADMINMAIL" | cut -d@ -f1)
     echo "===> Trying with sAMAccountName=$USERNAME..."
-    LDAPTLS_REQCERT=never ldapsearch -ZZ -o ldif-wrap=no \
-        -H "$LDAPURI_ZZ" \
-        -D "$LDAPBINDUSER" \
-        -w "$LDAPBINDPASSWD" \
-        -b "$LDAPSEARCHBASE" \
-        "(sAMAccountName=$USERNAME)" > $TEMP 2>&1
-    
-    RESULTS=$(grep "^# numEntries:" $TEMP | awk '{print $3}')
+    run_search "(sAMAccountName=$USERNAME)"
 fi
 
 if [ -z "$RESULTS" ] || [ "$RESULTS" == "0" ]; then
-    echo "================================================================================="
-    echo "ERROR!:"
-    echo "    No user found with email: $ADMINMAIL"
-    echo " "
-    echo "    Search base: $LDAPSEARCHBASE"
-    echo "    LDAP URI: $LDAPURI"
-    echo "    Bind user: $LDAPBINDUSER"
-    echo " "
-    echo "    Listing all users in this OU for debugging:"
-    echo "    -------------------------------------------"
-    
-    # List all users for debugging
-    LDAPTLS_REQCERT=never ldapsearch -ZZ -o ldif-wrap=no \
-        -H "$LDAPURI_ZZ" \
-        -D "$LDAPBINDUSER" \
-        -w "$LDAPBINDPASSWD" \
-        -b "$LDAPSEARCHBASE" \
-        "(|(objectClass=user)(objectClass=person))" mail cn sAMAccountName 2>/dev/null | \
-        awk '
-            /^dn:/ {dn=$0}
-            /^mail:/ {print dn; print "    " $0}
-            /^cn:/ && !/^mail:/ {print "    " $0}
-            /^sAMAccountName:/ {print "    " $0}
-        '
-    
-    echo "================================================================================="
-    rm $TEMP
+    BSD=$(grep "acl_read" "$TEMP")
+
+    if [ -n "$BSD" ] ; then
+        echo "================================================================================="
+        echo "ERROR!:"
+        echo "    There is no valid data and the search returned an error, this in most cases is"
+        echo "    a sign of a bad LDAPSEARCHBASE variable, please check that in your config and"
+        echo "    try again. For reference the LDAPSEARCHBASE var value is this:"
+        echo " "
+        echo "    $LDAPSEARCHBASE"
+        echo "================================================================================="
+    elif [ $SEARCH_RC -ne 0 ] ; then
+        echo "================================================================================="
+        echo "ERROR!:"
+        echo "    The LDAP query returned an error before any user could be matched."
+        echo "    Please validate the bind and TLS setup first with scripts/test_bind_dn.sh"
+        echo " "
+        echo "    Search base: $LDAPSEARCHBASE"
+        echo "    LDAP URI: $LDAPURI"
+        echo "    Bind user: $LDAPBINDUSER"
+        echo " "
+        echo "    Response (first 20 lines):"
+        sed -n '1,20p' "$TEMP"
+        echo "================================================================================="
+    else
+        echo "================================================================================="
+        echo "ERROR!:"
+        echo "    No user found with email: $ADMINMAIL"
+        echo " "
+        echo "    Search base: $LDAPSEARCHBASE"
+        echo "    LDAP URI: $LDAPURI"
+        echo "    Bind user: $LDAPBINDUSER"
+        echo " "
+        echo "    Listing all users in this OU for debugging:"
+        echo "    -------------------------------------------"
+
+        ldapsearch -o ldif-wrap=no \
+            -H "$LDAPURI" \
+            -D "$LDAPBINDUSER" \
+            -w "$LDAPBINDPASSWD" \
+            -b "$LDAPSEARCHBASE" \
+            "(|(objectClass=user)(objectClass=person))" mail cn sAMAccountName 2>/dev/null | \
+            awk '
+                /^dn:/ {dn=$0}
+                /^mail:/ {print dn; print "    " $0}
+                /^cn:/ && !/^mail:/ {print "    " $0}
+                /^sAMAccountName:/ {print "    " $0}
+            '
+
+        echo "================================================================================="
+    fi
+
+    rm "$TEMP"
     exit 1
 fi
 
@@ -126,7 +145,7 @@ fi
 # Extract telephone number (optional)
 TELEPHONE=$(grep "^telephoneNumber:" $TEMP | head -1 | awk '{print $2}' | tr -d '\r')
 if [ -z "$TELEPHONE" ]; then
-    echo "===> Note: No telephone number found for $ADMINMAIL (optional)"
+    echo "===> Note: No telephone number found for $ADMINMAIL"
 else
     echo "===> Telephone number found: $TELEPHONE"
 fi
@@ -144,7 +163,7 @@ echo " "
 echo "  You can use this user as a template for configuring other mail users!"
 echo "================================================================================="
 
-rm $TEMP || true
+rm "$TEMP" || true
 
 # Test DEFAULT_MAILBOX_SIZE format
 echo " "
@@ -152,10 +171,10 @@ echo "===> Testing DEFAULT_MAILBOX_SIZE format..."
 
 if [ -z "$DEFAULT_MAILBOX_SIZE" ]; then
     echo "================================================================================="
-    echo "WARNING: DEFAULT_MAILBOX_SIZE is not set in mailad.conf"
-    echo "         Will use default value: 100M"
+    echo "ERROR!:"
+    echo "    DEFAULT_MAILBOX_SIZE is not set in mailad.conf"
     echo "================================================================================="
-    DEFAULT_MAILBOX_SIZE="100M"
+    exit 1
 fi
 
 # Test IEC format
@@ -172,12 +191,6 @@ if [ $? -ne 0 ] ; then
 else
     BYTES=$(echo "$DEFAULT_MAILBOX_SIZE" | numfmt --from=iec)
     echo "===> DEFAULT_MAILBOX_SIZE: $DEFAULT_MAILBOX_SIZE ($BYTES bytes) - Valid format ✓"
-fi
-
-# Show TLS mode info
-if [ -n "$LDAPTLS_REQCERT" ] && [ "$LDAPTLS_REQCERT" = "never" ]; then
-    echo "===> Note: Running in INSECURE TLS mode (certificate verification disabled)"
-    echo "===> For production, install proper CA certificates from your AD server"
 fi
 
 exit 0
