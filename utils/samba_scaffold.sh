@@ -131,16 +131,6 @@ fi
 echo ">>> start samba"
 systemctl start samba-ad-dc
 
-# sanity check after provision
-if [ ! -f /var/lib/samba/private/sam.ldb ]; then
-    echo "======================================================"
-    echo "ERROR: samba provisioning failed to create /var/lib/samba/private/sam.ldb"
-    echo "       The domain was not provisioned successfully."
-    echo "       Check the samba-tool output above and try again."
-    echo "======================================================"
-    exit 1
-fi
-
 # create the link user
 echo ">>> create user linux"
 samba-tool user create linux "${LDAPBINDPASSWD}"
