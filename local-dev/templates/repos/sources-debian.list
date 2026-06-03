@@ -2,4 +2,4 @@
  
 deb [arch=_arch_] http://_repos_:_port_/debian _release_ main contrib non-free
 deb [arch=_arch_] http://_repos_:_port_/debian _release_-updates main contrib non-free
-deb [arch=_arch_] http://_repos_:_port_/debian _release_-security main contrib non-free
+deb [arch=_arch_] http://_repos_:_port_/debian-security _release_-security main contrib non-free

@@ -84,7 +84,7 @@ NATU=$(echo ${NACUSER} | cut -d '@' -f 1)
 TESTGROUP=testgroup
 
 # Set default DNS forwarder if not already set
-if [ -z "${DNSFWD:-}" ] ; then
+if [ -z "${DNSFWD}" ] ; then
     DNSFWD=1.1.1.1
 fi
 
@@ -139,9 +139,7 @@ echo "nameserver 1.1.1.1" >> /etc/resolv.conf
 echo "nameserver 8.8.8.8" >> /etc/resolv.conf
 
 # set the forwarder
-if [ "${DNSFWD}" ] ; then
-    sed s/"^dns forwarder .*$"/"dns forwarder = ${DNSFWD}"/ -i  /etc/samba/smb.conf
-fi
+sed s/"^dns forwarder .*$"/"dns forwarder = ${DNSFWD}"/ -i  /etc/samba/smb.conf
 
 # start the new domain
 echo ">>> start samba"

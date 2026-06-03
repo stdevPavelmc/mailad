@@ -24,6 +24,9 @@ echo "===> Searching for the user that owns the email: $ADMINMAIL"
 # Create temp file
 TEMP=$(mktemp)
 
+# define a RESULT variable from start to avoid errors of not defined or empty
+RESULTS=''
+
 run_search() {
     local FILTER=$1
 

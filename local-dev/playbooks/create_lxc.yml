@@ -154,13 +154,13 @@
       changed_when: False
 
     - name: Create the ubuntu source.list template
-      shell: cat ../templates/repos/sources-ubuntu.list | sed s/\_repos\_/"{{ repos.ubuntu.host }}"/g | sed s/\_port\_/"{{ repos.ubuntu.port }}"/g
+      shell: cat ../templates/repos/sources-ubuntu.list | sed s/\_arch\_/"{{ repos.arch }}"/g | sed s/\_repos\_/"{{ repos.ubuntu.host }}"/g | sed s/\_port\_/"{{ repos.ubuntu.port }}"/g
       register: ubuntu_repo
       changed_when: False
       tags: create
     
     - name: Create the debian source.list template
-      shell: cat ../templates/repos/sources-debian.list | sed s/\_repos\_/"{{ repos.debian.host }}"/g | sed s/\_port\_/"{{ repos.debian.port }}"/g
+      shell: cat ../templates/repos/sources-debian.list | sed s/\_arch\_/"{{ repos.arch }}"/g | sed s/\_repos\_/"{{ repos.debian.host }}"/g | sed s/\_port\_/"{{ repos.debian.port }}"/g
       register: debian_repo
       changed_when: False
       tags: create

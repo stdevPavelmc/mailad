@@ -2,14 +2,17 @@
 
 This directory contains Ansible playbooks for creating and managing LXC (Linux Containers) test hosts for MailAD development and testing. These containers provide isolated environments to test MailAD installations across different operating systems and configurations.
 
+**Note:** This instructions are updated to be ran on Ubuntu 26.04 LTS, other systems may need some tweaking.
+
 ## Overview
 
 The LXC setup creates a complete test environment with:
 
 - **DC (Domain Controller)**: Ubuntu Noble - Active Directory/Samba server
-- **mailu**: Ubuntu Noble - Mail server for testing Ubuntu-based installations
+- **mailur**: Ubuntu Resolute - Mail server for testing Ubuntu-based installations
 - **maild**: Debian Bookworm - Mail server for testing Debian-based installations  
 - **test**: Ubuntu Noble - General-purpose test environment
+- **mailun**: Ubuntu Noble - Mail server for testing Ubuntu-based installations
 
 All containers are configured with:
 - Local package repository access for faster installations
@@ -31,7 +34,7 @@ All containers are configured with:
 # Install LXC and dependencies
 sudo apt update
 sudo snap install lxd
-sudo apt install python3-lxc ansible dnsmask dnsmasq-base dnsmasq-utils
+sudo apt install python3-lxc ansible dnsmasq dnsmasq-base dnsmasq-utils
 
 # Install Ansible community collection
 ansible-galaxy collection install community.general
@@ -63,6 +66,14 @@ lxc.apparmor.profile = generated
 lxc.apparmor.allow_nesting = 1
 ```
 
+Configure the Ubuntu firewall to allow the traffic from the `lxcbr0` associated internal network to reach the outside word.
+
+```shell
+ufw allow in on lxcbr0
+ufw route allow in on lxcbr0
+ufw route allow out on lxcbr0
+```
+
 You must also configure the dnsmasq dhcp for the names of the hosts to secure stable IPs, edit/create the `/etc/lxc/dnsmasq.conf` file with this content:
 
 ```ini
@@ -71,9 +82,10 @@ domain=mailad.cu
 
 # reservations
 dhcp-host=dc,10.0.3.2 
-dhcp-host=mailu,10.0.3.3  
+dhcp-host=mailur,10.0.3.3  
 dhcp-host=maild,10.0.3.4 
 dhcp-host=test,10.0.3.5
+dhcp-host=mailun,10.0.3.6  
 ```
 
 Also setup the loading of that file via lxc in the file `/etc/default/lxc-net`:
@@ -87,6 +99,14 @@ LXC_DHCP_RANGE="10.0.3.1,10.0.3.254"
 ```
 
 ## Quick Start
+
+### Review to tune to your local env.
+
+Review the `vars/general.yml` to update the repos info, I use a local nginx reverse proxy with catching to speed up the process as rebuild and redeploy keeps fetching the same data several times.
+
+You can set the official repos (se comments on the file) or setup a local/near repo on the configs.
+
+Review the point "2. Repository Configuration" below for more details.
 
 ### Create LXC Test Environment
 Run this command **as root** to create all test containers:
@@ -142,11 +162,14 @@ lxcs:
 
 Containers are assigned IPs in the 10.0.3.x subnet:
 - DC: 10.0.3.2
-- mailu: 10.0.3.3  
+- mailur: 10.0.3.3  
 - maild: 10.0.3.4
 - test: 10.0.3.5
+- mailun: 10.0.3.6
 
 Note: this IP assignation is linked to the lxc config stated above, if you chante it, then you need to change the lxc configuration.
+
+**NOTE:** If you just installed LXC/LXD for the first time, save some headache and reboot the PC/Server. The network core for LXC/LXD has some kirks just after install, like not allowing traffic outside the LXC network.
 
 ### 2. Repository Configuration
 
@@ -173,7 +196,7 @@ Once created, access containers directly:
 ```bash
 # Access via LXC [preferred/default way]
 # sudo lxc-execute *container -- bash -c "*commands"
-sudo lxc-execute mailu -- bash -c "cd /root/mailad/ ; make conf"
+sudo lxc-execute mailur -- bash -c "cd /root/mailad/ ; make conf"
 
 # Check container status
 sudo lxc-ls -f
@@ -191,7 +214,7 @@ cd /root/mailad
 make deps    # Install dependencies
 make conf    # Configure
 
-# sudo lxc-execute mailu -- bash -c "cd /root/mailad/ ; make deps ; make conf"
+# sudo lxc-execute mailur -- bash -c "cd /root/mailad/ ; make deps ; make conf"
 ```
 
 #### Setting specific details for each container
@@ -207,7 +230,7 @@ make samba   # Install samba, dependencies and scaffold the bare DC settings to 
 # sudo lxc-execute dc -- bash -c "cd /root/mailad/ ; make samba"
 ```
 
-##### mailu and maild container
+##### mailur and maild container
 
 1. You need to set the hostname for that container on the maild config file
 
@@ -256,14 +279,14 @@ sudo lxc-attach test -- bash -c "cd /root/mailad && ./tests/test.sh 10.0.3.4"
 Test mail server connectivity:
 
 ```bash
-# Connectivity from test to mailu
+# Connectivity from test to mailur
 sudo lxc-attach test -- ping 10.0.3.3
 
 # Connectivity from test to maild
 sudo lxc-attach test -- ping 10.0.3.4
 
 # Following must get the service headers
-# Test SMTP/IMAP from test container to mailu containers
+# Test SMTP/IMAP from test container to mailur containers
 sudo lxc-attach test -- timeout 1 nc 10.0.3.3 25
 sudo lxc-attach test -- timeout 1 nc 10.0.3.3 143
 
@@ -279,32 +302,32 @@ sudo lxc-attach test -- timeout 1 nc 10.0.3.3 143
 #### Package Installation Fails
 ```bash
 # Check repository configuration
-sudo lxc-attach mailu -- cat /etc/apt/sources.list
+sudo lxc-attach mailur -- cat /etc/apt/sources.list
 
 # Test network connectivity
-sudo lxc-attach mailu -- ping -c 3 8.8.8.8
+sudo lxc-attach mailur -- ping -c 3 8.8.8.8
 ```
 
 #### MailAD Dependencies Fail
 ```bash
 # Check package manager
-sudo lxc-attach mailu -- apt update
+sudo lxc-attach mailur -- apt update
 
 # Check Python availability
-sudo lxc-attach mailu -- python3 --version
+sudo lxc-attach mailur -- python3 --version
 ```
 
 ### Debug Commands
 
 ```bash
 # View container logs
-sudo lxc-attach mailu -- journalctl -f
+sudo lxc-attach mailur -- journalctl -f
 
 # Check container resources
-sudo lxc-attach mailu -- top
+sudo lxc-attach mailur -- top
 
 # Verify MailAD source mount
-sudo lxc-attach mailu -- ls -la /root/mailad
+sudo lxc-attach mailur -- ls -la /root/mailad
 ```
 
 ## Maintenance
@@ -323,22 +346,22 @@ sudo ansible-playbook -i inventories/hosts.ini -b -m shell -a "apt update && apt
 #### Backup Container State
 ```bash
 # Stop container
-sudo lxc stop mailu
+sudo lxc stop mailur
 
 # Create snapshot
-sudo lxc snapshot mailu backup-$(date +%Y%m%d)
+sudo lxc snapshot mailur backup-$(date +%Y%m%d)
 
 # Restart container
-sudo lxc start mailu
+sudo lxc start mailur
 ```
 
 #### Restore from Snapshot
 ```bash
 # Restore snapshot
-sudo lxc restore mailu backup-20231201
+sudo lxc restore mailur backup-20231201
 
 # Start container
-sudo lxc start mailu
+sudo lxc start mailur
 ```
 
 ### Cleanup
@@ -361,7 +384,7 @@ sudo ansible-playbook playbooks/remove_lxc.yml
 
 2. **Test MailAD installation**:
    ```bash
-   sudo lxc-attach mailu -- bash -c "cd /root/mailad && make test"
+   sudo lxc-attach mailur -- bash -c "cd /root/mailad && make test"
    ```
 
 3. **Test cross-platform compatibility**:
