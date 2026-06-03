@@ -24,8 +24,10 @@ echo "===> Searching for the user that owns the email: $ADMINMAIL"
 # Create temp file
 TEMP=$(mktemp)
 
-# define a RESULT variable from start to avoid errors of not defined or empty
+# define a RESULT and SEARCH_RC variables from start
+# to avoid errors of not defined or empty
 RESULTS=''
+SEARCH_RC=0
 
 run_search() {
     local FILTER=$1
@@ -41,21 +43,36 @@ run_search() {
     RESULTS=$(grep "^# numEntries:" "$TEMP" | awk '{print $3}')
 }
 
-SEARCH_RC=0
+list_users() {
+    # List all users from the AD in a compact format for debugging
+    ldapsearch -o ldif-wrap=no \
+        -H "$LDAPURI" \
+        -D "$LDAPBINDUSER" \
+        -w "$LDAPBINDPASSWD" \
+        -b "$LDAPSEARCHBASE" \
+        "(|(objectClass=user)(objectClass=person))" mail cn sAMAccountName 2>/dev/null | \
+        awk '
+            /^dn:/ { dn=$0; has_data=1 }
+            /^dn:/ && dn_printed { print "" }
+            /^(mail|cn|sAMAccountName):/ { values[++v]=$0 }
+            /^$/ && has_data {
+                print dn
+                for (i=1; i<=v; i++) print "    " values[i]
+                print ""
+                dn_printed=1
+                delete values; v=0; has_data=0; dn=""
+            }
+            END {
+                if (has_data) {
+                    print dn
+                    for (i=1; i<=v; i++) print "    " values[i]
+                    print ""
+                }
+            }
+        '
+}
+
 run_search "(&(objectClass=person)(mail=$ADMINMAIL))"
-
-if [ -z "$RESULTS" ] || [ "$RESULTS" == "0" ]; then
-    # Try with userPrincipalName
-    echo "===> Trying with userPrincipalName..."
-    run_search "(userPrincipalName=$ADMINMAIL)"
-fi
-
-if [ -z "$RESULTS" ] || [ "$RESULTS" == "0" ]; then
-    # Try with sAMAccountName
-    USERNAME=$(echo "$ADMINMAIL" | cut -d@ -f1)
-    echo "===> Trying with sAMAccountName=$USERNAME..."
-    run_search "(sAMAccountName=$USERNAME)"
-fi
 
 if [ -z "$RESULTS" ] || [ "$RESULTS" == "0" ]; then
     BSD=$(grep "acl_read" "$TEMP")
@@ -94,18 +111,7 @@ if [ -z "$RESULTS" ] || [ "$RESULTS" == "0" ]; then
         echo "    Listing all users in this OU for debugging:"
         echo "    -------------------------------------------"
 
-        ldapsearch -o ldif-wrap=no \
-            -H "$LDAPURI" \
-            -D "$LDAPBINDUSER" \
-            -w "$LDAPBINDPASSWD" \
-            -b "$LDAPSEARCHBASE" \
-            "(|(objectClass=user)(objectClass=person))" mail cn sAMAccountName 2>/dev/null | \
-            awk '
-                /^dn:/ {dn=$0}
-                /^mail:/ {print dn; print "    " $0}
-                /^cn:/ && !/^mail:/ {print "    " $0}
-                /^sAMAccountName:/ {print "    " $0}
-            '
+        list_users
 
         echo "================================================================================="
     fi
