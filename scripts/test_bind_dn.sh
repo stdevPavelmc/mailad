@@ -24,46 +24,54 @@ if [ "$SECURELDAP" == "yes" -o "$SECURELDAP" == "Yes" -o "$SECURELDAP" == "true"
     for DC in $(echo "${HOSTAD}") ; do
         echo "===> Getting the certificate from ${DC}"
 
-        # Fix Debian 13
-        . /etc/os-release
-        if [ "$VERSION_CODENAME" == "trixie" ] ; then
-            # new way to extract the CA cert not the server cert
-            openssl s_client -connect ${DC}:636 -showcerts </dev/null 2>/dev/null | \
-                awk '/-----BEGIN CERTIFICATE-----/,/-----END CERTIFICATE-----/' | \
-                awk '/-----BEGIN CERTIFICATE-----/{c++} c==2' \
-                > /usr/local/share/ca-certificates/${DC}.crt
+        # update the certificates, for any user changes
+        /usr/sbin/update-ca-certificates
 
-            # but some self signed ones DO NOT EXPOSE THE CA cert, so we can't use it
-            # if the file is empty need to copy from the server and it did not copied the cert by hand yet...
-            if [ ! -s /usr/local/share/ca-certificates/${DC}.crt ] ; then
-                # if the user did not copied the cert yet
-                if [ ! -f /usr/local/share/ca-certificates/samba-ca.crt ] ; then
-                    # Warn the user that needs to copy the cert from the server
-                    echo "======================================================"
-                    echo "NOTICE: This is Debian Trixie and new secure policies"
-                    echo "        are in place, so we can't get the CA cert"
-                    echo " "
-                    echo "TODO: You need to copy the CA certificate from the"
-                    echo "      server by yourself and install it in the system"
-                    echo " "
-                    echo "      If you use a samba server as DC you need to check"
-                    echo "      the /etc/samba/smb.conf file for a property named"
-                    echo "      'tls cafile', if not defined you can use the"
-                    echo "      default one: '/var/lib/samba/private/tls/ca.pem'."
-                    echo "      Once identified just copy it from that server"
-                    echo "      to this server on the following path:"
-                    echo "      '/usr/local/share/ca-certificates/samba-ca.crt'"
-                    echo "      and re-run this script."
-                    echo "======================================================"
-                    exit 1
+        # Fix for newer releases with stricter CA cert policies (Trixie, Resolute, etc.)
+        . /etc/os-release
+        case "$VERSION_CODENAME" in
+            trixie|resolute)
+                # new way to extract the CA cert not the server cert
+                # this command will fethc the server cert + the CA cert
+                # but we need only the CA cert, so we need to extract the second one
+                openssl s_client -connect ${DC}:636 -showcerts </dev/null 2>/dev/null | \
+                    awk '/-----BEGIN CERTIFICATE-----/,/-----END CERTIFICATE-----/' | \
+                    awk '/-----BEGIN CERTIFICATE-----/{c++} c==2' \
+                    > /usr/local/share/ca-certificates/${DC}.crt
+
+                # but some self signed ones DO NOT EXPOSE THE CA cert, so we can't use it
+                # if the file is empty need to copy from the server and it did not copied the cert by hand yet...
+                if [ ! -s /usr/local/share/ca-certificates/${DC}.crt ] ; then
+                    # if the user did not copied the cert yet
+                    if [ ! -f /usr/local/share/ca-certificates/samba-ca.crt ] ; then
+                        # Warn the user that needs to copy the cert from the server
+                        echo "======================================================"
+                        echo "NOTICE: This is a recent release and new secure policies"
+                        echo "        are in place, so we can't get the CA cert"
+                        echo " "
+                        echo "TODO: You need to copy the CA certificate from the"
+                        echo "      server by yourself and install it in the system"
+                        echo " "
+                        echo "      If you use a samba server as DC you need to check"
+                        echo "      the /etc/samba/smb.conf file for a property named"
+                        echo "      'tls cafile', if not defined you can use the"
+                        echo "      default one: '/var/lib/samba/private/tls/ca.pem'."
+                        echo "      Once identified just copy it from that server"
+                        echo "      to this server on the following path:"
+                        echo "      '/usr/local/share/ca-certificates/samba-ca.crt'"
+                        echo "      and re-run this script."
+                        echo "======================================================"
+                        exit 1
+                    fi
                 fi
-            fi
-        else
-            # old way to extract the CA cert
-            echo | openssl s_client -connect ${DC}:636 2>&1 | sed --quiet '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' > /usr/local/share/ca-certificates/${DC}.crt
-        fi
+                ;;
+            *)
+                # old way to extract the CA cert
+                echo | openssl s_client -connect ${DC}:636 2>&1 | sed --quiet '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' > /usr/local/share/ca-certificates/${DC}.crt
+                ;;
+        esac
     done
-    # update the certificates
+    # update the certificates for script changes
     /usr/sbin/update-ca-certificates
 
     # testing
