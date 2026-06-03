@@ -12,13 +12,15 @@ domain: mailad.cu
 mailad_at: /home/pavel/Documents/Software/MailAD_Family/mailad
 
 # repo sources
+# I use a local nginx reverse proxy to cache all the files downloaded to speedup the process
+# if you want to use the official mirrors, just change the host to archive.ubuntu.com and deb.debian.org and remove the port
 repos:
   arch: amd64
   ubuntu:
-    host: 10.0.3.3
-    port: 8080
+    host: 192.168.1.102
+    port: 80
   debian:
-    host: repos.ou.edu.cu
+    host: 192.168.1.102
     port: 80
 
 # LXCs data
@@ -28,16 +30,19 @@ lxcs:
     distro: ubuntu
     release: noble
     host: 10.0.3.2
-  mailu:
+  mailur:
     distro: ubuntu
-    release: noble
+    release: resolute
     host: 10.0.3.3
   maild:
     distro: debian
     release: trixie
     host: 10.0.3.4
+  mailun:
+    distro: ubuntu
+    release: noble
+    host: 10.0.3.6
   test:
     distro: ubuntu
     release: noble
     host: 10.0.3.5
-
