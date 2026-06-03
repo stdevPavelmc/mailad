@@ -86,7 +86,7 @@ else
 fi
 
 # check if download fails
-if [ $R -ne 0 -a $R -ne 1 ]; then
+if [ ${R} -ne 0 -a ${R} -ne 1 ]; then
     echo "===> Error!" | tee -a $FILE
     echo "  Download of the snappymail package failed" | tee -a $FILE
     echo "  URL is: $SNAPPY_URL" | tee -a $FILE
@@ -138,7 +138,7 @@ cd $BPWD
 NGINX_CONFIG=/etc/nginx/sites-available/default
 NGINX_TEMPLATE=./var/nginx/default
 WEBPROTO=https
-if [ "$WEBSERVER_HTTP_ENABLED" == "yes" ]; then
+if is_enabled WEBSERVER_HTTP_ENABLED ; then
     NGINX_TEMPLATE=./var/nginx/default_http
     WEBPROTO=http
 
@@ -240,7 +240,7 @@ fixperms ${DEFAULTFOLDER}
 # ldap vars
 LDAP_PORT=389
 LDAP_PREFIX="ldap://"
-if [ "$SECURELDAP" == 'yes' ] ; then
+if is_enabled SECURELDAP ; then
     LDAP_PORT=636
     LDAP_PREFIX="ldaps://"
 fi

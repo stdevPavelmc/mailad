@@ -33,7 +33,7 @@ function os_not_supported {
 
 # Do update, and upgrade only if not in mailad.cu domain
 apt-get update ${APT_OPTS}
-if [ $DOMAIN != "mailad.cu" ] ; then
+if [ "${DOMAIN}" != "mailad.cu" ] ; then
     export DEBIAN_FRONTEND=noninteractive
     apt-get upgrade ${APT_OPTS}
 fi
@@ -44,52 +44,23 @@ if [ -f /etc/os-release ] ; then
     source /etc/os-release
 
     # Notice on discontinued OS
-    if [[ " ${OS_DISCONTINUED[*]} " =~ " $VERSION_CODENAME " ]]; then
-        echo ""
-        echo "##### WARNING  WARNING  WARNING ######################################"
-        echo "#                                                                    #"
-        echo "#    You are installing on a discontinued OS, this is dangerous,     #"
-        echo "#      as the OS version my be outdated and vulnerable, please       #"
-        echo "#           go here and read how to upgrade your OS:                 #"
-        echo "#  https://github.com/stdevPavelmc/mailad/blob/develop/INSTALL.md    #"
-        echo "#                                                                    #"
-        echo "#                      You has been warned!                          #"
-        echo "#                                                                    #"
-        echo "####################################  WARNING  WARNING  WARNING ######"
-        echo ""
-
-        # delay notice
-        echo "This is just a warning, it will be dismissed in 10 seconds, and installation will continue"
-        sleep 10
+    if [[ " ${OS_DISCONTINUED[*]} " =~ " ${VERSION_CODENAME} " ]]; then
+        show_os_warning "discontinued"
     fi
 
     # Notice on legacy OS
-    if [[ " ${OS_LEGACY[*]} " =~ " $VERSION_CODENAME " ]]; then
-        echo ""
-        echo "##### WARNING  WARNING  WARNING ######################################"
-        echo "#                                                                    #"
-        echo "#       You are installing on a legacy OS, be aware that it may      #"
-        echo "#  be outdated soon, please go here and read how to upgrade your OS: #"
-        echo "#  https://github.com/stdevPavelmc/mailad/blob/develop/INSTALL.md    #"
-        echo "#                                                                    #"
-        echo "#                      You has been warned!                          #"
-        echo "#                                                                    #"
-        echo "####################################  WARNING  WARNING  WARNING ######"
-        echo ""
-
-        # delay notice
-        echo "This is just a warning, it will be dismissed in 10 seconds, and installation will continue"
-        sleep 10
+    if [[ " ${OS_LEGACY[*]} " =~ " ${VERSION_CODENAME} " ]]; then
+        show_os_warning "legacy"
     fi
 
-    if [[ " ${OS_WORKING[*]} " =~ " $VERSION_CODENAME " ]]; then
+    if [[ " ${OS_WORKING[*]} " =~ " ${VERSION_CODENAME} " ]]; then
         # Load the correct pkgs to be installed
         export DEBIAN_FRONTEND=noninteractive
         apt-get install ${APT_OPTS} ${COMMON_DEPS_PKGS}
 
         # checking for success
         R=$?
-        if [ $R -eq 0 ] ; then
+        if [ ${R} -eq 0 ] ; then
             # success finish
             echo "done" > deps
         else

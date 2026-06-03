@@ -17,7 +17,7 @@ source "/etc/mailad/mailad.conf"
 # no interaction is neede
 export DEBIAN_FRONTEND=noninteractive
 
-if [ "$WEBMAIL_ENABLED" == "yes" -o "$ENABLE_WEBMAILS" == "Yes" ] ; then
+if is_enabled WEBMAIL_ENABLED ; then
     # notice
     echo "===> Enabling Webmails!"
 

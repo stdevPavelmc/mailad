@@ -17,27 +17,27 @@ LASTBACKUPFILE="${LIBFOLDER}/latest_backup"
 LASTWORKINGBACKUPFILE="${LIBFOLDER}/latest_working_backup"
 
 # advice
-echo "===> Starting a backup of all actual configs to $BKPFOLDER"
+echo "===> Starting a backup of all actual configs to ${BKPFOLDER}"
 
 # create the backup folder 
 mkdir -p ${BKPFOLDER} 2> /dev/null || true
 mkdir -p ${LIBFOLDER} 2> /dev/null || true
 
 # check if a non ideal backup is left behind
-if [ -f "$LASTBACKUPFILE" ] ; then
+if [ -f "${LASTBACKUPFILE}" ] ; then
     #use cases
-    if [ -f "$LASTWORKINGBACKUPFILE" ] ; then
+    if [ -f "${LASTWORKINGBACKUPFILE}" ] ; then
         # case one: backup & working backup
         # erase it only if points to different files
-        LAST=$(cat "$LASTBACKUPFILE")
-        WORKING=$(cat "$LASTWORKINGBACKUPFILE")
-        if [ "$LAST" != "$WORKING" ] ; then
+        LAST=$(cat "${LASTBACKUPFILE}")
+        WORKING=$(cat "${LASTWORKINGBACKUPFILE}")
+        if [ "${LAST}" != "${WORKING}" ] ; then
             # erase the file
-            rm -f "$LAST" || true
+            rm -f "${LAST}" || true
         fi
     else
         # case two: backup & no working backup, erase the file
-        rm -f $(cat "$LASTBACKUPFILE") || true
+        rm -f "$(cat "${LASTBACKUPFILE}")" || true
     fi
 fi
 

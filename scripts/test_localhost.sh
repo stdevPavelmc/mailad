@@ -19,10 +19,10 @@ source common.conf
 echo "===> Testing the configurations on the local host"
 
 # test /sbin on some envs (Debian 10/11)
-SBIN=$(echo $PATH | grep "/sbin")
-if [ -z "$SBIN" ] ; then
+SBIN=$(echo "${PATH}" | grep "/sbin")
+if [ -z "${SBIN}" ] ; then
     # apply the fix
-    printf "\nSBIN=$(echo \$PATH | grep '/sbin')\nif [ -z \${SBIN} ] ; then\n    PATH=/sbin:/usr/sbin:$PATH\nfi\n" >> /etc/environment
+    printf "\nSBIN=\$(echo \"\$PATH\" | grep '/sbin')\nif [ -z \${SBIN} ] ; then\n    PATH=/sbin:/usr/sbin:\$PATH\nfi\n" >> /etc/environment
 
     # fail
     echo "================================================================================="
@@ -59,23 +59,23 @@ fi
 # the port is open, but we need to know the correct por if LDAP or LDAPS
 # secure ldap by default
 PORT=636
-if [ "$SECURELDAP" == "" -o "$SECURELDAP" == "no" -o "$SECURELDAP" == "No" ] ; then
+if ! is_enabled SECURELDAP ; then
     # no sec, plain ldap
     PORT=389
 fi
 
 # command
-nc "${H}" "$PORT" -vz  2> /dev/null
+nc "${H}" "${PORT}" -vz  2> /dev/null
 
 # testing
 R=$?
-if [ $R -eq 0 ] ; then
+if [ ${R} -eq 0 ] ; then
     echo "===> We can reach the domain server listed in the configs!"
 else
     # fail
     echo "================================================================================="
     echo "ERROR!"
-    echo "    We can't connect to the port $PORT of the AD server ($H) specified in"
+    echo "    We can't connect to the port ${PORT} of the AD server (${H}) specified in"
     echo "    the config, check your network settings, firewalls, etc"
     echo ""
     echo "    HOSTAD is: ${HOSTAD}"
@@ -87,9 +87,9 @@ fi
 
 
 #vmail user
-GROUP=$(grep $VMAILNAME /etc/group | grep $VMAILGID)
-USER=$(grep $VMAILNAME /etc/passwd | grep $VMAILUID)
-if [ -z "$GROUP" -o -z "$USER" ] ; then
+GROUP=$(grep "${VMAILNAME}" /etc/group | grep "${VMAILGID}")
+USER=$(grep "${VMAILNAME}" /etc/passwd | grep "${VMAILUID}")
+if [ -z "${GROUP}" -o -z "${USER}" ] ; then
     # fix it!
     ./scripts/vmail_create.sh || ./vmail_create.sh
 fi
@@ -97,7 +97,7 @@ fi
 # hostname vs fqdn
 HOST=$(hostname)
 FQDN=$(hostname -f)
-if [ "$HOST" == "$FQDN" ] ; then
+if [ "${HOST}" == "${FQDN}" ] ; then
     # fail
     echo "================================================================================="
     echo "ERROR!"
@@ -112,18 +112,18 @@ if [ "$HOST" == "$FQDN" ] ; then
 
     exit 1
 else
-    echo "===> You have a correct fqdn [$FQDN] in the hostname [$HOST]"
+    echo "===> You have a correct fqdn [${FQDN}] in the hostname [${HOST}]"
 fi
 
 # localhost is localhost?
-if [ "$HOSTNAME" == "$FQDN" ] ; then
+if [ "${HOSTNAME}" == "${FQDN}" ] ; then
     echo "===> You have a correct HOSTNAME configured"
 else
     # fail
     echo "================================================================================="
     echo "ERROR!"
-    echo "    Your HOSTNAME var in mailad.conf [$HOSTNAME] does not match"
-    echo "    the FQDN [$FQDN] of this host!"
+    echo "    Your HOSTNAME var in mailad.conf [${HOSTNAME}] does not match"
+    echo "    the FQDN [${FQDN}] of this host!"
     echo "    Please fix that"
     echo "================================================================================="
     echo " "
@@ -132,7 +132,7 @@ else
 fi
 
 # testing that the password is different if we are in a non  testing domain
-if [ $DOMAIN != "mailad.cu" -a "$LDAPBINDPASSWD" == "Passw0rd---" ] ; then
+if [ "${DOMAIN}" != "mailad.cu" ] && [ "${LDAPBINDPASSWD}" == "Passw0rd---" ] ; then
     echo "================================================================================="
     echo "ERROR!"
     echo "    You has a default password in the bind dn user 'LDAPBINDUSER', that's a very"
@@ -146,17 +146,17 @@ fi
 
 # testing if a working DNS is configured if AV is set to enabled
 # and direct with no proxy or local mirror
-if [ "$ENABLE_AV" == "yes" -o "$ENABLE_AV" == "Yes" ] ; then
+if is_enabled ENABLE_AV ; then
 
     PROXY=""
     # check for proxy on use
-    if [ "$PROXY_HOST" -a "$PROXY_PORT" -a "$AV_UPDATES_USE_PROXY" == "yes" ] ; then
+    if [ "${PROXY_HOST}" -a "${PROXY_PORT}" -a "${AV_UPDATES_USE_PROXY}" == "yes" ] ; then
         PROXY="yeha baby!"
     fi
 
     AMIRROR=""
     # check for alternate mirror usage
-    if [ "$USE_AV_ALTERNATE_MIRROR" == "yes" -o "$USE_AV_ALTERNATE_MIRROR" == "Yes" ] ; then
+    if is_enabled USE_AV_ALTERNATE_MIRROR ; then
         AMIRROR="yeha baby!"
     fi
 
@@ -164,7 +164,7 @@ if [ "$ENABLE_AV" == "yes" -o "$ENABLE_AV" == "Yes" ] ; then
     if [ -z "${PROXY}${AMIRROR}" ] ; then
         # direct no proxy or local mirror, check if we can get the database fingerprint for clamav
         DBF=$(dig +short TXT current.cvd.clamav.net | grep -P "([0-9]+:){7}")
-        if [ -z "$DBF" ] ;  then
+        if [ -z "${DBF}" ] ;  then
             # DNS not working
             echo "================================================================================="
             echo "ERROR!"
@@ -193,16 +193,16 @@ fi
 
 
 # testing if a working DNS is configured if SPAMD is set to enabled
-if [ "$ENABLE_SPAMD" == "yes" -o "$ENABLE_SPAMD" == "Yes" ] ; then
+if is_enabled ENABLE_SPAMD ; then
     # test is targeted if on dev env
     DBF=123456
-    if [ "$DOMAIN" != "mailad.cu" ] ; then 
+    if [ "${DOMAIN}" != "mailad.cu" ] ; then 
         # check if we can get the database fingerprint for spamassassin
         DBF=$(dig TXT +short 2.4.3.updates.spamassassin.org | grep -P "\"[0-9]{5,}\"")
     fi
 
     # Test it        
-    if [ -z "$DBF" ] ;  then
+    if [ -z "${DBF}" ] ;  then
         # DNS not working
         echo "================================================================================"
         echo "ERROR!"
@@ -226,16 +226,16 @@ if [ "$ENABLE_SPAMD" == "yes" -o "$ENABLE_SPAMD" == "Yes" ] ; then
 fi
 
 # testing if a working DNS is configured if DNSBL is set to enabled
-if [ "$ENABLE_DNSBL" == "yes" -o "$ENABLE_DNSBL" == "Yes" ] ; then
+if is_enabled ENABLE_DNSBL ; then
     # if dev env force a working config
     DNSBL=127.0.0.1
-    if [ "$DOMAIN" != "mailad.cu" ] ; then
+    if [ "${DOMAIN}" != "mailad.cu" ] ; then
         # check if we can get the database fingerprint for spamassassin
         DNSBL=$(dig 2.0.0.127.zen.spamhaus.org +short | grep -P "127")
     fi
 
     # test it
-    if [ -z "$DNSBL" ] ;  then
+    if [ -z "${DNSBL}" ] ;  then
         # DNS not working
         echo "================================================================================"
         echo "ERROR!"

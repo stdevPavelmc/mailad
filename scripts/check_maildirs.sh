@@ -16,6 +16,14 @@
 # load conf files
 source /etc/mailad/mailad.conf
 
+# Boolean normalization: returns 0 (true) if var content is yes/Yes/YES
+# Note: You pass the name of the var, not the value, so it can be used with indirect expansion to get the value of the var
+function is_enabled {
+    local val
+    val=$(echo "${!1}" | tr '[:upper:]' '[:lower:]')
+    [ "${val}" == "yes" ] || [ "${val}" == "true" ]
+}
+
 # Direct copy from common.conf as this script runs standalone after install
 #
 # Get the ldap uri based on the file options
@@ -27,7 +35,7 @@ function get_ldap_uri {
     PROTO="ldaps"
     PORT=636
     # detect if NOT secure ldap and change the proto and port of the uri
-    if [ "$SECURELDAP" == "" -o "$SECURELDAP" == "no" -o "$SECURELDAP" == "No" ] ; then
+    if [ -z "${SECURELDAP}" ] || ! is_enabled SECURELDAP ; then
         # Use a not secure ldap
         PROTO="ldap"
         PORT=389

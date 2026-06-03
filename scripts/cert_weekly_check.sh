@@ -45,28 +45,28 @@ If all goes well you will see an email with the report of your SSL cert check.
 
 # Function to send email via swaks
 send_email() {
-    echo "$2" | swaks \
-        --to "$SYSADMINS" \
-        --from "$FROM_EMAIL" \
-        --server "$SMTP_SERVER" \
-        --h-Subject "$1" \
+    echo "${2}" | swaks \
+        --to "${SYSADMINS}" \
+        --from "${FROM_EMAIL}" \
+        --server "${SMTP_SERVER}" \
+        --h-Subject "${1}" \
         --body - \
         --suppress-data &>/dev/null 
 }
 
 # Function to check SSL certificate
 check_ssl_cert() {
-    local host_port="$1"
-    local host=$(echo "$host_port" | cut -d: -f1)
-    local port=$(echo "$host_port" | cut -d: -f2)
+    local host_port="${1}"
+    local host=$(echo "${host_port}" | cut -d: -f1)
+    local port=$(echo "${host_port}" | cut -d: -f2)
     
     # Get certificate expiration date
     local cert_info
-    cert_info=$(echo | timeout 10 openssl s_client -connect "$host_port" 2>/dev/null | openssl x509 -noout -dates 2>/dev/null)
+    cert_info=$(echo | timeout 10 openssl s_client -connect "${host_port}" 2>/dev/null | openssl x509 -noout -dates 2>/dev/null)
     
-    if [[ $? -ne 0 || -z "$cert_info" ]]; then
-        send_email "MailAD: SSL Certificate Check Failed - $host_port" \
-                  "Failed to retrieve SSL certificate from $host_port
+    if [[ ${?} -ne 0 || -z "${cert_info}" ]]; then
+        send_email "MailAD: SSL Certificate Check Failed - ${host_port}" \
+                  "Failed to retrieve SSL certificate from ${host_port}
 
 This could indicate:
 - Service is down
@@ -82,18 +82,18 @@ Date: $(date)"
     
     # Extract expiration date
     local exp_date
-    exp_date=$(echo "$cert_info" | grep "notAfter=" | cut -d= -f2)
+    exp_date=$(echo "${cert_info}" | grep "notAfter=" | cut -d= -f2)
     
-    if [[ -z "$exp_date" ]]; then
+    if [[ -z "${exp_date}" ]]; then
         echo "ERROR: Could not parse expiration date"
         return 1
     fi
     
     # Convert dates to seconds since epoch
     local exp_epoch
-    exp_epoch=$(date -d "$exp_date" +%s 2>/dev/null)
+    exp_epoch=$(date -d "${exp_date}" +%s 2>/dev/null)
     
-    if [[ $? -ne 0 ]]; then
+    if [[ ${?} -ne 0 ]]; then
         return 1
     fi
     
@@ -104,13 +104,13 @@ Date: $(date)"
     local days_left=$(( (exp_epoch - current_epoch) / 86400 ))
     
     # Check certificate status
-    if [[ $exp_epoch -lt $current_epoch ]]; then # lt
+    if [[ ${exp_epoch} -lt ${current_epoch} ]]; then
         # Certificate has expired
-        send_email "MailAD: URGENT SSL Certificate EXPIRED - $host_port" \
+        send_email "MailAD: URGENT SSL Certificate EXPIRED - ${host_port}" \
                    "CRITICAL ALERT: SSL Certificate has EXPIRED
 
-Service: $host_port
-Expired on: $exp_date
+Service: ${host_port}
+Expired on: ${exp_date}
 Days overdue: $((days_left * -1))
 
 This service is likely experiencing SSL/TLS connection failures.
@@ -122,15 +122,15 @@ Checked from: $(hostname)
 Date: $(date)"
         return 2
 
-    elif [[ $exp_epoch -lt $warning_epoch ]]; then # lt
+    elif [[ ${exp_epoch} -lt ${warning_epoch} ]]; then
         # Certificate expires within warning period
-        send_email "MailAD: SSL Certificate Expiring Soon - $host_port" \
+        send_email "MailAD: SSL Certificate Expiring Soon - ${host_port}" \
                   "SSL Certificate Expiration Warning
 
-Service: $host_port
-Expires on: $exp_date
-Days remaining: $days_left
-Warning threshold: $BEFORE_WARNING weeks
+Service: ${host_port}
+Expires on: ${exp_date}
+Days remaining: ${days_left}
+Warning threshold: ${BEFORE_WARNING} weeks
 
 Please renew the certificate before it expires to avoid service disruption.
 
@@ -146,19 +146,19 @@ Date: $(date)"
 
 # Check if required tools are available
 for tool in openssl swaks timeout; do
-    if ! command -v "$tool" &> /dev/null; then
+    if ! command -v "${tool}" &> /dev/null; then
         exit 1
     fi
 done
 
 # Perform the check
-check_ssl_cert "$HOSTNAME_SERVICE"
-results=$?
+check_ssl_cert "${HOSTNAME_SERVICE}"
+results=${?}
 
-case $results in
+case ${results} in
     1) echo "Check failed - Could not retrieve certificate" ;;
     2) echo "Check completed - Certificate has EXPIRED" ;;
     3) echo "Check completed - Certificate expires soon" ;;
 esac
 
-exit $results
+exit ${results}

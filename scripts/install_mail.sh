@@ -26,16 +26,9 @@ if [ -f /etc/os-release ] ; then
     source /etc/os-release
 
     # Distros check
-    if [[ " ${OS_WORKING[*]} " =~ " $VERSION_CODENAME " ]]; then
-        # Ubuntu
-        if [[ " ${OS_WORKING_U[*]} " =~ " $VERSION_CODENAME " ]]; then
-            craft_pkg_list "ubuntu"
-        fi
-
-        # Debian
-        if [[ " ${OS_WORKING_D[*]} " =~ " $VERSION_CODENAME " ]]; then
-            craft_pkg_list "debian"
-        fi
+    DISTRO=$(detect_distro)
+    if [ "${DISTRO}" != "unknown" ]; then
+        craft_pkg_list "${DISTRO}"
 
         # Check
         already_installed_debs
@@ -54,7 +47,7 @@ if [ -f /etc/os-release ] ; then
     fi
 
     # Fix permissions for clamav into amavis if AV is enabled
-    if [ "$ENABLE_AV" == "yes" -o "$ENABLE_AV" == "Yes" ] ; then
+    if is_enabled ENABLE_AV ; then
         # Add the clamav user to the amavis group, or it will not be able to reach emails to scan
         echo "===> Setting correct Perms for clamav and amavis to work together"
         adduser clamav amavis

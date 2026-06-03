@@ -17,7 +17,7 @@ DBDIR=$(grep DatabaseDirectory /etc/clamav/freshclam.conf | awk '{print $2}')
 BKPFILE='/tmp/clamavbkp.tar'
 
 # backup
-if [ "$1" == "backup" ] ;  then
+if [ "${1}" == "backup" ] ;  then
     # Make a backup
 
     # notice
@@ -26,14 +26,14 @@ if [ "$1" == "backup" ] ;  then
     # check if there is an update, we measure the folder size, if it's more than 1Mb then there is an update
     cd ${DBDIR}
     R=$(du ./ -sh)
-    if [[ "$R" == *"M"* ]] ; then
+    if [[ "${R}" == *"M"* ]] ; then
         # there is at leas a few Mb of data
         tar -cvf ${BKPFILE} ./*
     fi
 fi
 
 # restore
-if [ "$1" == "restore" ] ;  then
+if [ "${1}" == "restore" ] ;  then
     # restore a backup
 
     # notice
@@ -51,10 +51,10 @@ if [ "$1" == "restore" ] ;  then
 fi
 
 # usage
-if [ -z "$1" ] ;  then
+if [ -z "${1}" ] ;  then
     echo "Make and restore a clamav database backup..."
-    echo "$0 backup"
-    echo "    Creates a backup file in $BKPFILE from $DBDIR"
-    echo "$0 restore"
-    echo "    Restore the backup file in $BKPFILE into $DBDIR"
+    echo "${0} backup"
+    echo "    Creates a backup file in ${BKPFILE} from ${DBDIR}"
+    echo "${0} restore"
+    echo "    Restore the backup file in ${BKPFILE} into ${DBDIR}"
 fi

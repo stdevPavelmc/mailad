@@ -34,22 +34,22 @@ P=$(pwd)
 
 # Calc the max size of the message from the MB parameter in the vars
 # plus a little percent to allow for encoding grow
-t="$MESSAGESIZE"
-MESSAGESIZE=$(echo $(( $t * 1132462)))
+t="${MESSAGESIZE}"
+MESSAGESIZE=$(echo $(( ${t} * 1132462)))
 
 # detect the dovecot version to pick the right files to sync
 DOVERSION=$(dpkg -l | grep dovecot-core | awk '{print $3}' | cut -c3-5)
-if [ "$DOVERSION" == "" ] ; then
+if [ "${DOVERSION}" == "" ] ; then
     # error, must not be empty
     dovecot_version "not detected"
 else
     # ok, check if it's a supported version
-    if [ "$DOVERSION" == "2.2" -o "$DOVERSION" == "2.3" -o "$DOVERSION" == "2.4" ] ; then
+    if [ "${DOVERSION}" == "2.2" ] || [ "${DOVERSION}" == "2.3" ] || [ "${DOVERSION}" == "2.4" ] ; then
         # supported versions
-        echo "===> Detected a compatible dovecot version: $DOVERSION"
+        echo "===> Detected a compatible dovecot version: ${DOVERSION}"
     else
         # error not compatible
-        dovecot_version $DOVERSION
+        dovecot_version "${DOVERSION}"
     fi
 fi
 
@@ -62,41 +62,41 @@ echo "===> Sync amavis files..."
 rsync -r ./var/amavis/ /etc/amavis/
 
 # Check the SYSADMINS var and populate it if needed
-if [ -z "$SYSADMINS" ] ; then
-    SYSADMINS=$ADMINMAIL
+if [ -z "${SYSADMINS}" ] ; then
+    SYSADMINS=${ADMINMAIL}
 fi
 
 # add the escaped sysadmins var
-ESC_SYSADMINS=$(echo $SYSADMINS | sed s/"@"/"\\\@"/)
+ESC_SYSADMINS=$(echo "${SYSADMINS}" | sed s/"@"/"\\\@"/)
 
 # get the LDAP URI
 LDAPURI=$(get_ldap_uri)
 
 # check if the optional mail storage is enabled
 MBSUBFOLDER=''
-if [ "${USE_MS_SUBFOLDER}" == "yes" -o "${USE_MS_SUBFOLDER}" == "Yes" ] ; then
+if is_enabled USE_MS_SUBFOLDER ; then
     # set the var, must end in /, a escaped /
     MBSUBFOLDER='%{ldap:physicalDeliveryOfficeName}/'
 fi
 
 # Default MAILBOX SIZE in bytes as per new dovecot installs
-DEFAULT_MBSB=$(echo "$DEFAULT_MAILBOX_SIZE" | numfmt --from=iec)
+DEFAULT_MBSB=$(echo "${DEFAULT_MAILBOX_SIZE}" | numfmt --from=iec)
 
 # add the processed vars to the default ones
 VARS="${VARS} LDAPURI ESC_SYSADMINS MBSUBFOLDER DEFAULT_MBSB"
 
 # replace the vars in the folders
 for f in $(echo "/etc/postfix /etc/dovecot /etc/amavis" | xargs) ; do
-    echo "===> Provisioning $f..."
-    for v in $(echo $VARS | xargs) ; do
+    echo "===> Provisioning ${f}..."
+    for v in $(echo ${VARS} | xargs) ; do
         # get the var content
         CONTp=${!v}
 
         # escape possible "/" in there [KEEP THE BACKTICKS]
         CONT=`echo ${CONTp//\//\\\\/}`
 
-        find "$f/" -type f -exec \
-            sed -i s/"\_$v\_"/"$CONT"/g {} \;
+        find "${f}/" -type f -exec \
+            sed -i s/"\_${v}\_"/"${CONT}"/g {} \;
     done
 done
 
@@ -113,8 +113,8 @@ ESCDOMAIN=${DOMAIN//./\\\\\\.}
 ESCNATIONAL=${ESCNATIONAL//./\\\\\\.}
 
 # action goes here
-sed -i s/"_ESCDOMAIN_"/"$ESCDOMAIN"/g /etc/postfix/rules/filter_loc
-sed -i s/"_ESCNATIONAL_"/"$ESCNATIONAL"/g /etc/postfix/rules/filter_nat
+sed -i s/"_ESCDOMAIN_"/"${ESCDOMAIN}"/g /etc/postfix/rules/filter_loc
+sed -i s/"_ESCNATIONAL_"/"${ESCNATIONAL}"/g /etc/postfix/rules/filter_nat
 
 #notice
 echo "===> Installing the daily group update task"
@@ -123,9 +123,9 @@ echo "===> Installing the daily group update task"
 # rm if there
 rm -f /etc/cron.daily/mail_groups_update > /dev/null
 # fix exec perms just in case it was lost
-chmod +x "$P/scripts/groups.sh"
+chmod +x "${P}/scripts/groups.sh"
 # create the link
-ln -s "$P/scripts/groups.sh" /etc/cron.daily/mail_groups_update
+ln -s "${P}/scripts/groups.sh" /etc/cron.daily/mail_groups_update
 # run it
 /etc/cron.daily/mail_groups_update
 
@@ -135,28 +135,28 @@ echo "===> Installing the daily stats resume"
 # configure the daily mail summary
 rm -f /etc/cron.daily/daily_mail_resume > /dev/null
 # fix exec perms just in case it was lost
-chmod +x "$P/scripts/resume.sh"
+chmod +x "${P}/scripts/resume.sh"
 # create the link
-ln -s "$P/scripts/resume.sh" /etc/cron.daily/daily_mail_resume
+ln -s "${P}/scripts/resume.sh" /etc/cron.daily/daily_mail_resume
 
 # configure the left behind maildirs check/alert/warn
 rm -f /etc/cron.monthly/check_maildirs > /dev/null
 # fix exec perms just in case it was lost
-chmod +x "$P/scripts/check_maildirs.sh"
+chmod +x "${P}/scripts/check_maildirs.sh"
 # create the link
-ln -s "$P/scripts/check_maildirs.sh" /etc/cron.monthly/check_maildirs
+ln -s "${P}/scripts/check_maildirs.sh" /etc/cron.monthly/check_maildirs
 
 # Dovecot Sieve config: create the directory if not present
 mkdir -p /var/lib/dovecot/sieve/ || true
 
 # Create a default junk filter if required to
-if [ "$DOVECOT_SPAM_FILTER_ENABLED" == "yes" -o "$DOVECOT_SPAM_FILTER_ENABLED" == "Yes" -o "$DOVECOT_SPAM_FILTER_ENABLED" == "YES" ] ; then
+if is_enabled DOVECOT_SPAM_FILTER_ENABLED ; then
     # create the default filter
     FILE=/var/lib/dovecot/sieve/default.sieve
-    echo 'require "fileinto";' > $FILE
-    echo 'if header :contains "X-Spam-Flag" "YES" {' >> $FILE
-    echo '    fileinto "Junk";' >> $FILE
-    echo '}' >> $FILE
+    echo 'require "fileinto";' > ${FILE}
+    echo 'if header :contains "X-Spam-Flag" "YES" {' >> ${FILE}
+    echo '    fileinto "Junk";' >> ${FILE}
+    echo '}' >> ${FILE}
 
     # fix ownership
     chown -R vmail:vmail /var/lib/dovecot
@@ -167,61 +167,61 @@ fi
 
 # everyone list protection from outside (blank file as default)
 FILE=/etc/postfix/rules/everyone_list_check
-echo '# DO NOT EDIT BY HAND' > $FILE
-echo '# this file is used to protect the inside everyone list from outside' >> $FILE
-echo ' ' >> $FILE
+echo '# DO NOT EDIT BY HAND' > ${FILE}
+echo '# this file is used to protect the inside everyone list from outside' >> ${FILE}
+echo ' ' >> ${FILE}
 
-if [ "$EVERYONE" != "" ] ; then
+if [ "${EVERYONE}" != "" ] ; then
     # alias active
 
     # check no access from outside
-    if [ "$EVERYONE_ALLOW_EXTERNAL_ACCESS" == "no" -o "$EVERYONE_ALLOW_EXTERNAL_ACCESS" == "No" ] ; then
+    if ! is_enabled EVERYONE_ALLOW_EXTERNAL_ACCESS ; then
         # need protection from outside
-        echo "$EVERYONE         everyone_list" >> $FILE
+        echo "${EVERYONE}         everyone_list" >> ${FILE}
     fi
 
     # grant access from outside
-    if [ "$EVERYONE_ALLOW_EXTERNAL_ACCESS" == "yes" -o "$EVERYONE_ALLOW_EXTERNAL_ACCESS" == "Yes" ] ; then
+    if is_enabled EVERYONE_ALLOW_EXTERNAL_ACCESS ; then
         # disable the outside protection from the main.cf file
         T=$(mktemp)
-        cat /etc/postfix/main.cf | grep -v "veryone" > $T
-        cat $T > /etc/postfix/main.cf
-        rm $T
+        cat /etc/postfix/main.cf | grep -v "veryone" > ${T}
+        cat ${T} > /etc/postfix/main.cf
+        rm ${T}
     fi
 fi
 
 # process postmap files
-for f in $(echo "$PMFILES" | xargs) ; do
-    postmap $f
+for f in $(echo "${PMFILES}" | xargs) ; do
+    postmap ${f}
 done
 
 # local aliases and redirect to sysadmins all local mail
 ALIASES="/etc/aliases"
-rm -rdf $ALIASES || true
-echo "# File modified at provision time, #MailAD" > $ALIASES
-echo "postmaster:       root" >> $ALIASES
-echo "clamav:		root" >> $ALIASES
-echo "amavis:       root" >> $ALIASES
-echo "spamasassin:       root" >> $ALIASES
-echo "root:     $SYSADMINS" >> $ALIASES
+rm -rdf ${ALIASES} || true
+echo "# File modified at provision time, #MailAD" > ${ALIASES}
+echo "postmaster:       root" >> ${ALIASES}
+echo "clamav:		root" >> ${ALIASES}
+echo "amavis:       root" >> ${ALIASES}
+echo "spamasassin:       root" >> ${ALIASES}
+echo "root:     ${SYSADMINS}" >> ${ALIASES}
 # apply changes
 newaliases
 
 # check for SPF activation
-if [ "$ENABLE_SPF" == "no" -o "$ENABLE_SPF" == "No" -o -z "$ENABLE_SPF" ] ; then
+if ! is_enabled ENABLE_SPF || [ -z "${ENABLE_SPF}" ] ; then
     # disable SPF
     FILE="/etc/postfix/main.cf"
-    cat $FILE | grep -v "spf" > /tmp/1
+    cat ${FILE} | grep -v "spf" > /tmp/1
 
     # dump
-    cat /tmp/1 > $FILE
+    cat /tmp/1 > ${FILE}
 
     # notice
     echo "===> Disabing SPF as requested by the config"
 fi
 
 ### check if AV activation is needed
-if [ "$ENABLE_AV" == "no" -o "$ENABLE_AV" == "No" -o -z "$ENABLE_AV" ] ; then
+if ! is_enabled ENABLE_AV ; then
     # disable AV services to save resources
     disable_av
 
@@ -232,79 +232,79 @@ else
     FILE="/etc/clamav/freshclam.conf"
 
     ### Configure the services
-    if [ "$USE_AV_ALTERNATE_MIRROR" != "no" -o "$USE_AV_ALTERNATE_MIRROR" != "No" -o "$USE_AV_ALTERNATE_MIRROR" != "" ] ; then
-        # check if the alternates mirror haves an address
+    if is_enabled USE_AV_ALTERNATE_MIRROR && [ -n "${AV_ALT_MIRRORS}" ] ; then
+        # check if the alternates mirror has an address
         R=$(echo "${AV_ALT_MIRRORS}" | grep -P "(.*\.)+")
-        if [ -z "$R" ] ; then
+        if [ -z "${R}" ] ; then
             # no alternate mirror detected on the config file
             echo "========================================================================"
             echo "                             WARNING NOTICE!!!"
             echo " "
-            echo "You especified an alternate mirror on the AV, but we can't detect a"
+            echo "You specified an alternate mirror on the AV, but we can't detect a"
             echo "valid address on that variable, please check 'AV_ALT_MIRRORS' in the"
             echo "config file"
             echo " "
-            echo "We will continue, but no alternate AV mirror will be set in palce, do"
-            echo "not abort the install, Intead let it finish, fix the issue and make a"
+            echo "We will continue, but no alternate AV mirror will be set in place, do"
+            echo "not abort the install, Instead let it finish, fix the issue and make a"
             echo "'make force-provision' to apply the new changes"
             echo " "
             echo "======================================================================="
             sleep 10
         else
             # must activate the alternate mirror, but first clean the actual values
-            cat $FILE | grep -v DatabaseMirror | grep -v PrivateMirror | grep -v DatabaseCustomURL | grep -v Proxy > /tmp/1
-            cat /tmp/1 > $FILE
+            cat ${FILE} | grep -v DatabaseMirror | grep -v PrivateMirror | grep -v DatabaseCustomURL | grep -v Proxy > /tmp/1
+            cat /tmp/1 > ${FILE}
 
             # dump the config
             for M in $(echo "${AV_ALT_MIRRORS}" | xargs) ;  do
                 # if a proxy is set remove the 'http://' and 'https://' from the variables
 
-                if [ "$PROXY_HOST" -a "$PROXY_PORT" ] ; then
+                if [ "${PROXY_HOST}" -a "${PROXY_PORT}" ] ; then
                     # general proxy, but we must use it ?
-                    if [ "$AV_UPDATES_USE_PROXY" == "yes" -o "$AV_UPDATES_USE_PROXY" == "Yes" ] ; then
+                    if is_enabled AV_UPDATES_USE_PROXY ; then
                         # ok, by all means add proxy remove the prefix
                         Mm=$(echo ${M} | sed s/'http:\/\/'//g | sed s/'https:\/\/'//g)
-                        echo "DatabaseMirror ${Mm}" >> $FILE
+                        echo "DatabaseMirror ${Mm}" >> ${FILE}
                     else
                         # no proxy
-                        echo "DatabaseMirror ${M}" >> $FILE
+                        echo "DatabaseMirror ${M}" >> ${FILE}
                     fi
                 else
                     # no proxy
-                    echo "DatabaseMirror ${M}" >> $FILE
+                    echo "DatabaseMirror ${M}" >> ${FILE}
                 fi
             done
         fi
     fi
 
     ### configure proxy if needed
-    if [ "$PROXY_HOST" -a "$PROXY_PORT" ] ; then
+    if [ "${PROXY_HOST}" -a "${PROXY_PORT}" ] ; then
         # general proxy, but we must use it ?
-        if [ "$AV_UPDATES_USE_PROXY" == "yes" -o "$AV_UPDATES_USE_PROXY" == "Yes" ] ; then
+        if is_enabled AV_UPDATES_USE_PROXY ; then
             # ok, by all means add proxy
-            echo "HTTPProxyServer $PROXY_HOST" >> $FILE
-            echo "HTTPProxyPort $PROXY_PORT" >> $FILE
+            echo "HTTPProxyServer ${PROXY_HOST}" >> ${FILE}
+            echo "HTTPProxyPort ${PROXY_PORT}" >> ${FILE}
 
             # check for auth
-            if [ "$PROXY_USER" -a "$PROXY_PASS" ] ; then
-                echo "HTTPProxyUsername $PROXY_USER" >> $FILE
-                echo "HTTPProxyPassword $PROXY_PASS" >> $FILE
+            if [ "${PROXY_USER}" -a "${PROXY_PASS}" ] ; then
+                echo "HTTPProxyUsername ${PROXY_USER}" >> ${FILE}
+                echo "HTTPProxyPassword ${PROXY_PASS}" >> ${FILE}
             fi
         fi
     fi
 
     # increase the Timeouts
-    cat $FILE | grep -v ConnectTimeout | grep -v ReceiveTimeout > /tmp/1
-    cat /tmp/1 > $FILE
-    echo "ConnectTimeout 300" >> $FILE
-    echo "ReceiveTimeout 3600" >> $FILE
+    cat ${FILE} | grep -v ConnectTimeout | grep -v ReceiveTimeout > /tmp/1
+    cat /tmp/1 > ${FILE}
+    echo "ConnectTimeout 300" >> ${FILE}
+    echo "ReceiveTimeout 3600" >> ${FILE}
 
     ### Activating the services
     enable_av
 
     # set the hourly task to activate the filtering when fresclam end the update
     rm -f /etc/cron.hourly/av_filter_on_clamav_alive || true
-    ln -s "$P/var/clamav/activate_clamav_on_alive.sh" /etc/cron.hourly/av_filter_on_clamav_alive
+    ln -s "${P}/var/clamav/activate_clamav_on_alive.sh" /etc/cron.hourly/av_filter_on_clamav_alive
     echo "===> AV filtering provision is in place, but activation is delayed, we must wait for freshclam"
     echo "===> to update the AV database before enabling it or you will lose emails in the mean time"
     echo "===> you will be notified by mail when it's activated."
@@ -319,13 +319,13 @@ fi
 SPAMD_MTT_FILE=/etc/default/spamassassin
 
 # Fail safe
-if [ -z "$SPAMD_VERSION"  ] ; then
+if [ -z "${SPAMD_VERSION}" ] ; then
     # different file
     SPAMD_VERSION=$(dpkg -l spamassassin | grep spam | awk '{print $3}' | cut -d '.' -f 1)
 fi
 
 # select the correct file
-if [ "$SPAMD_VERSION" == "4" ] ; then
+if [ "${SPAMD_VERSION}" == "4" ] ; then
     # different file
     SPAMD_MTT_FILE=/etc/cron.daily/spamassassin
 
@@ -334,24 +334,24 @@ if [ "$SPAMD_VERSION" == "4" ] ; then
 fi
 
 # do the dance
-if [ "$ENABLE_SPAMD" == "yes" -o "$ENABLE_SPAMD" == "Yes" ] ; then
+if is_enabled ENABLE_SPAMD ; then
     # enable the SPAMD
 
     # notice
     echo "===> Enabling SpamAssassin"
 
     # Copy the template file
-    cp "${P}/var/spamassassin/spamassassin-${SPAMD_VERSION}" $SPAMD_MTT_FILE
+    cp "${P}/var/spamassassin/spamassassin-${SPAMD_VERSION}" ${SPAMD_MTT_FILE}
 
     # set the CRON maintenace task
     sed -i s/"^CRON=.*$"/"CRON=1"/ ${SPAMD_MTT_FILE}
     
     # configure SMA filtering on amavis if not already active
     FILE="/etc/amavis/conf.d/15-content_filter_mode"
-    ACTIVE=$(grep "^#@bypass_spam_checks_maps.*" $FILE)
-    if [ "$ACTIVE" ] ; then
+    ACTIVE=$(grep "^#@bypass_spam_checks_maps.*" ${FILE})
+    if [ "${ACTIVE}" ] ; then
         # not active, activating
-        sed -i s/"#@bypass_spam_checks_maps"/"@bypass_spam_checks_maps"/g $FILE
+        sed -i s/"#@bypass_spam_checks_maps"/"@bypass_spam_checks_maps"/g ${FILE}
 
         # reload services
         systemctl restart amavis
@@ -361,12 +361,12 @@ if [ "$ENABLE_SPAMD" == "yes" -o "$ENABLE_SPAMD" == "Yes" ] ; then
     SA_PROXY=""
 
     # build the chain
-    if [ "$PROXY_HOST" -a "$PROXY_PORT" ] ; then
+    if [ "${PROXY_HOST}" -a "${PROXY_PORT}" ] ; then
         # notice
         echo "===> SpamAssassin need proxy"
 
         # check for auth
-        if [ "$PROXY_USER" -a "$PROXY_PASS" ] ; then
+        if [ "${PROXY_USER}" -a "${PROXY_PASS}" ] ; then
             # notice
             echo "===> SpamAssassin proxy needs auth"
             SA_PROXY="http://${PROXY_USER}:${PROXY_PASS}@${PROXY_HOST}:${PROXY_PORT}/"
@@ -391,10 +391,10 @@ else
 
     # disable spamassasin on amavis
     FILE="/etc/amavis/conf.d/15-content_filter_mode"
-    ACTIVE=$(grep "^@bypass_spam_checks_maps.*" $FILE)
-    if [ "$ACTIVE" ] ; then
+    ACTIVE=$(grep "^@bypass_spam_checks_maps.*" ${FILE})
+    if [ "${ACTIVE}" ] ; then
         # not active, activating
-        sed -i s/"@bypass_spam_checks_maps"/"#@bypass_spam_checks_maps"/g $FILE
+        sed -i s/"@bypass_spam_checks_maps"/"#@bypass_spam_checks_maps"/g ${FILE}
 
         # reload services
         systemctl restart amavis
@@ -408,11 +408,11 @@ else
 fi
 
 ### altermime
-if [ "$ENABLE_DISCLAIMER" == "yes" -o "$ENABLE_DISCLAIMER" == "Yes" ] ; then
+if is_enabled ENABLE_DISCLAIMER ; then
     # enable disclaimer
     echo "===> Disclaimer enabled on config, installing altermime..."
 
-    apt-get install ${APT_OPTS} $DEBIAN_DISCLAIMER_PKGS
+    apt-get install ${APT_OPTS} ${DEBIAN_DISCLAIMER_PKGS}
 
     # notice
     echo "===> Enabling Altermime tweaks for disclaimer addition"
@@ -442,7 +442,7 @@ else
     echo "===> Disclaimer disabled on config, disabling"
 
     # remove the altermime package
-    apt-get purge ${APT_OPTS} $DEBIAN_DISCLAIMER_PKGS || true
+    apt-get purge ${APT_OPTS} ${DEBIAN_DISCLAIMER_PKGS} || true
 
     # disable the dfilt line in the master.cf file on postfix
     sed -i s/"content_filter=dfilt:"/"content_filter="/g /etc/postfix/master.cf
@@ -450,7 +450,7 @@ fi
 
 ### DNSBL
 FILE='/etc/postfix/master.cf'
-if [ "$ENABLE_DNSBL" == "yes" -o "$ENABLE_DNSBL" == "Yes" ] ; then
+if is_enabled ENABLE_DNSBL ; then
     # notice
     echo "===> Enabling DNSBL filtering "
 
@@ -484,7 +484,7 @@ services restart
 
 # install counter
 INSTALLS=1
-if [ ! -f "$INSTFILE" ]; then
+if [ ! -f "${INSTFILE}" ]; then
     # initialize
     echo "===> Initialize install counters"
 
@@ -492,28 +492,28 @@ if [ ! -f "$INSTFILE" ]; then
     FIRST_INSTALL=$(stat -c '%w' /etc/mail | sed -E 's/\.\d+//; s/ /T/; s/ ([+-])/\1/' | xargs -I {} date -u -d "{}" "+%Y/%m/%d %I:%M:%S %p UTC")
 
     # initialize
-    echo "INSTALLS=$INSTALLS" > $INSTFILE
-    echo "FIRST_INSTALL=$FIRST_INSTALL" >> $INSTFILE
-    echo "LAST_INSTALL=$(date)" >> $INSTFILE
+    echo "INSTALLS=${INSTALLS}" > ${INSTFILE}
+    echo "FIRST_INSTALL=${FIRST_INSTALL}" >> ${INSTFILE}
+    echo "LAST_INSTALL=$(date)" >> ${INSTFILE}
 else
     # New data on installs
     echo "===> Update install counters"
 
     # count +1
-    INSTCOUNT=$(grep '^INSTALLS=' "$INSTFILE" | cut -d'=' -f2)
+    INSTCOUNT=$(grep '^INSTALLS=' "${INSTFILE}" | cut -d'=' -f2)
     INCCOUNT=$((INSTCOUNT + 1))
     LAST=$(date)
     # update
-    sed -i "s/^INSTALLS=.*$/INSTALLS=$INCCOUNT/" "$INSTFILE"
-    sed -i "s/^LAST_INSTALL=.*$/LAST_INSTALL=$LAST/" "$INSTFILE"
+    sed -i "s/^INSTALLS=.*$/INSTALLS=${INCCOUNT}/" "${INSTFILE}"
+    sed -i "s/^LAST_INSTALL=.*$/LAST_INSTALL=${LAST}/" "${INSTFILE}"
 fi
 
 # optional stats
-if [ "$OPT_STATS" != "No" -o "$OPT_STATS" != "no" ] ; then
+if [ "${OPT_STATS}" != "No" ] && [ "${OPT_STATS}" != "no" ] ; then
     # install swaks to handle the forged email as the mailadmin
     apt-get install ${APT_OPTS} swaks
     # and we have stats, thanks
-    echo "===> Sending feedback to the creator & $ADMINMAIL"
+    echo "===> Sending feedback to the creator & ${ADMINMAIL}"
     ./scripts/feedback.sh
 fi
 

@@ -29,21 +29,20 @@ MAIL=$(mktemp)
 
 # check if we was run on debug mode
 DEBUG=''
-if [ "$1" == "-d" ] ; then
+if [ "${1}" == "-d" ] ; then
     DEBUG=1
     echo "Script ran in DEBUG mode, no mail will be sent, just info."
 fi
 
 # proxy detection
 PROXY=''
-if [ "${PROXY_HOST}" -a "${PROXY_PORT}" ] ; then
+if [ -n "${PROXY_HOST}" ] && [ -n "${PROXY_PORT}" ] ; then
     # user/passwd?
-    if [ "${PROXY_USER}" -a "${PROXY_PASS}" ] ; then
+    if [ -n "${PROXY_USER}" ] && [ -n "${PROXY_PASS}" ] ; then
         # user and password
         PROXY="http://${PROXY_USER}:${PROXY_PASS}@${PROXY_HOST}:${PROXY_PORT}/"
     else
         # no user
-        # user and password
         PROXY="http://${PROXY_HOST}:${PROXY_PORT}/"
     fi
 
@@ -59,7 +58,7 @@ if [ -f "${CHANGELOG}" ] ; then
     VERSION=$(cat "${CHANGELOG}" | grep "##" | head -n 1 | awk '{print $2}' | tr -d "[]")
     
     # DEBUG
-    if [ "${DEBUG}" ] ; then
+    if [ -n "${DEBUG}" ] ; then
         echo "Found Local version: ${VERSION}"
     fi
 else
@@ -73,7 +72,7 @@ if wget -q "${UPSTREAM_VERSION_URL}" -O "${UPSTREAM_VERSION_TMP}" ; then
     UPSTREAM_VERSION=$(cat "${UPSTREAM_VERSION_TMP}" | head -n 1)
 
     # DEBUG
-    if [ "${DEBUG}" ] ; then
+    if [ -n "${DEBUG}" ] ; then
         echo "Found UPSTREAM VERSION: ${UPSTREAM_VERSION}"
     fi
 
@@ -101,7 +100,7 @@ if wget -q "${UPSTREAM_VERSION_URL}" -O "${UPSTREAM_VERSION_TMP}" ; then
     fi
 else
     # DEBUG
-    if [ "${DEBUG}" ] ; then
+    if [ -n "${DEBUG}" ] ; then
         echo ""
         echo "Error: can download ${UPSTREAM_VERSION_URL}"
         echo "Will try to do it here for you to catch up the error"
@@ -123,12 +122,12 @@ else
     echo "" >> ${MAIL}
     echo "PS: you can test/debug this script by running it like this:" >> ${MAIL}
     echo "" >> ${MAIL}
-    echo "$0 -d" >> ${MAIL}
+    echo "${0} -d" >> ${MAIL}
     echo "" >> ${MAIL}
 fi
 
 # send the data in $MAIL if not in debug mode
-if [ ! "${DEBUG}" ] ; then
+if [ -z "${DEBUG}" ] ; then
     # check if we have something to say
     if [ -s ${MAIL} ] ; then
         cat ${MAIL} | mail ${ADMINMAIL} -s "MailAD: checking for a new version..."

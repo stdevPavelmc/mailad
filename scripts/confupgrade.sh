@@ -15,14 +15,14 @@ CONVARS=$(cat /etc/mailad/mailad.conf | grep -v "#" | grep "=" | cut -d "=" -f 1
 source ./mailad.conf
 
 # store it on another var and erase it
-NCONFVER=$CONFVER
+NCONFVER=${CONFVER}
 unset CONFVER
 
 # load the one on the file
 source /etc/mailad/mailad.conf
 
 # compare
-if [ "$CONFVER" == "$NCONFVER" ] ; then
+if [ "${CONFVER}" == "${NCONFVER}" ] ; then
     # Same version, no upgrade needed
     echo "===> Same version, no upgrade needed"
     exit 0  
@@ -32,20 +32,21 @@ fi
 echo "===> Different versions of config file, doing upgrade"
 
 ### Update the version for the update
-CONFVER=$NCONFVER
+CONFVER=${NCONFVER}
 
 # backup the actual config with a timestamp
 TS=$(date +"%Y%m%d_%H%M%S")
-cp /etc/mailad/mailad.conf /etc/mailad/mailad.conf_$TS
+cp /etc/mailad/mailad.conf /etc/mailad/mailad.conf_${TS}
 
 # create a target file to work with
 cat mailad.conf > /etc/mailad/mailad.conf
 
 # loop in the options and switch them as needed
-for O in $(echo $CONVARS | xargs) ; do
+for O in $(echo "${CONVARS}" | xargs) ; do
     # get the raw content of the var
     Vr=${!O}
     # excape possibles / in the string
+    # Keep the back ticks, or else: kaboom!
     V=`echo ${Vr//\//\\\\/}`
 
     # substitute in the file
@@ -69,4 +70,3 @@ echo " "
 echo " "
 
 exit 1
-

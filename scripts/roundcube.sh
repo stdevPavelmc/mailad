@@ -27,7 +27,7 @@ rm /etc/mailad/snappy_admin_pass || true
 NGINX_CONFIG=/etc/nginx/sites-available/default
 NGINX_TEMPLATE=./var/nginx/default
 HTTPS_ONLY=true
-if [ "$WEBSERVER_HTTP_ENABLED" == "yes" ]; then
+if is_enabled WEBSERVER_HTTP_ENABLED ; then
     NGINX_TEMPLATE=./var/nginx/default_http
     HTTPS_ONLY=false
 
@@ -107,7 +107,7 @@ chmod 0660 "${SQLITE_STORAGE}/${SQLITE_DB}"*
 # ldap vars
 LDAP_PORT=389
 LDAP_PREFIX=""
-if [ "$SECURELDAP" == 'yes' ] ; then
+if is_enabled SECURELDAP ; then
     LDAP_PORT=636
     LDAP_PREFIX="ldaps://"
 fi

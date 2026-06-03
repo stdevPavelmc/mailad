@@ -18,7 +18,7 @@ FILE="/var/log/mail.log /var/log/mail.log.1"
 TMP=$(mktemp)
 
 # check for soft
-if [ "$PFSL" == "" ] ; then
+if [ -z "${PFSL}" ] ; then
     # no soft installed, warning
     echo "MailAD: Can't make the mail traffic summary because pflogsumm software is missing!" \
         | mail -s "MailAD: Yesterday's mail traffic Summary" ${SYSADMINS}
@@ -26,13 +26,13 @@ if [ "$PFSL" == "" ] ; then
 fi
 
 # ejecutando
-$PFSL $OPTS $FILE > $TMP
+${PFSL} ${OPTS} ${FILE} > ${TMP}
 
 # emails to the sysadmins group or the mailadmin?
-if [ "$SYSADMINS" == "" ] ; then
-    SYSADMINS=$ADMINMAIL
+if [ -z "${SYSADMINS}" ] ; then
+    SYSADMINS=${ADMINMAIL}
 fi
 
 # enviar el correo
-cat $TMP | mail -s "MailAD: Yesterday's mail traffic Summary" ${SYSADMINS}
-rm $TMP
+cat ${TMP} | mail -s "MailAD: Yesterday's mail traffic Summary" ${SYSADMINS}
+rm ${TMP}

@@ -19,16 +19,9 @@ if [ -f /etc/os-release ] ; then
     source /etc/os-release
 
     # Distros check
-    if [[ " ${OS_WORKING[*]} " =~ " $VERSION_CODENAME " ]]; then
-        # Ubuntu
-        if [[ " ${OS_WORKING_U[*]} " =~ " $VERSION_CODENAME " ]]; then
-            craft_pkg_list "ubuntu"
-        fi
-
-        # Debian
-        if [[ " ${OS_WORKING_D[*]} " =~ " $VERSION_CODENAME " ]]; then
-            craft_pkg_list "debian"
-        fi
+    DISTRO=$(detect_distro)
+    if [ "${DISTRO}" != "unknown" ]; then
+        craft_pkg_list "${DISTRO}"
     else
         # Un supported distro
         echo "==========================================================================="

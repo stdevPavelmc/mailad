@@ -17,8 +17,8 @@ LASTWORKINGBACKUPFILE="${LIBFOLDER}/latest_working_backup"
 BKPFOLDER="/var/backups/mailad"
 
 # fun start here
-LIST=$(ls $BKPFOLDER)
-if [ -z "$LIST" ] ; then
+LIST=$(ls "${BKPFOLDER}")
+if [ -z "${LIST}" ] ; then
     # no backups
     echo "===> No backups found on the backup folder, exit."
     exit 0
@@ -28,36 +28,42 @@ fi
 c=1
 tf=$(mktemp -d)
 echo "===> We found the following backups, pick one to restore:"
-for f in $(echo "$LIST" | sort -r | xargs) ; do
-    n=$(echo $f | cut -d "." -f 1)
-    printf "    %s)\t%s\n" $c $n
-    echo "$f" > "$tf/$c"
-    c=$(( $c+1 ))
+for f in $(echo "${LIST}" | sort -r | xargs) ; do
+    n=$(echo "${f}" | cut -d "." -f 1)
+    printf "    %s)\t%s\n" ${c} ${n}
+    echo "${f}" > "${tf}/${c}"
+    c=$(( ${c}+1 ))
 done
 echo "Pick the number of the backup file to restore, #1 is latest"
 read -p "any other value or simply an enter to abort " BKPINDEX
 
+# validate input is numeric
+if ! [[ "${BKPINDEX}" =~ ^[0-9]+$ ]]; then
+    echo "===> You selected a non valid option, abort!"
+    exit 0
+fi
+
 # notice you selected a correct number
-if [ $BKPINDEX -ge $c ] ; then
+if [ ${BKPINDEX} -ge ${c} ] ; then
     # not valid
     echo "===> You selected a non valid option, abort!"
     exit 0
 else
     # valid file
-    F=$(cat $tf/$BKPINDEX)
-    FILE="$BKPFOLDER/$F"
-    if [ ! -f "$FILE" ] ; then
+    F=$(cat "${tf}/${BKPINDEX}")
+    FILE="${BKPFOLDER}/${F}"
+    if [ ! -f "${FILE}" ] ; then
         echo "===> You selected a non valid option, abort!"
         exit 0
     else
         echo "===> You selected the file:"
-        echo "     $FILE"
+        echo "     ${FILE}"
     fi
 fi
 
 # starting the restore
 echo "===> Starting to restore the selected backup..."
-cd / && tar -xvzf "$FILE"
+cd / && tar -xvzf "${FILE}"
 
 # restarting services
 services restart

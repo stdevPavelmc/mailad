@@ -24,9 +24,9 @@ if [ -f /etc/mailad/le/fullchain.pem -a -f /etc/mailad/le/privkey.pem ] ; then
     echo "===> Let's Encrypt certificates found, using them"
 
     # erase in place certificates if found
-    rm -f /etc/ssl/private/mail.key &2> /dev/null
-    rm -f /etc/ssl/certs/mail.crt &2> /dev/null
-    rm -f /etc/ssl/certs/cacert.pem &2> /dev/null
+    rm -f /etc/ssl/private/mail.key 2> /dev/null
+    rm -f /etc/ssl/certs/mail.crt 2> /dev/null
+    rm -f /etc/ssl/certs/cacert.pem 2> /dev/null
 
     # copy the LE certificates
     cp /etc/mailad/le/fullchain.pem /etc/ssl/certs/mail.crt
