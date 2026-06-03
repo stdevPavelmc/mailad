@@ -124,3 +124,5 @@ else
     # Success
     echo "===> LDAP bind succeeded!"
 fi
+
+exit 0

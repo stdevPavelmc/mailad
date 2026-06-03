@@ -1,4 +1,5 @@
 #!/bin/bash
+set -euo pipefail
 
 # This script is part of MailAD, see https://github.com/stdevPavelmc/mailad/
 # Copyright 2022 Pavel Milanes Costa <pavelmc@gmail.com>
@@ -49,17 +50,41 @@ fi
 source /etc/mailad/mailad.conf
 source .mailadmin.auth
 
+SAMBA_TLS_DIR=/var/lib/samba/private/tls
+SAMBA_CA_CERT=${SAMBA_TLS_DIR}/ca.pem
+SAMBA_SERVER_CERT=${SAMBA_TLS_DIR}/cert.pem
+SYSTEM_SAMBA_CA=/usr/local/share/ca-certificates/samba-ca.crt
+
+wait_for_samba_tls_material() {
+    local attempt
+
+    for attempt in $(seq 1 15) ; do
+        if [ -s "$SAMBA_CA_CERT" ] && [ -s "$SAMBA_SERVER_CERT" ] && [ -s "${SAMBA_TLS_DIR}/key.pem" ] ; then
+            return 0
+        fi
+
+        echo ">>> Waiting for Samba TLS material (attempt ${attempt}/15)"
+        sleep 2
+    done
+
+    echo "======================================================"
+    echo "ERROR: Samba did not generate its TLS files in time"
+    echo "       Expected files under: ${SAMBA_TLS_DIR}"
+    echo "======================================================"
+    return 1
+}
+
 ### Some var casting
 # Administrator PASSWD!
 APSWD=${PASS}
-NETBIOS=$(echo ${DOMAIN} | cut -d '.' -f 1 | tr [:lower:] [:upper:])
+NETBIOS=$(echo ${DOMAIN} | cut -d '.' -f 1 | tr '[:lower:]' '[:upper:]')
 ADMINUSER=$(echo ${ADMINMAIL} | cut -d '@' -f 1)
 LUCU=$(echo ${LOCUSER} | cut -d '@' -f 1)
 NATU=$(echo ${NACUSER} | cut -d '@' -f 1)
 TESTGROUP=testgroup
 
 # Set default DNS forwarder if not already set
-if [ -z "$DNSFWD" ] ; then
+if [ -z "${DNSFWD:-}" ] ; then
     DNSFWD=1.1.1.1
 fi
 
@@ -75,7 +100,13 @@ echo "==== END DEBUG ===="
 apt-get update
 
 # install samba and winbind
-apt-get install samba winbind python3-setproctitle -yq
+# samba-ad-dc is a separate package only on Ubuntu 26.04 (resolute) and later
+source /etc/os-release
+SAMBA_PKGS="samba winbind python3-setproctitle"
+if [ "${VERSION_CODENAME}" = "resolute" ]; then
+    SAMBA_PKGS="${SAMBA_PKGS} samba-ad-dc"
+fi
+apt-get install ${SAMBA_PKGS} -yq
 
 # config samba related services
 for a in stop disable mask ; do
@@ -115,6 +146,18 @@ fi
 # start the new domain
 echo ">>> start samba"
 systemctl start samba-ad-dc
+
+# Samba publishes its LDAPS material only after the AD DC service is running.
+wait_for_samba_tls_material
+
+# Install Samba's CA certificate into this host trust store so local LDAP
+# clients can validate LDAPS without disabling certificate verification.
+echo ">>> Installing Samba CA certificate to system trust store"
+cp "$SAMBA_CA_CERT" "$SYSTEM_SAMBA_CA"
+update-ca-certificates --fresh
+
+echo ">>> Verifying Samba TLS certificate chain"
+openssl verify -CAfile "$SAMBA_CA_CERT" "$SAMBA_SERVER_CERT"
 
 # create the link user
 echo ">>> create user linux"

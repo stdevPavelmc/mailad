@@ -37,6 +37,37 @@ function get_ldap_uri {
     echo "${SOUT}"
 }
 
+# Simplified LDAP search for single attribute
+# NOTE: Do NOT use -ZZ (StartTLS) here. When SECURELDAP=yes the URI is
+# ldaps://:636 which is already TLS; adding -ZZ to an ldaps:// connection
+# causes "TLS already started" and the search returns empty silently.
+# LDAPTLS_REQCERT=never handles self-signed certs for both ldap:// and ldaps://.
+ldap_search_simple() {
+    local FILTER=$1
+    local ATTRIBUTE=$2
+    
+    LDAPTLS_REQCERT=never ldapsearch -o ldif-wrap=no \
+        -H "$LDAPURI" \
+        -D "$LDAPBINDUSER" \
+        -w "$LDAPBINDPASSWD" \
+        -b "$LDAPSEARCHBASE" \
+        "$FILTER" "$ATTRIBUTE" 2>/dev/null | grep "^$ATTRIBUTE:" | awk '{print $2}'
+}
+
+# LDAP search returning all matching values of an attribute (one per line)
+# Same TLS note as ldap_search_simple: no -ZZ, LDAPTLS_REQCERT=never is enough.
+ldap_search_list() {
+    local FILTER=$1
+    local ATTRIBUTE=$2
+    
+    LDAPTLS_REQCERT=never ldapsearch -o ldif-wrap=no \
+        -H "$LDAPURI" \
+        -D "$LDAPBINDUSER" \
+        -w "$LDAPBINDPASSWD" \
+        -b "$LDAPSEARCHBASE" \
+        "$FILTER" "$ATTRIBUTE" 2>/dev/null | grep "^$ATTRIBUTE:" | awk '{print $2}'
+}
+
 # get the files' fingerprint
 function getfp {
     sha1sum /etc/postfix/aliases/auto_aliases | awk '{print $1}'
@@ -48,69 +79,101 @@ REPORT=$(mktemp)
 LDAPURI=$(get_ldap_uri)
 ERROR=""
 
+echo "===> Starting group aliases generation" > $REPORT
+echo "===> LDAP URI: $LDAPURI" >> $REPORT
+
 # check if we need to get the everyone group
 if [ -z "$EVERYONE" ] ; then
-    # empy result: Fail
-    echo "===> EVERYONE group disabled, skiping..." >> $REPORT
+    # empty result: Fail
+    echo "===> EVERYONE group disabled, skipping..." >> $REPORT
     echo "# Everyone list DISABLED in config" > /etc/postfix/aliases/auto_aliases
     echo " " >> /etc/postfix/aliases/auto_aliases
 else
     echo "===> Trying to retrieve all the emails to form the EVERYONE list" >> $REPORT
-    echo "===> login into some of the '$HOSTAD' servers" >> $REPORT
+    echo "===> Login into some of the '$HOSTAD' servers" >> $REPORT
     echo "===> as $LDAPBINDUSER" >> $REPORT
 
-    # LDAP query
-    RESULT=$(ldapsearch -o ldif-wrap=no -H "$LDAPURI" -D "$LDAPBINDUSER" -w "$LDAPBINDPASSWD" -b "$LDAPSEARCHBASE" "(&(objectCategory=person)(objectClass=user)(sAMAccountName=*))" mail | grep "mail: " | grep "@$DOMAIN" | awk '{print $2}' | tr '\n' ',')
+    # LDAP query - get all users with mail attribute
+    RESULT=$(ldap_search_list "(&(objectCategory=person)(objectClass=user)(mail=*))" "mail" | grep "@$DOMAIN" | tr '\n' ',' | sed 's/,$//')
 
-    if [ "$RESULT" == "" ] ; then
-        # empy result: Fail
-        echo "===> Error, something failed..." >> $REPORT
-        echo $RESULT >> $REPORT 
+    if [ -z "$RESULT" ] ; then
+        # empty result: Fail
+        echo "===> Error, something failed or no users found..." >> $REPORT
         ERROR="ujum..."
     else
         # Success
-        echo "===> Success, $EVERYONE list created/updated" >> $REPORT
+        echo "===> Success, found users for EVERYONE list" >> $REPORT
         echo "# Everyone list" > /etc/postfix/aliases/auto_aliases
-        echo "$EVERYONE     $RESULT" >> /etc/postfix/aliases/auto_aliases
+        echo "$EVERYONE    $RESULT" >> /etc/postfix/aliases/auto_aliases
         echo " " >> /etc/postfix/aliases/auto_aliases
     fi
 fi
 
-# Getting the list of the groups in the search base
+# Getting the list of the groups in the search base that have email defined
+echo "===> Searching for groups with email defined..." >> $REPORT
 TEMP=$(mktemp)
-ldapsearch -o ldif-wrap=no -H "$LDAPURI" -D "$LDAPBINDUSER" -w "$LDAPBINDPASSWD" -b "$LDAPSEARCHBASE" "(&(objectClass=group)(mail=*))" dn | grep "^dn:" > $TEMP
+
+ldap_search_list "(&(objectClass=group)(mail=*))" "dn" > $TEMP
 
 declare -a RES
 # parsing the group names, as it can be coded in base64 when non default charset is used
 while IFS= read -r line ; do
-    L=$(echo $line | grep '::')
-    if [ -z "$L" ] ; then
-        R=$(echo $line | cut -d " " -f 2- )
-    else
-        R=$(echo $line | cut -d " " -f 2-  | base64 -d)
+    if [ -n "$line" ]; then
+        # Check if line is base64 encoded (contains '::')
+        if [[ "$line" == *"::"* ]]; then
+            R=$(echo "$line" | awk -F':: ' '{print $2}' | base64 -d 2>/dev/null)
+            if [ -z "$R" ]; then
+                R=$(echo "$line" | awk -F':: ' '{print $2}')
+            fi
+        else
+            R="$line"
+        fi
+        RES+=("$R")
     fi
-
-    # aggregate
-    RES+=("$R")
 done < $TEMP
 
 rm $TEMP
 
+echo "===> Found ${#RES[@]} groups with email defined" >> $REPORT
+
 for G in "${RES[@]}"; do
-    # search the group dn
-    GEM=$(ldapsearch -o ldif-wrap=no -H "$LDAPURI" -D "$LDAPBINDUSER" -w "$LDAPBINDPASSWD" -b "$LDAPSEARCHBASE" "(&(objectClass=group)(distinguishedName=$G))" mail | grep "mail: " | awk '{print $2}')
-
-    if [ "$GEM" ] ; then
-        RESULT=$(ldapsearch -o ldif-wrap=no -H "$LDAPURI" -D "$LDAPBINDUSER" -w "$LDAPBINDPASSWD" -b "$LDAPSEARCHBASE" "(&(objectCategory=person)(objectClass=user)(sAMAccountName=*)(memberOf=$G))" mail | grep "mail: " | awk '{print$2}' | tr '\n' ',')
-
-        echo "===> Parsing members of the group: $G" >> $REPORT
+    # Get the group email address
+    GEM=$(ldap_search_simple "(&(objectClass=group)(distinguishedName=$G))" "mail")
+    
+    if [ -n "$GEM" ] ; then
+        # Get all members of this group (direct members)
+        RESULT=$(ldap_search_list "(&(objectCategory=person)(objectClass=user)(mail=*)(memberOf=$G))" "mail" | tr '\n' ',' | sed 's/,$//')
+        
+        # Also try nested groups (members that are groups themselves)
+        NESTED_MEMBERS=$(ldap_search_list "(&(objectClass=group)(mail=*)(memberOf=$G))" "mail" | tr '\n' ',' | sed 's/,$//')
+        
+        # Combine direct and nested members
+        if [ -n "$NESTED_MEMBERS" ]; then
+            if [ -n "$RESULT" ]; then
+                RESULT="$RESULT,$NESTED_MEMBERS"
+            else
+                RESULT="$NESTED_MEMBERS"
+            fi
+        fi
+        
+        echo "===> Parsing members of the group: $G (email: $GEM)" >> $REPORT
         echo "# Group: $G" >> /etc/postfix/aliases/auto_aliases
-        echo "$GEM   $RESULT" >> /etc/postfix/aliases/auto_aliases
+        if [ -n "$RESULT" ]; then
+            echo "$GEM    $RESULT" >> /etc/postfix/aliases/auto_aliases
+            echo "===>   Found $(echo $RESULT | tr ',' '\n' | wc -l) members" >> $REPORT
+        else
+            echo "# WARNING: No members found for group $G" >> /etc/postfix/aliases/auto_aliases
+            echo "$GEM    postmaster@$DOMAIN" >> /etc/postfix/aliases/auto_aliases
+            echo "===>   WARNING: No members found, redirecting to postmaster" >> $REPORT
+        fi
         echo " " >> /etc/postfix/aliases/auto_aliases
+    else
+        echo "===> WARNING: Group $G has no email attribute, skipping" >> $REPORT
     fi 
 done
 
 # updating postfix about the change
+echo "===> Updating postfix aliases..." >> $REPORT
 cd /etc/postfix/aliases && postmap auto_aliases
 postfix reload 2> /dev/null
 
@@ -122,13 +185,13 @@ if [ "$INITIALFP" != "$FINALFP" ] ; then
 fi
 
 # check for the sysadmin group alias if set
-if [ "$SYSADMINS" ] ; then
+if [ -n "$SYSADMINS" ] ; then
     # search for it on the aliases files
-    R=$(cat /etc/postfix/aliases/auto_aliases /etc/postfix/aliases/alias_virtuales | awk '{print $1}' | grep "$SYSADMINS")
+    R=$(cat /etc/postfix/aliases/auto_aliases /etc/postfix/aliases/alias_virtuales 2>/dev/null | awk '{print $1}' | grep "^$SYSADMINS$")
     if [ -z "$R" ] ; then
         # build the email
         F=$(mktemp)
-        echo "You have a SYSADMIN group configured to recieve notifications in /etc/mailad/mailad.conf" > $F
+        echo "You have a SYSADMIN group configured to receive notifications in /etc/mailad/mailad.conf" > $F
         echo "but the group checking & updating procedure can't find the group you mention in the config," >> $F
         echo "that means you are losing notification emails, daily mail summaries, etc." >> $F
         echo " " >> $F
@@ -140,10 +203,12 @@ if [ "$SYSADMINS" ] ; then
         echo " " >> $F
         echo "Cheers, MailAD dev team." >> $F
         echo " " >> $F
-        echo "PS: you will recieve this email daily until you solve that issue." >> $F
+        echo "PS: you will receive this email daily until you solve that issue." >> $F
 
         # sending the email to the ADMINMAIL declared
-        cat $F | mail ${ADMINMAIL} -s "MailAD need your attention: incomplete configuration detected!"
+        cat $F | mail -s "MailAD need your attention: incomplete configuration detected!" ${ADMINMAIL}
         rm $F
     fi
 fi
+
+exit 0

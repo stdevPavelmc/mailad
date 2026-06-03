@@ -5,11 +5,10 @@
 # LICENCE: GPL 3.0 and later  
 #
 # Goal:
-#   - Pass or Fail by logging into the AD with the bind DN provided
-#   - Search for the admin user by its declares email and test the followinf parameters
-#       - Office = VMAILSTORAGE
-#       - Telephone = not empty
-#       - WebPage = not empty and end in "/"
+#   - Pass or Fail by querying the AD with the configured bind DN
+#   - Search for the admin user by its declared email, with AD-friendly fallbacks
+#   - Detect legacy AD field values that still require migration
+#   - Validate DEFAULT_MAILBOX_SIZE format
 
 # source the common config
 source common.conf
@@ -22,25 +21,43 @@ LDAPURI=$(get_ldap_uri)
 
 echo "===> Searching for the user that owns the email: $ADMINMAIL"
 
+# Create temp file
 TEMP=$(mktemp)
-ldapsearch -o ldif-wrap=no -H "$LDAPURI" -D "$LDAPBINDUSER" -w "$LDAPBINDPASSWD" -b "$LDAPSEARCHBASE" "(&(objectClass=person)(mail=$ADMINMAIL))" > $TEMP
-RESULTS=$(cat $TEMP | grep "numEntries: " | awk '{print $3}')
 
-if [ -z "$RESULTS" ] ; then
-    # check for a bad LDAPSEARCHBASE
-    BSD=$(cat $TEMP | grep "acl_read")
-    if [ -z "$BSD" ] ; then
-        # fail
-        echo "================================================================================="
-        echo "ERROR!:"
-        echo "    There is no user in the AD with the email you provided en the ADMINMAIL setting"
-        echo "    please check and set the correct value"
-        echo "================================================================================="
-        echo " "
-        rm $TEMP
-        exit 1
-    else
-        # fail
+run_search() {
+    local FILTER=$1
+
+    ldapsearch -o ldif-wrap=no \
+        -H "$LDAPURI" \
+        -D "$LDAPBINDUSER" \
+        -w "$LDAPBINDPASSWD" \
+        -b "$LDAPSEARCHBASE" \
+        "$FILTER" > "$TEMP" 2>&1
+
+    SEARCH_RC=$?
+    RESULTS=$(grep "^# numEntries:" "$TEMP" | awk '{print $3}')
+}
+
+SEARCH_RC=0
+run_search "(&(objectClass=person)(mail=$ADMINMAIL))"
+
+if [ -z "$RESULTS" ] || [ "$RESULTS" == "0" ]; then
+    # Try with userPrincipalName
+    echo "===> Trying with userPrincipalName..."
+    run_search "(userPrincipalName=$ADMINMAIL)"
+fi
+
+if [ -z "$RESULTS" ] || [ "$RESULTS" == "0" ]; then
+    # Try with sAMAccountName
+    USERNAME=$(echo "$ADMINMAIL" | cut -d@ -f1)
+    echo "===> Trying with sAMAccountName=$USERNAME..."
+    run_search "(sAMAccountName=$USERNAME)"
+fi
+
+if [ -z "$RESULTS" ] || [ "$RESULTS" == "0" ]; then
+    BSD=$(grep "acl_read" "$TEMP")
+
+    if [ -n "$BSD" ] ; then
         echo "================================================================================="
         echo "ERROR!:"
         echo "    There is no valid data and the search returned an error, this in most cases is"
@@ -49,70 +66,131 @@ if [ -z "$RESULTS" ] ; then
         echo " "
         echo "    $LDAPSEARCHBASE"
         echo "================================================================================="
+    elif [ $SEARCH_RC -ne 0 ] ; then
+        echo "================================================================================="
+        echo "ERROR!:"
+        echo "    The LDAP query returned an error before any user could be matched."
+        echo "    Please validate the bind and TLS setup first with scripts/test_bind_dn.sh"
         echo " "
-        rm $TEMP
-        exit 1
+        echo "    Search base: $LDAPSEARCHBASE"
+        echo "    LDAP URI: $LDAPURI"
+        echo "    Bind user: $LDAPBINDUSER"
+        echo " "
+        echo "    Response (first 20 lines):"
+        sed -n '1,20p' "$TEMP"
+        echo "================================================================================="
+    else
+        echo "================================================================================="
+        echo "ERROR!:"
+        echo "    No user found with email: $ADMINMAIL"
+        echo " "
+        echo "    Search base: $LDAPSEARCHBASE"
+        echo "    LDAP URI: $LDAPURI"
+        echo "    Bind user: $LDAPBINDUSER"
+        echo " "
+        echo "    Listing all users in this OU for debugging:"
+        echo "    -------------------------------------------"
+
+        ldapsearch -o ldif-wrap=no \
+            -H "$LDAPURI" \
+            -D "$LDAPBINDUSER" \
+            -w "$LDAPBINDPASSWD" \
+            -b "$LDAPSEARCHBASE" \
+            "(|(objectClass=user)(objectClass=person))" mail cn sAMAccountName 2>/dev/null | \
+            awk '
+                /^dn:/ {dn=$0}
+                /^mail:/ {print dn; print "    " $0}
+                /^cn:/ && !/^mail:/ {print "    " $0}
+                /^sAMAccountName:/ {print "    " $0}
+            '
+
+        echo "================================================================================="
     fi
-else
-    # Success
-    echo "===> Found at least one Object, parsing the data..."
+
+    rm "$TEMP"
+    exit 1
 fi
 
-# Extract the office parameter "physicalDeliveryOfficeName"
-OFFICE=$(cat $TEMP | grep physicalDeliveryOfficeName | awk '{print $2}')
+echo "===> Found $RESULTS object(s), parsing the data..."
+
+# Extract the office parameter
+OFFICE=$(grep "^physicalDeliveryOfficeName:" $TEMP | head -1 | awk '{print $2}' | tr -d '\r')
 if [ "$OFFICE" == "$VMAILSTORAGE" ] ; then
-    # fail, old config
     echo "================================================================================="
     echo "ERROR!:"
-    echo "    Office property has the VMAILSTORAGE parameter, this is a legacy system, so"
-    echo "    you need to upgrade, see the file Simplify_AD_config.md and do the changes"
-    echo "    before continue with the install/upgrade."
+    echo "    Office property has the VMAILSTORAGE parameter ($VMAILSTORAGE)"
+    echo "    This is a legacy system configuration."
+    echo "    Please review Simplify_AD_config.md"
     echo "================================================================================="
-    echo " "
     rm $TEMP
     exit 1
 fi
 
-# Extract the web page parameter "wWWHomePage"
-WP=$(cat $TEMP | grep wWWHomePage | awk '{print $2}')
-if [ "$WP" != "" ] ; then
-    # success 1/2
-    echo "===> Found some text on the wWWHomePage parameter... hum..."
-    LAST=$(echo "${WP: -1}")
+# Extract the web page parameter
+WP=$(grep "^wWWHomePage:" $TEMP | head -1 | awk '{print $2}' | tr -d '\r')
+if [ -n "$WP" ] ; then
+    echo "===> Found wWWHomePage: $WP"
+    LAST="${WP: -1}"
     if [ "$LAST" == "/" ] ; then
-        # fail old config
         echo "================================================================================="
         echo "ERROR!:"
-        echo "    wWWHomePage property appears to have the home folder for the user, this is a"
-        echo "    sign of a legacy system; you need to upgrade, see the file: "
-        echo "    Simplify_AD_config.md and do the changes before continuing with the"
-        echo "    install/upgrade."
+        echo "    wWWHomePage property ends with '/' indicating legacy configuration."
+        echo "    Please review Simplify_AD_config.md"
         echo "================================================================================="
-        echo " "
         rm $TEMP
         exit 1
     fi
 fi
 
-# succcess
-echo "===> User $ADMINMAIL is configured ok"
-echo "===> You can use that user as an example to set up the others!"
-rm $TEMP || true
+# Extract telephone number (optional)
+TELEPHONE=$(grep "^telephoneNumber:" $TEMP | head -1 | awk '{print $2}' | tr -d '\r')
+if [ -z "$TELEPHONE" ]; then
+    echo "===> Note: No telephone number found for $ADMINMAIL"
+else
+    echo "===> Telephone number found: $TELEPHONE"
+fi
 
-# Add tests for the default mailbox size in iect standard
-echo "===> Testing the DEFAULT MAILBOX SIZE is in correct IEC format..."
-dumy=$(echo "$DEFAULT_MAILBOX_SIZE" | numfmt --from=iec)
-R=$?
-if [ $R -ne 0 ] ; then
-    # nope...
+# Success message
+echo "================================================================================="
+echo "SUCCESS: User $ADMINMAIL is configured correctly"
+echo " "
+echo "  - Email: $ADMINMAIL"
+echo "  - DN: $(grep "^dn:" $TEMP | head -1)"
+echo "  - Office field: ${OFFICE:-'(not set)'}"
+echo "  - Telephone: ${TELEPHONE:-'(not set)'}"
+echo "  - Web page: ${WP:-'(not set)'}"
+echo " "
+echo "  You can use this user as a template for configuring other mail users!"
+echo "================================================================================="
+
+rm "$TEMP" || true
+
+# Test DEFAULT_MAILBOX_SIZE format
+echo " "
+echo "===> Testing DEFAULT_MAILBOX_SIZE format..."
+
+if [ -z "$DEFAULT_MAILBOX_SIZE" ]; then
     echo "================================================================================="
     echo "ERROR!:"
-    echo "    DEFAULT_MAILBOX_SIZE is not in IEC format, you must use a number and a unit,"
-    echo "    some valid examples are: 100M, 1G, 1T; also if you want to express fractions"
-    echo "    you can use them or use the lower unit, this are the same: 1.5G = 1500M"
+    echo "    DEFAULT_MAILBOX_SIZE is not set in mailad.conf"
     echo "================================================================================="
-    echo " "
     exit 1
+fi
+
+# Test IEC format
+echo "$DEFAULT_MAILBOX_SIZE" | numfmt --from=iec >/dev/null 2>&1
+if [ $? -ne 0 ] ; then
+    echo "================================================================================="
+    echo "ERROR!:"
+    echo "    DEFAULT_MAILBOX_SIZE is not in IEC format: '$DEFAULT_MAILBOX_SIZE'"
+    echo " "
+    echo "    Valid examples: 100M, 1G, 500M, 2T"
+    echo "    For fractions use lower unit: 1.5G = 1500M"
+    echo "================================================================================="
+    exit 1
+else
+    BYTES=$(echo "$DEFAULT_MAILBOX_SIZE" | numfmt --from=iec)
+    echo "===> DEFAULT_MAILBOX_SIZE: $DEFAULT_MAILBOX_SIZE ($BYTES bytes) - Valid format ✓"
 fi
 
 exit 0
