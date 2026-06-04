@@ -1,5 +1,5 @@
 #!/bin/bash
-set -euo pipefail
+set -eo pipefail
 
 # This script is part of MailAD, see https://github.com/stdevPavelmc/mailad/
 # Copyright 2022 Pavel Milanes Costa <pavelmc@gmail.com>
